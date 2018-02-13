@@ -8,7 +8,7 @@
         "specs",
         "cpu"
     ],
-    "license": "GPL",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Joe Gillotti",
