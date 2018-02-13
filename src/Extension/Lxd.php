@@ -33,7 +33,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
-use Linfo\Meta\Timer;
 
 /**
  * Get status on lxd containers.
@@ -42,7 +41,7 @@ class Lxd implements Extension
 {
     private
         $sock_path = null,
-        $vms = false;
+        $vms = [];
 
     public function __construct(Linfo $linfo)
     {
@@ -52,8 +51,6 @@ class Lxd implements Extension
 
     public function work()
     {
-        $t = new Timer('lxd extension');
-
         $vm_list = $this->hitIt('/1.0/containers');
 
         if (!$vm_list)
@@ -113,7 +110,7 @@ class Lxd implements Extension
       $sock = fsockopen($this->sock_path);
 
       if (!$sock) {
-          Errors::add('lxd extension', 'Error connecting to socket ' + $this->sock_path);
+          Errors::add('lxd extension', 'Error connecting to socket ' . $this->sock_path);
           return false;
       }
 
