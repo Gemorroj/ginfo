@@ -3,6 +3,11 @@
 ### Linfo is a:
  - Extensible, easy (composer) to use PHP Library to get extensive system stats programmatically from your PHP app
 
+### Fork changes:
+- drop ui
+- minor code improvements 
+
+
 ### PHP library usage
 
 ```bash
