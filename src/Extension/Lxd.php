@@ -107,7 +107,7 @@ class Lxd implements Extension
 
     private function hitIt($url)
     {
-      $sock = fsockopen($this->sock_path);
+      $sock = @fsockopen($this->sock_path);
 
       if (!$sock) {
           Errors::add('lxd extension', 'Error connecting to socket ' . $this->sock_path);

@@ -608,6 +608,22 @@ class Linfo
         $settings['sudo_apps'] = array(//'ps' // For example
         );
 
+        $settings['extensions']['ipmi'] = true;
+        $settings['extensions']['nvidia'] = true;
+        $settings['extensions']['smb'] = true;
+        $settings['extensions']['lxd'] = true;
+        $settings['extensions']['libvirt'] = true;
+        $settings['libvirt_connection'] = array(
+            'url' => 'qemu:///system', // For xen do 'xen:///' instead
+            'credentials' => null
+        );
+        $settings['extensions']['Dnsmasq_dhcpd'] = true;
+        $settings['dnsmasq_hide_mac'] = false;  // set to false to show mac addresses
+        $settings['dnsmasq_leases'] = '/var/lib/libvirt/dnsmasq/default.leases';  // change path to the leases file. defaults to /var/lib/libvirt/dnsmasq/default.leases
+        $settings['extensions']['dhcpd3_leases'] = true;
+        $settings['extensions']['cups'] = true;
+        $settings['extensions']['apcaccess'] = true;
+
         return $settings;
     }
 

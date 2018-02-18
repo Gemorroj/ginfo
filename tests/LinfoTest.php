@@ -18,11 +18,19 @@
  */
 namespace Linfo\Tests;
 
+use Linfo\Linfo;
+use Linfo\Meta\Errors;
 
 class LinfoTest extends \PHPUnit_Framework_TestCase
 {
     public function testTodo()
     {
-        self::markTestSkipped('not implemented');
+        $linfo = new Linfo();
+        $linfo->scan();
+        $info = $linfo->getInfo();
+        print_r(Errors::show());
+
+        print_r($info); // and a whole lot more
+        //self::markTestSkipped('not implemented');
     }
 }

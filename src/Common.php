@@ -41,8 +41,8 @@ class Common
      * linux distro to linux distro. This function, when passed an array of
      * possible file location, picks the first it finds and returns it. When
      * none are found, it returns false
-     * @param array $paths
-     * @return null|array
+     * @param string[] $paths
+     * @return null|string
      */
     public static function locateActualPath(array $paths)
     {

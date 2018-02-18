@@ -34,6 +34,7 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Common;
+use Linfo\Meta\Errors;
 
 /**
  * Get status on dhcp3 leases.
@@ -46,6 +47,7 @@ class Dnsmasq_dhcpd implements Extension
 
     // Store these tucked away here
     private $_leases_file,
+        $_res,
         $_hide_mac,
         $_leases = array();
 
@@ -61,10 +63,9 @@ class Dnsmasq_dhcpd implements Extension
         $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', $settings) ? (bool)$settings['dnsmasq_hide_mac'] : false;
 
         // Find leases file
-        $this->_leases_file = isset($settings['dnsmasq_leases']) && is_file($settings['dnsmasq_leases']) ?
-            $settings['dnsmasq_leases'] : Common::locateActualPath(array(
-                '/var/lib/libvirt/dnsmasq/default.leases',
-            ));
+        $this->_leases_file = isset($settings['dnsmasq_leases']) ? $settings['dnsmasq_leases'] : Common::locateActualPath(array(
+            '/var/lib/libvirt/dnsmasq/default.leases',
+        ));
     }
 
     /**
@@ -72,6 +73,13 @@ class Dnsmasq_dhcpd implements Extension
      */
     public function work()
     {
+        if (!is_file($this->_leases_file)) {
+            Errors::add('dnsmasq leases extension', 'couldn\'t find leases file');
+            $this->_res = false;
+
+            return;
+        }
+
         foreach (Common::getLines($this->_leases_file) as $line) {
             if (!preg_match('/^(\d+) ([a-z0-9:]+) (\S+) (\S+)/', $line, $m)) {
                 continue;
@@ -83,10 +91,15 @@ class Dnsmasq_dhcpd implements Extension
     /**
      * Return result.
      *
-     * @return array of the leases
+     * @return array|false array of the leases
      */
     public function result()
     {
+        // Don't bother if it didn't go well
+        if ($this->_res === false) {
+            return false;
+        }
+
         // Store rows here
         $rows = array();
 

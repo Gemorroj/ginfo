@@ -16,7 +16,8 @@ composer require gemorroj/linfo
 
 ```php
 <?php
-$linfo = new \Linfo\Linfo;
+$linfo = new \Linfo\Linfo();
+$linfo->scan();
 $info = $linfo->getInfo();
 
 print_r($info); // and a whole lot more
@@ -47,6 +48,7 @@ print_r($info); // and a whole lot more
  - Temperatures/voltages/fan speeds
  - RAID arrays
  - Via included extensions:
+   - Nvidia GPU temps
    - DHCPD leases
    - Samba status
    - APC UPS status
