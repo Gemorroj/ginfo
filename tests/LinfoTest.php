@@ -25,12 +25,12 @@ class LinfoTest extends \PHPUnit_Framework_TestCase
 {
     public function testTodo()
     {
-        $linfo = new Linfo();
+        /*$linfo = new Linfo();
         $linfo->scan();
         $info = $linfo->getInfo();
         print_r(Errors::show());
+        print_r($info);*/
 
-        print_r($info); // and a whole lot more
-        //self::markTestSkipped('not implemented');
+        self::markTestSkipped('not implemented');
     }
 }

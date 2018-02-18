@@ -55,6 +55,7 @@ print_r($info); // and a whole lot more
    - CUPS printer status
    - IPMI
    - libvirt VMs
+   - lxd Containers
    - more
 
 ## System requirements:
