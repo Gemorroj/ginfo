@@ -1,7 +1,6 @@
 <?php
 
 /*
-
 This lets you view the command output of the APC program apcaccess.
 
 Make sure that you have your UPS connected correctly, the apc package installed, and that
@@ -9,11 +8,10 @@ running apcaccess produces output you find interesting enough for Linfo to displ
 
 Installation: 
  - The following lines must be added to your settings:
-   $settings['extensions']['apcaccess'] = true; 
-
+   $settings['extensions']['apcaccess'] = true;
 */
 
-/*
+/**
  * This file is part of Linfo (c) 2011 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -29,7 +27,7 @@ Installation:
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  * 
-*/
+ */
 
 namespace Linfo\Extension;
 
@@ -39,10 +37,9 @@ use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
 use Exception;
 
-/*
+/**
  * Get status on apcaccess volumes. 
  */
-
 class Apcaccess implements Extension
 {
     // Store these tucked away here

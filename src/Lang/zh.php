@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Linfo\Lang;
 
-/*
+/**
  * Chinese translation
  * 如果您有任何对翻译的建议请联系:Digimoncn@Gmail.com
  */
-
 return array(
     'header' => 'System Health and Information',
     'core' => '核心信息',

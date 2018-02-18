@@ -1,16 +1,14 @@
 <?php
 
 /*
-
 This grabs wattages and temps for nvidia cards by using nvidia-smi
 
 Installation:
  - The following lines must be added to your settings:
    $settings['extensions']['nvidia'] = true;
-
 */
 
-/*
+/**
  * This file is part of Linfo (c) 2017 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
@@ -26,7 +24,7 @@ Installation:
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Linfo\Extension;
 

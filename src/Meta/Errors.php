@@ -15,6 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 namespace Linfo\Meta;
@@ -24,7 +25,6 @@ namespace Linfo\Meta;
  */
 class Errors
 {
-
     /**
      * Store error messages here.
      *

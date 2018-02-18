@@ -15,16 +15,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
 namespace Linfo\OS;
 
 use Linfo\Common;
 
-/*
+/**
  * The Unix os's are largely similar and thus draw from this class.
-*/
-
+ */
 abstract class Unixcommon extends OS
 {
     /**

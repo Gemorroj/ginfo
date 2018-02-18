@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
@@ -16,16 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
 
-/*
+/**
  * Extensions must conform to this
  */
-
 interface Extension
 {
     public function __construct(Linfo $linfo);    // Have them localize useful things

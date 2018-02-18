@@ -1,7 +1,6 @@
 <?php
 
 /*
-
 This implements a ipmi status checker for temps/voltages
 
 Installation: 
@@ -12,10 +11,9 @@ Installation:
    if you don't have php running as root, configure sudo appropriately
    for the user the php scripts are running as, comment out 'Defaults    requiretty' in your sudoers
    file, and add 'ipmitool' to the $settings['sudo_apps'] array in settings
-
 */
 
-/*
+/**
  * This file is part of Linfo (c) 2011 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -31,7 +29,7 @@ Installation:
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  * 
-*/
+ */
 
 namespace Linfo\Extension;
 

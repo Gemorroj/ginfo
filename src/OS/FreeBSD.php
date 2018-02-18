@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  *
  * Linfo is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  *
-*/
+ */
 
 namespace Linfo\OS;
 
@@ -25,13 +25,12 @@ use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Parsers\Hwpci;
 
-/*
+/**
  * Mostly complete FreeBSD info class.
  *
  * Note: When Linux compatibility is enabled and /proc is mounted, it only
  * contains process info; none of the hardware/system/network status that Linux /proc has.
  */
-
 class FreeBSD extends BSDcommon
 {
     // Encapsulate these

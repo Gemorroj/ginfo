@@ -1,7 +1,6 @@
 <?php
 
 /*
-
 This shows a cursory list of running VMs managed by libvirt and their stats.
 Requires libvirt php extension (http://libvirt.org/php/):
   sudo apt-get install php5-libvirt-php
@@ -13,8 +12,6 @@ $settings['libvirt_connection'] = array(
     'url' => 'qemu:///system', // For xen do 'xen:///' instead
     'credentials' => NULL
 );
-
-
 */
 
 /**

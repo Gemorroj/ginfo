@@ -1,14 +1,12 @@
 <?php
 
 /*
-
 This shows a cursory list of containers managed by LXD and their state. It works by
 hitting /var/lib/lxd/unix.socket, so make sure your web server use can hit that.
 
 To enable this extension, add/tweak the following to your config.inc.php
 
 $settings['extensions']['lxd'] = true;
-
 */
 
 /**
@@ -53,8 +51,9 @@ class Lxd implements Extension
     {
         $vm_list = $this->hitIt('/1.0/containers');
 
-        if (!$vm_list)
+        if (!$vm_list) {
             return;
+        }
 
         $this->vms = [];
 

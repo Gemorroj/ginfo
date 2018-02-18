@@ -1,16 +1,14 @@
 <?php
 
 /*
-
 This impliments a CUPS printer queue status parser.
 
 Installation: 
  - The following lines must be added to your settings:
-   $settings['extensions']['cups'] = true; 
-
+   $settings['extensions']['cups'] = true;
 */
 
-/*
+/**
  * This file is part of Linfo (c) 2010 Joseph Gillotti.
  * 
  * Linfo is free software: you can redistribute it and/or modify
@@ -26,7 +24,7 @@ Installation:
  * You should have received a copy of the GNU General Public License
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  * 
-*/
+ */
 
 namespace Linfo\Extension;
 
@@ -36,10 +34,9 @@ use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
 use Exception;
 
-/*
+/**
  * Get info on a cups install by running lpq
  */
-
 class Cups implements Extension
 {
     // Store these tucked away here
