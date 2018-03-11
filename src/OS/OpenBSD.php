@@ -30,15 +30,9 @@ use Linfo\Common;
  */
 class OpenBSD extends BSDcommon
 {
-    // Encapsulate these
-    protected $settings,
-        $exec,
-        $dmesg;
-
     // Start us off
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Initiate parent
         parent::__construct($settings);
 

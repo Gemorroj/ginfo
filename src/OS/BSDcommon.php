@@ -30,15 +30,16 @@ use Linfo\Parsers\CallExt;
 abstract class BSDcommon extends Unixcommon
 {
     // Store these
-    protected $settings,
-        $exec,
-        $dmesg,
-        $sysctl = array();
+    protected $settings;
+    /** @var CallExt */
+    protected $exec;
+    /** @var string */
+    protected $dmesg;
+    protected $sysctl = array();
 
     // Start us off
-    protected function __construct($settings)
+    protected function __construct(array $settings)
     {
-
         // Localize settings
         $this->settings = $settings;
 

@@ -30,16 +30,9 @@ use Linfo\Common;
  */
 class NetBSD extends BSDcommon
 {
-    // Encapsulate these
-    protected $settings,
-        $exec,
-        $error,
-        $dmesg;
-
     // Start us off
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Initiate parent
         parent::__construct($settings);
 

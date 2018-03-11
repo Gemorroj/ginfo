@@ -31,16 +31,12 @@ use Linfo\Common;
  */
 class Darwin extends BSDcommon
 {
-    // Encapsulate these
-    protected $settings,
-        $exec,
-        $dmesg,
-        $systemProfiler;
+    /** @var string */
+    protected $systemProfiler;
 
     // Start us off
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Instantiate parent
         parent::__construct($settings);
 

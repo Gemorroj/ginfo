@@ -33,7 +33,8 @@ class Windows extends OS
     // Keep these tucked away
     protected $settings;
 
-    private $wmi, $windows_version;
+    private $wmi;
+    private $windows_version;
 
     /**
      * Constructor. Localizes settings.
@@ -41,7 +42,7 @@ class Windows extends OS
      * @param array $settings of linfo settings
      * @throws FatalException
      */
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
         // Localize settings
         $this->settings = $settings;

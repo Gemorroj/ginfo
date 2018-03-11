@@ -38,8 +38,9 @@ use Exception;
 class Linux extends Unixcommon
 {
     // Keep these tucked away
-    protected $settings,
-        $exec;
+    protected $settings;
+    /** @var CallExt */
+    protected $exec;
 
     // Generally disabled as it's slowww
     protected $cpu_percent = array('overall' => false, 'cpus' => array());
@@ -50,9 +51,8 @@ class Linux extends Unixcommon
      * @param array $settings of linfo settings
      * @throws FatalException
      */
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Localize settings
         $this->settings = $settings;
 

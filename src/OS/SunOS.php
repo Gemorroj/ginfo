@@ -28,15 +28,16 @@ use Linfo\Parsers\CallExt;
 class SunOS extends OS
 {
     // Encapsulate these
-    protected $settings,
-        $exec,
-        $kstat = array(),
-        $release;
+    protected $settings;
+    /** @var CallExt */
+    protected $exec;
+    protected $kstat = array();
+    /** @var string */
+    protected $release;
 
     // Start us off
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Localize settings
         $this->settings = $settings;
 

@@ -33,16 +33,12 @@ use Linfo\Parsers\Hwpci;
  */
 class FreeBSD extends BSDcommon
 {
-    // Encapsulate these
-    protected $settings,
-        $exec,
-        $dmesg,
-        $version;
+    /** @var float */
+    protected $version;
 
     // Start us off
-    public function __construct($settings)
+    public function __construct(array $settings)
     {
-
         // Initiate parent
         parent::__construct($settings);
 
