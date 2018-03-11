@@ -23,8 +23,6 @@ class Common
 {
     protected static $settings = array();
     protected static $lang = array();
-    // Used for unit tests
-    public static $path_prefix = false;
 
     /**
      * @param Linfo $linfo
@@ -162,10 +160,6 @@ class Common
      */
     public static function getContents($file, $default = '')
     {
-        if (is_string(self::$path_prefix)) {
-            $file = self::$path_prefix . $file;
-        }
-
         return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
     }
 

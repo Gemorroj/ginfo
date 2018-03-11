@@ -41,7 +41,6 @@ class Linfo
     protected $info = array();
     /** @var OS */
     protected $parser;
-    protected $linfo_localdir;
 
     /**
      * Linfo constructor.
@@ -50,9 +49,6 @@ class Linfo
      */
     public function __construct(array $userSettings = array())
     {
-        // Some paths..
-        $this->linfo_localdir = dirname(__DIR__);
-
         // Load our settings/language
         $this->loadSettings(array_merge($this->getDefaultSettings(), $userSettings));
         $this->loadLanguage();
@@ -322,7 +318,7 @@ class Linfo
         }
 
         // If it can't be found default to english
-        if (!is_file($this->linfo_localdir . '/src/Lang/' . $settings['language'] . '.php')) {
+        if (!is_file(__DIR__ . '/Lang/' . $settings['language'] . '.php')) {
             $settings['language'] = 'en';
         }
 
@@ -336,12 +332,14 @@ class Linfo
     {
         // Load translation, defaulting to english of keys are missing (assuming
         // we're not using english anyway and the english translation indeed exists)
-        if (is_file($this->linfo_localdir . '/src/Lang/en.php') && $this->settings['language'] != 'en') {
-            $this->lang = array_merge(require($this->linfo_localdir . '/src/Lang/en.php'),
-                require($this->linfo_localdir . '/src/Lang/' . $this->settings['language'] . '.php'));
+        if (is_file(__DIR__ . '/Lang/en.php') && $this->settings['language'] != 'en') {
+            $this->lang = array_merge(
+                require __DIR__ . '/Lang/en.php',
+                require __DIR__ . '/Lang/' . $this->settings['language'] . '.php'
+            );
         } // Otherwise snag desired translation, be it english or a non-english without english to fall back on
         else {
-            $this->lang = require $this->linfo_localdir . '/src/Lang/' . $this->settings['language'] . '.php';
+            $this->lang = require __DIR__ . '/Lang/' . $this->settings['language'] . '.php';
         }
     }
 
@@ -354,7 +352,6 @@ class Linfo
 
         // This magical constant knows all
         switch ($os) {
-
             // These are supported
             case 'Linux':
             case 'FreeBSD':
@@ -455,8 +452,6 @@ class Linfo
     protected function getDefaultSettings()
     {
         $settings = array();
-        // If you experience timezone errors, uncomment (remove //) the following line and change the timezone to your liking
-        // date_default_timezone_set('America/New_York');
 
         /*
          * Usual configuration
@@ -495,23 +490,23 @@ class Linfo
         // CPU Usage on Linux (per core and overall). This requires running sleep(1) once so it slows
         // the entire page load down. Enable at your own inconvenience, especially since the load averages
         // are more useful.
-        $settings['cpu_usage'] = false;
+        $settings['cpu_usage'] = true;
 
         // Sometimes a filesystem mount is mounted more than once. Only list the first one I see?
         // (note, duplicates are not shown twice in the file system totals)
         $settings['show']['duplicate_mounts'] = true;
 
         // Disabled by default as they require extra config below
-        $settings['show']['temps'] = false;
-        $settings['show']['raid'] = false;
+        $settings['show']['temps'] = true;
+        $settings['show']['raid'] = true;
 
         // Following are probably only useful on laptop/desktop/workstation systems, not servers, although they work just as well
-        $settings['show']['battery'] = false;
-        $settings['show']['sound'] = false;
-        $settings['show']['wifi'] = false; # Not finished
+        $settings['show']['battery'] = true;
+        $settings['show']['sound'] = true;
+        $settings['show']['wifi'] = true; # Not finished
 
         // Service monitoring
-        $settings['show']['services'] = false;
+        $settings['show']['services'] = true;
 
         /*
          * Misc settings pertaining to the above follow below:
@@ -538,16 +533,16 @@ class Linfo
 
         // Various softraids. Set to true to enable.
         // Only works if it's available on your system; otherwise does nothing
-        $settings['raid']['gmirror'] = false;  # For FreeBSD
-        $settings['raid']['mdadm'] = false;  # For Linux; known to support RAID 1, 5, and 6
+        $settings['raid']['gmirror'] = true;  # For FreeBSD
+        $settings['raid']['mdadm'] = true;  # For Linux; known to support RAID 1, 5, and 6
 
         // Various ways of getting temps/voltages/etc. Set to true to enable. Currently these are just for Linux
         $settings['temps']['hwmon'] = true; // Requires no extra config, is fast, and is in /sys :)
-        $settings['temps']['thermal_zone'] = false;
-        $settings['temps']['hddtemp'] = false;
-        $settings['temps']['mbmon'] = false;
-        $settings['temps']['sensord'] = false; // Part of lm-sensors; logs periodically to syslog. slow
-        $settings['temps_show0rpmfans'] = false; // Set to true to show fans with 0 RPM
+        $settings['temps']['thermal_zone'] = true;
+        $settings['temps']['hddtemp'] = true;
+        $settings['temps']['mbmon'] = true;
+        $settings['temps']['sensord'] = true; // Part of lm-sensors; logs periodically to syslog. slow
+        $settings['temps_show0rpmfans'] = true; // Set to true to show fans with 0 RPM
 
         // Configuration for getting temps with hddtemp
         $settings['hddtemp']['mode'] = 'daemon'; // Either daemon or syslog

@@ -36,7 +36,6 @@ class Sensord
 
     private function parseSysLog()
     {
-
         /*
          * For parsing the syslog looking for sensord entries
          * POTENTIALLY BUGGY -- only tested on debian/ubuntu flavored syslogs
