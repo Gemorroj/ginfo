@@ -27,7 +27,6 @@
         "symfony/polyfill-mbstring": "^1.7"
     },
     "suggest": {
-        "ext-com": "On Windows",
         "ext-mbstring": "On Windows"
     },
     "require-dev": {

@@ -5,7 +5,8 @@
 
 ### Fork changes:
 - drop ui
-- minor code improvements 
+- no need `COM` extension on Windows
+- minor code improvements
 
 
 ### PHP library usage
@@ -64,7 +65,7 @@ print_r($info); // and a whole lot more
  - pcre extension
 
 #### Windows
- - You need to have [COM enabled](http://www.php.net/manual/en/class.com.php).
+ - You need to have `wmic` and `systeminfo`
 
 #### Linux
  - /proc and /sys mounted and readable by PHP

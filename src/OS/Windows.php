@@ -21,43 +21,93 @@
 namespace Linfo\OS;
 
 use Linfo\Common;
-use Linfo\Exceptions\FatalException;
-use COM;
+use Linfo\Parsers\CallExt;
 
 /**
  * Get info on Windows systems
  * Written and maintained by Oliver Kuckertz (mologie).
+ * Modify by Gemorroj
  */
 class Windows extends OS
 {
     // Keep these tucked away
     protected $settings;
-
-    private $wmi;
-    private $windows_version;
+    /** @var CallExt */
+    protected $exec;
+    private $systemInfo = array();
 
     /**
      * Constructor. Localizes settings.
      *
      * @param array $settings of linfo settings
-     * @throws FatalException
      */
     public function __construct(array $settings)
     {
         // Localize settings
         $this->settings = $settings;
 
-        if (!class_exists('COM')) {
-            throw new FatalException('You need to install the COM extension for linfo to work on Windows: http://php.net/manual/en/book.com.php');
-        }
+        setlocale(LC_ALL, 'en-US.UTF-8');
+        shell_exec('chcp 65001');
+        $this->exec = new CallExt();
+        $this->exec->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
 
-        // Get WMI instance
-        $this->wmi = new COM('winmgmts:{impersonationLevel=impersonate}//./root/cimv2');
-
-        if (!is_object($this->wmi)) {
-            throw new FatalException('This needs access to WMI. Please enable DCOM in php.ini and allow the current user to access the WMI DCOM object.');
-        }
+        $this->makeSystemInfo();
+        //print_r($this->systemInfo);
     }
+
+
+    /**
+     *
+     * make array from wmic list data
+     * /format:csv is bogus (no quotes commas)
+     * @param string $str
+     * @return array
+     */
+    private function parseWmicListData($str)
+    {
+        $out = array();
+        $data = explode("\n", trim($str));
+
+        $i = 0;
+        foreach ($data as $row) {
+            if (trim($row) === '') {
+                $i++;
+                continue;
+            }
+
+            $parsedRow = explode('=', $row, 2);
+
+            $out[$i][$parsedRow[0]] = trim($parsedRow[1]);
+
+            if (strtolower($out[$i][$parsedRow[0]]) === 'true') {
+                $out[$i][$parsedRow[0]] = true;
+            } else if (strtolower($out[$i][$parsedRow[0]]) === 'false') {
+                $out[$i][$parsedRow[0]] = false;
+            }
+        }
+
+        return $out;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getSystemInfo()
+    {
+        return $this->systemInfo;
+    }
+
+    private function makeSystemInfo()
+    {
+        $systemInfo = explode("\n", trim($this->exec->exec('systeminfo.exe', '/fo csv')));
+
+        $this->systemInfo = array_combine(
+            str_getcsv($systemInfo[0]),
+            str_getcsv($systemInfo[1])
+        );
+    }
+
 
     /**
      * Return a list of things to hide from view..
@@ -79,11 +129,7 @@ class Windows extends OS
      */
     public function getOS()
     {
-        foreach ($this->wmi->ExecQuery('SELECT Caption FROM Win32_OperatingSystem') as $os) {
-            return mb_convert_encoding($os->Caption, 'UTF-8', 'Windows-1251');
-        }
-
-        return 'Windows';
+        return $this->systemInfo['OS Name'];
     }
 
     /**
@@ -93,13 +139,7 @@ class Windows extends OS
      */
     public function getKernel()
     {
-        foreach ($this->wmi->ExecQuery('SELECT WindowsVersion FROM Win32_Process WHERE Handle = 0') as $process) {
-            $this->windows_version = $process->WindowsVersion;
-
-            return $process->WindowsVersion;
-        }
-
-        return 'Unknown';
+        return $this->systemInfo['OS Version'];
     }
 
     /**
@@ -109,11 +149,7 @@ class Windows extends OS
      */
     public function getHostName()
     {
-        foreach ($this->wmi->ExecQuery('SELECT Name FROM Win32_ComputerSystem') as $cs) {
-            return $cs->Name;
-        }
-
-        return 'Unknown';
+        return $this->systemInfo['Host Name'];
     }
 
     /**
@@ -123,23 +159,10 @@ class Windows extends OS
      */
     public function getRam()
     {
-        $total_memory = 0;
-        $free_memory = 0;
-
-        foreach ($this->wmi->ExecQuery('SELECT TotalPhysicalMemory FROM Win32_ComputerSystem') as $cs) {
-            $total_memory = $cs->TotalPhysicalMemory;
-            break;
-        }
-
-        foreach ($this->wmi->ExecQuery('SELECT FreePhysicalMemory FROM Win32_OperatingSystem') as $os) {
-            $free_memory = $os->FreePhysicalMemory;
-            break;
-        }
-
         return array(
             'type' => 'Physical',
-            'total' => $total_memory,
-            'free' => $free_memory * 1024,
+            'total' => $this->systemInfo['Total Physical Memory'],
+            'free' => $this->systemInfo['Available Physical Memory'],
         );
     }
 
@@ -151,32 +174,17 @@ class Windows extends OS
     public function getCPU()
     {
         $cpus = array();
-        $alt = false;
-        $object = $this->wmi->ExecQuery('SELECT Name, Manufacturer, CurrentClockSpeed, NumberOfLogicalProcessors,LoadPercentage FROM Win32_Processor');
 
-        if (!is_object($object)) {
-            $object = $this->wmi->ExecQuery('SELECT Name, Manufacturer, CurrentClockSpeed,LoadPercentage FROM Win32_Processor');
-            $alt = true;
-        }
-
-        foreach ($object as $cpu) {
-            $curr = array(
-                'Model' => $cpu->Name,
-                'Vendor' => $cpu->Manufacturer,
-                'MHz' => $cpu->CurrentClockSpeed,
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpuInfo) {
+            $cpus[] = array(
+                'Caption' => $cpuInfo['Caption'],
+                'Model' => $cpuInfo['Name'],
+                'Vendor' => $cpuInfo['Manufacturer'],
+                'MHz' => $cpuInfo['CurrentClockSpeed'],
+                'LoadPercentage' => $cpuInfo['LoadPercentage'],
+                'Cores' => $cpuInfo['NumberOfCores'],
+                'Threads' => $cpuInfo['ThreadCount'],
             );
-
-            if ($cpu->LoadPercentage != '') {
-                $curr['usage_percentage'] = $cpu->LoadPercentage;
-            }
-
-            if (!$alt) {
-                for ($i = 0; $i < $cpu->NumberOfLogicalProcessors; ++$i) {
-                    $cpus[] = $curr;
-                }
-            } else {
-                $cpus[] = $curr;
-            }
         }
 
         return $cpus;
@@ -185,30 +193,15 @@ class Windows extends OS
     /**
      * getUpTime.
      *
-     * @return string uptime
+     * @return array uptime
      */
     public function getUpTime()
     {
-        $booted_str = '';
-
-        foreach ($this->wmi->ExecQuery('SELECT LastBootUpTime FROM Win32_OperatingSystem') as $os) {
-            $booted_str = $os->LastBootUpTime;
-            break;
-        }
-
-        $booted = array(
-            'year' => substr($booted_str, 0, 4),
-            'month' => substr($booted_str, 4, 2),
-            'day' => substr($booted_str, 6, 2),
-            'hour' => substr($booted_str, 8, 2),
-            'minute' => substr($booted_str, 10, 2),
-            'second' => substr($booted_str, 12, 2),
-        );
-        $booted_ts = mktime($booted['hour'], $booted['minute'], $booted['second'], $booted['month'], $booted['day'], $booted['year']);
+        $booted = new \DateTime($this->systemInfo['System Boot Time']);
 
         return array(
-            'text' => Common::secondsConvert(time() - $booted_ts),
-            'bootedTimestamp' => $booted_ts,
+            'text' => Common::secondsConvert(time() - $booted->getTimestamp()),
+            'bootedTimestamp' => $booted->getTimestamp(),
         );
     }
 
@@ -222,27 +215,25 @@ class Windows extends OS
         $drives = array();
         $partitions = array();
 
-        foreach ($this->wmi->ExecQuery('SELECT DiskIndex, Size, DeviceID, Type FROM Win32_DiskPartition') as $partition) {
-            $partitions[$partition->DiskIndex][] = array(
-                'size' => $partition->Size,
-                'name' => $partition->DeviceID . ' (' . $partition->Type . ')',
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'partition get /FORMAT:list')) as $partitionInfo) {
+            $partitions[$partitionInfo['DiskIndex']][] = array(
+                'size' => $partitionInfo['Size'],
+                'name' => $partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')',
             );
         }
 
-        foreach ($this->wmi->ExecQuery('SELECT Caption, DeviceID, Index, Size FROM Win32_DiskDrive') as $drive) {
-            $caption = explode(' ', $drive->Caption);
+
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'diskdrive get /FORMAT:list')) as $driveInfo) {
             $drives[] = array(
-                'name' => $drive->Caption,
-                'vendor' => reset($caption),
-                'device' => $drive->DeviceID,
+                'name' => $driveInfo['Caption'],
+                'vendor' => explode(' ', $driveInfo['Caption'], 1)[0],
+                'device' => $driveInfo['DeviceID'],
                 'reads' => false,
                 'writes' => false,
-                'size' => $drive->Size,
-                'partitions' => array_key_exists($drive->Index, $partitions) && is_array($partitions[$drive->Index]) ? $partitions[$drive->Index] : false,
+                'size' => $driveInfo['Size'],
+                'partitions' => array_key_exists($driveInfo['Index'], $partitions) && is_array($partitions[$driveInfo['Index']]) ? $partitions[$driveInfo['Index']] : null,
             );
         }
-
-        usort($drives, array('Linfo\OS\Windows', 'compare_drives'));
 
         return $drives;
     }
@@ -265,47 +256,38 @@ class Windows extends OS
     public function getMounts()
     {
         $volumes = array();
-
-        if ($this->windows_version > '6.1.0000') {
-            $object = $this->wmi->ExecQuery('SELECT Automount, BootVolume, Compressed, IndexingEnabled, Label, Caption, FileSystem, Capacity, FreeSpace, DriveType FROM Win32_Volume');
-        } else {
-            $object = $this->wmi->ExecQuery('SELECT Compressed, Name, FileSystem, Size, FreeSpace, DriveType FROM Win32_LogicalDisk');
-        }
-
-        foreach ($object as $volume) {
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'volume get /FORMAT:list')) as $volume) {
             $options = array();
-            if ($this->windows_version > '6.1.0000') {
-                if ($volume->Automount) {
-                    $options[] = 'automount';
-                }
-                if ($volume->BootVolume) {
-                    $options[] = 'boot';
-                }
-                if ($volume->IndexingEnabled) {
-                    $options[] = 'indexed';
-                }
+
+            if ($volume['Automount']) {
+                $options[] = 'automount';
             }
-            if ($volume->Compressed) {
+            if ($volume['BootVolume']) {
+                $options[] = 'boot';
+            }
+            if ($volume['IndexingEnabled']) {
+                $options[] = 'indexed';
+            }
+            if ($volume['Compressed']) {
                 $options[] = 'compressed';
             }
-            $capacity = ($this->windows_version > '6.1.0000') ? $volume->Capacity : $volume->Size;
-            $label = ($this->windows_version > '6.1.0000') ? $volume->Label : $volume->Name;
-            $mount = ($this->windows_version > '6.1.0000') ? $volume->Caption : $label . '\\';
+
+
             $a = array(
                 'device' => false,
-                'label' => $label,
-                'devtype' => '',
-                'mount' => $mount,
-                'type' => $volume->FileSystem,
-                'size' => $capacity,
-                'used' => $capacity - $volume->FreeSpace,
-                'free' => $volume->FreeSpace,
+                'label' => mb_convert_encoding($volume['Label'], 'UTF-8', 'CP866'),
+                'devtype' => null,
+                'mount' => $volume['Caption'],
+                'type' => $volume['FileSystem'],
+                'size' => $volume['Capacity'],
+                'used' => $volume['Capacity'] - $volume['FreeSpace'],
+                'free' => $volume['FreeSpace'],
                 'free_percent' => 0,
                 'used_percent' => 0,
                 'options' => $options,
             );
 
-            switch ($volume->DriveType) {
+            switch ($volume['DriveType']) {
                 case 2:
                     $a['devtype'] = 'Removable drive';
                     break;
@@ -326,15 +308,13 @@ class Windows extends OS
                     break;
             }
 
-            if ($capacity != 0) {
-                $a['free_percent'] = round($volume->FreeSpace / $capacity, 2) * 100;
-                $a['used_percent'] = round(($capacity - $volume->FreeSpace) / $capacity, 2) * 100;
+            if ($volume['Capacity'] != 0) {
+                $a['free_percent'] = round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100;
+                $a['used_percent'] = round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100;
             }
 
             $volumes[] = $a;
         }
-
-        usort($volumes, array('Linfo\OS\Windows', 'compare_mounts'));
 
         return $volumes;
     }
@@ -348,25 +328,18 @@ class Windows extends OS
     {
         $devs = array();
 
-        foreach ($this->wmi->ExecQuery('SELECT DeviceID, Caption, Manufacturer FROM Win32_PnPEntity') as $pnpdev) {
-            $devId = explode('\\', $pnpdev->DeviceID);
-            $type = reset($devId);
-            if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev->Caption) || $pnpdev->Manufacturer[0] == '(')) {
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'path Win32_PnPEntity get /FORMAT:list')) as $pnpdev) {
+            $type = explode('\\', $pnpdev['DeviceID'], 2)[0];
+            if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || $pnpdev['Manufacturer'][0] == '(')) {
                 continue;
             }
 
-            $manufacturer = mb_convert_encoding($pnpdev->Manufacturer, 'UTF-8', 'Windows-1251');
-            $caption = mb_convert_encoding($pnpdev->Caption, 'UTF-8', 'Windows-1251');
-
             $devs[] = array(
-                'vendor' => $manufacturer,
-                'device' => $caption,
+                'vendor' => mb_convert_encoding($pnpdev['Manufacturer'], 'UTF-8', 'CP866'),
+                'device' => mb_convert_encoding($pnpdev['Caption'], 'UTF-8', 'CP866'),
                 'type' => $type,
             );
         }
-
-        // Sort by 1. Type, 2. Vendor
-        usort($devs, array('Linfo\OS\Windows', 'compare_devices'));
 
         return $devs;
     }
@@ -389,11 +362,11 @@ class Windows extends OS
     public function getLoad()
     {
         $load = array();
-        foreach ($this->wmi->ExecQuery('SELECT LoadPercentage FROM Win32_Processor') as $cpu) {
-            $load[] = $cpu->LoadPercentage;
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpu) {
+            $load[] = $cpu['LoadPercentage'];
         }
 
-        return round(array_sum($load) / count($load), 2) . '%';
+        return array(round(array_sum($load) / count($load), 2));
     }
 
     /**
@@ -406,15 +379,14 @@ class Windows extends OS
         $return = array();
         $i = 0;
 
-        if ($this->windows_version > '6.1.0000') {
-            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus, GUID FROM Win32_NetworkAdapter WHERE PhysicalAdapter = TRUE');
-        } else {
-            $object = $this->wmi->ExecQuery('SELECT AdapterType, Name, NetConnectionStatus FROM Win32_NetworkAdapter WHERE NetConnectionStatus != NULL');
-        }
+        $perfRawData = $this->parseWmicListData($this->exec->exec('wmic.exe', 'path Win32_PerfRawData_Tcpip_NetworkInterface GET /FORMAT:list'));
 
-        foreach ($object as $net) {
-            // Save and get info for each
-            $return[$net->Name] = array(
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'nic GET /FORMAT:list')) as $net) {
+            if (!$net['PhysicalAdapter']) {
+                continue;
+            }
+
+            $return[$net['Name']] = array(
                 'recieved' => array(
                     'bytes' => 0,
                     'errors' => 0,
@@ -426,74 +398,71 @@ class Windows extends OS
                     'packets' => 0,
                 ),
                 'state' => 0,
-                'type' => $net->AdapterType,
+                'type' => $net['AdapterType'],
             );
-            switch ($net->NetConnectionStatus) {
+            switch ($net['NetConnectionStatus']) {
                 case 0:
-                    $return[$net->Name]['state'] = 'down';
+                    $return[$net['Name']]['state'] = 'down';
                     break;
                 case 1:
-                    $return[$net->Name]['state'] = 'Connecting';
+                    $return[$net['Name']]['state'] = 'Connecting';
                     break;
                 case 2:
-                    $return[$net->Name]['state'] = 'up';
+                    $return[$net['Name']]['state'] = 'up';
                     break;
                 case 3:
-                    $return[$net->Name]['state'] = 'Disconnecting';
+                    $return[$net['Name']]['state'] = 'Disconnecting';
                     break;
                 case 4:
-                    $return[$net->Name]['state'] = 'down'; // MSDN 'Hardware not present'
+                    $return[$net['Name']]['state'] = 'down'; // MSDN 'Hardware not present'
                     break;
                 case 5:
-                    $return[$net->Name]['state'] = 'Hardware disabled';
+                    $return[$net['Name']]['state'] = 'Hardware disabled';
                     break;
                 case 6:
-                    $return[$net->Name]['state'] = 'Hardware malfunction';
+                    $return[$net['Name']]['state'] = 'Hardware malfunction';
                     break;
                 case 7:
-                    $return[$net->Name]['state'] = 'Media disconnected';
+                    $return[$net['Name']]['state'] = 'Media disconnected';
                     break;
                 case 8:
-                    $return[$net->Name]['state'] = 'Authenticating';
+                    $return[$net['Name']]['state'] = 'Authenticating';
                     break;
                 case 9:
-                    $return[$net->Name]['state'] = 'Authentication succeeded';
+                    $return[$net['Name']]['state'] = 'Authentication succeeded';
                     break;
                 case 10:
-                    $return[$net->Name]['state'] = 'Authentication failed';
+                    $return[$net['Name']]['state'] = 'Authentication failed';
                     break;
                 case 11:
-                    $return[$net->Name]['state'] = 'Invalid address';
+                    $return[$net['Name']]['state'] = 'Invalid address';
                     break;
                 case 12:
-                    $return[$net->Name]['state'] = 'Credentials required';
+                    $return[$net['Name']]['state'] = 'Credentials required';
                     break;
                 default:
-                    $return[$net->Name]['state'] = 'unknown';
+                    $return[$net['Name']]['state'] = 'unknown';
                     break;
             }
-            // @Microsoft: An index would be nice here indeed.
-            if ($this->windows_version > '6.1.0000') {
-                $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $isatapname = 'isatap.' . $net->GUID;
-                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname' OR Name = '$isatapname'");
-            } else {
-                $canonname = preg_replace('/[^A-Za-z0-9- ]/', '_', $net->Name);
-                $result = $this->wmi->ExecQuery("SELECT BytesReceivedPersec, PacketsReceivedErrors, PacketsReceivedPersec, BytesSentPersec, PacketsSentPersec FROM Win32_PerfRawData_Tcpip_NetworkInterface WHERE Name = '$canonname'");
+
+            $canonName = preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
+            $isatapName = 'isatap.' . $net['GUID'];
+
+
+            foreach ($perfRawData as $netSpeed) {
+                if ($netSpeed['Name'] === $canonName || $netSpeed['Name'] === $isatapName) {
+                    $return[$net['Name']]['recieved'] = array(
+                        'bytes' => (int)$netSpeed['BytesReceivedPersec'],
+                        'errors' => (int)$netSpeed['PacketsReceivedErrors'],
+                        'packets' => (int)$netSpeed['PacketsReceivedPersec'],
+                    );
+                    $return[$net['Name']]['sent'] = array(
+                        'bytes' => (int)$netSpeed['BytesSentPersec'],
+                        'errors' => 0,
+                        'packets' => (int)$netSpeed['PacketsSentPersec'],
+                    );
+                }
             }
-            foreach ($result as $netspeed) {
-                $return[$net->Name]['recieved'] = array(
-                    'bytes' => (int)$netspeed->BytesReceivedPersec,
-                    'errors' => (int)$netspeed->PacketsReceivedErrors,
-                    'packets' => (int)$netspeed->PacketsReceivedPersec,
-                );
-                $return[$net->Name]['sent'] = array(
-                    'bytes' => (int)$netspeed->BytesSentPersec,
-                    'errors' => 0,
-                    'packets' => (int)$netspeed->PacketsSentPersec,
-                );
-            }
-            ++$i;
         }
 
         return $return;
@@ -528,17 +497,12 @@ class Windows extends OS
     {
         $cards = array();
         $i = 1;
-
-        foreach ($this->wmi->ExecQuery('SELECT Caption, Manufacturer FROM Win32_SoundDevice') as $card) {
-            $manufacturer = mb_convert_encoding($card->Manufacturer, 'UTF-8', 'Windows-1251');
-            $caption = mb_convert_encoding($card->Caption, 'UTF-8', 'Windows-1251');
-
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'SOUNDDEV GET /FORMAT:list')) as $card) {
             $cards[] = array(
-                'number' => $i,
-                'vendor' => $manufacturer,
-                'card' => $caption,
+                'number' => $i++,
+                'vendor' => mb_convert_encoding($card['Manufacturer'], 'UTF-8', 'CP866'),
+                'card' => mb_convert_encoding($card['Caption'], 'UTF-8', 'CP866'),
             );
-            ++$i;
         }
 
         return $cards;
@@ -557,8 +521,8 @@ class Windows extends OS
             'threads' => 0,
         );
 
-        foreach ($this->wmi->ExecQuery('SELECT ThreadCount FROM Win32_Process') as $proc) {
-            $result['threads'] += (int)$proc->ThreadCount;
+        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $proc) {
+            $result['threads'] += (int)$proc['ThreadCount'];
             ++$result['proc_total'];
         }
 
@@ -592,87 +556,44 @@ class Windows extends OS
      */
     public function getCPUArchitecture()
     {
-        foreach ($this->wmi->ExecQuery('SELECT Architecture FROM Win32_Processor') as $cpu) {
-            switch ($cpu->Architecture) {
-                case 0:
-                    return 'x86';
-                case 1:
-                    return 'MIPS';
-                case 2:
-                    return 'Alpha';
-                case 3:
-                    return 'PowerPC';
-                case 6:
-                    return 'Itanium-based systems';
-                case 9:
-                    return 'x64';
-            }
+        $architecture = $this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list'))[0]['Architecture'];
+
+        switch ($architecture) {
+            case '0':
+                return 'x86';
+            case '1':
+                return 'MIPS';
+            case '2':
+                return 'Alpha';
+            case '3':
+                return 'PowerPC';
+            case '6':
+                return 'Itanium-based systems';
+            case '9':
+                return 'x64';
         }
 
         return 'Unknown';
     }
 
     /**
-     * @ignore
-     * @param $a
-     * @param $b
-     * @return int
-     */
-    public static function compare_devices($a, $b)
-    {
-        if ($a['type'] == $b['type']) {
-            if ($a['vendor'] == $b['vendor']) {
-                if ($a['device'] == $b['device']) {
-                    return 0;
-                }
-
-                return ($a['device'] > $b['device']) ? 1 : -1;
-            }
-
-            return ($a['vendor'] > $b['vendor']) ? 1 : -1;
-        }
-
-        return ($a['type'] > $b['type']) ? 1 : -1;
-    }
-
-    /**
-     * @ignore
-     * @param $a
-     * @param $b
-     * @return int
-     */
-    public static function compare_drives($a, $b)
-    {
-        if ($a['device'] == $b['device']) {
-            return 0;
-        }
-
-        return ($a['device'] > $b['device']) ? 1 : -1;
-    }
-
-    /**
-     * @ignore
-     * @param $a
-     * @param $b
-     * @return int
-     */
-    public static function compare_mounts($a, $b)
-    {
-        if ($a['mount'] == $b['mount']) {
-            return 0;
-        }
-
-        return ($a['mount'] > $b['mount']) ? 1 : -1;
-    }
-
-    /**
      * Fix error 'Method getModel not present' in Windows (XAMPP).
      *
      * @access public
-     * @return void
+     * @return string
      */
     public function getModel()
     {
+        return $this->systemInfo['System Model'];
+    }
+
+    public function getCPUUsage()
+    {
         return null;
+    }
+
+    public function getPhpVersion()
+    {
+        return PHP_VERSION;
     }
 }

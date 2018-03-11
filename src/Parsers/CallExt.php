@@ -95,7 +95,6 @@ class CallExt
      */
     public function exec($name, $switches = '')
     {
-
         // Sometimes it is necessary to call a program with sudo
         $attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
 
