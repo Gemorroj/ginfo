@@ -1,6 +1,7 @@
 <?php
 
 /*
+
 This grabs wattages and temps for nvidia cards by using nvidia-smi
 
 Installation:

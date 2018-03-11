@@ -60,7 +60,7 @@ print_r($info); // and a whole lot more
 
 ## System requirements:
  - At least PHP 5.6
- - If you are using PHP 7.1, you might need to disable the opcache extension.
+ - If you are using PHP 7.1.9 or lower, you might need to disable the opcache extension.
  - pcre extension
 
 #### Windows
