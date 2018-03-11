@@ -42,13 +42,12 @@ use Exception;
 class Nvidia implements Extension
 {
     // Minimum version of Linfo required
-    const
-        LINFO_INTEGRATE = true,
-        EXTENSION_NAME = 'nvidia';
+    const LINFO_INTEGRATE = true;
+    const EXTENSION_NAME = 'nvidia';
 
     // Store these tucked away here
-    private $_CallExt,
-        $linfo;
+    private $_CallExt;
+    private $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
@@ -119,4 +118,3 @@ class Nvidia implements Extension
         return false;
     }
 }
-

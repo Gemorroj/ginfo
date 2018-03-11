@@ -43,8 +43,8 @@ use Exception;
 class Apcaccess implements Extension
 {
     // Store these tucked away here
-    private $_CallExt,
-        $_res;
+    private $_CallExt;
+    private $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
@@ -89,15 +89,7 @@ class Apcaccess implements Extension
         // Get charge percentage, and get it cool
         if (preg_match('/^BCHARGE\s+:\s+(\d+(?:\.\d+)?)/m', $result, $m)) {
             $charge = (int)$m[1];
-            $this->_res['charge'] = '
-					<div class="bar_chart">
-						<div class="bar_inner" style="width: ' . (int)$charge . '%;">
-							<div class="bar_text">
-								' . ($charge ? $charge . '%' : '?') . '
-							</div>
-						</div>
-					</div>
-			';
+            $this->_res['charge'] = $charge ? $charge . '%' : '?';
         }
 
         // Get time remaning
@@ -113,15 +105,7 @@ class Apcaccess implements Extension
         // Load percentage looking cool
         if (preg_match('/^LOADPCT\s+:\s+(\d+\.\d+)/m', $result, $m)) {
             $load = (int)$m[1];
-            $this->_res['load'] = '
-					<div class="bar_chart">
-						<div class="bar_inner" style="width: ' . (int)$load . '%;">
-							<div class="bar_text">
-								' . ($load ? $load . '%' : '?') . '
-							</div>
-						</div>
-					</div>
-			';
+            $this->_res['load'] = $load ? $load . '%' : '?';
         }
 
         // Attempt getting wattage 

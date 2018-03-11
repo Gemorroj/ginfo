@@ -511,7 +511,7 @@ class Linux extends Unixcommon
                 // Append values
                 $hwmon_vals[] = array(
                     'path' => '',
-                    'name' => $label . ($drivername ? ' <span class="faded">(' . $drivername . ')</span>' : ''),
+                    'name' => $label . ($drivername ? ' (' . $drivername . ')' : ''),
                     'temp' => $value,
                     'unit' => $unit,
                 );

@@ -40,14 +40,13 @@ use Linfo\Meta\Errors;
 class Dnsmasq_dhcpd implements Extension
 {
     // How dates should look
-    const
-        DATE_FORMAT = 'm/d/y h:i A';
+    const DATE_FORMAT = 'm/d/y h:i A';
 
     // Store these tucked away here
-    private $_leases_file,
-        $_res,
-        $_hide_mac,
-        $_leases = array();
+    private $_leases_file;
+    private $_res;
+    private $_hide_mac;
+    private $_leases = array();
 
     /**
      * localize important stuff.
@@ -106,14 +105,13 @@ class Dnsmasq_dhcpd implements Extension
             'type' => 'header',
             'columns' =>
 
-            // Not hiding mac address?
+                // Not hiding mac address?
                 !$this->_hide_mac ? array(
                     'IP Address',
                     'MAC Address',
                     'Hostname',
                     'Lease End',
                 ) :
-
                     // Hiding it indeed
                     array(
                         'IP Address',
@@ -128,20 +126,17 @@ class Dnsmasq_dhcpd implements Extension
                 'type' => 'values',
                 'columns' =>
 
-                // Not hiding mac addresses?
+                    // Not hiding mac addresses?
                     !$this->_hide_mac ? array(
                         $lease['ip'],
                         $lease['mac'],
-                        array_key_exists('hostname', $lease) ?
-                            $lease['hostname'] : '<em>unknown</em>',
+                        array_key_exists('hostname', $lease) ? $lease['hostname'] : 'unknown',
                         date(self::DATE_FORMAT, $lease['lease_end']),
                     ) :
-
                         // Hiding them indeed
                         array(
                             $lease['ip'],
-                            array_key_exists('hostname', $lease) ?
-                                $lease['hostname'] : '<em>unknown</em>',
+                            array_key_exists('hostname', $lease) ? $lease['hostname'] : 'unknown',
                             date(self::DATE_FORMAT, $lease['lease_end']),
                         ),
             );

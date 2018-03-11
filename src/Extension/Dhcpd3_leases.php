@@ -42,10 +42,10 @@ class Dhcpd3_leases implements Extension
         DATE_FORMAT = 'm/d/y h:i A';
 
     // Store these tucked away here
-    private $_leases_file,
-        $_hide_mac,
-        $_res,
-        $_leases = array();
+    private $_leases_file;
+    private $_hide_mac;
+    private $_res;
+    private $_leases = array();
 
     /**
      * localize important stuff.
@@ -202,7 +202,7 @@ class Dhcpd3_leases implements Extension
     /**
      * Return result.
      *
-     * @return false on failure|array of the leases
+     * @return array|bool false on failure|array of the leases
      */
     public function result()
     {
@@ -243,21 +243,18 @@ class Dhcpd3_leases implements Extension
                 'type' => 'values',
                 'columns' =>
 
-                // Not hiding mac addresses?
+                    // Not hiding mac addresses?
                     !$this->_hide_mac ? array(
                         $this->_leases[$i]['ip'],
                         $this->_leases[$i]['mac'],
-                        array_key_exists('hostname', $this->_leases[$i]) ?
-                            $this->_leases[$i]['hostname'] : '<em>unknown</em>',
+                        array_key_exists('hostname', $this->_leases[$i]) ? $this->_leases[$i]['hostname'] : 'unknown',
                         date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
                         date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
                     ) :
-
                         // Hiding them indeed
                         array(
                             $this->_leases[$i]['ip'],
-                            array_key_exists('hostname', $this->_leases[$i]) ?
-                                $this->_leases[$i]['hostname'] : '<em>unknown</em>',
+                            array_key_exists('hostname', $this->_leases[$i]) ? $this->_leases[$i]['hostname'] : 'unknown',
                             date(self::DATE_FORMAT, $this->_leases[$i]['lease_start']),
                             date(self::DATE_FORMAT, $this->_leases[$i]['lease_end']),
                         ),

@@ -117,7 +117,7 @@ class CallExt
                 $command = $attempt_sudo ? Common::locateActualPath(Common::arrayAppendString($this->searchPaths, 'sudo', '%2s%1s')) . ' ' . $command : $command;
 
                 // Result of command
-                $result = `$command`;
+                $result = shell_exec($command);
 
                 // Increment call count
                 ++self::$callCount;

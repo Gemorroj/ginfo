@@ -40,8 +40,8 @@ use Exception;
 class Cups implements Extension
 {
     // Store these tucked away here
-    private $_CallExt,
-        $_res;
+    private $_CallExt;
+    private $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
@@ -127,7 +127,6 @@ class Cups implements Extension
     // Get result. Essentially take results and make it usable by the Common::createTable function
     public function result()
     {
-
         // Don't bother if it didn't go well
         if ($this->_res == false) {
             return false;

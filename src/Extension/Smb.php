@@ -39,9 +39,9 @@ use Exception;
 class Smb implements Extension
 {
     // Store these tucked away here
-    private $_CallExt,
-        $_res,
-        $_date_format = 'm/d/y @ h:i A';
+    private $_CallExt;
+    private $_res;
+    private $_date_format = 'm/d/y @ h:i A';
 
     // Localize important classes
     public function __construct(Linfo $linfo)
@@ -176,7 +176,7 @@ class Smb implements Extension
                         'columns' => array(
                             $conn['username'],
                             $conn['group'],
-                            array(3, $conn['hostname'] . ($conn['hostname'] != $conn['ip'] ? ' <span class="perc">(' . $conn['ip'] . ')</span>' : '')),
+                            array(3, $conn['hostname'] . ($conn['hostname'] != $conn['ip'] ? ' (' . $conn['ip'] . ')' : '')),
                         ),
                     );
                 }

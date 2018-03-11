@@ -42,12 +42,11 @@ use Linfo\Meta\Errors;
  */
 class Libvirt implements Extension
 {
-    private
-        $VMs = array(),
-        $connection = false,
-        $connectionSettings = array(),
-        $hypervisor = false,
-        $res = false;
+    private $VMs = array();
+    private $connection = false;
+    private $connectionSettings = array();
+    private $hypervisor = false;
+    private $res = false;
 
     public function __construct(Linfo $linfo)
     {
@@ -204,7 +203,7 @@ class Libvirt implements Extension
                 }
 
                 if (count($extra_info) > 0) {
-                    $line .= ' <span class="caption">(' . implode(', ', $extra_info) . ')</span>';
+                    $line .= implode(', ', $extra_info);
                 }
 
                 $disks[] = $line;
@@ -214,13 +213,13 @@ class Libvirt implements Extension
                 'type' => 'values',
                 'columns' => array(
                     $name,
-                    $info['state'] == 1 ? '<span style="color: green;">On</span>' : '<span style="color: maroon;">Off</span>',
+                    $info['state'] == 1 ? 'On' : 'Off',
                     Common::byteConvert($info['memory'] * 1024, 2),
                     $info['nrVirtCpu'],
                     $info['cpuUsed'] ? $info['cpuUsed'] : 'N/A',
                     $info['autostart'],
-                    $disks ? implode('<br />', $disks) : 'None',
-                    $info['nets'] ? implode('<br />', $info['nets']) : 'None',
+                    $disks ? implode("\n", $disks) : 'None',
+                    $info['nets'] ? implode("\n", $info['nets']) : 'None',
                 ),
             );
 
@@ -233,8 +232,7 @@ class Libvirt implements Extension
 
         // Give it off
         return array(
-            'root_title' => 'libvirt Virtual Machines <span style="font-size: 80%;">' . ($this->hypervisor ? ' (' . $this->hypervisor . ') ' : '') .
-                '(' . $running . ' running - using ' . Common::byteConvert($allram * 1024, 2) . ' RAM)</span>',
+            'root_title' => 'libvirt Virtual Machines ' . ($this->hypervisor ? ' (' . $this->hypervisor . ') ' : '') . '(' . $running . ' running - using ' . Common::byteConvert($allram * 1024, 2) . ' RAM)',
             'rows' => $rows,
         );
     }

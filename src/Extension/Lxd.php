@@ -37,13 +37,11 @@ use Linfo\Meta\Errors;
  */
 class Lxd implements Extension
 {
-    private
-        $sock_path = null,
-        $vms = [];
+    private $sock_path = null;
+    private $vms = [];
 
     public function __construct(Linfo $linfo)
     {
-        $settings = $linfo->getSettings();
         $this->sock_path = 'unix:///var/lib/lxd/unix.socket';
     }
 
@@ -90,7 +88,7 @@ class Lxd implements Extension
                 'type' => 'values',
                 'columns' => array(
                     $vm['name'],
-                    $vm['status'] == 'Running' ? '<span style="color: green;">Running</span>' : ($vm['status'] == 'Stopped' ? '<span style="color: maroon;">Off</span>' : $vm['status']),
+                    $vm['status'] == 'Running' ? 'Running' : ($vm['status'] == 'Stopped' ? 'Off' : $vm['status']),
                     $vm['cpu_limit'],
                     $vm['memory_limit'],
                 ),
@@ -106,31 +104,31 @@ class Lxd implements Extension
 
     private function hitIt($url)
     {
-      $sock = @fsockopen($this->sock_path);
+        $sock = @fsockopen($this->sock_path);
 
-      if (!$sock) {
-          Errors::add('lxd extension', 'Error connecting to socket ' . $this->sock_path);
-          return false;
-      }
-
-      fwrite($sock, "GET $url HTTP/1.1\r\nHost: localhost\r\n\r\n");
-
-      $size = null;
-
-      // If we try reading past the http body, we hang forever, so specifically just
-      // read up to that point
-      while ($line = fgets($sock)) {
-        if (preg_match('/^Content-Length: (\d+)/', $line, $m)) {
-          $size = (int) $m[1];
-          break;
+        if (!$sock) {
+            Errors::add('lxd extension', 'Error connecting to socket ' . $this->sock_path);
+            return false;
         }
-      };
 
-      // The + 2 is to read past the \r\n
-      $response = fread($sock, $size + 2);
+        fwrite($sock, "GET $url HTTP/1.1\r\nHost: localhost\r\n\r\n");
 
-      fclose($sock);
+        $size = null;
 
-      return json_decode($response, true);
+        // If we try reading past the http body, we hang forever, so specifically just
+        // read up to that point
+        while ($line = fgets($sock)) {
+            if (preg_match('/^Content-Length: (\d+)/', $line, $m)) {
+                $size = (int) $m[1];
+                break;
+            }
+        }
+
+        // The + 2 is to read past the \r\n
+        $response = fread($sock, $size + 2);
+
+        fclose($sock);
+
+        return json_decode($response, true);
     }
 }
