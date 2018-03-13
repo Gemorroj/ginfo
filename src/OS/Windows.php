@@ -183,7 +183,7 @@ class Windows extends OS
                 'MHz' => $cpuInfo['CurrentClockSpeed'],
                 'LoadPercentage' => $cpuInfo['LoadPercentage'],
                 'Cores' => $cpuInfo['NumberOfCores'],
-                'Threads' => $cpuInfo['ThreadCount'],
+                //'Threads' => $cpuInfo['ThreadCount'], // Windows 7 - not exists, Windows 10 - exists
             );
         }
 
@@ -330,7 +330,7 @@ class Windows extends OS
 
         foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'path Win32_PnPEntity get /FORMAT:list')) as $pnpdev) {
             $type = explode('\\', $pnpdev['DeviceID'], 2)[0];
-            if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || $pnpdev['Manufacturer'][0] == '(')) {
+            if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || mb_substr($pnpdev['Manufacturer'], 0, 1) == '(')) {
                 continue;
             }
 
@@ -522,7 +522,7 @@ class Windows extends OS
         );
 
         foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $proc) {
-            $result['threads'] += (int)$proc['ThreadCount'];
+            $result['threads'] += (int)(isset($proc['ThreadCount']) ? $proc['ThreadCount'] : $proc['NumberOfLogicalProcessors']);
             ++$result['proc_total'];
         }
 
