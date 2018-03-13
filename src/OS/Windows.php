@@ -46,8 +46,9 @@ class Windows extends OS
         // Localize settings
         $this->settings = $settings;
 
-        setlocale(LC_ALL, 'en-US.UTF-8');
+        setlocale(LC_ALL, 'English');
         shell_exec('chcp 65001');
+
         $this->exec = new CallExt();
         $this->exec->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
     }
@@ -103,7 +104,8 @@ class Windows extends OS
 
     private function makeSystemInfo()
     {
-        $systemInfo = explode("\n", trim($this->exec->exec('systeminfo.exe', '/fo csv')));
+        $systemInfo = explode("\n", trim(shell_exec('chcp 65001 | systeminfo.exe /fo csv'))); //fix cp
+        //$systemInfo = explode("\n", trim($this->exec->exec('systeminfo.exe', '/fo csv')));
 
         $this->systemInfo = array_combine(
             str_getcsv($systemInfo[0]),
