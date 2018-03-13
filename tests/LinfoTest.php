@@ -29,6 +29,7 @@ class LinfoTest extends \PHPUnit_Framework_TestCase
         $linfo = new Linfo();
         $linfo->scan();
         $info = $linfo->getInfo();
+        print_r($info);
 
         //$errors = Errors::show();
         //print_r($errors);

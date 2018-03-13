@@ -50,11 +50,14 @@ class Windows extends OS
         shell_exec('chcp 65001');
         $this->exec = new CallExt();
         $this->exec->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
+    }
 
+
+    public function init()
+    {
         $this->makeSystemInfo();
         //print_r($this->systemInfo);
     }
-
 
     /**
      *

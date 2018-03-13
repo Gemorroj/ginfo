@@ -23,8 +23,6 @@ use Linfo\OS\OS;
 use Linfo\Parsers\CallExt;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * Linfo.
@@ -64,8 +62,8 @@ class Linfo
             throw new FatalException('Unknown/unsupported operating system');
         }
 
-        $distro_class = '\\Linfo\\OS\\' . $os;
-        $this->parser = new $distro_class($this->settings);
+        $distroClass = '\\Linfo\\OS\\' . $os;
+        $this->parser = new $distroClass($this->settings);
     }
 
     /**
@@ -87,12 +85,8 @@ class Linfo
      */
     public function scan()
     {
-        $reflector = new \ReflectionClass($this->parser);
-
-        // Prime parser. Do things not appropriate to do in constructor. Most OS classes
-        // don't have this.
-        if ($reflector->hasMethod('init') && ($method = $reflector->getMethod('init'))) {
-            $method->invoke($this->parser);
+        if (method_exists($this->parser, 'init')) {
+            $this->parser->init();
         }
 
         // Array fields, tied to method names and default values...
@@ -273,10 +267,9 @@ class Linfo
                 continue;
             }
 
-            try {
-                $method = $reflector->getMethod($data['method']);
-                $this->info[$key] = $method->invoke($this->parser);
-            } catch (ReflectionException $e) {
+            if (method_exists($this->parser, $data['method'])) {
+                $this->info[$key] = call_user_func(array($this->parser, $data['method']));
+            } else {
                 $this->info[$key] = $data['default'];
             }
         }
@@ -413,22 +406,17 @@ class Linfo
             }
 
             // Try loading our class..
-            try {
-                $reflector = new ReflectionClass('\\Linfo\\Extension\\' . $ext);
-                $ext_class = $reflector->newInstance($this);
-            } catch (ReflectionException $e) {
-                Errors::add('Extension Loader', 'Cannot instantiate class for "' . $ext . '" extension: ' . $e->getMessage());
-                continue;
-            }
+            $extClassName = '\\Linfo\\Extension\\' . $ext;
+            $extClass =  new $extClassName($this);
 
             // Deal with it
-            $ext_class->work();
+            $extClass->work();
 
             // Does this edit the $info directly, instead of creating a separate output table type thing?
-            if (!$reflector->hasConstant('LINFO_INTEGRATE')) {
+            if (!defined($extClassName.'::LINFO_INTEGRATE')) {
 
                 // Result
-                $result = $ext_class->result();
+                $result = $extClass->result();
 
                 // Save result if it's good
                 if ($result != false) {
