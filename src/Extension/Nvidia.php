@@ -32,7 +32,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * Get nvidia card temps from nvidia-smmi
@@ -68,7 +67,7 @@ class Nvidia implements Extension
         // Get card names and their IDs
         try {
             $cards_list = $this->_CallExt->exec('nvidia-smi', ' -L');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // messed up somehow
             Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
             return;
@@ -86,7 +85,7 @@ class Nvidia implements Extension
             // Get temp and power for this card
             try {
                 $card_stat = $this->_CallExt->exec('nvidia-smi', ' dmon -s p -c 1 -i ' . $id);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
                 continue;
             }

@@ -19,7 +19,6 @@
 
 namespace Linfo\Parsers;
 
-use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 
@@ -30,19 +29,19 @@ use Linfo\Common;
  */
 class Hwpci
 {
-    private $_usb_file = '',
-        $_pci_file = '',
-        $_usb_entries = array(),
-        $_pci_entries = array(),
-        $_usb_devices = array(),
-        $_pci_devices = array(),
-        $_result = array(),
-        $exec;
+    private $_usb_file = '';
+    private $_pci_file = '';
+    private $_usb_entries = array();
+    private $_pci_entries = array();
+    private $_usb_devices = array();
+    private $_pci_devices = array();
+    private $_result = array();
+    private $exec;
 
     /**
      * Constructor.
-     * @param $usb_file
-     * @param $pci_file
+     * @param string $usb_file
+     * @param string $pci_file
      */
     public function __construct($usb_file, $pci_file)
     {
@@ -134,16 +133,14 @@ class Hwpci
     }
 
 
-    /*
+    /**
      * Parse pciconf to get pci ids
-     *
-     * @access private
      */
     private function _fetchPciIdsPciConf()
     {
         try {
             $pciconf = $this->exec->exec('pciconf', '-l');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
 
             return;
@@ -160,11 +157,11 @@ class Hwpci
 
     /**
      * Do its goddam job.
-     * @param $os
+     * @param string $os
      */
     public function work($os)
     {
-        switch ($os) {
+        switch (strtolower($os)) {
             case 'linux':
                 $this->_fetchPciIdsLinux();
                 $this->_fetchUsbIdsLinux();
@@ -184,6 +181,8 @@ class Hwpci
 
     /**
      * Compile and return results.
+     *
+     * @return array
      */
     public function result()
     {

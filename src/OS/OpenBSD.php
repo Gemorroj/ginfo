@@ -20,7 +20,6 @@
 
 namespace Linfo\OS;
 
-use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Meta\Settings;
@@ -73,7 +72,7 @@ class OpenBSD extends BSDcommon
         // Get result of mount command
         try {
             $mount_res = $this->callExt->exec('mount');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -135,7 +134,7 @@ class OpenBSD extends BSDcommon
                 $return['type'] = 'Physical';
                 $return['free'] = $return['total'] - ($hard_ram_free * 1024);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `vmstat` to get memory usage usage');
         }
 
@@ -154,7 +153,7 @@ class OpenBSD extends BSDcommon
                     'type' => ucfirst($ft),
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
@@ -249,7 +248,7 @@ class OpenBSD extends BSDcommon
         // Get result of netstat command
         try {
             $res = $this->callExt->exec('netstat', '-nbi');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return array();
@@ -275,7 +274,7 @@ class OpenBSD extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         // Get type from dmesg boot
@@ -412,7 +411,7 @@ class OpenBSD extends BSDcommon
                         break;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 

@@ -28,8 +28,6 @@ use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
-use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * Get info on a usual linux system
@@ -434,7 +432,7 @@ class Linux extends Unixcommon
                     // Save result
                     $return = array_merge($return, $mbmon_res);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Errors::add('mbmon parser', $e->getMessage());
             }
         }
@@ -453,7 +451,7 @@ class Linux extends Unixcommon
                     // Save result
                     $return = array_merge($return, $sensord_res);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Errors::add('sensord parser', $e->getMessage());
             }
         }

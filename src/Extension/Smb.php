@@ -31,7 +31,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * Get info on a samba install by running smbstatus
@@ -56,7 +55,7 @@ class Smb implements Extension
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('smbstatus');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // messed up somehow
             Errors::add('Samba Status Extension', $e->getMessage());
             $this->_res = false;

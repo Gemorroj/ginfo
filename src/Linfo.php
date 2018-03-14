@@ -19,9 +19,9 @@
 
 namespace Linfo;
 
+use Linfo\Extension\Extension;
 use Linfo\Meta\Settings;
 use Linfo\OS\OS;
-use Linfo\Parsers\CallExt;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;
 
@@ -331,7 +331,8 @@ class Linfo
 
             // Try loading our class..
             $extClassName = '\\Linfo\\Extension\\' . $ext;
-            $extClass =  new $extClassName($this);
+            /** @var Extension $extClass */
+            $extClass = new $extClassName($this);
 
             // Deal with it
             $extClass->work();

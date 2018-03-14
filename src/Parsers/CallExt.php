@@ -21,8 +21,6 @@
 namespace Linfo\Parsers;
 
 use Linfo\Common;
-use Linfo\Linfo;
-use Exception;
 use Linfo\Meta\Settings;
 
 /**
@@ -78,7 +76,7 @@ class CallExt
     /**
      * Run a command and cache its output for later.
      *
-     * @throws Exception
+     * @throws \Exception
      *
      * @param string $name name of executable to call
      * @param string $switches command arguments
@@ -121,6 +119,6 @@ class CallExt
         }
 
         // Never got it
-        throw new Exception('Exec `' . $name . '` not found');
+        throw new \Exception('Exec `' . $name . '` not found');
     }
 }

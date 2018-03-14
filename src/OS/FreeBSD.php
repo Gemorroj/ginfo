@@ -20,7 +20,6 @@
 
 namespace Linfo\OS;
 
-use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Meta\Settings;
@@ -86,7 +85,7 @@ class FreeBSD extends BSDcommon
         // Get result of mount command
         try {
             $res = $this->callExt->exec('mount');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -185,7 +184,7 @@ class FreeBSD extends BSDcommon
                     'type' => ucfirst($ft),
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `swapinfo` to get swap usage');
             // meh
         }
@@ -282,7 +281,7 @@ class FreeBSD extends BSDcommon
                         }
                     }
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Errors::add('RAID', 'Error using gmirror to get raid info');
                 // Don't jump out; allow potential more raid array
                 // mechanisms to be gathered and outputted
@@ -302,7 +301,7 @@ class FreeBSD extends BSDcommon
         // Use netstat to get info
         try {
             $netstat = $this->callExt->exec('netstat', '-nbdi');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return $return;
@@ -334,7 +333,7 @@ class FreeBSD extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         // Get type from dmesg boot
@@ -514,7 +513,7 @@ class FreeBSD extends BSDcommon
         // Get result of program
         try {
             $res = $this->callExt->exec('apm', '-abl');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `apm` battery info');
 
             return $batts;
@@ -603,7 +602,7 @@ class FreeBSD extends BSDcommon
                         break;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 

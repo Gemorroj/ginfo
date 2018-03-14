@@ -20,8 +20,6 @@
 
 namespace Linfo\Exceptions;
 
-use Exception;
-
-class FatalException extends Exception
+class FatalException extends \Exception
 {
 }

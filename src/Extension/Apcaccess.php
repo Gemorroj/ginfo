@@ -35,7 +35,6 @@ use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * Get status on apcaccess volumes. 
@@ -59,7 +58,7 @@ class Apcaccess implements Extension
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('apcaccess');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // messed up somehow
             Errors::add('apcaccess Extension', $e->getMessage());
             $this->_res = false;

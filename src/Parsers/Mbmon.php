@@ -20,32 +20,40 @@
 
 namespace Linfo\Parsers;
 
-use Exception;
-
 /**
  * Deal with MbMon
  */
 class Mbmon
 {
     // Store these
-    protected $host, $port;
+    protected $host;
+    protected $port;
 
     // Default socket connect timeout
-    const timeout = 3;
+    const TIMEOUT = 3;
 
-    // Localize host and port
+    /**
+     * Localize host and port
+     * @param string $host
+     * @param int $port
+     */
     public function setAddress($host, $port = 411)
     {
         $this->host = $host;
         $this->port = $port;
     }
 
-    // Connect to host/port and get info
+    /**
+     * Connect to host/port and get info
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function getSock()
     {
         // Try connecting
-        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::timeout))) {
-            throw new Exception('Error connecting');
+        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
+            throw new \Exception('Error connecting');
         }
 
         // Try getting stuff
@@ -61,7 +69,12 @@ class Mbmon
         return $buffer;
     }
 
-    // Parse and return info from daemon socket
+    /**
+     * Parse and return info from daemon socket
+     *
+     * @param string $data
+     * @return array
+     */
     private function parseSockData($data)
     {
         $return = array();
@@ -82,7 +95,11 @@ class Mbmon
         return $return;
     }
 
-    // Do work and return temps
+    /**
+     * Do work and return temps
+     * @return array
+     * @throws \Exception
+     */
     public function work()
     {
         $sockResult = $this->getSock();

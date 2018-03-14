@@ -21,7 +21,6 @@
 namespace Linfo\Parsers;
 
 use Linfo\Common;
-use Exception;
 use Linfo\Meta\Settings;
 
 /**
@@ -30,10 +29,12 @@ use Linfo\Meta\Settings;
 class Hddtemp
 {
     // Store these
-    protected $mode, $host, $port;
+    protected $mode;
+    protected $host;
+    protected $port;
 
     // Default socket connect timeout
-    const timeout = 3;
+    const TIMEOUT = 3;
 
     // Localize mode
     public function setMode($mode)
@@ -41,23 +42,28 @@ class Hddtemp
         $this->mode = $mode;
     }
 
-    /*
-     *  For connecting to HDDTemp daemon
+    /**
+     * Localize host and port for connecting to HDDTemp daemon
+     * @param string $host
+     * @param int $port
      */
-
-    // Localize host and port
     public function setAddress($host, $port = 7634)
     {
         $this->host = $host;
         $this->port = $port;
     }
 
-    // Connect to host/port and get info
+    /**
+     * Connect to host/port and get info
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function getSock()
     {
         // Try connecting
-        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::timeout))) {
-            throw new Exception('Error connecting');
+        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
+            throw new \Exception('Error connecting');
         }
 
         // Try getting stuff
@@ -73,7 +79,12 @@ class Hddtemp
         return $buffer;
     }
 
-    // Parse and return info from daemon socket
+    /**
+     * Parse and return info from daemon socket
+     *
+     * @param string $data
+     * @return array
+     */
     private function parseSockData($data)
     {
 
@@ -117,11 +128,12 @@ class Hddtemp
         return $return;
     }
 
-    /*
+    /**
      * For parsing the syslog looking for hddtemp entries
      * POTENTIALLY BUGGY -- only tested on debian/ubuntu flavored syslogs
      * Also slow as balls as it parses the entire syslog instead of
      * using something like tail
+     * @return array
      */
     private function parseSysLogData()
     {
@@ -149,15 +161,15 @@ class Hddtemp
         return $return;
     }
 
-    /*
+    /**
      * Wrapper function around the private ones here which do the
      * actual work, and returns temps
+     * Use supplied mode, and optionally host/port, to get temps and return them
+     * @throws \Exception
+     * @return array
      */
-
-    // Use supplied mode, and optionally host/port, to get temps and return them
     public function work()
     {
-
         // Deal with differences in mode
         switch ($this->mode) {
 
@@ -173,7 +185,7 @@ class Hddtemp
 
             // Some other mode
             default:
-                throw new Exception('Not supported mode');
+                throw new \Exception('Not supported mode');
                 break;
         }
     }

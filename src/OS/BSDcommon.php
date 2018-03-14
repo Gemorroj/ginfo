@@ -20,9 +20,7 @@
 
 namespace Linfo\OS;
 
-use Exception;
 use Linfo\Common;
-use Linfo\Parsers\CallExt;
 
 /**
  * The BSD os's are largely similar and thus draw from this class.
@@ -98,7 +96,7 @@ abstract class BSDcommon extends Unixcommon
 
             // Something broke with that sysctl call; try getting
             // all the values separately (slower)
-        catch (Exception $e) {
+        catch (\Exception $e) {
 
             // Go through each
             foreach ($keys as $v) {
@@ -107,7 +105,7 @@ abstract class BSDcommon extends Unixcommon
                 try {
                     $results[$v] = $this->callExt->exec('sysctl', $v);
                 } // Didn't work again... just forget it and set value to empty string
-                catch (Exception $e) {
+                catch (\Exception $e) {
                     $results[$v] = '';
                 }
             }

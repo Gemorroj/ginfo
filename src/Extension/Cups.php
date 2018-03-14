@@ -32,7 +32,6 @@ use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * Get info on a cups install by running lpq
@@ -56,7 +55,7 @@ class Cups implements Extension
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('lpstat', '-p -o -l');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // messed up somehow
             Errors::add('CUPS Extension', $e->getMessage());
             $this->_res = false;

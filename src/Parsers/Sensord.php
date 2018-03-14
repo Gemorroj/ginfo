@@ -27,13 +27,17 @@ use Linfo\Common;
  */
 class Sensord
 {
+    /**
+     * @return array
+     */
     public function work()
     {
-        $temps = $this->parseSysLog();
-
-        return $temps;
+        return $this->parseSysLog();
     }
 
+    /**
+     * @return array
+     */
     private function parseSysLog()
     {
         /*

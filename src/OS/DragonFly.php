@@ -20,7 +20,6 @@
 
 namespace Linfo\OS;
 
-use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Meta\Settings;
@@ -69,7 +68,7 @@ class DragonFly extends BSDcommon
         // Get result of mount command
         try {
             $res = $this->callExt->exec('mount');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -174,7 +173,7 @@ class DragonFly extends BSDcommon
         // Use netstat to get nic names and stats
         try {
             $netstat = $this->callExt->exec('netstat', '-nibd');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'error using netstat');
 
             return array();
@@ -245,7 +244,7 @@ class DragonFly extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'error using ifconfig to get nic statuses');
         }
 
@@ -339,7 +338,7 @@ class DragonFly extends BSDcommon
                         break;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 

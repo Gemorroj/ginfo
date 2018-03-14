@@ -19,7 +19,6 @@
  */
 namespace Linfo\OS;
 
-use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Meta\Settings;
@@ -49,7 +48,7 @@ class NetBSD extends BSDcommon
         // Try getting mount command
         try {
             $res = $this->callExt->exec('mount');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
             return array();
@@ -111,7 +110,7 @@ class NetBSD extends BSDcommon
         // Try using netstat
         try {
             $res = $this->callExt->exec('netstat', '-nbdi');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
             return array();
@@ -137,7 +136,7 @@ class NetBSD extends BSDcommon
                     $current_nic = false;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
         }
 
         // Store interfaces here
@@ -285,7 +284,7 @@ class NetBSD extends BSDcommon
 
             // Did we?
             if (!is_numeric($bytes_per_page[1]) || $bytes_per_page[1] < 0) {
-                throw new Exception('Error parsing page size out of `vmstat`');
+                throw new \Exception('Error parsing page size out of `vmstat`');
             } else {
                 list(, $bytes_per_page) = $bytes_per_page;
             }
@@ -295,7 +294,7 @@ class NetBSD extends BSDcommon
 
             // Did we?
             if (!is_numeric($available_ram[1])) {
-                throw new Exception('Error parsing managed pages out of `vmstat`');
+                throw new \Exception('Error parsing managed pages out of `vmstat`');
             } else {
                 list(, $available_ram) = $available_ram;
             }
@@ -305,7 +304,7 @@ class NetBSD extends BSDcommon
 
             // Did we?
             if (!is_numeric($free_ram[1])) {
-                throw new Exception('Error parsing free pages out of `vmstat`');
+                throw new \Exception('Error parsing free pages out of `vmstat`');
             } else {
                 list(, $free_ram) = $free_ram;
             }
@@ -313,7 +312,7 @@ class NetBSD extends BSDcommon
             // Okay, cool. Total them up
             $return['total'] = $available_ram * $bytes_per_page;
             $return['free'] = $free_ram * $bytes_per_page;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `vmstat` to get memory usage');
         }
 
@@ -332,7 +331,7 @@ class NetBSD extends BSDcommon
                     'type' => ucfirst($ft),
                 );
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `swapctl` to get swap usage');
         }
 
@@ -428,7 +427,7 @@ class NetBSD extends BSDcommon
                         break;
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Errors::add('Linfo Core', 'Error using `ps` to get process info');
         }
 

@@ -36,7 +36,6 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
 use Linfo\Parsers\CallExt;
-use Exception;
 
 /**
  * IPMI extension for temps/voltages.
@@ -72,7 +71,7 @@ class Ipmi implements Extension
         // Deal with calling it
         try {
             $result = $this->_CallExt->exec('ipmitool', ' sdr');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // messed up somehow
             Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
 
