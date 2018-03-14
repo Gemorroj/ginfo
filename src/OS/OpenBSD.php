@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
+use Linfo\Meta\Settings;
 
 /**
  * OpenBSD info class.
@@ -31,9 +32,9 @@ use Linfo\Common;
 class OpenBSD extends BSDcommon
 {
     // Start us off
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         // We search these folders for our commands
         $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
@@ -89,7 +90,7 @@ class OpenBSD extends BSDcommon
         // Go through
         foreach ($mount_matches as $mount) {
             // Should we not show this?
-            if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems'])) {
+            if (in_array($mount[1], Settings::getInstance()->getSettings()['hide']['storage_devices']) || in_array($mount[3], Settings::getInstance()->getSettings()['hide']['filesystems'])) {
                 continue;
             }
 

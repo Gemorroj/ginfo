@@ -36,6 +36,7 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
+use Linfo\Meta\Settings;
 
 /**
  * Get status on libvirt VMs.
@@ -50,9 +51,7 @@ class Libvirt implements Extension
 
     public function __construct(Linfo $linfo)
     {
-        $settings = $linfo->getSettings();
-
-        $this->connectionSettings = $settings['libvirt_connection'];
+        $this->connectionSettings = Settings::getInstance()->getSettings()['libvirt_connection'];
     }
 
     private function connect()

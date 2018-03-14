@@ -34,9 +34,9 @@ abstract class BSDcommon extends Unixcommon
     protected $sysctl = array();
 
     // Start us off
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         // Get dmesg
         $this->loadDmesg();

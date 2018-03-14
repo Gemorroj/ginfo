@@ -19,21 +19,10 @@
 
 namespace Linfo;
 
+use Linfo\Meta\Settings;
+
 class Common
 {
-    protected static $settings = array();
-    protected static $lang = array();
-
-    /**
-     * @param Linfo $linfo
-     */
-    public static function config(Linfo $linfo)
-    {
-        self::$settings = $linfo->getSettings();
-        self::$lang = $linfo->getLang();
-    }
-
-
     /**
      * Certain files, specifcally the pci/usb ids files, vary in location from
      * linux distro to linux distro. This function, when passed an array of
@@ -96,7 +85,7 @@ class Common
         }
 
         // Get the notation
-        $notation = self::$settings['byte_notation'] == 1000 ? 1000 : 1024;
+        $notation = Settings::getInstance()->getSettings()['byte_notation'] == 1000 ? 1000 : 1024;
 
         // Fixes large disk size overflow issue
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
@@ -129,23 +118,23 @@ class Common
         $return = array();
 
         if ($years > 0) {
-            $return[] = $years . ' ' . ($years > 1 ? self::$lang['years'] : substr(self::$lang['years'], 0, strlen(self::$lang['years']) - 1));
+            $return[] = $years . ' ' . ($years > 1 ? 'years' : substr('years', 0, strlen('years') - 1));
         }
 
         if ($days > 0) {
-            $return[] = $days . ' ' . self::$lang['days'];
+            $return[] = $days . ' ' . 'days';
         }
 
         if ($hours > 0) {
-            $return[] = $hours . ' ' . self::$lang['hours'];
+            $return[] = $hours . ' ' . 'hours';
         }
 
         if ($minutes > 0) {
-            $return[] = $minutes . ' ' . self::$lang['minutes'];
+            $return[] = $minutes . ' ' . 'minutes';
         }
 
         if ($seconds > 0) {
-            $return[] = $seconds . (date('m/d') == '06/03' ? ' sex' : ' ' . self::$lang['seconds']);
+            $return[] = $seconds . (date('m/d') == '06/03' ? ' sex' : ' ' . 'seconds');
         }
 
         return implode(', ', $return);

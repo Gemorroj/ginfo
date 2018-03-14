@@ -31,6 +31,7 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
+use Linfo\Meta\Settings;
 
 /**
  * Get status on dhcp3 leases.
@@ -53,10 +54,8 @@ class Dhcpd3_leases implements Extension
      */
     public function __construct(Linfo $linfo)
     {
-        $settings = $linfo->getSettings();
-
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
-        $this->_hide_mac = array_key_exists('dhcpd3_hide_mac', $settings) ? (bool)$settings['dhcpd3_hide_mac'] : false;
+        $this->_hide_mac = array_key_exists('dhcpd3_hide_mac', Settings::getInstance()->getSettings()) ? (bool)Settings::getInstance()->getSettings()['dhcpd3_hide_mac'] : false;
 
         // Find leases file
         $this->_leases_file = Common::locateActualPath(array(

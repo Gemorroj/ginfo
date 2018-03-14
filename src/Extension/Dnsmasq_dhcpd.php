@@ -33,6 +33,7 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
+use Linfo\Meta\Settings;
 
 /**
  * Get status on dhcp3 leases.
@@ -54,13 +55,11 @@ class Dnsmasq_dhcpd implements Extension
      */
     public function __construct(Linfo $linfo)
     {
-        $settings = $linfo->getSettings();
-
         // Should we hide mac addresses, to prevent stuff like mac address spoofing?
-        $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', $settings) ? (bool)$settings['dnsmasq_hide_mac'] : false;
+        $this->_hide_mac = array_key_exists('dnsmasq_hide_mac', Settings::getInstance()->getSettings()) ? (bool)Settings::getInstance()->getSettings()['dnsmasq_hide_mac'] : false;
 
         // Find leases file
-        $this->_leases_file = isset($settings['dnsmasq_leases']) ? $settings['dnsmasq_leases'] : Common::locateActualPath(array(
+        $this->_leases_file = isset(Settings::getInstance()->getSettings()['dnsmasq_leases']) ? Settings::getInstance()->getSettings()['dnsmasq_leases'] : Common::locateActualPath(array(
             '/var/lib/libvirt/dnsmasq/default.leases',
         ));
     }

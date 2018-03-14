@@ -22,6 +22,7 @@ namespace Linfo\Parsers;
 
 use Linfo\Common;
 use Exception;
+use Linfo\Meta\Settings;
 
 /**
  * Deal with hddtemp
@@ -29,16 +30,10 @@ use Exception;
 class Hddtemp
 {
     // Store these
-    protected $mode, $host, $port, $settings;
+    protected $mode, $host, $port;
 
     // Default socket connect timeout
     const timeout = 3;
-
-    // Start us off
-    public function __construct($settings)
-    {
-        $this->settings = $settings;
-    }
 
     // Localize mode
     public function setMode($mode)
@@ -100,7 +95,7 @@ class Hddtemp
             }
 
             // Ignore /dev/sg?
-            if (!empty($this->settings['hide']['sg']) && substr($path, 0, 7) == '/dev/sg') {
+            if (!empty(Settings::getInstance()->getSettings()['hide']['sg']) && substr($path, 0, 7) == '/dev/sg') {
                 continue;
             }
 

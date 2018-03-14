@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
+use Linfo\Meta\Settings;
 use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
@@ -43,12 +44,11 @@ class Linux extends Unixcommon
     /**
      * Constructor. Localizes settings.
      *
-     * @param array $settings of linfo settings
      * @throws FatalException
      */
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         // Make sure we have what we need
         if (!is_dir('/sys') || !is_dir('/proc')) {
@@ -58,7 +58,7 @@ class Linux extends Unixcommon
         // We search these folders for our commands
         $this->callExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 
-        if (isset($this->settings['cpu_usage']) && !empty($this->settings['cpu_usage'])) {
+        if (isset(Settings::getInstance()->getSettings()['cpu_usage']) && !empty(Settings::getInstance()->getSettings()['cpu_usage'])) {
             $this->determineCPUPercentage();
         }
     }
@@ -386,19 +386,19 @@ class Linux extends Unixcommon
         $return = array();
 
         // hddtemp?
-        if (array_key_exists('hddtemp', (array)$this->settings['temps']) && !empty($this->settings['temps']['hddtemp']) && isset($this->settings['hddtemp'])) {
+        if (array_key_exists('hddtemp', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['hddtemp']) && isset(Settings::getInstance()->getSettings()['hddtemp'])) {
             try {
                 // Initiate class
-                $hddtemp = new Hddtemp($this->settings);
+                $hddtemp = new Hddtemp(Settings::getInstance()->getSettings());
 
                 // Set mode, as in either daemon or syslog
-                $hddtemp->setMode($this->settings['hddtemp']['mode']);
+                $hddtemp->setMode(Settings::getInstance()->getSettings()['hddtemp']['mode']);
 
                 // If we're daemon, save host and port
-                if ($this->settings['hddtemp']['mode'] == 'daemon') {
+                if (Settings::getInstance()->getSettings()['hddtemp']['mode'] == 'daemon') {
                     $hddtemp->setAddress(
-                        $this->settings['hddtemp']['address']['host'],
-                        $this->settings['hddtemp']['address']['port']);
+                        Settings::getInstance()->getSettings()['hddtemp']['address']['host'],
+                        Settings::getInstance()->getSettings()['hddtemp']['address']['port']);
                 }
 
                 // Result after working it
@@ -416,15 +416,15 @@ class Linux extends Unixcommon
         }
 
         // mbmon?
-        if (array_key_exists('mbmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['mbmon']) && isset($this->settings['mbmon'])) {
+        if (array_key_exists('mbmon', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['mbmon']) && isset(Settings::getInstance()->getSettings()['mbmon'])) {
             try {
                 // Initiate class
                 $mbmon = new Mbmon();
 
                 // Set host and port
                 $mbmon->setAddress(
-                    $this->settings['mbmon']['address']['host'],
-                    $this->settings['mbmon']['address']['port']);
+                    Settings::getInstance()->getSettings()['mbmon']['address']['host'],
+                    Settings::getInstance()->getSettings()['mbmon']['address']['port']);
 
                 // Get result after working it
                 $mbmon_res = $mbmon->work();
@@ -440,7 +440,7 @@ class Linux extends Unixcommon
         }
 
         // sensord? (part of lm-sensors)
-        if (array_key_exists('sensord', (array)$this->settings['temps']) && !empty($this->settings['temps']['sensord'])) {
+        if (array_key_exists('sensord', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['sensord'])) {
             try {
                 // Iniatate class
                 $sensord = new Sensord();
@@ -460,7 +460,7 @@ class Linux extends Unixcommon
 
         // hwmon? (probably the fastest of what's here)
         // too simple to be in its own class
-        if (array_key_exists('hwmon', (array)$this->settings['temps']) && !empty($this->settings['temps']['hwmon'])) {
+        if (array_key_exists('hwmon', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['hwmon'])) {
 
             // Store them here
             $hwmon_vals = array();
@@ -471,7 +471,7 @@ class Linux extends Unixcommon
                 $value = Common::getContents($path);
                 $base = basename($path);
                 $labelpath = $initpath . 'label';
-                $showemptyfans = isset($this->settings['temps_show0rpmfans']) ? $this->settings['temps_show0rpmfans'] : false;
+                $showemptyfans = isset(Settings::getInstance()->getSettings()['temps_show0rpmfans']) ? Settings::getInstance()->getSettings()['temps_show0rpmfans'] : false;
                 $drivername = @basename(@readlink(dirname($path) . '/driver')) ?: false;
 
                 // Temperatures
@@ -512,7 +512,7 @@ class Linux extends Unixcommon
         }
 
         // thermal_zone? 
-        if (array_key_exists('thermal_zone', (array)$this->settings['temps']) && !empty($this->settings['temps']['thermal_zone'])) {
+        if (array_key_exists('thermal_zone', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['thermal_zone'])) {
 
             // Store them here
             $thermal_zone_vals = array();
@@ -597,13 +597,13 @@ class Linux extends Unixcommon
         foreach ($match as $mount) {
 
             // Should we not show this?
-            if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems'])) {
+            if (in_array($mount[1], Settings::getInstance()->getSettings()['hide']['storage_devices']) || in_array($mount[3], Settings::getInstance()->getSettings()['hide']['filesystems'])) {
                 continue;
             }
 
             // Should we not show this? (regex)
-            if (isset($this->settings['hide']['mountpoints_regex']) && is_array($this->settings['hide']['mountpoints_regex'])) {
-                foreach ($this->settings['hide']['mountpoints_regex'] as $regex) {
+            if (isset(Settings::getInstance()->getSettings()['hide']['mountpoints_regex']) && is_array(Settings::getInstance()->getSettings()['hide']['mountpoints_regex'])) {
+                foreach (Settings::getInstance()->getSettings()['hide']['mountpoints_regex'] as $regex) {
                     if (@preg_match($regex, $mount[2])) {
                         continue 2;
                     }
@@ -620,14 +620,14 @@ class Linux extends Unixcommon
 
             // If it's a symlink, find out where it really goes.
             // (using realpath instead of readlink because the former gives absolute paths)
-            if (isset($this->settings['hide']['dont_resolve_mountpoint_symlinks']) && $this->settings['hide']['dont_resolve_mountpoint_symlinks']) {
+            if (isset(Settings::getInstance()->getSettings()['hide']['dont_resolve_mountpoint_symlinks']) && Settings::getInstance()->getSettings()['hide']['dont_resolve_mountpoint_symlinks']) {
                 $symlink = false;
             } else {
                 $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
             }
 
             // Optionally get mount options
-            if ($this->settings['show']['mounts_options'] && !in_array($mount[3], (array)$this->settings['hide']['fs_mount_options'])) {
+            if (Settings::getInstance()->getSettings()['show']['mounts_options'] && !in_array($mount[3], (array)Settings::getInstance()->getSettings()['hide']['fs_mount_options'])) {
                 $mount_options = explode(',', $mount[4]);
             } else {
                 $mount_options = array();
@@ -692,7 +692,7 @@ class Linux extends Unixcommon
         $raidinfo = array();
 
         // mdadm?
-        if (array_key_exists('mdadm', (array)$this->settings['raid']) && !empty($this->settings['raid']['mdadm'])) {
+        if (array_key_exists('mdadm', (array)Settings::getInstance()->getSettings()['raid']) && !empty(Settings::getInstance()->getSettings()['raid']['mdadm'])) {
 
             // Try getting contents
             $mdadm_contents = Common::getContents('/proc/mdstat', false);
@@ -1122,21 +1122,21 @@ class Linux extends Unixcommon
     public function getServices()
     {
         // We allowed?
-        if (empty($this->settings['show']['services']) || !is_array($this->settings['services']) || count($this->settings['services']) == 0) {
+        if (empty(Settings::getInstance()->getSettings()['show']['services']) || !is_array(Settings::getInstance()->getSettings()['services']) || count(Settings::getInstance()->getSettings()['services']) == 0) {
             return array();
         }
 
         // Temporarily keep statuses here
         $statuses = array();
 
-        $this->settings['services']['executables'] = (array)$this->settings['services']['executables'];
-        $this->settings['services']['pidFiles'] = (array)$this->settings['services']['pidFiles'];
-        $this->settings['services']['systemdServices'] = (array)$this->settings['services']['systemdServices'];
+        Settings::getInstance()->getSettings()['services']['executables'] = (array)Settings::getInstance()->getSettings()['services']['executables'];
+        Settings::getInstance()->getSettings()['services']['pidFiles'] = (array)Settings::getInstance()->getSettings()['services']['pidFiles'];
+        Settings::getInstance()->getSettings()['services']['systemdServices'] = (array)Settings::getInstance()->getSettings()['services']['systemdServices'];
 
         // Convert paths of executables to PID files
         $pids = array();
         $do_process_search = false;
-        if (count($this->settings['services']['executables']) > 0) {
+        if (count(Settings::getInstance()->getSettings()['services']['executables']) > 0) {
             $potential_paths = @glob('/proc/*/cmdline');
             if (is_array($potential_paths)) {
                 $num_paths = count($potential_paths);
@@ -1152,7 +1152,7 @@ class Linux extends Unixcommon
             }
 
             // Go through the list of executables to search for
-            foreach ($this->settings['services']['executables'] as $service => $exec) {
+            foreach (Settings::getInstance()->getSettings()['services']['executables'] as $service => $exec) {
                 // Go through pid file list. for loops are faster than foreach
                 for ($i = 0; $i < $num_paths; ++$i) {
                     $cmdline = $cmdline_cache[$i];
@@ -1179,7 +1179,7 @@ class Linux extends Unixcommon
         }
 
         // PID files
-        foreach ($this->settings['services']['pidFiles'] as $service => $file) {
+        foreach (Settings::getInstance()->getSettings()['services']['pidFiles'] as $service => $file) {
             $pid = Common::getContents($file, false);
             if ($pid != false && is_numeric($pid)) {
                 $pids[$service] = $pid;
@@ -1187,7 +1187,7 @@ class Linux extends Unixcommon
         }
 
         // systemd services
-        foreach ($this->settings['services']['systemdServices'] as $service => $systemdService) {
+        foreach (Settings::getInstance()->getSettings()['services']['systemdServices'] as $service => $systemdService) {
             $command = $this->callExt->exec('systemctl', 'show -p MainPID ' . $systemdService);
             $command = trim($command);
             $pid = str_replace('MainPID=', '', $command);

@@ -23,22 +23,13 @@ namespace Linfo\Parsers;
 use Linfo\Common;
 use Linfo\Linfo;
 use Exception;
+use Linfo\Meta\Settings;
 
 /**
  * Class used to call external programs.
  */
 class CallExt
 {
-    protected static $settings = array();
-
-    /**
-     * @param Linfo $linfo
-     */
-    public static function config(Linfo $linfo)
-    {
-        self::$settings = $linfo->getSettings();
-    }
-
     /**
      * Maintain a count of how many external programs we call.
      *
@@ -68,11 +59,11 @@ class CallExt
     public function setSearchPaths(array $paths)
     {
         // Merge in possible custom paths
-        if (array_key_exists('additional_paths', self::$settings) &&
-            is_array(self::$settings['additional_paths']) &&
-            count(self::$settings['additional_paths']) > 0) {
+        if (array_key_exists('additional_paths', Settings::getInstance()->getSettings()) &&
+            is_array(Settings::getInstance()->getSettings()['additional_paths']) &&
+            count(Settings::getInstance()->getSettings()['additional_paths']) > 0) {
 
-            $paths = array_merge(self::$settings['additional_paths'], $paths);
+            $paths = array_merge(Settings::getInstance()->getSettings()['additional_paths'], $paths);
         }
 
         // Make sure they all have a trailing slash
@@ -96,7 +87,7 @@ class CallExt
     public function exec($name, $switches = '')
     {
         // Sometimes it is necessary to call a program with sudo
-        $attempt_sudo = array_key_exists('sudo_apps', self::$settings) && in_array($name, self::$settings['sudo_apps']);
+        $attempt_sudo = array_key_exists('sudo_apps', Settings::getInstance()->getSettings()) && in_array($name, Settings::getInstance()->getSettings()['sudo_apps']);
 
         // Have we gotten it before?
         if (array_key_exists($name . $switches, $this->cliCache)) {

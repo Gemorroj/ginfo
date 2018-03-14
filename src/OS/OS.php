@@ -24,18 +24,14 @@ use Linfo\Parsers\CallExt;
 
 abstract class OS
 {
-    /** @var array */
-    protected $settings;
     /** @var CallExt */
     protected $callExt;
 
     /**
      * OS constructor.
-     * @param array $settings
      */
-    public function __construct(array $settings)
+    public function __construct()
     {
-        $this->settings = $settings;
         $this->callExt = new CallExt();
     }
 

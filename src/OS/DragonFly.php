@@ -23,14 +23,15 @@ namespace Linfo\OS;
 use Exception;
 use Linfo\Meta\Errors;
 use Linfo\Common;
+use Linfo\Meta\Settings;
 use Linfo\Parsers\Hwpci;
 
 class DragonFly extends BSDcommon
 {
     // Start us off
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         // We search these folders for our commands
         $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
@@ -86,7 +87,7 @@ class DragonFly extends BSDcommon
         foreach ($m as $mount) {
 
             // Should we not show this?
-            if (in_array($mount[1], $this->settings['hide']['storage_devices']) || in_array($mount[3], $this->settings['hide']['filesystems'])) {
+            if (in_array($mount[1], Settings::getInstance()->getSettings()['hide']['storage_devices']) || in_array($mount[3], Settings::getInstance()->getSettings()['hide']['filesystems'])) {
                 continue;
             }
 
@@ -97,8 +98,8 @@ class DragonFly extends BSDcommon
 
             // Optionally get mount options
             if (
-                $this->settings['show']['mounts_options'] &&
-                !in_array($mount[3], (array)$this->settings['hide']['fs_mount_options']) &&
+                Settings::getInstance()->getSettings()['show']['mounts_options'] &&
+                !in_array($mount[3], (array)Settings::getInstance()->getSettings()['hide']['fs_mount_options']) &&
                 isset($mount[4])
             ) {
                 $mount_options = explode(', ', $mount[4]);

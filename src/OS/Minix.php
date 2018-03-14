@@ -34,9 +34,9 @@ class Minix extends OS
 {
     // Start us off by localizing the settings and initializing the external
     // application running class
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         // Have it look in these places
         $this->callExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));

@@ -33,13 +33,11 @@ class Windows extends OS
     private $systemInfo = array();
 
     /**
-     * Constructor. Localizes settings.
-     *
-     * @param array $settings of linfo settings
+     * Windows constructor.
      */
-    public function __construct(array $settings)
+    public function __construct()
     {
-        parent::__construct($settings);
+        parent::__construct();
 
         setlocale(LC_ALL, 'English');
         shell_exec('chcp 65001');
