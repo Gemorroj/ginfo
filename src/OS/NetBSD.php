@@ -33,11 +33,10 @@ class NetBSD extends BSDcommon
     // Start us off
     public function __construct(array $settings)
     {
-        // Initiate parent
         parent::__construct($settings);
 
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
+        $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/pkg/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
         $this->getSysCTL(array('kern.boottime', 'vm.loadavg'), false);
@@ -48,7 +47,7 @@ class NetBSD extends BSDcommon
     {
         // Try getting mount command
         try {
-            $res = $this->exec->exec('mount');
+            $res = $this->callExt->exec('mount');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
@@ -110,7 +109,7 @@ class NetBSD extends BSDcommon
     {
         // Try using netstat
         try {
-            $res = $this->exec->exec('netstat', '-nbdi');
+            $res = $this->callExt->exec('netstat', '-nbdi');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
@@ -127,7 +126,7 @@ class NetBSD extends BSDcommon
 
         // Try using ifconfig to get statuses for each interface
         try {
-            $ifconfig = $this->exec->exec('ifconfig', '-a');
+            $ifconfig = $this->callExt->exec('ifconfig', '-a');
             $current_nic = false;
             foreach ((array)explode("\n", $ifconfig) as $line) {
                 if (preg_match('/^(\w+):/m', $line, $m) == 1) {
@@ -278,7 +277,7 @@ class NetBSD extends BSDcommon
         // Get virtual memory usage with vmstat
         try {
             // Get result of vmstat
-            $vmstat = $this->exec->exec('vmstat', '-s');
+            $vmstat = $this->callExt->exec('vmstat', '-s');
 
             // Get bytes per page
             preg_match('/^\s+(\d+) bytes per page$/m', $vmstat, $bytes_per_page);
@@ -319,7 +318,7 @@ class NetBSD extends BSDcommon
 
         // Get swap
         try {
-            $swapinfo = $this->exec->exec('swapctl', '-l');
+            $swapinfo = $this->callExt->exec('swapctl', '-l');
             @preg_match_all('/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)/m', $swapinfo, $sm, PREG_SET_ORDER);
             foreach ($sm as $swap) {
                 $return['swapTotal'] += $swap[2] * 1024;
@@ -400,7 +399,7 @@ class NetBSD extends BSDcommon
         // Use ps
         try {
             // Get it
-            $ps = $this->exec->exec('ps', 'ax');
+            $ps = $this->callExt->exec('ps', 'ax');
 
             // Match them
             preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);

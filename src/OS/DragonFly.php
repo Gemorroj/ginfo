@@ -30,11 +30,10 @@ class DragonFly extends BSDcommon
     // Start us off
     public function __construct(array $settings)
     {
-        // Initiate parent
         parent::__construct($settings);
 
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+        $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
         $this->getSysCTL(array(
@@ -68,7 +67,7 @@ class DragonFly extends BSDcommon
     {
         // Get result of mount command
         try {
-            $res = $this->exec->exec('mount');
+            $res = $this->callExt->exec('mount');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
@@ -173,7 +172,7 @@ class DragonFly extends BSDcommon
     {
         // Use netstat to get nic names and stats
         try {
-            $netstat = $this->exec->exec('netstat', '-nibd');
+            $netstat = $this->callExt->exec('netstat', '-nibd');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'error using netstat');
 
@@ -212,7 +211,7 @@ class DragonFly extends BSDcommon
             // Store current nic here
             $current_nic = false;
 
-            $ifconfig = $this->exec->exec('ifconfig', '-a');
+            $ifconfig = $this->callExt->exec('ifconfig', '-a');
 
             // Go through each line
             foreach (explode("\n", $ifconfig) as $line) {
@@ -309,7 +308,7 @@ class DragonFly extends BSDcommon
         // Use ps
         try {
             // Get it
-            $ps = $this->exec->exec('ps', 'ax');
+            $ps = $this->callExt->exec('ps', 'ax');
 
             // Match them
             preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);

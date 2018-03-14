@@ -27,10 +27,6 @@ use Linfo\Parsers\CallExt;
 
 class SunOS extends OS
 {
-    // Encapsulate these
-    protected $settings;
-    /** @var CallExt */
-    protected $exec;
     protected $kstat = array();
     /** @var string */
     protected $release;
@@ -38,14 +34,10 @@ class SunOS extends OS
     // Start us off
     public function __construct(array $settings)
     {
-        // Localize settings
-        $this->settings = $settings;
-
-        // External exec runnign
-        $this->exec = new CallExt();
+        parent::__construct($settings);
 
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+        $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 
         // Used multpile times so might as well just get it once. here
         $this->release = php_uname('r');
@@ -90,7 +82,7 @@ class SunOS extends OS
         }
 
         try {
-            $command = $this->exec->exec('kstat', ' -p ' . implode(' ', array_map('escapeshellarg', $keys)));
+            $command = $this->callExt->exec('kstat', ' -p ' . implode(' ', array_map('escapeshellarg', $keys)));
             $lines = explode("\n", $command);
         } catch (Exception $e) {
             Errors::add('Solaris Core', 'Failed running kstat.');
@@ -154,7 +146,7 @@ class SunOS extends OS
     {
         // Run mount command
         try {
-            $res = $this->exec->exec('mount', '-p');
+            $res = $this->callExt->exec('mount', '-p');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
@@ -230,7 +222,7 @@ class SunOS extends OS
         // Use ps
         try {
             // Get it
-            $ps = $this->exec->exec('ps', '-fe -o s');
+            $ps = $this->callExt->exec('ps', '-fe -o s');
 
             // Go through it
             foreach (explode("\n", trim($ps)) as $process) {
@@ -325,7 +317,7 @@ class SunOS extends OS
 
         // ifconfig for nics/statuses
         try {
-            $ifconfig = $this->exec->exec('ifconfig', '-a');
+            $ifconfig = $this->callExt->exec('ifconfig', '-a');
         } catch (Exception $e) {
             Errors::add('Solaris Core', 'Failed running ifconfig -a.');
 
@@ -402,7 +394,7 @@ class SunOS extends OS
 
         // dladm for more stats...
         try {
-            $dladm = $this->exec->exec('dladm', 'show-link');
+            $dladm = $this->callExt->exec('dladm', 'show-link');
             foreach (explode("\n", $dladm) as $line) {
                 if (!preg_match('/^(\S+)\s+(\S+)\s+\d+\s+(\S+)/', $line, $m)) {
                     continue;

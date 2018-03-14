@@ -39,11 +39,10 @@ class FreeBSD extends BSDcommon
     // Start us off
     public function __construct(array $settings)
     {
-        // Initiate parent
         parent::__construct($settings);
 
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
+        $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
 
         // sysctl values we'll access below
         $this->getSysCTL(array(
@@ -85,7 +84,7 @@ class FreeBSD extends BSDcommon
     {
         // Get result of mount command
         try {
-            $res = $this->exec->exec('mount');
+            $res = $this->callExt->exec('mount');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
@@ -171,7 +170,7 @@ class FreeBSD extends BSDcommon
 
         // Swap info
         try {
-            $swapinfo = $this->exec->exec('swapinfo', '-k');
+            $swapinfo = $this->callExt->exec('swapinfo', '-k');
             // Parse swap info
             @preg_match_all('/^(\S+)\s+(\d+)\s+(\d+)\s+(\d+)/m', $swapinfo, $sm, PREG_SET_ORDER);
             foreach ($sm as $swap) {
@@ -225,7 +224,7 @@ class FreeBSD extends BSDcommon
         if (array_key_exists('gmirror', $this->settings['raid']) && !empty($this->settings['raid']['gmirror'])) {
             try {
                 // Run gmirror status program to get raid array status
-                $res = $this->exec->exec('gmirror', 'status');
+                $res = $this->callExt->exec('gmirror', 'status');
 
                 // Divide that into lines
                 $lines = explode("\n", $res);
@@ -301,7 +300,7 @@ class FreeBSD extends BSDcommon
 
         // Use netstat to get info
         try {
-            $netstat = $this->exec->exec('netstat', '-nbdi');
+            $netstat = $this->callExt->exec('netstat', '-nbdi');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
@@ -317,7 +316,7 @@ class FreeBSD extends BSDcommon
         $statuses = array();
         try {
             // Output of ifconfig command
-            $ifconfig = $this->exec->exec('ifconfig', '-a');
+            $ifconfig = $this->callExt->exec('ifconfig', '-a');
 
             // Set this to false to prevent wasted regexes
             $current_nic = false;
@@ -513,7 +512,7 @@ class FreeBSD extends BSDcommon
 
         // Get result of program
         try {
-            $res = $this->exec->exec('apm', '-abl');
+            $res = $this->callExt->exec('apm', '-abl');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `apm` battery info');
 
@@ -573,7 +572,7 @@ class FreeBSD extends BSDcommon
         // Use ps
         try {
             // Get it
-            $ps = $this->exec->exec('ps', 'ax');
+            $ps = $this->callExt->exec('ps', 'ax');
 
             // Match them
             preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);

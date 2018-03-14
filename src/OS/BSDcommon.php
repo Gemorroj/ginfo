@@ -29,22 +29,14 @@ use Linfo\Parsers\CallExt;
  */
 abstract class BSDcommon extends Unixcommon
 {
-    // Store these
-    protected $settings;
-    /** @var CallExt */
-    protected $exec;
     /** @var string */
     protected $dmesg;
     protected $sysctl = array();
 
     // Start us off
-    protected function __construct(array $settings)
+    public function __construct(array $settings)
     {
-        // Localize settings
-        $this->settings = $settings;
-
-        // Exec running
-        $this->exec = new CallExt();
+        parent::__construct($settings);
 
         // Get dmesg
         $this->loadDmesg();
@@ -83,7 +75,7 @@ abstract class BSDcommon extends Unixcommon
         // Try running sysctl to get all the values together
         try {
             // Result of sysctl
-            $command = $this->exec->exec('sysctl', implode(' ', $keys));
+            $command = $this->callExt->exec('sysctl', implode(' ', $keys));
 
             // Place holder
             $current_key = false;
@@ -113,7 +105,7 @@ abstract class BSDcommon extends Unixcommon
 
                 // Try it
                 try {
-                    $results[$v] = $this->exec->exec('sysctl', $v);
+                    $results[$v] = $this->callExt->exec('sysctl', $v);
                 } // Didn't work again... just forget it and set value to empty string
                 catch (Exception $e) {
                     $results[$v] = '';

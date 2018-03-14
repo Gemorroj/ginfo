@@ -30,10 +30,6 @@ use Linfo\Parsers\CallExt;
  */
 class Windows extends OS
 {
-    // Keep these tucked away
-    protected $settings;
-    /** @var CallExt */
-    protected $exec;
     private $systemInfo = array();
 
     /**
@@ -43,19 +39,13 @@ class Windows extends OS
      */
     public function __construct(array $settings)
     {
-        // Localize settings
-        $this->settings = $settings;
+        parent::__construct($settings);
 
         setlocale(LC_ALL, 'English');
         shell_exec('chcp 65001');
 
-        $this->exec = new CallExt();
-        $this->exec->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
-    }
+        $this->callExt->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
 
-
-    public function init()
-    {
         $this->makeSystemInfo();
         //print_r($this->systemInfo);
     }
@@ -105,7 +95,7 @@ class Windows extends OS
     private function makeSystemInfo()
     {
         $systemInfo = explode("\n", trim(shell_exec('chcp 65001 | systeminfo.exe /fo csv'))); //fix cp
-        //$systemInfo = explode("\n", trim($this->exec->exec('systeminfo.exe', '/fo csv')));
+        //$systemInfo = explode("\n", trim($this->callExt->exec('systeminfo.exe', '/fo csv')));
 
         $this->systemInfo = array_combine(
             str_getcsv($systemInfo[0]),
@@ -180,7 +170,7 @@ class Windows extends OS
     {
         $cpus = array();
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpuInfo) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpuInfo) {
             $cpus[] = array(
                 'Caption' => $cpuInfo['Caption'],
                 'Model' => $cpuInfo['Name'],
@@ -220,7 +210,7 @@ class Windows extends OS
         $drives = array();
         $partitions = array();
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'partition get /FORMAT:list')) as $partitionInfo) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'partition get /FORMAT:list')) as $partitionInfo) {
             $partitions[$partitionInfo['DiskIndex']][] = array(
                 'size' => $partitionInfo['Size'],
                 'name' => $partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')',
@@ -228,7 +218,7 @@ class Windows extends OS
         }
 
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'diskdrive get /FORMAT:list')) as $driveInfo) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'diskdrive get /FORMAT:list')) as $driveInfo) {
             $drives[] = array(
                 'name' => $driveInfo['Caption'],
                 'vendor' => explode(' ', $driveInfo['Caption'], 1)[0],
@@ -261,7 +251,7 @@ class Windows extends OS
     public function getMounts()
     {
         $volumes = array();
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'volume get /FORMAT:list')) as $volume) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'volume get /FORMAT:list')) as $volume) {
             $options = array();
 
             if ($volume['Automount']) {
@@ -333,7 +323,7 @@ class Windows extends OS
     {
         $devs = array();
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'path Win32_PnPEntity get /FORMAT:list')) as $pnpdev) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'path Win32_PnPEntity get /FORMAT:list')) as $pnpdev) {
             $type = explode('\\', $pnpdev['DeviceID'], 2)[0];
             if (($type != 'USB' && $type != 'PCI') || (empty($pnpdev['Caption']) || mb_substr($pnpdev['Manufacturer'], 0, 1) == '(')) {
                 continue;
@@ -367,7 +357,7 @@ class Windows extends OS
     public function getLoad()
     {
         $load = array();
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpu) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $cpu) {
             $load[] = $cpu['LoadPercentage'];
         }
 
@@ -384,9 +374,9 @@ class Windows extends OS
         $return = array();
         $i = 0;
 
-        $perfRawData = $this->parseWmicListData($this->exec->exec('wmic.exe', 'path Win32_PerfRawData_Tcpip_NetworkInterface GET /FORMAT:list'));
+        $perfRawData = $this->parseWmicListData($this->callExt->exec('wmic.exe', 'path Win32_PerfRawData_Tcpip_NetworkInterface GET /FORMAT:list'));
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'nic GET /FORMAT:list')) as $net) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'nic GET /FORMAT:list')) as $net) {
             if (!$net['PhysicalAdapter']) {
                 continue;
             }
@@ -502,7 +492,7 @@ class Windows extends OS
     {
         $cards = array();
         $i = 1;
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'SOUNDDEV GET /FORMAT:list')) as $card) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'SOUNDDEV GET /FORMAT:list')) as $card) {
             $cards[] = array(
                 'number' => $i++,
                 'vendor' => mb_convert_encoding($card['Manufacturer'], 'UTF-8', 'CP866'),
@@ -526,7 +516,7 @@ class Windows extends OS
             'threads' => 0,
         );
 
-        foreach ($this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $proc) {
+        foreach ($this->parseWmicListData($this->callExt->exec('wmic.exe', 'CPU GET /FORMAT:list')) as $proc) {
             $result['threads'] += (int)(isset($proc['ThreadCount']) ? $proc['ThreadCount'] : $proc['NumberOfLogicalProcessors']);
             ++$result['proc_total'];
         }
@@ -561,7 +551,7 @@ class Windows extends OS
      */
     public function getCPUArchitecture()
     {
-        $architecture = $this->parseWmicListData($this->exec->exec('wmic.exe', 'CPU GET /FORMAT:list'))[0]['Architecture'];
+        $architecture = $this->parseWmicListData($this->callExt->exec('wmic.exe', 'CPU GET /FORMAT:list'))[0]['Architecture'];
 
         switch ($architecture) {
             case '0':

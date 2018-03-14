@@ -37,11 +37,10 @@ class Darwin extends BSDcommon
     // Start us off
     public function __construct(array $settings)
     {
-        // Instantiate parent
         parent::__construct($settings);
 
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
+        $this->callExt->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/sbin'));
 
         // We need these sysctl values
         $this->getSysCTL(array(
@@ -59,7 +58,7 @@ class Darwin extends BSDcommon
 
         // And get this info for when the above fails
         try {
-            $this->systemProfiler = $this->exec->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
+            $this->systemProfiler = $this->callExt->exec('system_profiler', 'SPHardwareDataType SPSoftwareDataType SPPowerDataType');
         } catch (Exception $e) {
             // Meh
             Errors::add('Linfo Mac OS 10', 'Error using system_profiler');
@@ -95,7 +94,7 @@ class Darwin extends BSDcommon
     {
         // Get result of mount command
         try {
-            $res = $this->exec->exec('mount');
+            $res = $this->callExt->exec('mount');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error running `mount` command');
 
@@ -148,7 +147,7 @@ class Darwin extends BSDcommon
 
         // Use netstat to get info
         try {
-            $netstat = $this->exec->exec('netstat', '-nbdi');
+            $netstat = $this->callExt->exec('netstat', '-nbdi');
         } catch (Exception $e) {
             Errors::add('Linfo Core', 'Error using `netstat` to get network info');
 
@@ -184,7 +183,7 @@ class Darwin extends BSDcommon
         $statuses = array();
         try {
             // Output of ifconfig command
-            $ifconfig = $this->exec->exec('ifconfig', '-a');
+            $ifconfig = $this->callExt->exec('ifconfig', '-a');
 
             // Set this to false to prevent wasted regexes
             $current_nic = false;
@@ -284,7 +283,7 @@ class Darwin extends BSDcommon
         // Use ps
         try {
             // Get it
-            $ps = $this->exec->exec('ps', 'ax');
+            $ps = $this->callExt->exec('ps', 'ax');
 
             // Match them
             preg_match_all('/^\s*\d+\s+[\w?]+\s+([A-Z])\S*\s+.+$/m', $ps, $processes, PREG_SET_ORDER);
@@ -444,7 +443,7 @@ class Darwin extends BSDcommon
     {
         // Use system profiler to get info
         try {
-            $res = $this->exec->exec('diskutil', ' list');
+            $res = $this->callExt->exec('diskutil', ' list');
         } catch (Exception $e) {
             Errors::add('Linfo drives', 'Error using `diskutil list` to get drives');
 
@@ -499,7 +498,7 @@ class Darwin extends BSDcommon
                     // Try getting the name
                     $drive_name = false; // I'm pessimistic
                     try {
-                        $drive_res = $this->exec->exec('diskutil', ' info /dev/' . $m[5]);
+                        $drive_res = $this->callExt->exec('diskutil', ' info /dev/' . $m[5]);
                         if (preg_match('/^\s+Device \/ Media Name:\s+(.+)/m', $drive_res, $drive_m)) {
                             $drive_name = $drive_m[1];
                         }

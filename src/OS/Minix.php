@@ -32,23 +32,14 @@ use Linfo\Parsers\CallExt;
  */
 class Minix extends OS
 {
-    // Store these here
-    protected $settings;
-    /** @var CallExt */
-    protected $exec;
-
     // Start us off by localizing the settings and initializing the external
     // application running class
     public function __construct(array $settings)
     {
-        // Localize settings
-        $this->settings = $settings;
-
-        // Start up external app loader
-        $this->exec = new CallExt();
+        parent::__construct($settings);
 
         // Have it look in these places
-        $this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
+        $this->callExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/bin'));
     }
 
     // Mounted file systems
@@ -61,7 +52,7 @@ class Minix extends OS
 
         // Try using the `mount` command to get mounted file systems
         try {
-            $res = $this->exec->exec('mount');
+            $res = $this->callExt->exec('mount');
         } catch (Exception $e) {
             return array();
         }
@@ -109,7 +100,7 @@ class Minix extends OS
 
         // Try getting it.
         try {
-            $res = $this->exec->exec('ifconfig', '-a');
+            $res = $this->callExt->exec('ifconfig', '-a');
         } catch (Exception $e) {
             return array();
         }

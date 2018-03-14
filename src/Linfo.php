@@ -34,18 +34,18 @@ use Linfo\Meta\Errors;
  */
 class Linfo
 {
-    protected $settings = array();
-    protected $lang = array();
-    protected $info = array();
+    protected $settings = [];
+    protected $lang = [];
+    protected $info = [];
     /** @var OS */
-    protected $parser;
+    protected $os;
 
     /**
      * Linfo constructor.
      * @param array $userSettings
      * @throws FatalException
      */
-    public function __construct(array $userSettings = array())
+    public function __construct(array $userSettings = [])
     {
         // Load our settings/language
         $this->loadSettings(array_merge($this->getDefaultSettings(), $userSettings));
@@ -63,21 +63,7 @@ class Linfo
         }
 
         $distroClass = '\\Linfo\\OS\\' . $os;
-        $this->parser = new $distroClass($this->settings);
-    }
-
-    /**
-     * Forward missing method request to the parser
-     *
-     * @param string $name
-     * @param string $args
-     * @return mixed
-     */
-    public function __call($name, $args)
-    {
-        if (method_exists($this->parser, $name) && is_callable(array($this->parser, $name))) {
-            return call_user_func(array($this->parser, $name), $args);
-        }
+        $this->os = new $distroClass($this->settings);
     }
 
     /**
@@ -85,10 +71,6 @@ class Linfo
      */
     public function scan()
     {
-        if (method_exists($this->parser, 'init')) {
-            $this->parser->init();
-        }
-
         // Array fields, tied to method names and default values...
         $fields = array(
             'OS' => array(
@@ -267,8 +249,8 @@ class Linfo
                 continue;
             }
 
-            if (method_exists($this->parser, $data['method'])) {
-                $this->info[$key] = call_user_func(array($this->parser, $data['method']));
+            if (method_exists($this->os, $data['method'])) {
+                $this->info[$key] = call_user_func(array($this->os, $data['method']));
             } else {
                 $this->info[$key] = $data['default'];
             }
@@ -341,7 +323,7 @@ class Linfo
      */
     protected function getOS()
     {
-        list($os) = explode('_', PHP_OS, 2);
+        list($os) = \explode('_', PHP_OS, 2);
 
         // This magical constant knows all
         switch ($os) {
@@ -356,6 +338,7 @@ class Linfo
             case 'SunOS':
                 return PHP_OS;
                 break;
+
             case 'WINNT':
                 return 'Windows';
                 break;
@@ -616,13 +599,5 @@ class Linfo
     public function getSettings()
     {
         return $this->settings;
-    }
-
-    /**
-     * @return OS
-     */
-    public function getParser()
-    {
-        return $this->parser;
     }
 }

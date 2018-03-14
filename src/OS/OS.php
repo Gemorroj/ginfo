@@ -20,13 +20,23 @@
 
 namespace Linfo\OS;
 
-use Linfo\Exceptions\FatalException;
+use Linfo\Parsers\CallExt;
 
 abstract class OS
 {
-    public function __call($name, $args)
+    /** @var array */
+    protected $settings;
+    /** @var CallExt */
+    protected $callExt;
+
+    /**
+     * OS constructor.
+     * @param array $settings
+     */
+    public function __construct(array $settings)
     {
-        throw new FatalException('Method ' . $name . ' not present.');
+        $this->settings = $settings;
+        $this->callExt = new CallExt();
     }
 
     /**

@@ -37,11 +37,6 @@ use Exception;
  */
 class Linux extends Unixcommon
 {
-    // Keep these tucked away
-    protected $settings;
-    /** @var CallExt */
-    protected $exec;
-
     // Generally disabled as it's slowww
     protected $cpu_percent = array('overall' => false, 'cpus' => array());
 
@@ -53,23 +48,16 @@ class Linux extends Unixcommon
      */
     public function __construct(array $settings)
     {
-        // Localize settings
-        $this->settings = $settings;
+        parent::__construct($settings);
 
         // Make sure we have what we need
         if (!is_dir('/sys') || !is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
         }
 
-        // Exec running
-        $this->exec = new CallExt();
-
         // We search these folders for our commands
-        $this->exec->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
-    }
+        $this->callExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 
-    public function init()
-    {
         if (isset($this->settings['cpu_usage']) && !empty($this->settings['cpu_usage'])) {
             $this->determineCPUPercentage();
         }
@@ -1200,7 +1188,7 @@ class Linux extends Unixcommon
 
         // systemd services
         foreach ($this->settings['services']['systemdServices'] as $service => $systemdService) {
-            $command = $this->exec->exec('systemctl', 'show -p MainPID ' . $systemdService);
+            $command = $this->callExt->exec('systemctl', 'show -p MainPID ' . $systemdService);
             $command = trim($command);
             $pid = str_replace('MainPID=', '', $command);
             if ($pid != '' && is_numeric($pid)) {
