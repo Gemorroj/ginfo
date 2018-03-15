@@ -21,7 +21,6 @@
 namespace Linfo\OS;
 
 use Linfo\Common;
-use Linfo\Parsers\CallExt;
 
 /**
  * Get info on Windows systems
@@ -37,10 +36,8 @@ class Windows extends OS
      */
     public function __construct()
     {
-        parent::__construct();
-
         setlocale(LC_ALL, 'English');
-        shell_exec('chcp 65001');
+        parent::__construct();
 
         $this->callExt->setSearchPaths([getenv('SystemRoot') . '\\System32\\Wbem', getenv('SystemRoot') . '\\System32']);
 
@@ -577,7 +574,7 @@ class Windows extends OS
      */
     public function getModel()
     {
-        return $this->systemInfo['System Model'];
+        return $this->systemInfo['System Manufacturer'] . '(' . $this->systemInfo['System Model'] . ')';
     }
 
     public function getCPUUsage()
