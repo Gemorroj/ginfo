@@ -270,13 +270,6 @@ class Linfo
         switch ($os) {
             // These are supported
             case 'Linux':
-            case 'FreeBSD':
-            case 'DragonFly':
-            case 'OpenBSD':
-            case 'NetBSD':
-            case 'Minix':
-            case 'Darwin':
-            case 'SunOS':
                 return PHP_OS;
                 break;
 

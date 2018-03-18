@@ -127,8 +127,7 @@ class Settings
 
         // Various softraids. Set to true to enable.
         // Only works if it's available on your system; otherwise does nothing
-        $settings['raid']['gmirror'] = true;  # For FreeBSD
-        $settings['raid']['mdadm'] = true;  # For Linux; known to support RAID 1, 5, and 6
+        $settings['raid']['mdadm'] = true;  // For Linux; known to support RAID 1, 5, and 6
 
         // Various ways of getting temps/voltages/etc. Set to true to enable. Currently these are just for Linux
         $settings['temps']['hwmon'] = true; // Requires no extra config, is fast, and is in /sys :)

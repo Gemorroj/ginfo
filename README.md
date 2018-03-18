@@ -6,6 +6,7 @@
 ### Fork changes:
 - drop ui
 - drop internationalization
+- drop bsd* support (sorry, I will not be able to support)
 - no need `COM` extension on Windows, but need powershell
 - minor code improvements
 

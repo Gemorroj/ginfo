@@ -132,29 +132,6 @@ class Hwpci
         $file && @fclose($file);
     }
 
-
-    /**
-     * Parse pciconf to get pci ids
-     */
-    private function _fetchPciIdsPciConf()
-    {
-        try {
-            $pciconf = $this->exec->exec('pciconf', '-l');
-        } catch (\Exception $e) {
-            Errors::add('Linfo Core', 'Error using `pciconf -l` to get hardware info');
-
-            return;
-        }
-
-        if (preg_match_all('/^.+chip=0x([a-z0-9]{4})([a-z0-9]{4})/m', $pciconf, $devs, PREG_SET_ORDER) == 0) {
-            return;
-        }
-
-        foreach ($devs as $dev) {
-            $this->_pci_entries[$dev[2]][$dev[1]] = 1;
-        }
-    }
-
     /**
      * Do its goddam job.
      * @param string $os
@@ -165,10 +142,6 @@ class Hwpci
             case 'linux':
                 $this->_fetchPciIdsLinux();
                 $this->_fetchUsbIdsLinux();
-                break;
-            case 'freebsd':
-            case 'dragonfly':
-                $this->_fetchPciIdsPciConf();
                 break;
             default:
                 return;
