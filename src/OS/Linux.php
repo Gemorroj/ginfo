@@ -1464,11 +1464,10 @@ class Linux extends OS
     /**
      * getNumLoggedIn.
      *
-     * @return number of logged in users with shells
+     * @return int number of logged in users with shells
      */
     public function getNumLoggedIn()
     {
-
         // Snag command line of every process in system
         $procs = glob('/proc/*/cmdline', GLOB_NOSORT);
 
@@ -1504,7 +1503,7 @@ class Linux extends OS
      * getVirtualization. Potentially not very accurate especially since you can virtualize hypervisors,
      * kernel module names change frequently, you can load (some of) these modules if you aren't a host/guest, etc.
      *
-     * @return array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
+     * @return array array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
      */
     public function getVirtualization()
     {

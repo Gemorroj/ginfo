@@ -21,9 +21,11 @@ namespace Linfo;
 
 use Linfo\Extension\Extension;
 use Linfo\Meta\Settings;
+use Linfo\OS\Linux;
 use Linfo\OS\OS;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Errors;
+use Linfo\OS\Windows;
 
 /**
  * Linfo.
@@ -51,15 +53,17 @@ class Linfo
             $userSettings
         ));
 
-        // Determine OS
-        $os = $this->getOS();
-
-        if (!$os) {
-            throw new FatalException('Unknown/unsupported operating system');
+        switch (\explode('_', PHP_OS, 2)) {
+            case 'Linux':
+                $this->os = new Linux();
+                break;
+            case 'WINNT':
+                $this->os = new Windows();
+                break;
+            default:
+                throw new FatalException('Unknown/unsupported operating system');
+                break;
         }
-
-        $distroClass = '\\Linfo\\OS\\' . $os;
-        $this->os = new $distroClass();
     }
 
     /**
@@ -260,32 +264,10 @@ class Linfo
     }
 
     /**
-     * @return null|string
-     */
-    protected function getOS()
-    {
-        list($os) = \explode('_', PHP_OS, 2);
-
-        // This magical constant knows all
-        switch ($os) {
-            // These are supported
-            case 'Linux':
-                return PHP_OS;
-                break;
-
-            case 'WINNT':
-                return 'Windows';
-                break;
-        }
-
-        // So anything else isn't
-        return null;
-    }
-
-    /**
      * getInfo()
      *
      * Returning reference so extensions can modify result
+     * @return array
      */
     public function &getInfo()
     {

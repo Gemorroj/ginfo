@@ -39,10 +39,10 @@ class Windows extends OS
      */
     public function getContains()
     {
-        return array(
+        return [
             'drives_rw_stats' => false,
             'nic_port_speed' => false,
-        );
+        ];
     }
 
     /**
@@ -125,7 +125,7 @@ class Windows extends OS
      */
     public function getCPU()
     {
-        $cpus = array();
+        $cpus = [];
 
         $info = $this->getInfo('Processor');
 
@@ -172,8 +172,8 @@ class Windows extends OS
      */
     public function getHD()
     {
-        $drives = array();
-        $partitions = array();
+        $drives = [];
+        $partitions = [];
 
         $infoDiskPartition = $this->getInfo('DiskPartition');
 
@@ -203,28 +203,18 @@ class Windows extends OS
     }
 
     /**
-     * getTemps.
-     *
-     * @return array the temps
-     */
-    public function getTemps()
-    {
-        return array(); // TODO
-    }
-
-    /**
      * getMounts.
      *
      * @return array the mounted the file systems
      */
     public function getMounts()
     {
-        $volumes = array();
+        $volumes = [];
 
         $info = $this->getInfo('Volume');
 
         foreach ($info as $volume) {
-            $options = array();
+            $options = [];
 
             if ($volume['Automount']) {
                 $options[] = 'automount';
@@ -293,7 +283,7 @@ class Windows extends OS
      */
     public function getDevs()
     {
-        $devs = array();
+        $devs = [];
 
         $info = $this->getInfo('PnPEntity');
 
@@ -314,23 +304,13 @@ class Windows extends OS
     }
 
     /**
-     * getRAID.
-     *
-     * @return array of raid arrays
-     */
-    public function getRAID()
-    {
-        return array();
-    }
-
-    /**
      * getLoad.
      *
      * @return array of current system load values
      */
     public function getLoad()
     {
-        $cpus = array();
+        $cpus = [];
 
         $info = $this->getInfo('Processor');
 
@@ -348,7 +328,7 @@ class Windows extends OS
      */
     public function getNet()
     {
-        $return = array();
+        $return = [];
 
         $perfRawData = $this->getInfo('PerfRawData_Tcpip_NetworkAdapter');
         $csv = $this->getInfo('NetworkAdapter');
@@ -437,23 +417,13 @@ class Windows extends OS
     }
 
     /**
-     * getBattery.
-     *
-     * @return array of battery status
-     */
-    public function getBattery()
-    {
-        return array(); // TODO
-    }
-
-    /**
      * getWifi.
      *
      * @return array of wifi devices
      */
     public function getWifi()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -463,7 +433,7 @@ class Windows extends OS
      */
     public function getSoundCards()
     {
-        $cards = array();
+        $cards = [];
 
         $info = $this->getInfo('SoundDevice');
 
@@ -507,17 +477,7 @@ class Windows extends OS
      */
     public function getServices()
     {
-        return array(); // TODO
-    }
-
-    /**
-     * getDistro.
-     *
-     * @return array the distro,version or false
-     */
-    public function getDistro()
-    {
-        return array();
+        return []; // TODO
     }
 
     /**
@@ -555,18 +515,5 @@ class Windows extends OS
         $info = $this->getInfo('ComputerSystem');
 
         return $info[0]['Manufacturer'] . ' (' . $info[0]['Model'] . ')';
-    }
-
-    public function getCPUUsage()
-    {
-        return null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPhpVersion()
-    {
-        return PHP_VERSION;
     }
 }
