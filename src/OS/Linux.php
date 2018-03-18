@@ -28,6 +28,7 @@ use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
+use Symfony\Component\Process\Process;
 
 /**
  * Get info on a usual linux system
@@ -46,15 +47,10 @@ class Linux extends OS
      */
     public function __construct()
     {
-        parent::__construct();
-
         // Make sure we have what we need
         if (!is_dir('/sys') || !is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
         }
-
-        // We search these folders for our commands
-        $this->callExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
 
         if (isset(Settings::getInstance()->getSettings()['cpu_usage']) && !empty(Settings::getInstance()->getSettings()['cpu_usage'])) {
             $this->determineCPUPercentage();
@@ -1218,8 +1214,7 @@ class Linux extends OS
                     // If this one matches, stop here and save it
                     if ($match) {
                         // Get pid out of path to cmdline file
-                        $pids[$service] = substr($potential_paths[$i], 6 /*strlen('/proc/')*/,
-                            strpos($potential_paths[$i], '/', 7) - 6);
+                        $pids[$service] = substr($potential_paths[$i], 6 /*strlen('/proc/')*/, strpos($potential_paths[$i], '/', 7) - 6);
                         break;
                     }
                 }
@@ -1236,7 +1231,10 @@ class Linux extends OS
 
         // systemd services
         foreach (Settings::getInstance()->getSettings()['services']['systemdServices'] as $service => $systemdService) {
-            $command = $this->callExt->exec('systemctl', 'show -p MainPID ' . $systemdService);
+            $process = new Process('systemctl show -p MainPID ' . $systemdService);
+            $process->mustRun();
+            $command = $process->getOutput();
+
             $command = trim($command);
             $pid = str_replace('MainPID=', '', $command);
             if ($pid != '' && is_numeric($pid)) {

@@ -36,7 +36,6 @@ class Hwpci
     private $_usb_devices = array();
     private $_pci_devices = array();
     private $_result = array();
-    private $exec;
 
     /**
      * Constructor.
@@ -48,10 +47,6 @@ class Hwpci
         // Localize paths to the ids files
         $this->_pci_file = $pci_file;
         $this->_usb_file = $usb_file;
-
-        // Might need these
-        $this->exec = new CallExt();
-        $this->exec->setSearchPaths(array('/sbin', '/bin', '/usr/bin', '/usr/local/bin', '/usr/sbin'));
     }
 
     /**

@@ -34,22 +34,19 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
-use Linfo\Parsers\CallExt;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Get status on apcaccess volumes. 
  */
 class Apcaccess implements Extension
 {
-    // Store these tucked away here
-    private $_CallExt;
     private $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     // call apcaccess and parse it
@@ -57,8 +54,10 @@ class Apcaccess implements Extension
     {
         // Deal with calling it
         try {
-            $result = $this->_CallExt->exec('apcaccess');
-        } catch (\Exception $e) {
+            $process = new Process('apcaccess');
+            $process->mustRun();
+            $result = $process->getOutput();
+        } catch (ProcessFailedException $e) {
             // messed up somehow
             Errors::add('apcaccess Extension', $e->getMessage());
             $this->_res = false;

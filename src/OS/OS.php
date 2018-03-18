@@ -20,21 +20,9 @@
 
 namespace Linfo\OS;
 
-use Linfo\Parsers\CallExt;
 
 abstract class OS
 {
-    /** @var CallExt */
-    protected $callExt;
-
-    /**
-     * OS constructor.
-     */
-    public function __construct()
-    {
-        $this->callExt = new CallExt();
-    }
-
     /**
      * getAccessedIP
      *

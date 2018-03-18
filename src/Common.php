@@ -43,25 +43,6 @@ class Common
     }
 
     /**
-     * Append a string to the end of each element in a 2d array
-     *
-     * @param array $array
-     * @param string $string
-     * @param string $format
-     * @return array
-     */
-    public static function arrayAppendString(array $array, $string = '', $format = '%1s%2s')
-    {
-        // Get to it
-        foreach ($array as $k => $v) {
-            $array[$k] = is_string($v) ? sprintf($format, $v, $string) : $v;
-        }
-
-        // Give
-        return $array;
-    }
-
-    /**
      * Get a file who's contents should just be an int. Returns zero on failure.
      * @param string $file
      * @return string

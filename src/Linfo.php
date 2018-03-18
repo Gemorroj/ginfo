@@ -53,16 +53,11 @@ class Linfo
             $userSettings
         ));
 
-        switch (\explode('_', PHP_OS, 2)) {
-            case 'Linux':
-                $this->os = new Linux();
-                break;
-            case 'WINNT':
-                $this->os = new Windows();
-                break;
-            default:
-                throw new FatalException('Unknown/unsupported operating system');
-                break;
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $this->os = new Windows();
+        } else {
+            // bsd, linux, darwin, solaris
+            $this->os = new Linux();
         }
     }
 

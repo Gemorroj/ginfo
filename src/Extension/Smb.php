@@ -30,23 +30,20 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\Parsers\CallExt;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Get info on a samba install by running smbstatus
  */
 class Smb implements Extension
 {
-    // Store these tucked away here
-    private $_CallExt;
     private $_res;
     private $_date_format = 'm/d/y @ h:i A';
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     // call samba and parse it
@@ -54,8 +51,10 @@ class Smb implements Extension
     {
         // Deal with calling it
         try {
-            $result = $this->_CallExt->exec('smbstatus');
-        } catch (\Exception $e) {
+            $process = new Process('smbstatus');
+            $process->mustRun();
+            $result = $process->getOutput();
+        } catch (ProcessFailedException $e) {
             // messed up somehow
             Errors::add('Samba Status Extension', $e->getMessage());
             $this->_res = false;

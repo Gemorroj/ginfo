@@ -31,7 +31,8 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\Parsers\CallExt;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Get nvidia card temps from nvidia-smmi
@@ -44,16 +45,12 @@ class Nvidia implements Extension
     const LINFO_INTEGRATE = true;
     const EXTENSION_NAME = 'nvidia';
 
-    // Store these tucked away here
-    private $_CallExt;
     private $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
     {
         $this->linfo = $linfo;
-        $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     // Work it, baby
@@ -66,8 +63,10 @@ class Nvidia implements Extension
 
         // Get card names and their IDs
         try {
-            $cards_list = $this->_CallExt->exec('nvidia-smi', ' -L');
-        } catch (\Exception $e) {
+            $process = new Process('nvidia-smi -L');
+            $process->mustRun();
+            $cards_list = $process->getOutput();
+        } catch (ProcessFailedException $e) {
             // messed up somehow
             Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
             return;
@@ -82,10 +81,13 @@ class Nvidia implements Extension
             $id = $card[1];
             $name = trim($card[2]);
 
+
             // Get temp and power for this card
             try {
-                $card_stat = $this->_CallExt->exec('nvidia-smi', ' dmon -s p -c 1 -i ' . $id);
-            } catch (\Exception $e) {
+                $process = new Process('nvidia-smi dmon -s p -c 1 -i ' . $id);
+                $process->mustRun();
+                $card_stat = $process->getOutput();
+            } catch (ProcessFailedException $e) {
                 Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
                 continue;
             }

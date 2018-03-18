@@ -31,22 +31,19 @@ namespace Linfo\Extension;
 use Linfo\Linfo;
 use Linfo\Common;
 use Linfo\Meta\Errors;
-use Linfo\Parsers\CallExt;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Get info on a cups install by running lpq
  */
 class Cups implements Extension
 {
-    // Store these tucked away here
-    private $_CallExt;
     private $_res;
 
     // Localize important classes
     public function __construct(Linfo $linfo)
     {
-        $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     // call lpq and parse it
@@ -54,8 +51,10 @@ class Cups implements Extension
     {
         // Deal with calling it
         try {
-            $result = $this->_CallExt->exec('lpstat', '-p -o -l');
-        } catch (\Exception $e) {
+            $process = new Process('lpstat -p -o -l');
+            $process->mustRun();
+            $result = $process->getOutput();
+        } catch (ProcessFailedException $e) {
             // messed up somehow
             Errors::add('CUPS Extension', $e->getMessage());
             $this->_res = false;

@@ -35,7 +35,8 @@ namespace Linfo\Extension;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\Parsers\CallExt;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * IPMI extension for temps/voltages.
@@ -48,16 +49,12 @@ class Ipmi implements Extension
     const LINFO_INTEGRATE = true;
     const EXTENSION_NAME = 'ipmi';
 
-    // Store these tucked away here
-    private $_CallExt;
     private $linfo;
 
     // Start us off
     public function __construct(Linfo $linfo)
     {
         $this->linfo = $linfo;
-        $this->_CallExt = new CallExt();
-        $this->_CallExt->setSearchPaths(array('/usr/bin', '/usr/local/bin', '/sbin', '/usr/local/sbin'));
     }
 
     // Work it, baby
@@ -70,11 +67,12 @@ class Ipmi implements Extension
 
         // Deal with calling it
         try {
-            $result = $this->_CallExt->exec('ipmitool', ' sdr');
-        } catch (\Exception $e) {
+            $process = new Process('ipmitool sdr');
+            $process->mustRun();
+            $result = $process->getOutput();
+        } catch (ProcessFailedException $e) {
             // messed up somehow
             Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
-
             return;
         }
 

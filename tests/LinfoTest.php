@@ -20,7 +20,6 @@ namespace Linfo\Tests;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
-use Linfo\OS\Windows;
 
 if (class_exists('\PHPUnit_Framework_TestCase')) {
     class_alias('\PHPUnit_Framework_TestCase', '\PHPUnit\Framework\TestCase');
