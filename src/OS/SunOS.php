@@ -84,6 +84,7 @@ class SunOS extends OS
             $command = $this->callExt->exec('kstat', ' -p ' . implode(' ', array_map('escapeshellarg', $keys)));
             $lines = explode("\n", $command);
         } catch (\Exception $e) {
+            $lines = null;
             Errors::add('Solaris Core', 'Failed running kstat.');
         }
 

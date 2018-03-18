@@ -1,2 +1,2 @@
-param([String]$tmpFile="/linfi-ComputerSystem.csv")
-Get-WmiObject -Class Win32_ComputerSystem TotalPhysicalMemory, FreePhysicalMemory | Export-Csv -Path $tmpFile -Delimiter "," -Encoding "utf8" -NoTypeInformation
+param([String]$tmpFile="/linfi-OperatingSystem.csv")
+Get-WmiObject -Class Win32_OperatingSystem Caption, Version, BuildNumber, CSName, TotalVisibleMemorySize, FreePhysicalMemory, LastBootUpTime | Export-Csv -Path $tmpFile -Delimiter "," -Encoding "utf8" -NoTypeInformation

@@ -387,7 +387,7 @@ class Linux extends Unixcommon
         if (array_key_exists('hddtemp', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['hddtemp']) && isset(Settings::getInstance()->getSettings()['hddtemp'])) {
             try {
                 // Initiate class
-                $hddtemp = new Hddtemp(Settings::getInstance()->getSettings());
+                $hddtemp = new Hddtemp();
 
                 // Set mode, as in either daemon or syslog
                 $hddtemp->setMode(Settings::getInstance()->getSettings()['hddtemp']['mode']);

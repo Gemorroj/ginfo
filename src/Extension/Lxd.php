@@ -29,7 +29,6 @@ $settings['extensions']['lxd'] = true;
 namespace Linfo\Extension;
 
 use Linfo\Linfo;
-use Linfo\Common;
 use Linfo\Meta\Errors;
 
 /**

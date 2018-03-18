@@ -6,7 +6,7 @@
 ### Fork changes:
 - drop ui
 - drop internationalization
-- no need `COM` extension on Windows
+- no need `COM` extension on Windows, but need powershell
 - minor code improvements
 
 

@@ -92,7 +92,11 @@ class Linfo
                 'default' => '',
                 'method' => 'getDistro',
             ),
-
+            'CPU' => array(
+                'show' => !empty(Settings::getInstance()->getSettings()['show']['cpu']),
+                'default' => array(),
+                'method' => 'getCPU',
+            ),
             'RAM' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['ram']),
                 'default' => array(),
@@ -129,11 +133,7 @@ class Linfo
                 'method' => 'getUpTime',
             ),
 
-            'CPU' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['cpu']),
-                'default' => array(),
-                'method' => 'getCPU',
-            ),
+
 
             'Model' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['model']),
