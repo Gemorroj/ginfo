@@ -31,13 +31,6 @@ print_r($info); // and a whole lot more
 ## Runs on
  - Linux
  - Windows
- - FreeBSD
- - NetBSD
- - OpenBSD
- - DragonflyBSD
- - Darwin/Mac OSX
- - Solaris
- - Minix
 
 ## Information reported
  - CPU type/speed; Architecture
@@ -67,24 +60,11 @@ print_r($info); // and a whole lot more
  - pcre extension
 
 #### Windows
- - You need to have `wmic` and `systeminfo`
+ - You need to have `powershell`
 
 #### Linux
  - /proc and /sys mounted and readable by PHP
  - Tested with the 2.6.x/3.x kernels
-
-#### FreeBSD
- - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, etc
- - Tested on 8.0-RELEASE, 10.2-RELEASE
-
-#### NetBSD
- - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin, /usr/pkg/bin, etc
- - Tested on NetBSD 5.0.2
-
-#### OpenBSD
- - PHP able to execute usual programs under /bin, /usr/bin, /usr/local/bin,  etc
- - Tested on OpenBSD 4.7, 5.7
- - Turn chroot of httpd/nginx/php-fpm off
 
 ### Extensions
  - See a list of php files in src/Linfo/Extensions/
