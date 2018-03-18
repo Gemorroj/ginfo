@@ -136,7 +136,7 @@ class Common
     /**
      * Like above, but in lines instead of a big string
      * @param string $file
-     * @return array|bool
+     * @return array
      */
     public static function getLines($file)
     {

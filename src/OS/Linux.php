@@ -38,7 +38,10 @@ use Symfony\Component\Process\Process;
 class Linux extends OS
 {
     // Generally disabled as it's slowww
-    protected $cpu_percent = array('overall' => false, 'cpus' => array());
+    protected $cpu_percent = [
+        'overall' => false,
+        'cpus' => [],
+    ];
 
     /**
      * Constructor. Localizes settings.
@@ -243,10 +246,7 @@ class Linux extends OS
          */
 
         // Get contents
-        $contents = Common::getContents($file);
-
-        // Lines
-        $lines = explode("\n", $contents);
+        $lines = Common::getLines($file);
 
         // Store CPUs here
         $cpus = array();
