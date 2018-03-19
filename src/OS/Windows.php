@@ -55,7 +55,12 @@ class Windows extends OS
             return $this->infoCache[$name];
         }
 
-        $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1');
+        $powershellDirectory = \getenv('SystemRoot') . '\\System32\\WindowsPowerShell\\v1.0';
+        if (!is_dir($powershellDirectory)) {
+            $powershellDirectory = null;
+        }
+
+        $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1', $powershellDirectory);
         $process->mustRun();
         $tmpFile = trim($process->getOutput());
 
