@@ -126,20 +126,16 @@ class Windows extends OS
     public function getCPU()
     {
         $cpus = [];
-        $info = $this->getInfo('Processor');
-        if (!isset($info[0])) {
-            $info = [$info]; // if one processor convert to many processors
-        }
+        $cpuInfo = $this->getInfo('Processor');
+        $cpuDatas = $this->getInfo('PerfFormattedData_PerfOS_Processor');
 
-        foreach ($info as $cpuInfo) {
+        foreach ($cpuDatas as $cpuData) {
             $cpus[] = array(
                 'Caption' => $cpuInfo['Caption'],
                 'Model' => $cpuInfo['Name'],
                 'Vendor' => $cpuInfo['Manufacturer'],
                 'MHz' => $cpuInfo['CurrentClockSpeed'],
-                'LoadPercentage' => $cpuInfo['LoadPercentage'],
-                'Cores' => $cpuInfo['NumberOfCores'],
-                //'Threads' => $cpuInfo['ThreadCount'], // Windows 7 - not exists, Windows 10 - exists
+                'LoadPercentage' => $cpuData['PercentProcessorTime'],
             );
         }
 
@@ -311,22 +307,13 @@ class Windows extends OS
     /**
      * getLoad.
      *
-     * @return array of current system load values
+     * @return int
      */
-    public function getLoad()
+    public function getCPUUsage()
     {
-        $cpus = [];
+        $cpuInfo = $this->getInfo('Processor');
 
-        $info = $this->getInfo('Processor');
-        if (!isset($info[0])) {
-            $info = [$info]; // if one processor convert to many processors
-        }
-
-        foreach ($info as $cpuInfo) {
-            $cpus[] = $cpuInfo['LoadPercentage'];
-        }
-
-        return array(round(array_sum($cpus) / count($cpus), 2));
+        return $cpuInfo['LoadPercentage'];
     }
 
     /**
@@ -499,11 +486,8 @@ class Windows extends OS
     public function getCPUArchitecture()
     {
         $info = $this->getInfo('Processor');
-        if (!isset($info[0])) {
-            $info = [$info]; // if one processor convert to many processors
-        }
 
-        switch ($info[0]['Architecture']) {
+        switch ($info['Architecture']) {
             case '0':
                 return 'x86';
             case '1':

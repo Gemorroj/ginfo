@@ -308,7 +308,7 @@ class Linux extends OS
                 // ID. Corresponds to percentage if enabled below
                 case 'processor':
                     if (isset($this->cpu_percent['cpus'][$value])) {
-                        $cur_cpu['usage_percentage'] = $this->cpu_percent['cpus'][$value];
+                        $cur_cpu['LoadPercentage'] = $this->cpu_percent['cpus'][$value];
                     }
                     break;
             }
