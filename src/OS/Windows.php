@@ -61,7 +61,7 @@ class Windows extends OS
         }
 
 
-        $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1', $powershellDirectory);
+        $process = new Process('chcp 65001 | powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1', $powershellDirectory);
         $process->mustRun();
 
         $this->infoCache[$name] = \json_decode($process->getOutput(), true);
