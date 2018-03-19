@@ -60,17 +60,12 @@ class Windows extends OS
             $powershellDirectory = null;
         }
 
+
         $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1', $powershellDirectory);
         $process->mustRun();
-        $tmpFile = trim($process->getOutput());
 
-        $csv = array_map('str_getcsv', file($tmpFile));
-        array_walk($csv, function (&$a) use ($csv) {
-            $a = array_combine($csv[0], $a);
-        });
-        array_shift($csv); // remove column header
+        $this->infoCache[$name] = \json_decode($process->getOutput(), true);
 
-        $this->infoCache[$name] = $csv;
         return $this->infoCache[$name];
     }
 
@@ -82,7 +77,7 @@ class Windows extends OS
     public function getOS()
     {
         $info = $this->getInfo('OperatingSystem');
-        return $info[0]['Caption'];
+        return $info['Caption'];
     }
 
     /**
@@ -93,7 +88,7 @@ class Windows extends OS
     public function getKernel()
     {
         $info = $this->getInfo('OperatingSystem');
-        return $info[0]['Version'] . ' Build ' . $info[0]['BuildNumber'];
+        return $info['Version'] . ' Build ' . $info['BuildNumber'];
     }
 
     /**
@@ -104,7 +99,7 @@ class Windows extends OS
     public function getHostName()
     {
         $info = $this->getInfo('OperatingSystem');
-        return $info[0]['CSName'];
+        return $info['CSName'];
     }
 
     /**
@@ -118,8 +113,8 @@ class Windows extends OS
 
         return array(
             'type' => 'Physical',
-            'total' => $info[0]['TotalVisibleMemorySize'],
-            'free' => $info[0]['FreePhysicalMemory'],
+            'total' => $info['TotalVisibleMemorySize'],
+            'free' => $info['FreePhysicalMemory'],
         );
     }
 
@@ -131,8 +126,10 @@ class Windows extends OS
     public function getCPU()
     {
         $cpus = [];
-
         $info = $this->getInfo('Processor');
+        if (!isset($info[0])) {
+            $info = [$info]; // if one processor convert to many processors
+        }
 
         foreach ($info as $cpuInfo) {
             $cpus[] = array(
@@ -159,7 +156,7 @@ class Windows extends OS
         $info = $this->getInfo('OperatingSystem');
 
         // custom windows date format ¯\_(ツ)_/¯
-        list($dateTime, $operand, $modifyMinutes) = preg_split('/([\+\-])+/', $info[0]['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
+        list($dateTime, $operand, $modifyMinutes) = preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
         $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
@@ -191,6 +188,9 @@ class Windows extends OS
 
 
         $infoDiskDrive = $this->getInfo('DiskDrive');
+        if (!isset($infoDiskDrive[0])) { // if onу drive convert to many drives
+            $infoDiskDrive = [$infoDiskDrive];
+        }
 
         foreach ($infoDiskDrive as $driveInfo) {
             $drives[] = array(
@@ -239,7 +239,7 @@ class Windows extends OS
                 'device' => false,
                 'label' => $volume['Label'],
                 'devtype' => null,
-                'mount' => $volume['Name'], // bug \
+                'mount' => $volume['Caption'], // bug \
                 'type' => $volume['FileSystem'],
                 'size' => $volume['Capacity'],
                 'used' => $volume['Capacity'] - $volume['FreeSpace'],
@@ -318,6 +318,9 @@ class Windows extends OS
         $cpus = [];
 
         $info = $this->getInfo('Processor');
+        if (!isset($info[0])) {
+            $info = [$info]; // if one processor convert to many processors
+        }
 
         foreach ($info as $cpuInfo) {
             $cpus[] = $cpuInfo['LoadPercentage'];
@@ -335,7 +338,7 @@ class Windows extends OS
     {
         $return = [];
 
-        $perfRawData = $this->getInfo('PerfRawData_Tcpip_NetworkAdapter');
+        $perfRawData = $this->getInfo('PerfRawData_Tcpip_NetworkInterface');
         $csv = $this->getInfo('NetworkAdapter');
 
         foreach ($csv as $net) {
@@ -441,6 +444,9 @@ class Windows extends OS
         $cards = [];
 
         $info = $this->getInfo('SoundDevice');
+        if (!isset($info[0])) {
+            $info = [$info]; // if one SoundDevice convert to many SoundDevices
+        }
 
         foreach ($info as $key => $card) {
             $cards[] = array(
@@ -493,6 +499,9 @@ class Windows extends OS
     public function getCPUArchitecture()
     {
         $info = $this->getInfo('Processor');
+        if (!isset($info[0])) {
+            $info = [$info]; // if one processor convert to many processors
+        }
 
         switch ($info[0]['Architecture']) {
             case '0':
@@ -519,6 +528,6 @@ class Windows extends OS
     {
         $info = $this->getInfo('ComputerSystem');
 
-        return $info[0]['Manufacturer'] . ' (' . $info[0]['Model'] . ')';
+        return $info['Manufacturer'] . ' (' . $info['Model'] . ')';
     }
 }
