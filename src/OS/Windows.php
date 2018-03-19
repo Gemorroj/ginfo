@@ -234,7 +234,7 @@ class Windows extends OS
                 'device' => false,
                 'label' => $volume['Label'],
                 'devtype' => null,
-                //'mount' => $volume['Caption'], // bug \
+                'mount' => $volume['Name'], // bug \
                 'type' => $volume['FileSystem'],
                 'size' => $volume['Capacity'],
                 'used' => $volume['Capacity'] - $volume['FreeSpace'],
