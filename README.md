@@ -61,6 +61,7 @@ print_r($info); // and a whole lot more
 
 #### Windows
  - You need to have `powershell`
+ - Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
 
 #### Linux
  - /proc and /sys mounted and readable by PHP
