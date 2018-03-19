@@ -55,9 +55,9 @@ class Windows extends OS
             return $this->infoCache[$name];
         }
 
-        $tmpFile = tempnam(sys_get_temp_dir(), $name . '-');
-        $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1 -tmpFile "' . $tmpFile . '"');
+        $process = new Process('powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1');
         $process->mustRun();
+        $tmpFile = trim($process->getOutput());
 
         $csv = array_map('str_getcsv', file($tmpFile));
         array_walk($csv, function (&$a) use ($csv) {
