@@ -24,26 +24,6 @@ namespace Linfo\OS;
 abstract class OS
 {
     /**
-     * getAccessedIP
-     *
-     * @return string SERVER_ADDR or LOCAL_ADDR key in $_SERVER superglobal or Unknown
-     */
-    public function getAccessedIP()
-    {
-        return isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['LOCAL_ADDR']) && $_SERVER['LOCAL_ADDR'] ? $_SERVER['LOCAL_ADDR'] : 'Unknown');
-    }
-
-    /**
-     * getWebService
-     *
-     * @return string SERVER_SOFTWARE key in $_SERVER superglobal or Unknown
-     */
-    public function getWebService()
-    {
-        return isset($_SERVER['SERVER_SOFTWARE']) && $_SERVER['SERVER_SOFTWARE'] ? $_SERVER['SERVER_SOFTWARE'] : 'Unknown';
-    }
-
-    /**
      * getPhpVersion
      *
      * @return string the version of php

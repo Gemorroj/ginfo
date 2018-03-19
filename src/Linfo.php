@@ -80,12 +80,6 @@ class Linfo
                 'method' => 'getKernel',
             ),
 
-            'AccessedIP' => array(
-                'show' => !isset(Settings::getInstance()->getSettings()['show']['ip']) || !empty(Settings::getInstance()->getSettings()['show']['ip']),
-                'default' => '',
-                'method' => 'getAccessedIP',
-            ),
-
             'Distro' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['distro']),
                 'default' => '',
@@ -222,12 +216,6 @@ class Linfo
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['phpversion']),
                 'default' => false,
                 'method' => 'getPhpVersion',
-            ),
-
-            'webService' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['webservice']),
-                'default' => false,
-                'method' => 'getWebService',
             ),
 
             // Extra info such as which fields to not show

@@ -47,38 +47,29 @@ class Settings
     {
         $settings = array();
 
-        /*
-         * Usual configuration
-         */
         $settings['byte_notation'] = 1024; // Either 1024 or 1000; defaults to 1024
         $settings['dates'] = 'm/d/y h:i A (T)'; // Format for dates shown. See php.net/date for syntax
-
-        /*
-         * Possibly don't show stuff
-         */
 
         // For certain reasons, some might choose to not display all we can
         // Set these to true to enable; false to disable. They default to false.
         $settings['show']['kernel'] = true;
-        $settings['show']['ip'] = true;
         $settings['show']['os'] = true;
         $settings['show']['load'] = true;
         $settings['show']['ram'] = true;
         $settings['show']['hd'] = true;
         $settings['show']['mounts'] = true;
-        $settings['show']['mounts_options'] = true; // Might be useless/confidential information; disabled by default.
-        $settings['show']['webservice'] = false; // Might be dangerous/confidential information; disabled by default.
-        $settings['show']['phpversion'] = true; // Might be dangerous/confidential information; disabled by default.
+        $settings['show']['mounts_options'] = true;
+        $settings['show']['phpversion'] = true;
         $settings['show']['network'] = true;
         $settings['show']['uptime'] = true;
         $settings['show']['cpu'] = true;
         $settings['show']['process_stats'] = true;
         $settings['show']['hostname'] = true;
-        $settings['show']['distro'] = true; # Attempt finding name and version of distribution on Linux systems
-        $settings['show']['devices'] = true; # Slow on old systems
-        $settings['show']['model'] = true; # Model of system. Supported on certain OS's. ex: Macbook Pro
-        $settings['show']['numLoggedIn'] = true; # Number of unqiue users with shells running (on Linux)
-        $settings['show']['virtualization'] = true; # whether this is a VPS/VM and what kind
+        $settings['show']['distro'] = true; // Attempt finding name and version of distribution on Linux systems
+        $settings['show']['devices'] = true; // Slow on old systems
+        $settings['show']['model'] = true; // Model of system. Supported on certain OS's. ex: Macbook Pro
+        $settings['show']['numLoggedIn'] = true; // Number of unqiue users with shells running (on Linux)
+        $settings['show']['virtualization'] = true; // whether this is a VPS/VM and what kind
 
         // CPU Usage on Linux (per core and overall). This requires running sleep(1) once so it slows
         // the entire page load down. Enable at your own inconvenience, especially since the load averages
@@ -109,7 +100,8 @@ class Settings
         $settings['hide']['filesystems'] = array(
             'tmpfs', 'ecryptfs', 'nfsd', 'rpc_pipefs', 'proc', 'sysfs',
             'usbfs', 'devpts', 'fusectl', 'securityfs', 'fuse.truecrypt',
-            'cgroup', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore', 'rootfs', 'binfmt_misc'
+            'cgroup', 'debugfs', 'mqueue', 'hugetlbfs', 'pstore', 'rootfs',
+            'binfmt_misc',
         );
         $settings['hide']['storage_devices'] = array('gvfs-fuse-daemon', 'none', 'systemd-1', 'udev');
 
