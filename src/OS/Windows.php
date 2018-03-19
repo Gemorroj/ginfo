@@ -326,9 +326,10 @@ class Windows extends OS
         $return = [];
 
         $perfRawData = $this->getInfo('PerfRawData_Tcpip_NetworkInterface');
-        $csv = $this->getInfo('NetworkAdapter');
+        $perfRawData = isset($perfRawData[0]) ? $perfRawData : [$perfRawData]; // if one NetworkInterface convert to many NetworkInterfaces
+        $networkAdapters = $this->getInfo('NetworkAdapter');
 
-        foreach ($csv as $net) {
+        foreach ($networkAdapters as $net) {
             $return[$net['Name']] = array(
                 'recieved' => array(
                     'bytes' => 0,
