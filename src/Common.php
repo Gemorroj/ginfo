@@ -125,22 +125,29 @@ class Common
      * Get a file's contents, or default to second param
      *
      * @param string $file
-     * @param string $default
+     * @param mixed $default
      * @return string
      */
-    public static function getContents($file, $default = '')
+    public static function getContents($file, $default = null)
     {
-        return !is_file($file) || !is_readable($file) || !($contents = @file_get_contents($file)) ? $default : trim($contents);
+        if (\file_exists($file) && \is_readable($file)) {
+            return \trim(\file_get_contents($file));
+        }
+        return $default;
     }
 
     /**
      * Like above, but in lines instead of a big string
      * @param string $file
-     * @return array
+     * @param mixed $default
+     * @return array|null
      */
-    public static function getLines($file)
+    public static function getLines($file, $default = null)
     {
-        return !is_file($file) || !is_readable($file) || !($lines = @file($file, FILE_SKIP_EMPTY_LINES)) ? array() : $lines;
+        if (\file_exists($file) && \is_readable($file)) {
+            return \file($file, \FILE_SKIP_EMPTY_LINES);
+        }
+        return $default;
     }
 
 
@@ -151,12 +158,8 @@ class Common
      * @param array $haystack
      * @return bool
      */
-    public static function anyInArray($needles, $haystack)
+    public static function anyInArray(array $needles, array $haystack)
     {
-        if (!is_array($needles) || !is_array($haystack)) {
-            return false;
-        }
-
-        return count(array_intersect($needles, $haystack)) > 0;
+        return \count(\array_intersect($needles, $haystack)) > 0;
     }
 }

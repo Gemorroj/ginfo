@@ -332,45 +332,16 @@ class Linux extends OS
         return $cpus;
     }
 
-    // Famously interesting uptime
-    public function getUpTime()
+
+    public function getUptime()
     {
-        // Get contents
-        $contents = Common::getContents('/proc/uptime', false);
+        $uptime = Common::getContents('/proc/uptime');
 
-        // eh?
-        if ($contents === false) {
-            Errors::add('Linfo Core', '/proc/uptime does not exist.');
-
-            return 'Unknown';
+        if (null === $uptime) {
+            return null;
         }
 
-        // Seconds
-        list($seconds) = explode(' ', $contents, 1);
-
-        // Get it textual, as in days/minutes/hours/etc
-        $uptime = Common::secondsConvert(ceil($seconds));
-
-        // Now find out when the system was booted
-        $contents = Common::getContents('/proc/stat', false);
-
-        // Ugh
-        if ($contents === false) {
-            return $uptime;
-        } // Settle for just uptime
-
-        // Get date of boot
-        if (preg_match('/^btime (\d+)$/m', $contents, $boot) != 1) {
-            return $uptime;
-        }
-
-        // Okay?
-        list(, $boot) = $boot;
-
-        return array(
-            'text' => $uptime,
-            'bootedTimestamp' => $boot,
-        );
+        return \round(\explode(' ', $uptime, 2)[0]);
     }
 
     /**
@@ -1334,138 +1305,43 @@ class Linux extends OS
         return $statuses;
     }
 
-    /**
-     * getDistro.
-     *
-     * @return array the distro,version or false
-     */
-    public function getDistro()
+
+    public function getOsName()
     {
-        // Seems the best way of doing it, as opposed to calling 'lsb_release -a', parsing /etc/issue, or 
-        // just checking if distro specific version files exist without actually parsing them: 
-        // - Allows multiple files of the same name for different distros/versions of distros, provided each
-        // - uses different regular expression syntax.
-        // - Also permits files that contain only the distro release version and nothing else,
-        // - in which case passing false instead of a regex string snags the contents.
-        // - And even also supports empty files, and just uses said file to identify the distro and ignore version
+        $stringReleases = [
+            '/etc/centos-release',
+            '/etc/redhat-release',
+            '/etc/fedora-release',
+            '/etc/system-release',
+            '/etc/gentoo-release',
+            '/etc/alpine-release',
+            '/etc/slackware-version',
+        ];
 
-        $contents_distros = array(
-            array(
-                'file' => '/etc/redhat-release',
-                'regex' => '/^CentOS.+release (?P<version>[\d\.]+) \((?P<codename>[^)]+)\)$/i',
-                'distro' => 'CentOS',
-            ),
-            array(
-                'file' => '/etc/redhat-release',
-                'regex' => '/^Red Hat.+release (?P<version>\S+) \((?P<codename>[^)]+)\)$/i',
-                'distro' => 'RedHat',
-            ),
-            array(
-                'file' => '/etc/lsb-release',
-                'closure' => function ($ini) {
-                    return ($info = @parse_ini_string($ini)) &&
-                    isset($info['DISTRIB_ID']) &&
-                    isset($info['DISTRIB_RELEASE']) &&
-                    isset($info['DISTRIB_CODENAME']) ? array(
-                        'distro' => $info['DISTRIB_ID'],
-                        'version' => $info['DISTRIB_RELEASE'],
-                        'codename' => $info['DISTRIB_CODENAME'],
-                    ) : false;
-                }
-            ),
-            array(
-                'file' => '/etc/os-release',
-                'closure' => function ($ini) {
-                    return ($info = @parse_ini_string($ini)) &&
-                    isset($info['ID']) &&
-                    isset($info['VERSION']) ? array(
-                        'distro' => $info['ID'],
-                        'version' => $info['VERSION']
-                    ) : false;
-                },
-            ),
-            array(
-                'file' => '/etc/fedora-release',
-                'regex' => '/^Fedora(?: Core)? release (?P<version>\d+) \((?P<codename>[^)]+)\)$/',
-                'distro' => 'Fedora',
-            ),
-            array(
-                'file' => '/etc/gentoo-release',
-                'regex' => '/(?P<version>[\d\.]+)$/',
-                'distro' => 'Gentoo',
-            ),
-            array(
-                'file' => '/etc/SuSE-release',
-                'regex' => '/^VERSION = (?P<version>[\d\.]+)$/m',
-                'distro' => 'openSUSE',
-            ),
-            array(
-                'file' => '/etc/slackware-version',
-                'regex' => '/(?P<version>[\d\.]+)$/',
-                'distro' => 'Slackware',
-            ),
-            array(
-                'file' => '/etc/debian_version',
-                'distro' => 'Debian',
-            ),
-            array(
-                'file' => '/etc/alpine-release',
-                'regex' => '/(?P<version>[\d\.]+)$/',
-                'distro' => 'Alpine Linux',
-            ),
-        );
-
-        foreach ($contents_distros as $distro) {
-            if (!($contents = Common::getContents($distro['file'], false))) {
-                continue;
-            }
-            if (isset($distro['closure']) && ($info = $distro['closure']($contents))) {
-                return array(
-                    'name' => ucfirst($info['distro']),
-                    'version' => $info['version'] . (isset($info['codename']) ? ' (' . ucfirst($info['codename']) . ')' : ''),
-                );
-            } elseif (isset($distro['regex']) && preg_match($distro['regex'], $contents, $info)) {
-                return array(
-                    'name' => $distro['distro'],
-                    'version' => $info['version'] . (isset($info['codename']) ? ' (' . ucfirst($info['codename']) . ')' : ''),
-                );
-            } elseif (isset($distro['distro'])) {
-                return array(
-                    'name' => $distro['distro'],
-                    'version' => $contents,
-                );
+        foreach ($stringReleases as $releaseFile) {
+            $os = Common::getContents($releaseFile);
+            if (null !== $os) {
+                return $os;
             }
         }
 
-        $existence_distros = array(
-            '/etc/arch-release' => 'Arch',
-            '/etc/mklinux-release' => 'MkLinux',
-            '/etc/tinysofa-release ' => 'TinySofa',
-            '/etc/turbolinux-release ' => 'TurboLinux',
-            '/etc/yellowdog-release ' => 'YellowDog',
-            '/etc/annvix-release ' => 'Annvix',
-            '/etc/arklinux-release ' => 'Arklinux',
-            '/etc/aurox-release ' => 'AuroxLinux',
-            '/etc/blackcat-release ' => 'BlackCat',
-            '/etc/cobalt-release ' => 'Cobalt',
-            '/etc/immunix-release ' => 'Immunix',
-            '/etc/lfs-release ' => 'Linux-From-Scratch',
-            '/etc/linuxppc-release ' => 'Linux-PPC',
-            '/etc/mklinux-release ' => 'MkLinux',
-            '/etc/nld-release ' => 'NovellLinuxDesktop',
-        );
 
-        foreach ($existence_distros as $file => $distro) {
-            if (is_file($file)) {
-                return array(
-                    'name' => $distro,
-                    'version' => false,
-                );
-            }
+        $lsbRelease = Common::getContents('/etc/lsb-release');
+        if (null !== $lsbRelease) {
+            return \parse_ini_string($lsbRelease)['DISTRIB_DESCRIPTION'];
         }
 
-        // Return lack of result if we didn't find it
-        return array();
+        $suseRelease = Common::getLines('/etc/SuSE-release');
+        if (null !== $suseRelease) {
+            return $suseRelease[0];
+        }
+
+        $debianVersion = Common::getContents('/etc/debian_version');
+        if (null !== $debianVersion) {
+            return 'Debian ' . $debianVersion;
+        }
+
+        return \php_uname('s');
     }
 
     /**
@@ -1506,98 +1382,63 @@ class Linux extends OS
         return count($users);
     }
 
-    /**
-     * getVirtualization. Potentially not very accurate especially since you can virtualize hypervisors,
-     * kernel module names change frequently, you can load (some of) these modules if you aren't a host/guest, etc.
-     *
-     * @return array array('type' => 'guest', 'method' => kvm or vmware or xen or openvz) or array('type' => 'host', 'methods' = ['intel', 'amd'])
-     */
+
     public function getVirtualization()
     {
-        // OpenVZ host?
-        if (is_file('/proc/vz/version')) {
-            return array('type' => 'host', 'method' => 'OpenVZ');
-        } // OpenVZ guest?
-        elseif (is_file('/proc/vz/veinfo')) {
-            return array('type' => 'guest', 'method' => 'OpenVZ');
+        if (\is_file('/proc/vz/veinfo')) {
+            return 'OpenVZ';
         }
 
-        // Veertu guest?
-        if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') == 'Veertu') {
-            return array('type' => 'guest', 'method' => 'Veertu');
+        if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') === 'Veertu') {
+            return 'Veertu';
         }
 
-        // LXC guest?
-        if (strpos(Common::getContents('/proc/mounts'), 'lxcfs /proc/') !== false) {
-            return array('type' => 'guest', 'method' => 'LXC');
+        if (\strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/') !== false) {
+            return 'LXC';
         }
 
-        // Docker guest?
-        if (is_file('/.dockerenv') || is_file('/.dockerinit') || strpos(Common::getContents('/proc/1/cgroup'), 'docker') !== false) {
-            return array('type' => 'guest', 'method' => 'Docker');
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \strpos(Common::getContents('/proc/1/cgroup', ''), 'docker') !== false) {
+            return 'Docker';
         }
 
         // Try getting kernel modules
-        $modules = array();
-        if (preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
+        $modules = [];
+        if (\preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $modules[] = $match[1];
             }
         }
 
         // Sometimes /proc/modules is missing what is in this dir on VMs
-        foreach (@glob('/sys/bus/pci/drivers/*') as $name) {
-            $modules[] = basename($name);
+        foreach (@\glob('/sys/bus/pci/drivers/*') as $name) {
+            $modules[] = \basename($name);
         }
 
         // VMware guest. Tested on debian under vmware fusion for mac...
-        if (Common::anyInArray(array('vmw_balloon', 'vmwgfx', 'vmw_vmci'), $modules)) {
-            return array('type' => 'guest', 'method' => 'VMWare');
+        if (Common::anyInArray(['vmw_balloon', 'vmwgfx', 'vmw_vmci'], $modules)) {
+            return 'VMWare';
         }
 
-        // VMware Host! tested on rhel6 running vmware..workstation?
-        if (Common::anyInArray(array('vmnet', 'vmci', 'vmmon'), $modules)) {
-            return array('type' => 'host', 'method' => 'VMWare');
+        if (Common::anyInArray(['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'], $modules) || \is_dir('/proc/xen')) {
+            return 'Xen';
         }
 
-        // Looks like it might be xen...
-        if (Common::anyInArray(array('xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'), $modules) || is_dir('/proc/xen')) {
-
-            // Guest or host?
-            if (Common::anyInArray(array('xen-netback', 'xen_blkback'), $modules) || strpos(Common::getContents('/proc/xen/capabilities', ''), 'control_d') !== false) {
-                return array('type' => 'host', 'method' => 'Xen');
-            } else {
-                return array('type' => 'guest', 'method' => 'Xen');
-            }
-        }
-
-        // VirtualBox Host! Tested on lucid running vbox..
-        if (in_array('vboxdrv', $modules)) {
-            return array('type' => 'host', 'method' => 'VirtualBox');
-        }
-
-        // VirtualBox Guest! Tested on wheezy under mac vbox
-        if (in_array('vboxguest', $modules)) {
-            return array('type' => 'guest', 'method' => 'VirtualBox');
+        if (\in_array('vboxguest', $modules)) {
+            return 'VirtualBox';
         }
 
         // Hyper-V guest. Tested with Trusty under Client Hyper-V in Windows 10 Pro. Needs to be checked before KVM/QEMU!
-        if (Common::anyInArray(array('hid_hyperv', 'hv_vmbus', 'hv_utils'), $modules)) {
-            return array('type' => 'guest', 'method' => 'Hyper-V');
-        }
-
-        // Looks like it might be KVM HOST!
-        if (Common::anyInArray(array('kvm_intel', 'kvm_amd'), $modules)) {
-            return array('type' => 'host', 'method' => 'KVM');
+        if (Common::anyInArray(['hid_hyperv', 'hv_vmbus', 'hv_utils'], $modules)) {
+            return 'Hyper-V';
         }
 
         // Looks like it might be a KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
-        if (Common::anyInArray(array('virtio', 'virtio_balloon', 'virtio_pci', 'virtio-pci', 'virtio_blk', 'virtio_net'), $modules)) {
-            return array('type' => 'guest', 'method' => 'Qemu/KVM');
+        if (Common::anyInArray(['virtio', 'virtio_balloon', 'virtio_pci', 'virtio-pci', 'virtio_blk', 'virtio_net'], $modules)) {
+            return 'Qemu/KVM';
         }
 
         // idk
-        return array();
+        return null;
     }
 
     /**

@@ -24,54 +24,49 @@ namespace Linfo\OS;
 abstract class OS
 {
     /**
-     * getPhpVersion
-     *
      * @return string the version of php
      */
     public function getPhpVersion()
     {
-        return phpversion();
+        return \phpversion();
     }
 
     /**
-     * getCPUArchitecture
-     *
-     * @return string the arch and bits
+     * @return string the arch OS
      */
-    public function getCPUArchitecture()
+    public function getArchitecture()
     {
-        return php_uname('m');
+        return \php_uname('m');
     }
 
     /**
-     * getKernel
-     *
      * @return string the OS kernel. A few OS classes override this.
      */
     public function getKernel()
     {
-        return php_uname('r');
+        return \php_uname('r');
     }
 
     /**
-     * getHostName
-     *
      * @return string the OS' hostname A few OS classes override this.
      */
     public function getHostName()
     {
-        // Take advantage of that function again
-        return php_uname('n');
+        return \php_uname('n');
     }
 
     /**
-     * getOS
-     *
      * @return string the OS' name.
      */
-    public function getOS()
-    {
-        $parts = explode('\\', get_class($this));
-        return array_pop($parts);
-    }
+    public abstract function getOsName();
+
+    /**
+     * @return int seconds
+     */
+    public abstract function getUptime();
+
+    /**
+     * @return string
+     */
+    public abstract function getVirtualization();
 }

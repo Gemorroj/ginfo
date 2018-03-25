@@ -60,10 +60,10 @@ class Ipmi implements Extension
     // Work it, baby
     public function work()
     {
-        $info = &$this->linfo->getInfo();
+        $info = $this->linfo->getInfo();
 
         // Make sure this is an array
-        $info['Temps'] = (array)$info['Temps'];
+        $info['Temps'] = (array)@$info['Temps'];
 
         // Deal with calling it
         try {

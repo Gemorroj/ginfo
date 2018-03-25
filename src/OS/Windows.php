@@ -69,12 +69,8 @@ class Windows extends OS
         return $this->infoCache[$name];
     }
 
-    /**
-     * getOS.
-     *
-     * @return string current windows version
-     */
-    public function getOS()
+
+    public function getOsName()
     {
         $info = $this->getInfo('OperatingSystem');
         return $info['Caption'];
@@ -142,25 +138,18 @@ class Windows extends OS
         return $cpus;
     }
 
-    /**
-     * getUpTime.
-     *
-     * @return array uptime
-     */
-    public function getUpTime()
+
+    public function getUptime()
     {
         $info = $this->getInfo('OperatingSystem');
 
         // custom windows date format ¯\_(ツ)_/¯
-        list($dateTime, $operand, $modifyMinutes) = preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
+        list($dateTime, $operand, $modifyMinutes) = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
         $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
 
-        return array(
-            'text' => Common::secondsConvert(time() - $booted->getTimestamp()),
-            'bootedTimestamp' => $booted->getTimestamp(),
-        );
+        return \time() - $booted->getTimestamp();
     }
 
     /**
@@ -480,33 +469,6 @@ class Windows extends OS
     }
 
     /**
-     * getCPUArchitecture.
-     *
-     * @return string the arch and bits
-     */
-    public function getCPUArchitecture()
-    {
-        $info = $this->getInfo('Processor');
-
-        switch ($info['Architecture']) {
-            case '0':
-                return 'x86';
-            case '1':
-                return 'MIPS';
-            case '2':
-                return 'Alpha';
-            case '3':
-                return 'PowerPC';
-            case '6':
-                return 'Itanium-based systems';
-            case '9':
-                return 'x64';
-        }
-
-        return 'Unknown';
-    }
-
-    /**
      * @return string
      */
     public function getModel()
@@ -514,5 +476,10 @@ class Windows extends OS
         $info = $this->getInfo('ComputerSystem');
 
         return $info['Manufacturer'] . ' (' . $info['Model'] . ')';
+    }
+
+    public function getVirtualization()
+    {
+        return null; // TODO
     }
 }

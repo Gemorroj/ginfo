@@ -20,14 +20,32 @@
 
 namespace Linfo\Meta;
 
-class Response
+use Linfo\OS\OS;
+
+class Response extends \ArrayObject //fixes for old api
 {
+    /** @var OS */
+    private $os;
+    public function __construct(OS $os)
+    {
+        $this->os = $os;
+    }
+
     /**
      * General info
      */
     public function getGeneral()
     {
-        //todo
+        return [
+            'datetime' => new \DateTime(),
+            'osName' => $this->os->getOsName(),
+            'kernel' => $this->os->getKernel(),
+            'hostname' => $this->os->getHostName(),
+            'uptime' => $this->os->getUptime(),
+            'architecture' => $this->os->getArchitecture(),
+            'virtualization' => $this->os->getVirtualization(),
+            //'selinux' => '', // todo: parse ini file /etc/sysconfig/selinux
+        ];
     }
 
     /**

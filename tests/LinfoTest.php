@@ -27,6 +27,7 @@ if (class_exists('\PHPUnit_Framework_TestCase')) {
 
 class LinfoTest extends \PHPUnit\Framework\TestCase
 {
+    /*
     public function testTodo()
     {
         $linfo = new Linfo();
@@ -40,5 +41,16 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         $this->assertInternalType('array', $info);
         //self::markTestSkipped('not implemented');
+    }
+    */
+
+
+    public function testNew()
+    {
+        $linfo = new Linfo();
+        $linfo->scan();
+        $info = $linfo->getInfo();
+
+        \print_r($info->getGeneral());
     }
 }

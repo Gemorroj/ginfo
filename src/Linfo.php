@@ -20,6 +20,7 @@
 namespace Linfo;
 
 use Linfo\Extension\Extension;
+use Linfo\Meta\Response;
 use Linfo\Meta\Settings;
 use Linfo\OS\Linux;
 use Linfo\OS\OS;
@@ -68,23 +69,6 @@ class Linfo
     {
         // Array fields, tied to method names and default values...
         $fields = array(
-            'OS' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['os']),
-                'default' => '',
-                'method' => 'getOS',
-            ),
-
-            'Kernel' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['kernel']),
-                'default' => '',
-                'method' => 'getKernel',
-            ),
-
-            'Distro' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['distro']),
-                'default' => '',
-                'method' => 'getDistro',
-            ),
             'CPU' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['cpu']),
                 'default' => array(),
@@ -114,30 +98,11 @@ class Linfo
                 'method' => 'getLoad',
             ),
 
-            'HostName' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['hostname']),
-                'default' => '',
-                'method' => 'getHostName',
-            ),
-
-            'UpTime' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['uptime']),
-                'default' => array(),
-                'method' => 'getUpTime',
-            ),
-
-
 
             'Model' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['model']),
                 'default' => array(),
                 'method' => 'getModel',
-            ),
-
-            'CPUArchitecture' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['cpu']),
-                'default' => '',
-                'method' => 'getCPUArchitecture',
             ),
 
             'Network Devices' => array(
@@ -200,12 +165,6 @@ class Linfo
                 'method' => 'getnumLoggedIn',
             ),
 
-            'virtualization' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['virtualization']),
-                'default' => array(),
-                'method' => 'getVirtualization',
-            ),
-
             'cpuUsage' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['cpu_usage']),
                 'default' => false,
@@ -239,9 +198,6 @@ class Linfo
             }
         }
 
-        // Add a timestamp
-        $this->info['timestamp'] = date('c');
-
         // Run extra extensions
         $this->runExtensions();
     }
@@ -250,11 +206,11 @@ class Linfo
      * getInfo()
      *
      * Returning reference so extensions can modify result
-     * @return array
+     * @return Response
      */
-    public function &getInfo()
+    public function getInfo()
     {
-        return $this->info;
+        return new Response($this->os);
     }
 
     /**
