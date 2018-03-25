@@ -79,4 +79,9 @@ abstract class OS
      * @return array
      */
     public abstract function getLoad();
+
+    /**
+     * @return array
+     */
+    public abstract function getMemory();
 }

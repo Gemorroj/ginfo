@@ -98,20 +98,23 @@ class Windows extends OS
         return $info['CSName'];
     }
 
-    /**
-     * getRam.
-     *
-     * @return array the memory information
-     */
-    public function getRam()
+
+    public function getMemory()
     {
         $info = $this->getInfo('OperatingSystem');
 
-        return array(
-            'type' => 'Physical',
-            'total' => $info['TotalVisibleMemorySize'],
-            'free' => $info['FreePhysicalMemory'],
-        );
+        return [
+            'memoryTotal' => $info['TotalVisibleMemorySize'],
+            'memoryUsed' => null, // todo
+            'memoryFree' => $info['FreePhysicalMemory'],
+            'memoryShared' => null, // todo
+            'memoryBuffers' => null, // todo
+            'memoryCached' => null, // todo
+
+            'swapTotal' => null, // todo
+            'swapUsed' => null, // todo
+            'swapFree' => null, // todo
+        ];
     }
 
 

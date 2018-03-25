@@ -60,7 +60,7 @@ class Response extends \ArrayObject //fixes for old api
             'cores' => $cpuInfo['cores'],
             'hyperthreading' => $cpuInfo['cores'] < $cpuInfo['virtual'],
 
-            'processor' => $cpuInfo['processor'],
+            'processor' => $cpuInfo['processor'], //physical processors info
             'load' => $this->os->getLoad(),
         ];
     }
@@ -70,7 +70,19 @@ class Response extends \ArrayObject //fixes for old api
      */
     public function getMemory()
     {
-        //todo
+        $memory = $this->os->getMemory();
+        return [
+            'memoryTotal' => $memory['memoryTotal'],
+            'memoryUsed' => $memory['memoryUsed'],
+            'memoryFree' => $memory['memoryFree'],
+            'memoryShared' => $memory['memoryShared'],
+            'memoryBuffers' => $memory['memoryBuffers'],
+            'memoryCached' => $memory['memoryCached'],
+
+            'swapTotal' => $memory['swapTotal'],
+            'swapUsed' => $memory['swapUsed'],
+            'swapFree' => $memory['swapFree'],
+        ];
     }
 
     public function getDisk()

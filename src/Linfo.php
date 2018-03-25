@@ -69,12 +69,6 @@ class Linfo
     {
         // Array fields, tied to method names and default values...
         $fields = array(
-            'RAM' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['ram']),
-                'default' => array(),
-                'method' => 'getRam',
-            ),
-
             'HD' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['hd']),
                 'default' => array(),

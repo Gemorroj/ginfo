@@ -155,91 +155,57 @@ class Linux extends OS
         return $this->ensureFQDN($hostname);
     }
 
-    /**
-     * getRam.
-     *
-     * @return array the memory information
-     */
-    public function getRam()
+
+    public function getMemory()
     {
-        // We'll return the contents of this
-        $return = [];
+        $free = (new Process('free -bw'))->mustRun()->getOutput();
 
-        // Files containing juicy info
-        $procFileSwap = '/proc/swaps';
-        $procFileMem = '/proc/meminfo';
+        $arr = \explode("\n", $free);
+        unset($arr[0]); // remove header
 
-        // First off, these need to exist..
-        if (!is_readable($procFileMem)) {
-            Errors::add('Linfo Core', '/proc/meminfo are not readable');
+        $memStr = \trim(\ltrim($arr[1], 'Mem:'));
+        $swapStr = \trim(\ltrim($arr[2], 'Swap:'));
 
-            return [];
-        }
+        list($memTotal, $memUsed, $memFree, $memShared, $memBuffers, $memCached, $memAvailable) = \preg_split('/\s+/', $memStr);
+        list($swapTotal, $swapUsed, $swapFree) = \preg_split('/\s+/', $swapStr);
 
-        // Check swap
-        $useProcFileSwap = true;
-        if (!is_readable($procFileSwap)) {
-            $useProcFileSwap = false;
-            Errors::add('Linfo Core', '/proc/swaps are not readable');
-        }
+        return [
+            'memoryTotal' => $memTotal,
+            'memoryUsed' => $memUsed,
+            'memoryFree' => $memFree,
+            'memoryShared' => $memShared,
+            'memoryBuffers' => $memBuffers,
+            'memoryCached' => $memCached,
 
-        // To hold their values
-        $memVals = [];
-        $swapVals = [];
-
-        // Get memContents
-        @preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', Common::getContents($procFileMem), $matches, PREG_SET_ORDER);
-
-        // Deal with it
-        foreach ((array)$matches as $memInfo) {
-            $memVals[$memInfo[1]] = $memInfo[2];
-        }
-
-        // Get swapContents
-        if ($useProcFileSwap) {
-            @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
-            foreach ((array)$matches as $swapDevice) {
-
-                // Append each swap device
-                $swapVals[] = [
-                    'device' => $swapDevice[1],
-                    'type' => $swapDevice[2],
-                    'size' => $swapDevice[3] * 1024,
-                    'used' => $swapDevice[4] * 1024,
-                ];
-            }
-        }
-
-        // Get individual vals
-        $return['type'] = 'Physical';
-        $return['total'] = @$memVals['MemTotal'] * 1024;
-        $return['free'] = @$memVals['MemFree'] * 1024 + @$memVals['Cached'] * 1024 + @$memVals['Buffers'] * 1024;
-        $return['swapTotal'] = @$memVals['SwapTotal'] * 1024;
-        $return['swapFree'] = @$memVals['SwapFree'] * 1024 + @$memVals['SwapCached'] * 1024;
-        $return['swapCached'] = @$memVals['SwapCached'] * 1024;
-        $return['swapInfo'] = @$swapVals;
-
-        // Return it
-        return $return;
+            'swapTotal' => $swapTotal,
+            'swapUsed' => $swapUsed,
+            'swapFree' => $swapFree,
+        ];
     }
 
-
+    /**
+     * @param string $block
+     * @return array
+     */
+    private function parseBlock($block)
+    {
+        $tmp = [];
+        foreach (\explode("\n", $block) as $line) {
+            if (false !== \strpos($line, ':')) {
+                @list($key, $value) = \explode(':', $line, 2);
+                $tmp[\trim($key)] = \trim($value);
+            }
+        }
+        return $tmp;
+    }
 
     public function getCpu()
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
-            $tmp = [];
-            foreach (\explode("\n", $block) as $line) {
-                if (false !== \strpos($line, ':')) {
-                    @list($key, $value) = \explode(':', $line, 2);
-                    $tmp[\trim($key)] = \trim($value);
-                }
-            }
-            $cpuData[] = $tmp;
+            $cpuData[] = $this->parseBlock($block);
         }
-
 
 
         $detectPhysical = function (array $cpuData) {
