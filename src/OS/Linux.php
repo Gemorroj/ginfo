@@ -180,10 +180,17 @@ class Linux extends OS
         $procFileMem = '/proc/meminfo';
 
         // First off, these need to exist..
-        if (!is_readable($procFileSwap) || !is_readable($procFileMem)) {
-            Errors::add('Linfo Core', '/proc/swaps and/or /proc/meminfo are not readable');
+        if (!is_readable($procFileMem)) {
+            Errors::add('Linfo Core', '/proc/meminfo are not readable');
 
             return array();
+        }
+
+        // Check swap
+        $useProcFileSwap = true;
+        if (!is_readable($procFileSwap)) {
+            $useProcFileSwap = false;
+            Errors::add('Linfo Core', '/proc/swaps are not readable');
         }
 
         // To hold their values
@@ -199,7 +206,9 @@ class Linux extends OS
         }
 
         // Get swapContents
-        @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
+        if ($useProcFileSwap) {
+            @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
+        }
         foreach ((array)$matches as $swapDevice) {
 
             // Append each swap device
