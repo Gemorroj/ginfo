@@ -173,7 +173,7 @@ class Linux extends OS
     public function getRam()
     {
         // We'll return the contents of this
-        $return = array();
+        $return = [];
 
         // Files containing juicy info
         $procFileSwap = '/proc/swaps';
@@ -183,7 +183,7 @@ class Linux extends OS
         if (!is_readable($procFileMem)) {
             Errors::add('Linfo Core', '/proc/meminfo are not readable');
 
-            return array();
+            return [];
         }
 
         // Check swap
@@ -194,8 +194,8 @@ class Linux extends OS
         }
 
         // To hold their values
-        $memVals = array();
-        $swapVals = array();
+        $memVals = [];
+        $swapVals = [];
 
         // Get memContents
         @preg_match_all('/^([^:]+)\:\s+(\d+)\s*(?:k[bB])?\s*/m', Common::getContents($procFileMem), $matches, PREG_SET_ORDER);
@@ -208,16 +208,16 @@ class Linux extends OS
         // Get swapContents
         if ($useProcFileSwap) {
             @preg_match_all('/^(\S+)\s+(\S+)\s+(\d+)\s(\d+)/m', Common::getContents($procFileSwap), $matches, PREG_SET_ORDER);
-        }
-        foreach ((array)$matches as $swapDevice) {
+            foreach ((array)$matches as $swapDevice) {
 
-            // Append each swap device
-            $swapVals[] = array(
-                'device' => $swapDevice[1],
-                'type' => $swapDevice[2],
-                'size' => $swapDevice[3] * 1024,
-                'used' => $swapDevice[4] * 1024,
-            );
+                // Append each swap device
+                $swapVals[] = [
+                    'device' => $swapDevice[1],
+                    'type' => $swapDevice[2],
+                    'size' => $swapDevice[3] * 1024,
+                    'used' => $swapDevice[4] * 1024,
+                ];
+            }
         }
 
         // Get individual vals
