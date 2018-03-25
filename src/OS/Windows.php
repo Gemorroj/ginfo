@@ -87,17 +87,6 @@ class Windows extends OS
         return $info['Version'] . ' Build ' . $info['BuildNumber'];
     }
 
-    /**
-     * getHostName.
-     *
-     * @return string the host name
-     */
-    public function getHostName()
-    {
-        $info = $this->getInfo('OperatingSystem');
-        return $info['CSName'];
-    }
-
 
     public function getMemory()
     {
