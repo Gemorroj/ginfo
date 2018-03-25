@@ -8,6 +8,7 @@
 - drop internationalization
 - drop bsd* support (sorry, I will not be able to support)
 - no need `COM` extension on Windows, but need powershell
+- minimal windows 10 support
 - minor code improvements
 
 
@@ -30,7 +31,7 @@ print_r($info); // and a whole lot more
 
 ## Runs on
  - Linux
- - Windows
+ - Windows >= 10
 
 ## Information reported
  - CPU type/speed; Architecture

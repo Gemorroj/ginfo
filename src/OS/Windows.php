@@ -114,30 +114,42 @@ class Windows extends OS
         );
     }
 
-    /**
-     * getCPU.
-     *
-     * @return array of cpu info
-     */
-    public function getCPU()
-    {
-        $cpus = [];
-        $cpuInfo = $this->getInfo('Processor');
-        $cpuDatas = $this->getInfo('PerfFormattedData_PerfOS_Processor');
 
-        foreach ($cpuDatas as $cpuData) {
-            $cpus[] = array(
-                'Caption' => $cpuInfo['Caption'],
-                'Model' => $cpuInfo['Name'],
-                'Vendor' => $cpuInfo['Manufacturer'],
-                'MHz' => $cpuInfo['CurrentClockSpeed'],
-                'LoadPercentage' => $cpuData['PercentProcessorTime'],
-            );
+    public function getCpu()
+    {
+        $cpuInfo = $this->getInfo('Processor');
+        if (!isset($cpuInfo[0])) { // if one processor convert to many drives
+            $cpuInfo = [$cpuInfo];
         }
 
-        return $cpus;
+        $cores = 0;
+        $virtual = 0;
+        $processor = [];
+        foreach ($cpuInfo as $cpu) {
+            $cores += $cpu['NumberOfCores'];
+            $virtual += $cpu['NumberOfLogicalProcessors'];
+
+            $processor[] = [
+                'model' => $cpu['Name'],
+                'speed' => $cpu['CurrentClockSpeed'],
+                'cache' => $cpu['L2CacheSize'], // L2 cache size
+                'flags' => null, //todo
+            ];
+        }
+
+        return [
+            'physical' => \count($cpuInfo),
+            'virtual' => $virtual,
+            'cores' => $cores,
+            'processor' => $processor,
+        ];
     }
 
+    public function getLoad()
+    {
+        return [];
+        // TODO: Implement getLoad() method.
+    }
 
     public function getUptime()
     {
@@ -173,7 +185,7 @@ class Windows extends OS
 
 
         $infoDiskDrive = $this->getInfo('DiskDrive');
-        if (!isset($infoDiskDrive[0])) { // if onу drive convert to many drives
+        if (!isset($infoDiskDrive[0])) { // if one drive convert to many drives
             $infoDiskDrive = [$infoDiskDrive];
         }
 
@@ -291,18 +303,6 @@ class Windows extends OS
         }
 
         return $devs;
-    }
-
-    /**
-     * getLoad.
-     *
-     * @return int
-     */
-    public function getCPUUsage()
-    {
-        $cpuInfo = $this->getInfo('Processor');
-
-        return $cpuInfo['LoadPercentage'];
     }
 
     /**

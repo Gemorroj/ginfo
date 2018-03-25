@@ -37,12 +37,6 @@ use Symfony\Component\Process\Process;
  */
 class Linux extends OS
 {
-    // Generally disabled as it's slowww
-    protected $cpu_percent = [
-        'overall' => false,
-        'cpus' => [],
-    ];
-
     /**
      * Constructor. Localizes settings.
      *
@@ -53,10 +47,6 @@ class Linux extends OS
         // Make sure we have what we need
         if (!is_dir('/sys') || !is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
-        }
-
-        if (isset(Settings::getInstance()->getSettings()['cpu_usage']) && !empty(Settings::getInstance()->getSettings()['cpu_usage'])) {
-            $this->determineCPUPercentage();
         }
     }
 
@@ -233,104 +223,69 @@ class Linux extends OS
         return $return;
     }
 
-    /**
-     * getCPU.
-     *
-     * @return array of cpu info
-     */
-    public function getCPU()
+
+
+    public function getCpu()
     {
-        // File that has it
-        $file = '/proc/cpuinfo';
-
-        // Not there?
-        if (!is_file($file) || !is_readable($file)) {
-            Errors::add('Linfo Core', '/proc/cpuinfo not readable');
-
-            return array();
+        $cpuInfo = Common::getContents('/proc/cpuinfo');
+        $cpuData = [];
+        foreach (\explode("\n\n", $cpuInfo) as $block) {
+            $tmp = [];
+            foreach (\explode("\n", $block) as $line) {
+                if (false !== \strpos($line, ':')) {
+                    @list($key, $value) = \explode(':', $line, 2);
+                    $tmp[\trim($key)] = \trim($value);
+                }
+            }
+            $cpuData[] = $tmp;
         }
 
-        /*
-         * Get all info for all CPUs from the cpuinfo file
-         */
 
-        // Get contents
-        $lines = Common::getLines($file);
 
-        // Store CPUs here
-        $cpus = array();
-
-        // Holder for current CPU info
-        $cur_cpu = array();
-
-        // Go through lines in file
-        $num_lines = count($lines);
-
-        // We use the key of the first line to separate CPUs
-        $first_line = substr($lines[0], 0, strpos($lines[0], ' '));
-
-        for ($i = 0; $i < $num_lines; ++$i) {
-
-            // Approaching new CPU? Save current and start new info for this
-            if (strpos($lines[$i], $first_line) === 0 && count($cur_cpu) > 0) {
-                $cpus[] = $cur_cpu;
-                $cur_cpu = array();
-
-                // Default to unknown
-                $cur_cpu['Model'] = 'Unknown';
+        $detectPhysical = function (array $cpuData) {
+            $out = [];
+            foreach ($cpuData as $block) {
+                if (isset($out[$block['physical id']])) {
+                    $out[$block['physical id']]++;
+                } else {
+                    $out[$block['physical id']] = 1;
+                }
             }
 
-            // Info here
-            $line = explode(':', $lines[$i], 2);
-
-            if (!array_key_exists(1, $line)) {
-                continue;
+            return \count($out);
+        };
+        $detectVirtual = function (array $cpuData) {
+            echo \count($cpuData);
+        };
+        $detectCores = function (array $cpuData) {
+            $out = [];
+            foreach ($cpuData as $block) {
+                $out[$block['physical id']] = $block['cpu cores'];
             }
 
-            $key = trim($line[0]);
-            $value = trim($line[1]);
+            return \array_sum($out);
+        };
 
-            // What we want are MHZ, Vendor, and Model.
-            switch ($key) {
-
-                // CPU model
-                case 'model name':
-                case 'cpu':
-                case 'Processor':
-                    $cur_cpu['Model'] = $value;
-                    break;
-
-                // Speed in MHz
-                case 'cpu MHz':
-                    $cur_cpu['MHz'] = $value;
-                    break;
-
-                case 'Cpu0ClkTck': // Old sun boxes
-                    $cur_cpu['MHz'] = hexdec($value) / 1000000;
-                    break;
-
-                // Brand/vendor
-                case 'vendor_id':
-                    $cur_cpu['Vendor'] = $value;
-                    break;
-
-                // ID. Corresponds to percentage if enabled below
-                case 'processor':
-                    if (isset($this->cpu_percent['cpus'][$value])) {
-                        $cur_cpu['LoadPercentage'] = $this->cpu_percent['cpus'][$value];
-                    }
-                    break;
+        $detectInfo = function (array $cpuData) {
+            $out = [];
+            foreach ($cpuData as $block) {
+                $out[$block['physical id']]['model'] = $block['model name'];
+                $out[$block['physical id']]['speed'] = $block['cpu MHz'];
+                $out[$block['physical id']]['cache'] = $block['cache size']; // L2 cache
+                $out[$block['physical id']]['flags'] = $block['flags'];
             }
-        }
 
-        // Save remaining one
-        if (count($cur_cpu) > 0) {
-            $cpus[] = $cur_cpu;
-        }
+            return $out;
+        };
 
-        // Return them
-        return $cpus;
+        return [
+            'physical' => $detectPhysical($cpuData),
+            'virtual' => $detectVirtual($cpuData),
+            'cores' => $detectCores($cpuData),
+            'processor' => $detectInfo($cpuData),
+        ];
     }
+
 
 
     public function getUptime()
@@ -796,33 +751,20 @@ class Linux extends OS
         return $raidinfo;
     }
 
-    /**
-     * getLoad.
-     *
-     * @return array of current system load values
-     */
+
     public function getLoad()
     {
-        // File that has it
-        $file = '/proc/loadavg';
-
-        // Get contents
-        $contents = Common::getContents($file, false);
-
-        // ugh
-        if ($contents === false) {
-            Errors::add('Linfo Core', '/proc/loadavg unreadable');
-            return array();
+        $contents = Common::getContents('/proc/loadavg');
+        if (null === $contents) {
+            return [];
         }
 
-        // Parts
-        $parts = array_slice(explode(' ', $contents), 0, 3);
-
+        $parts = \array_slice(\explode(' ', $contents), 0, 3);
         if (!$parts) {
-            return array();
+            return [];
         }
 
-        return array_combine(array('now', '5min', '15min'), $parts);
+        return \array_combine(['now', '5min', '15min'], $parts);
     }
 
     /**
@@ -1441,102 +1383,6 @@ class Linux extends OS
         return null;
     }
 
-    /**
-     * Get overall CPU usage. Depends on determineCPUPercentage() being called prior.
-     */
-    public function getCPUUsage()
-    {
-        return $this->cpu_percent['overall'] === false ? false : $this->cpu_percent['overall'];
-    }
-
-    /**
-     * Parse lines from /proc/stat. Used by determineCPUPercentage function.
-     * @param $key
-     * @param $line
-     * @return float
-     */
-    private function cpuPercent($key, $line)
-    {
-
-        // With each iteration we compare what we got to last time's version
-        // as the file changes every milisecond or something
-        static $prev = array();
-
-        // Using regex/explode is excessive here, not unlike rest of linfo :/
-        $ret = sscanf($line, '%Lu %Lu %Lu %Lu %Lu %Lu %Lu %Lu');
-
-        // Negative? That's crazy talk now
-        foreach ($ret as $k => $v) {
-            if ($v < 0) {
-                $ret[$k] = 0;
-            }
-        }
-
-        // First time; set our vals
-        if (!isset($prev[$key])) {
-            $prev[$key] = $ret;
-        } // Subsequent time; difference with last time
-        else {
-            $orig = $ret;
-            foreach ($ret as $k => $v) {
-                $ret[$k] -= $prev[$key][$k];
-            }
-            $prev[$key] = $orig;
-        }
-
-        // Refer back to top.c for the reasoning here. I just copied the algorithm without
-        // trying to understand why.
-        $retSum = (float)array_sum($ret);
-        if ($retSum > 0) {
-            $scale = 100 / $retSum;
-        } else {
-            $scale = 100;
-        }
-        $cpu_percent = $ret[0] * $scale;
-
-        return round($cpu_percent, 2);
-    }
-
-    /**
-     * Most controersial and different function in linfo. Updates $this->cpu_percent array. Sleeps 1 second
-     * to do this which is how it gets accurate details. Code stolen from procps' source for the Linux top command.
-     *
-     * @void
-     */
-    public function determineCPUPercentage()
-    {
-        $iterations = 2;
-
-        // Probably only inline function here. Only used once so it makes sense.
-
-        for ($i = 0; $i < $iterations; ++$i) {
-            $contents = Common::getContents('/proc/stat', false);
-
-            // Yay we can't read it so we won't sleep below!
-            if (!$contents) {
-                continue;
-            }
-
-            // Overall system CPU usage
-            if (preg_match('/^cpu\s+(.+)/', $contents, $m)) {
-                $this->cpu_percent['overall'] = $this->cpuPercent('overall', $m[1]);
-            }
-
-            // CPU usage per CPU
-            if (preg_match_all('/^cpu(\d+)\s+(.+)/m', $contents, $cpus, PREG_SET_ORDER)) {
-                foreach ($cpus as $cpu) {
-                    $this->cpu_percent['cpus'][$cpu[1]] = $this->cpuPercent('c' . $cpu[1], $cpu[2]);
-                }
-            }
-
-            // Following two lines make me want to puke as they go against everything linfo stands for
-            // this functionality will always be disabled by default
-            // Sleep *between* iterations and only if we're doing at least two of them
-            if ($iterations > 1 && $i != $iterations - 1) {
-                sleep(1);
-            }
-        }
-    }
 
     /**
      * Get brand/name of motherboard/server through /sys' interface to dmidecode.

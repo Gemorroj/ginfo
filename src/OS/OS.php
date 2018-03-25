@@ -69,4 +69,14 @@ abstract class OS
      * @return string
      */
     public abstract function getVirtualization();
+
+    /**
+     * @return array
+     */
+    public abstract function getCpu();
+
+    /**
+     * @return array
+     */
+    public abstract function getLoad();
 }

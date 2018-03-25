@@ -51,6 +51,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $linfo->scan();
         $info = $linfo->getInfo();
 
-        \print_r($info->getGeneral());
+        \print_r($info->getCpu());
     }
 }

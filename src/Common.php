@@ -30,6 +30,7 @@ class Common
      * none are found, it returns false
      * @param string[] $paths
      * @return null|string
+     * @deprecated
      */
     public static function locateActualPath(array $paths)
     {
@@ -46,6 +47,7 @@ class Common
      * Get a file who's contents should just be an int. Returns zero on failure.
      * @param string $file
      * @return string
+     * @deprecated
      */
     public static function getIntFromFile($file)
     {
@@ -81,6 +83,7 @@ class Common
      * Like above, but for seconds
      * @param int $uptime
      * @return string
+     * @deprecated
      */
     public static function secondsConvert($uptime)
     {

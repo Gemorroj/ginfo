@@ -69,11 +69,6 @@ class Linfo
     {
         // Array fields, tied to method names and default values...
         $fields = array(
-            'CPU' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['cpu']),
-                'default' => array(),
-                'method' => 'getCPU',
-            ),
             'RAM' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['ram']),
                 'default' => array(),
@@ -163,12 +158,6 @@ class Linfo
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['numLoggedIn']),
                 'default' => false,
                 'method' => 'getnumLoggedIn',
-            ),
-
-            'cpuUsage' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['cpu_usage']),
-                'default' => false,
-                'method' => 'getCPUUsage',
             ),
 
             'phpVersion' => array(

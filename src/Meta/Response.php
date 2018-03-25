@@ -53,7 +53,16 @@ class Response extends \ArrayObject //fixes for old api
      */
     public function getCpu()
     {
-        //todo
+        $cpuInfo = $this->os->getCpu();
+        return [
+            'physical' => $cpuInfo['physical'],
+            'virtual' => $cpuInfo['virtual'],
+            'cores' => $cpuInfo['cores'],
+            'hyperthreading' => $cpuInfo['cores'] < $cpuInfo['virtual'],
+
+            'processor' => $cpuInfo['processor'],
+            'load' => $this->os->getLoad(),
+        ];
     }
 
     /**
