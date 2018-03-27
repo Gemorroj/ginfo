@@ -98,19 +98,6 @@ class Linfo
                 'default' => array(),
                 'method' => 'getServices',
             ),
-
-            'phpVersion' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['phpversion']),
-                'default' => false,
-                'method' => 'getPhpVersion',
-            ),
-
-            // Extra info such as which fields to not show
-            'contains' => array(
-                'show' => true,
-                'default' => array(),
-                'method' => 'getContains',
-            ),
         );
 
         foreach ($fields as $key => $data) {

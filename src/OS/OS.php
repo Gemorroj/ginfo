@@ -24,14 +24,6 @@ namespace Linfo\OS;
 abstract class OS
 {
     /**
-     * @return string the version of php
-     */
-    public function getPhpVersion()
-    {
-        return \phpversion();
-    }
-
-    /**
      * @return string the arch OS
      */
     public function getArchitecture()

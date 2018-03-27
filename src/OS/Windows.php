@@ -33,19 +33,6 @@ class Windows extends OS
     private $infoCache = [];
 
     /**
-     * Return a list of things to hide from view..
-     *
-     * @return array
-     */
-    public function getContains()
-    {
-        return [
-            'drives_rw_stats' => false,
-            'nic_port_speed' => false,
-        ];
-    }
-
-    /**
      * @param string $name
      * @return array
      */
