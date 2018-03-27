@@ -97,7 +97,7 @@ class Apcaccess implements Extension
 
         // Get status
         if (preg_match('/^STATUS\s+:\s+([A-Z]+)/m', $result, $m)) {
-            $this->_res['status'] = $m[1] == 'ONBATT' ? 'On Battery' : ucfirst(strtolower($m[1]));
+            $this->_res['status'] = $m[1] == 'ONBATT' ? 'On Battery' : ucfirst(\mb_strtolower($m[1]));
         }
 
         // Load percentage looking cool

@@ -111,4 +111,9 @@ abstract class OS
      * @return array
      */
     public abstract function getPci();
+
+    /**
+     * @return array
+     */
+    public abstract function getNetwork();
 }

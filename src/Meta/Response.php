@@ -116,13 +116,16 @@ class Response extends \ArrayObject //fixes for old api
         return $this->os->getSoundCards();
     }
 
-
-    public function getDisk()
+    /**
+     * Network devices
+     * @return array
+     */
+    public function getNetwork()
     {
-        //todo
+        return $this->os->getNetwork();
     }
 
-    public function getNetwork()
+    public function getDisk()
     {
         //todo
     }

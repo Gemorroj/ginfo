@@ -81,12 +81,6 @@ class Linfo
                 'method' => 'getMounts',
             ),
 
-            'Network Devices' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['network']),
-                'default' => array(),
-                'method' => 'getNet',
-            ),
-
             'Temps' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['temps']),
                 'default' => array(),

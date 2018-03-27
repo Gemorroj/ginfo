@@ -101,12 +101,12 @@ class Hddtemp
             list($path, $name, $temp, $unit) = explode('|', trim($drive));
 
             // Ignore garbled output from SSDs that hddtemp cant parse
-            if (strpos($temp, 'UNK') !== false) {
+            if (\mb_strpos($temp, 'UNK') !== false) {
                 continue;
             }
 
             // Ignore /dev/sg?
-            if (!empty(Settings::getInstance()->getSettings()['hide']['sg']) && substr($path, 0, 7) == '/dev/sg') {
+            if (!empty(Settings::getInstance()->getSettings()['hide']['sg']) && \mb_substr($path, 0, 7) == '/dev/sg') {
                 continue;
             }
 
@@ -120,7 +120,7 @@ class Hddtemp
                 'path' => $path,
                 'name' => $name,
                 'temp' => $temp,
-                'unit' => strtoupper($unit),
+                'unit' => \mb_strtoupper($unit),
             );
         }
 
@@ -154,7 +154,7 @@ class Hddtemp
                 'path' => $dev,
                 'name' => $stat[0],
                 'temp' => $stat[1],
-                'unit' => strtoupper($stat[2]),
+                'unit' => \mb_strtoupper($stat[2]),
             );
         }
 

@@ -321,12 +321,7 @@ class Windows extends OS
     }
 
 
-    /**
-     * getNet.
-     *
-     * @return array of network devices
-     */
-    public function getNet()
+    public function getNetwork()
     {
         $return = [];
 
@@ -335,20 +330,21 @@ class Windows extends OS
         $networkAdapters = $this->getInfo('NetworkAdapter');
 
         foreach ($networkAdapters as $net) {
-            $return[$net['Name']] = array(
-                'recieved' => array(
+            $return[$net['Name']] = [
+                'recieved' => [
                     'bytes' => 0,
                     'errors' => 0,
                     'packets' => 0,
-                ),
-                'sent' => array(
+                ],
+                'sent' => [
                     'bytes' => 0,
                     'errors' => 0,
                     'packets' => 0,
-                ),
+                ],
                 'state' => 0,
                 'type' => $net['AdapterType'],
-            );
+            ];
+
             switch ($net['NetConnectionStatus']) {
                 case 0:
                     $return[$net['Name']]['state'] = 'down';
@@ -400,16 +396,16 @@ class Windows extends OS
 
             foreach ($perfRawData as $netSpeed) {
                 if ($netSpeed['Name'] === $canonName || $netSpeed['Name'] === $isatapName) {
-                    $return[$net['Name']]['recieved'] = array(
+                    $return[$net['Name']]['recieved'] = [
                         'bytes' => (int)$netSpeed['BytesReceivedPersec'],
                         'errors' => (int)$netSpeed['PacketsReceivedErrors'],
                         'packets' => (int)$netSpeed['PacketsReceivedPersec'],
-                    );
-                    $return[$net['Name']]['sent'] = array(
+                    ];
+                    $return[$net['Name']]['sent'] = [
                         'bytes' => (int)$netSpeed['BytesSentPersec'],
                         'errors' => 0,
                         'packets' => (int)$netSpeed['PacketsSentPersec'],
-                    );
+                    ];
                 }
             }
         }

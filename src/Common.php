@@ -101,7 +101,7 @@ class Common
         $return = array();
 
         if ($years > 0) {
-            $return[] = $years . ' ' . ($years > 1 ? 'years' : substr('years', 0, strlen('years') - 1));
+            $return[] = $years . ' ' . ($years > 1 ? 'years' : \mb_substr('years', 0, \mb_strlen('years') - 1));
         }
 
         if ($days > 0) {

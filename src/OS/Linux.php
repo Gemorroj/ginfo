@@ -58,7 +58,7 @@ class Linux extends OS
     {
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {
-            if (false !== \strpos($line, ':')) {
+            if (false !== \mb_strpos($line, ':')) {
                 @list($key, $value) = \explode(':', $line, 2);
                 $tmp[\trim($key)] = \trim($value);
             }
@@ -287,7 +287,7 @@ class Linux extends OS
                 $drivername = @basename(@readlink(dirname($path) . '/driver')) ?: false;
 
                 // Temperatures
-                if (is_file($labelpath) && strpos($base, 'temp') === 0) {
+                if (is_file($labelpath) && \mb_strpos($base, 'temp') === 0) {
                     $label = Common::getContents($labelpath);
                     $value /= $value > 10000 ? 1000 : 1;
                     $unit = 'C'; // I don't think this is ever going to be in F
@@ -609,27 +609,20 @@ class Linux extends OS
         return \array_combine(['now', '5min', '15min'], $parts);
     }
 
-    /**
-     * getNet.
-     *
-     * @return array of network devices
-     */
-    public function getNet()
+
+    public function getNetwork()
     {
-        // Hold our return values
-        $return = array();
+        $return = [];
 
-        // Get values for each device
-        foreach ((array)@glob('/sys/class/net/*', GLOB_NOSORT) as $path) {
-            $nic = basename($path);
+        foreach ((array)@\glob('/sys/class/net/*', \GLOB_NOSORT) as $path) {
+            $nic = \basename($path);
 
-            // States
-            $operstate_contents = Common::getContents($path . '/operstate');
-            switch ($operstate_contents) {
+            $operstateContents = Common::getContents($path . '/operstate');
+            switch ($operstateContents) {
                 case 'down':
                 case 'up':
                 case 'unknown':
-                    $state = $operstate_contents;
+                    $state = $operstateContents;
                     break;
 
                 default:
@@ -637,8 +630,8 @@ class Linux extends OS
                     break;
             }
 
-            if ($state = 'unknown' && file_exists($path . '/carrier')) {
-                $carrier = Common::getContents($path . '/carrier', false);
+            if ($state === 'unknown' && \file_exists($path . '/carrier')) {
+                $carrier = Common::getContents($path . '/carrier');
                 if (!empty($carrier)) {
                     $state = 'up';
                 } else {
@@ -647,65 +640,58 @@ class Linux extends OS
             }
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
-            $type = false;
-            $typeCode = Common::getIntFromFile($path . '/type');
+            $typeCode = Common::getContents($path . '/type');
 
-            if ($typeCode == 772) {
+            if ($typeCode === '772') {
                 $type = 'Loopback';
-            } elseif ($typeCode == 65534) {
+            } elseif ($typeCode === '65534') {
                 $type = 'Tunnel';
-            } elseif ($typeCode == 776) {
+            } elseif ($typeCode === '776') {
                 $type = 'IPv6 in IPv4';
-            }
+            } else {
+                $typeContents = \mb_strtoupper(Common::getContents($path . '/device/modalias'));
+                list($typeMatch) = \explode(':', $typeContents, 2);
 
-            if (!$type) {
-                $type_contents = strtoupper(Common::getContents($path . '/device/modalias'));
-                list($type_match) = explode(':', $type_contents, 2);
+                if (\in_array($typeMatch, ['PCI', 'USB'])) {
+                    $type = 'Ethernet (' . $typeMatch . ')';
 
-                if (in_array($type_match, array('PCI', 'USB'))) {
-                    $type = 'Ethernet (' . $type_match . ')';
-
-                    // Driver maybe?
-                    if (($uevent_contents = @parse_ini_file($path . '/device/uevent')) && isset($uevent_contents['DRIVER'])) {
-                        $type .= ' (' . $uevent_contents['DRIVER'] . ')';
+                    if (($ueventContents = @\parse_ini_file($path . '/device/uevent')) && isset($ueventContents['DRIVER'])) {
+                        $type .= ' (' . $ueventContents['DRIVER'] . ')';
                     }
-                } elseif ($type_match == 'VIRTIO') {
+                } elseif ($typeMatch === 'VIRTIO') {
                     $type = 'VirtIO';
-                } elseif ($type_contents == 'XEN:VIF') {
+                } elseif ($typeContents === 'XEN:VIF') {
                     $type = 'Xen (VIF)';
-                } elseif ($type_contents == 'XEN-BACKEND:VIF') {
+                } elseif ($typeContents === 'XEN-BACKEND:VIF') {
                     $type = 'Xen Backend (VIF)';
-                } elseif (is_dir($path . '/bridge')) {
+                } elseif (\is_dir($path . '/bridge')) {
                     $type = 'Bridge';
-                } elseif (is_dir($path . '/bonding')) {
+                } elseif (\is_dir($path . '/bonding')) {
                     $type = 'Bond';
+                } else {
+                    $type = 'Unknown';
                 }
 
                 // TODO find some way of finding out what provides the virt-specific kvm vnet devices
             }
 
-            $speed = Common::getIntFromFile($path . '/speed');
+            $speed = Common::getContents($path . '/speed');
 
-            // Save and get info for each
-            $return[$nic] = array(
-
-                // Stats are stored in simple files just containing the number
-                'recieved' => array(
-                    'bytes' => Common::getIntFromFile($path . '/statistics/rx_bytes'),
-                    'errors' => Common::getIntFromFile($path . '/statistics/rx_errors'),
-                    'packets' => Common::getIntFromFile($path . '/statistics/rx_packets'),
-                ),
-                'sent' => array(
-                    'bytes' => Common::getIntFromFile($path . '/statistics/tx_bytes'),
-                    'errors' => Common::getIntFromFile($path . '/statistics/tx_errors'),
-                    'packets' => Common::getIntFromFile($path . '/statistics/tx_packets'),
-                ),
-
-                // These were determined above
+            $return[$nic] = [
+                'recieved' => [
+                    'bytes' => Common::getContents($path . '/statistics/rx_bytes'),
+                    'errors' => Common::getContents($path . '/statistics/rx_errors'),
+                    'packets' => Common::getContents($path . '/statistics/rx_packets'),
+                ],
+                'sent' => [
+                    'bytes' => Common::getContents($path . '/statistics/tx_bytes'),
+                    'errors' => Common::getContents($path . '/statistics/tx_errors'),
+                    'packets' => Common::getContents($path . '/statistics/tx_packets'),
+                ],
                 'state' => $state,
-                'type' => $type ?: 'N/A',
-                'port_speed' => $speed > 0 ? $speed : false,
-            );
+                'type' => $type,
+                'port_speed' => $speed,
+            ];
         }
 
         // Return array of info
@@ -963,7 +949,7 @@ class Linux extends OS
                     // If this one matches, stop here and save it
                     if ($match) {
                         // Get pid out of path to cmdline file
-                        $pids[$service] = substr($potential_paths[$i], 6 /*strlen('/proc/')*/, strpos($potential_paths[$i], '/', 7) - 6);
+                        $pids[$service] = \mb_substr($potential_paths[$i], 6 /*\mb_strlen('/proc/')*/, \mb_strpos($potential_paths[$i], '/', 7) - 6);
                         break;
                     }
                 }
@@ -1154,11 +1140,11 @@ class Linux extends OS
             return 'Veertu';
         }
 
-        if (\strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/') !== false) {
+        if (\mb_strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/') !== false) {
             return 'LXC';
         }
 
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \strpos(Common::getContents('/proc/1/cgroup', ''), 'docker') !== false) {
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \mb_strpos(Common::getContents('/proc/1/cgroup', ''), 'docker') !== false) {
             return 'Docker';
         }
 
@@ -1218,7 +1204,7 @@ class Linux extends OS
         }
 
         // Don't add vendor to the mix if the name starts with it
-        if ($vendor && \strpos($name, $vendor) !== 0) {
+        if ($vendor && \mb_strpos($name, $vendor) !== 0) {
             $info[] = $vendor;
         }
 
@@ -1228,7 +1214,7 @@ class Linux extends OS
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && \strpos($name, $product) === false && \strpos($product, 'Filled') === false) {
+        if ($product && \mb_strpos($name, $product) === false && \mb_strpos($product, 'Filled') === false) {
             return $product . ' (' . $infostr . ')';
         } else {
             return $infostr;

@@ -53,12 +53,12 @@ class Hwpci
 
             // First try uevent
             if (\is_readable($path . '/uevent') &&
-                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \strtolower(Common::getContents($path . '/uevent')), $match)) {
+                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
                 $this->entries[\str_pad($match[1], 4, '0', \STR_PAD_LEFT)][\str_pad($match[2], 4, '0', \STR_PAD_LEFT)] = 1;
             } // And next modalias 
             elseif (\is_readable($path . '/modalias') &&
                 \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
-                $this->entries[\strtolower($match[1])][\strtolower($match[2])] = 1;
+                $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
             }
         }
     }
@@ -76,11 +76,11 @@ class Hwpci
                 list(, $d_id) = \explode('x', $f_device, 2);
                 $this->entries[$v_id][$d_id] = 1;
             } // Try uevent nextly
-            elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \strtolower(Common::getContents($path . '/uevent')), $match)) {
+            elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
                 $this->entries[$match[1]][$match[2]] = 1;
             } // Now for modalias
             elseif (\is_readable($path . '/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
-                $this->entries[\strtolower($match[1])][\strtolower($match[2])] = 1;
+                $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
             }
         }
     }
@@ -94,7 +94,7 @@ class Hwpci
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
-                if ($v && isset($this->entries[\strtolower($v[1])][\strtolower($dev_match[1])])) {
+                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($dev_match[1])])) {
                     $this->devices[$v[1]][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
                 }
             }
@@ -111,8 +111,8 @@ class Hwpci
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
-                if ($v && isset($this->entries[\strtolower($v[1])][\strtolower($dev_match[1])])) {
-                    $this->devices[\strtolower($v[1])][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
+                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($dev_match[1])])) {
+                    $this->devices[\mb_strtolower($v[1])][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
                 }
             }
         }
