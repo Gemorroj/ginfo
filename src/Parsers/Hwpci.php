@@ -120,12 +120,21 @@ class Hwpci
     }
 
     /**
-     * @param string $file
-     * @return array
+     * @return array|null
      */
-    public static function workUsb($file)
+    public static function workUsb()
     {
-        $obj = new self($file);
+        $usbIds = Common::locateActualPath([
+            '/usr/share/misc/usb.ids',    // debian/ubuntu
+            '/usr/share/usb.ids',        // opensuse
+            '/usr/share/hwdata/usb.ids',    // centos. maybe also redhat/fedora
+        ]);
+
+        if (!$usbIds) {
+            return null;
+        }
+
+        $obj = new self($usbIds);
         $obj->fetchUsbIdsLinux();
         $obj->fetchUsbNames();
 
@@ -133,12 +142,21 @@ class Hwpci
     }
 
     /**
-     * @param string $file
      * @return array
      */
-    public static function workPci($file)
+    public static function workPci()
     {
-        $obj = new self($file);
+        $pciIds = Common::locateActualPath([
+            '/usr/share/misc/pci.ids',    // debian/ubuntu
+            '/usr/share/pci.ids',        // opensuse
+            '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
+        ]);
+
+        if (!$pciIds) {
+            return null;
+        }
+
+        $obj = new self($pciIds);
 
         $obj->fetchPciIdsLinux();
         $obj->fetchPciNames();

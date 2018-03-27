@@ -69,18 +69,6 @@ class Linfo
     {
         // Array fields, tied to method names and default values...
         $fields = array(
-            'HD' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['hd']),
-                'default' => array(),
-                'method' => 'getHD',
-            ),
-
-            'Mounts' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['mounts']),
-                'default' => array(),
-                'method' => 'getMounts',
-            ),
-
             'Temps' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['temps']),
                 'default' => array(),
@@ -91,12 +79,6 @@ class Linfo
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['battery']),
                 'default' => array(),
                 'method' => 'getBattery',
-            ),
-
-            'Raid' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['raid']),
-                'default' => array(),
-                'method' => 'getRAID',
             ),
 
             'Wifi' => array(

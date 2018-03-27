@@ -116,4 +116,19 @@ abstract class OS
      * @return array
      */
     public abstract function getNetwork();
+
+    /**
+     * @return array
+     */
+    public abstract function getPartitions();
+
+    /**
+     * @return array
+     */
+    public abstract function getMounts();
+
+    /**
+     * @return array
+     */
+    public abstract function getRaid();
 }

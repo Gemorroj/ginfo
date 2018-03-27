@@ -162,12 +162,8 @@ class Windows extends OS
         return \time() - $booted->getTimestamp();
     }
 
-    /**
-     * getHD.
-     *
-     * @return array the hard drive info
-     */
-    public function getHD()
+
+    public function getPartitions()
     {
         $drives = [];
         $partitions = [];
@@ -175,10 +171,10 @@ class Windows extends OS
         $infoDiskPartition = $this->getInfo('DiskPartition');
 
         foreach ($infoDiskPartition as $partitionInfo) {
-            $partitions[$partitionInfo['DiskIndex']][] = array(
+            $partitions[$partitionInfo['DiskIndex']][] = [
                 'size' => $partitionInfo['Size'],
                 'name' => $partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')',
-            );
+            ];
         }
 
 
@@ -188,31 +184,25 @@ class Windows extends OS
         }
 
         foreach ($infoDiskDrive as $driveInfo) {
-            $drives[] = array(
+            $drives[] = [
                 'name' => $driveInfo['Caption'],
-                'vendor' => explode(' ', $driveInfo['Caption'], 1)[0],
+                'vendor' => \explode(' ', $driveInfo['Caption'], 1)[0],
                 'device' => $driveInfo['DeviceID'],
-                'reads' => false,
-                'writes' => false,
+                'reads' => null, //todo
+                'writes' => null, //todo
                 'size' => $driveInfo['Size'],
-                'partitions' => array_key_exists($driveInfo['Index'], $partitions) && is_array($partitions[$driveInfo['Index']]) ? $partitions[$driveInfo['Index']] : null,
-            );
+                'partitions' => \array_key_exists($driveInfo['Index'], $partitions) && \is_array($partitions[$driveInfo['Index']]) ? $partitions[$driveInfo['Index']] : null,
+            ];
         }
 
         return $drives;
     }
 
-    /**
-     * getMounts.
-     *
-     * @return array the mounted the file systems
-     */
     public function getMounts()
     {
         $volumes = [];
 
         $info = $this->getInfo('Volume');
-
         foreach ($info as $volume) {
             $options = [];
 
@@ -230,44 +220,39 @@ class Windows extends OS
             }
 
 
-            $a = array(
-                'device' => false,
-                'label' => $volume['Label'],
-                'devtype' => null,
-                'mount' => $volume['Caption'], // bug \
+            $a = [
+                'device' => $volume['Label'],
+                'mount' => $volume['Caption'],
                 'type' => $volume['FileSystem'],
                 'size' => $volume['Capacity'],
                 'used' => $volume['Capacity'] - $volume['FreeSpace'],
                 'free' => $volume['FreeSpace'],
-                'free_percent' => 0,
-                'used_percent' => 0,
+                'freePercent' => null,
+                'usedPercent' => null,
                 'options' => $options,
-            );
+            ];
 
             switch ($volume['DriveType']) {
                 case 2:
-                    $a['devtype'] = 'Removable drive';
+                    $a['device'] .= ' (Removable drive)';
                     break;
                 case 3:
-                    $a['devtype'] = 'Fixed drive';
+                    //$a['device'] .= ' (Fixed drive)';
                     break;
                 case 4:
-                    $a['devtype'] = 'Remote drive';
+                    $a['device'] .= ' (Remote drive)';
                     break;
                 case 5:
-                    $a['devtype'] = 'CD-ROM';
+                    $a['device'] .= ' (CD-ROM)';
                     break;
                 case 6:
-                    $a['devtype'] = 'RAM disk';
-                    break;
-                default:
-                    $a['devtype'] = 'Unknown';
+                    $a['device'] .= ' (RAM disk)';
                     break;
             }
 
             if ($volume['Capacity'] != 0) {
-                $a['free_percent'] = round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100;
-                $a['used_percent'] = round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100;
+                $a['freePercent'] = \round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100;
+                $a['usedPercent'] = \round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100;
             }
 
             $volumes[] = $a;
@@ -276,6 +261,10 @@ class Windows extends OS
         return $volumes;
     }
 
+    public function getRaid()
+    {
+        return []; //todo
+    }
 
     public function getPci()
     {

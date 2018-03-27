@@ -26,6 +26,7 @@ use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Settings;
 use Linfo\Parsers\Free;
 use Linfo\Parsers\Hwpci;
+use Linfo\Parsers\Mdadm;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
@@ -132,59 +133,89 @@ class Linux extends OS
         return \round(\explode(' ', $uptime, 2)[0]);
     }
 
-    /**
-     * getHD.
-     *
-     * @return array the hard drive info
-     */
-    public function getHD()
+
+    public function getPartitions()
     {
-        // Get partitions
-        $partitions = array();
+        $partitions = [];
         $partitions_contents = Common::getContents('/proc/partitions');
-        if (@preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, PREG_SET_ORDER) > 0) {
-            // Go through each match
+        if (@\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, \PREG_SET_ORDER) > 0) {
             foreach ($partitions_match as $partition) {
-                $partitions[$partition[2]][] = array(
+                $partitions[$partition[2]][] = [
                     'size' => $partition[1] * 1024,
                     'number' => $partition[3],
-                );
+                ];
             }
         }
 
-        // Store drives here
-        $drives = array();
-
-        // Get actual drives
-        foreach ((array)@glob('/sys/block/*/device/model', GLOB_NOSORT) as $path) {
-
-            // Parts of the path
-            $parts = explode('/', $path);
+        $drives = [];
+        foreach ((array)@\glob('/sys/block/*/device/model', \GLOB_NOSORT) as $path) {
+            $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
-            if (preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(dirname(dirname($path)) . '/stat'), $statMatches) !== 1) {
-                // Didn't get it
-                $reads = false;
-                $writes = false;
+            if (\preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(\dirname(\dirname($path)) . '/stat'), $statMatches) !== 1) {
+                $reads = null;
+                $writes = null;
             } else {
-                // Got it, save it
                 list(, $reads, $writes) = $statMatches;
             }
 
-            // Append this drive on
             $drives[] = array(
-                'name' => Common::getContents($path, 'Unknown') . (Common::getContents(dirname(dirname($path)) . '/queue/rotational') == 0 ? ' (SSD)' : ''),
-                'vendor' => Common::getContents(dirname($path) . '/vendor', 'Unknown'),
+                'name' => Common::getContents($path, 'Unknown') . (Common::getContents(\dirname(\dirname($path)) . '/queue/rotational') === '0' ? ' (SSD)' : ''),
+                'vendor' => Common::getContents(\dirname($path) . '/vendor', 'Unknown'),
                 'device' => '/dev/' . $parts[3],
                 'reads' => $reads,
                 'writes' => $writes,
-                'size' => Common::getContents(dirname(dirname($path)) . '/size', 0) * 512,
-                'partitions' => array_key_exists($parts[3], $partitions) && is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : false,
+                'size' => Common::getContents(\dirname(\dirname($path)) . '/size', 0) * 512,
+                'partitions' => \array_key_exists($parts[3], $partitions) && \is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : null,
             );
         }
 
-        // Return drives
         return $drives;
+    }
+
+    public function getMounts()
+    {
+        $contents = Common::getContents('/proc/mounts');
+        if (null === $contents) {
+            return [];
+        }
+
+        if (@\preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER) === false) {
+            return [];
+        }
+
+        $mounts = [];
+        foreach ($match as $mount) {
+            // Spaces and other things in the mount path are escaped C style. Fix that.
+            $mount[2] = \stripcslashes($mount[2]);
+
+            $size = @\disk_total_space($mount[2]);
+            $free = @\disk_free_space($mount[2]);
+            $used = $size !== false && $free !== false ? $size - $free : false;
+
+            $mounts[] = [
+                'device' => $mount[1],
+                'mount' => $mount[2],
+                'type' => $mount[3],
+                'size' => $size,
+                'used' => $used,
+                'free' => $free,
+                'freePercent' => ($free !== false && $size !== false && $size > 0 ? \round($free / $size, 2) * 100 : null),
+                'usedPercent' => ($used !== false && $size !== false && $size > 0 ? \round($used / $size, 2) * 100 : null),
+                'options' => \explode(',', $mount[4]),
+            ];
+        }
+
+        return $mounts;
+    }
+
+    /**
+     * mdadm wrapper
+     * @return array|null
+     */
+    public function getRaid()
+    {
+        return Mdadm::work();
     }
 
     /**
@@ -323,7 +354,7 @@ class Linux extends OS
             }
         }
 
-        // thermal_zone? 
+        // thermal_zone?
         if (array_key_exists('thermal_zone', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['thermal_zone'])) {
 
             // Store them here
@@ -383,104 +414,12 @@ class Linux extends OS
     }
 
     /**
-     * getMounts.
-     *
-     * @return array the mounted the file systems
-     */
-    public function getMounts()
-    {
-        // File
-        $contents = Common::getContents('/proc/mounts', false);
-
-        // Can't?
-        if ($contents == false) {
-            Errors::add('Linfo Core', '/proc/mounts does not exist');
-        }
-
-        // Parse
-        if (@preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, PREG_SET_ORDER) === false) {
-            Errors::add('Linfo Core', 'Error parsing /proc/mounts');
-        }
-
-        // Return these
-        $mounts = array();
-
-        // Populate
-        foreach ($match as $mount) {
-
-            // Should we not show this?
-            if (in_array($mount[1], Settings::getInstance()->getSettings()['hide']['storage_devices']) || in_array($mount[3], Settings::getInstance()->getSettings()['hide']['filesystems'])) {
-                continue;
-            }
-
-            // Should we not show this? (regex)
-            if (isset(Settings::getInstance()->getSettings()['hide']['mountpoints_regex']) && is_array(Settings::getInstance()->getSettings()['hide']['mountpoints_regex'])) {
-                foreach (Settings::getInstance()->getSettings()['hide']['mountpoints_regex'] as $regex) {
-                    if (@preg_match($regex, $mount[2])) {
-                        continue 2;
-                    }
-                }
-            }
-
-            // Spaces and other things in the mount path are escaped C style. Fix that.
-            $mount[2] = stripcslashes($mount[2]);
-
-            // Get these
-            $size = @disk_total_space($mount[2]);
-            $free = @disk_free_space($mount[2]);
-            $used = $size != false && $free != false ? $size - $free : false;
-
-            // If it's a symlink, find out where it really goes.
-            // (using realpath instead of readlink because the former gives absolute paths)
-            if (isset(Settings::getInstance()->getSettings()['hide']['dont_resolve_mountpoint_symlinks']) && Settings::getInstance()->getSettings()['hide']['dont_resolve_mountpoint_symlinks']) {
-                $symlink = false;
-            } else {
-                $symlink = is_link($mount[1]) ? realpath($mount[1]) : false;
-            }
-
-            // Optionally get mount options
-            if (Settings::getInstance()->getSettings()['show']['mounts_options'] && !in_array($mount[3], (array)Settings::getInstance()->getSettings()['hide']['fs_mount_options'])) {
-                $mount_options = explode(',', $mount[4]);
-            } else {
-                $mount_options = array();
-            }
-
-            // Might be good, go for it
-            $mounts[] = array(
-                'device' => $symlink != false ? $symlink : $mount[1],
-                'mount' => $mount[2],
-                'type' => $mount[3],
-                'size' => $size,
-                'used' => $used,
-                'free' => $free,
-                'free_percent' => ((bool)$free != false && (bool)$size != false ? round($free / $size, 2) * 100 : false),
-                'used_percent' => ((bool)$used != false && (bool)$size != false ? round($used / $size, 2) * 100 : false),
-                'options' => $mount_options,
-            );
-        }
-
-        // Return
-        return $mounts;
-    }
-
-
-    /**
      * usbutils wrapper
      * @return array|null
      */
     public function getUsb()
     {
-        $usbIds = Common::locateActualPath([
-            '/usr/share/misc/usb.ids',    // debian/ubuntu
-            '/usr/share/usb.ids',        // opensuse
-            '/usr/share/hwdata/usb.ids',    // centos. maybe also redhat/fedora
-        ]);
-
-        if (!$usbIds) {
-            return null;
-        }
-
-        return Hwpci::workUsb($usbIds);
+        return Hwpci::workUsb();
     }
 
     /**
@@ -489,108 +428,7 @@ class Linux extends OS
      */
     public function getPci()
     {
-        $pciIds = Common::locateActualPath([
-            '/usr/share/misc/pci.ids',    // debian/ubuntu
-            '/usr/share/pci.ids',        // opensuse
-            '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
-        ]);
-
-        if (!$pciIds) {
-            return null;
-        }
-
-        return Hwpci::workPci($pciIds);
-    }
-
-    /**
-     * getRAID.
-     *
-     * @return array of raid arrays
-     */
-    public function getRAID()
-    {
-        // Store it here
-        $raidinfo = array();
-
-        // mdadm?
-        if (array_key_exists('mdadm', (array)Settings::getInstance()->getSettings()['raid']) && !empty(Settings::getInstance()->getSettings()['raid']['mdadm'])) {
-
-            // Try getting contents
-            $mdadm_contents = Common::getContents('/proc/mdstat', false);
-
-            // No?
-            if ($mdadm_contents === false) {
-                Errors::add('Linux softraid mdstat parser', '/proc/mdstat does not exist.');
-            }
-
-            // Parse
-            @preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string)$mdadm_contents, $match, PREG_SET_ORDER);
-
-            // Store them here
-            $mdadm_arrays = array();
-
-            // Deal with entries
-            foreach ((array)$match as $array) {
-
-                // Temporarily store drives here
-                $drives = array();
-
-                // Parse drives
-                foreach (explode(' ', $array[4]) as $drive) {
-
-                    // Parse?
-                    if (preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $match_drive) == 1) {
-
-                        // Determine a status other than normal, like if it failed or is a spare
-                        if (array_key_exists(2, $match_drive)) {
-                            switch ($match_drive[2]) {
-                                case '(S)':
-                                    $drive_state = 'spare';
-                                    break;
-                                case '(F)':
-                                    $drive_state = 'failed';
-                                    break;
-                                case null:
-                                    $drive_state = 'normal';
-                                    break;
-
-                                // I'm not sure if there are status codes other than the above
-                                default:
-                                    $drive_state = 'unknown';
-                                    break;
-                            }
-                        } else {
-                            $drive_state = 'normal';
-                        }
-
-                        // Append this drive to the temp drives array
-                        $drives[] = array(
-                            'drive' => '/dev/' . $match_drive[1],
-                            'state' => $drive_state,
-                        );
-                    }
-                }
-
-                // Add record of this array to arrays list
-                $mdadm_arrays[] = array(
-                    'device' => '/dev/' . $array[1],
-                    'status' => $array[2],
-                    'level' => $array[3],
-                    'drives' => $drives,
-                    'size' => Common::byteConvert($array[5] * 1024),
-                    'count' => $array[6],
-                    'chart' => $array[7],
-                );
-            }
-
-            // Append MD arrays to main raidinfo if it's good
-            if (is_array($mdadm_arrays) && count($mdadm_arrays) > 0) {
-                $raidinfo = array_merge($raidinfo, $mdadm_arrays);
-            }
-        }
-
-        // Return info
-        return $raidinfo;
+        return Hwpci::workPci();
     }
 
 

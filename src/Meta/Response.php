@@ -125,9 +125,17 @@ class Response extends \ArrayObject //fixes for old api
         return $this->os->getNetwork();
     }
 
+    /**
+     * Hard disk info
+     * @return array
+     */
     public function getDisk()
     {
-        //todo
+        return [
+            'partitions' => $this->os->getPartitions(),
+            'mounts' => $this->os->getMounts(),
+            'raid' => $this->os->getRaid(),
+        ];
     }
 
     public function getProcess()
