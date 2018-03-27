@@ -56,7 +56,7 @@ class Windows extends OS
         }
 
         $powershellDirectory = \getenv('SystemRoot') . '\\System32\\WindowsPowerShell\\v1.0';
-        if (!is_dir($powershellDirectory)) {
+        if (!\is_dir($powershellDirectory)) {
             $powershellDirectory = null;
         }
 
@@ -67,6 +67,12 @@ class Windows extends OS
         $this->infoCache[$name] = \json_decode($process->getOutput(), true);
 
         return $this->infoCache[$name];
+    }
+
+
+    public function getLoggedUsers()
+    {
+        return $this->getInfo('LoggedOnUser');
     }
 
 
@@ -455,9 +461,7 @@ class Windows extends OS
         return []; // TODO
     }
 
-    /**
-     * @return string
-     */
+
     public function getModel()
     {
         $info = $this->getInfo('ComputerSystem');

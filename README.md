@@ -45,6 +45,7 @@ print_r($info); // and a whole lot more
  - Memory usage (physical and swap, if possible)
  - Temperatures/voltages/fan speeds
  - RAID arrays
+ - Motherboard (need dimedecode for linux)
  - Via included extensions:
    - Nvidia GPU temps
    - DHCPD leases

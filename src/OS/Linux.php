@@ -30,21 +30,14 @@ use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
 use Symfony\Component\Process\Process;
 
-/**
- * Get info on a usual linux system
- * Works by exclusively looking around /proc and /sys
- * Also deliberately ignores trying to find out the distro.
- */
+
 class Linux extends OS
 {
     /**
-     * Constructor. Localizes settings.
-     *
      * @throws FatalException
      */
     public function __construct()
     {
-        // Make sure we have what we need
         if (!\is_dir('/sys') || !\is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
         }
@@ -82,7 +75,7 @@ class Linux extends OS
      * @param string $block
      * @return array
      */
-    private function parseBlock($block)
+    private function parseProcBlock($block)
     {
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {
@@ -99,7 +92,7 @@ class Linux extends OS
         $cpuInfo = Common::getContents('/proc/cpuinfo');
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
-            $cpuData[] = $this->parseBlock($block);
+            $cpuData[] = $this->parseProcBlock($block);
         }
 
 
@@ -1132,42 +1125,34 @@ class Linux extends OS
         return \php_uname('s');
     }
 
-    /**
-     * getNumLoggedIn.
-     *
-     * @return int number of logged in users with shells
-     */
-    public function getNumLoggedIn()
+    public function getLoggedUsers()
     {
         // Snag command line of every process in system
-        $procs = glob('/proc/*/cmdline', GLOB_NOSORT);
+        $procs = \glob('/proc/*/cmdline', \GLOB_NOSORT);
 
-        // Store unqiue users here
-        $users = array();
-
-        // Each process
+        $users = [];
         foreach ($procs as $proc) {
-
             // Does the process match a popular shell, such as bash, csh, etc?
-            if (preg_match('/(?:bash|csh|zsh|ksh)$/', Common::getContents($proc, ''))) {
+            if (\preg_match('/(?:bash|csh|zsh|ksh)$/', Common::getContents($proc))) {
 
                 // Who owns it, anyway? 
-                $owner = fileowner(dirname($proc));
-
-                // Careful..
-                if (!is_numeric($owner)) {
+                $owner = \fileowner(\dirname($proc));
+                if (!\is_numeric($owner)) {
                     continue;
                 }
-
-                // Have we not seen this user before?
-                if (!in_array($owner, $users)) {
+                if (!\in_array($owner, $users)) {
                     $users[] = $owner;
                 }
             }
         }
 
-        // Give number of unique users with shells running
-        return count($users);
+        if (\function_exists('posix_getpwuid')) {
+            \array_walk($users, function (&$item) {
+                $item = \posix_getpwuid($item)['name'];
+            });
+        }
+
+        return $users;
     }
 
 
@@ -1231,31 +1216,31 @@ class Linux extends OS
 
 
     /**
-     * Get brand/name of motherboard/server through /sys' interface to dmidecode.
+     * through /sys' interface to dmidecode
      */
     public function getModel()
     {
-        $info = array();
-        $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor', false);
-        $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name', false);
-        $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name', false);
+        $info = [];
+        $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor');
+        $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name');
+        $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name');
 
         if (!$name) {
             return null;
         }
 
         // Don't add vendor to the mix if the name starts with it
-        if ($vendor && strpos($name, $vendor) !== 0) {
+        if ($vendor && \strpos($name, $vendor) !== 0) {
             $info[] = $vendor;
         }
 
         $info[] = $name;
 
-        $infostr = implode(' ', $info);
+        $infostr = \implode(' ', $info);
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && strpos($name, $product) === false && strpos($product, 'Filled') === false) {
+        if ($product && \strpos($name, $product) === false && \strpos($product, 'Filled') === false) {
             return $product . ' (' . $infostr . ')';
         } else {
             return $infostr;

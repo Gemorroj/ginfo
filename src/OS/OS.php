@@ -89,4 +89,16 @@ abstract class OS
      * @return array
      */
     public abstract function getSoundCards();
+
+    /**
+     * string[]
+     */
+    public abstract function getLoggedUsers();
+
+    /**
+     * Get brand/name of motherboard/server
+     *
+     * string
+     */
+    public abstract function getModel();
 }

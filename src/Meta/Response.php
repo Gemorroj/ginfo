@@ -44,6 +44,8 @@ class Response extends \ArrayObject //fixes for old api
             'uptime' => $this->os->getUptime(),
             'architecture' => $this->os->getArchitecture(),
             'virtualization' => $this->os->getVirtualization(),
+            'loggedUsers' => $this->os->getLoggedUsers(),
+            'model' => $this->os->getModel(),
             //'selinux' => '', // todo: parse ini file /etc/sysconfig/selinux
         ];
     }
