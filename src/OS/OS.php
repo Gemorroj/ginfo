@@ -138,4 +138,14 @@ abstract class OS
      * @return array
      */
     public abstract function getTemps();
+
+    /**
+     * @return array
+     */
+    public abstract function getProcesses();
+
+    /**
+     * @return array
+     */
+    public abstract function getServices();
 }

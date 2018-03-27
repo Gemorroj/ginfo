@@ -486,86 +486,48 @@ class Linux extends OS
         return $cards;
     }
 
-    /**
-     * getProcessStats.
-     *
-     * @return array of process stats
-     */
-    public function getProcessStats()
+
+    public function getProcesses()
     {
-        // We'll return this after stuffing it with useful info
-        $result = array(
-            'exists' => true,
-            'totals' => array(
-                'running' => 0,
-                'zombie' => 0,
-                'sleeping' => 0,
-                'stopped' => 0,
-            ),
-            'proc_total' => 0,
-            'threads' => 0,
-        );
+        $result = [];
 
-        // Get all the paths to each process' status file
-        $processes = glob('/proc/*/status', GLOB_NOSORT);
-
-        // Total
-        $result['proc_total'] = count($processes);
-
-        // Go through each
+        $processes = \glob('/proc/*/status', \GLOB_NOSORT);
         foreach ($processes as $process) {
-
-            // Don't waste time if we can't use it
-            if (!is_readable($process)) {
+            $statusContents = Common::getContents($process);
+            if (null === $statusContents) {
+                $result[] = [
+                    'name' => null,
+                    'commandLine' => null,
+                    'threads' => null,
+                    'state' => null,
+                    'workingSet' => null,
+                    'pid' => \basename(\dirname($process)),
+                ];
                 continue;
             }
 
-            // Get that file's contents
-            $status_contents = Common::getContents($process);
+            $info = $this->parseProcBlock($statusContents);
 
-            // Try getting state
-            preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
+            $cmdlineContents = Common::getContents(\dirname($process) . '/cmdline');
+            $uid = \explode("\t", $info['Uid'], 2)[0];
+            $user = \posix_getpwuid($uid);
 
-            // Well? Determine state
-            switch ($state_match[1]) {
-                case 'D': // disk sleep? wtf?
-                case 'S':
-                    $result['totals']['sleeping']++;
-                    break;
-                case 'Z':
-                    $result['totals']['zombie']++;
-                    break;
-                case 'R':
-                    $result['totals']['running']++;
-                    break;
-                case 'T':
-                    $result['totals']['stopped']++;
-                    break;
-            }
-
-            // Try getting number of threads
-            preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
-
-            // Well?
-            if ($threads_match) {
-                list(, $threads) = $threads_match;
-            }
-
-            // Append it on if it's good
-            if (is_numeric($threads)) {
-                $result['threads'] = $result['threads'] + $threads;
-            }
+            $result[] = [
+                'name' => $info['Name'],
+                'commandLine' => null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
+                'threads' => $info['Threads'],
+                'state' => $info['State'],
+                'memory' => $info['VmSize'],
+                'peakMemory' => $info['VmPeak'],
+                'pid' => \basename(\dirname($process)),
+                'user' => $user ? $user['name'] : $uid,
+            ];
         }
 
-        // Give off result
         return $result;
     }
 
-    /**
-     * getServices.
-     *
-     * @return array the services
-     */
+
     public function getServices()
     {
         // We allowed?
@@ -788,11 +750,10 @@ class Linux extends OS
             }
         }
 
-        if (\function_exists('posix_getpwuid')) {
-            \array_walk($users, function (&$item) {
-                $item = \posix_getpwuid($item)['name'];
-            });
-        }
+        \array_walk($users, function (&$item) {
+            $user = \posix_getpwuid($item);
+            $item = $user ? $user['name'] : $item;
+        });
 
         return $users;
     }
@@ -878,14 +839,14 @@ class Linux extends OS
 
         $info[] = $name;
 
-        $infostr = \implode(' ', $info);
+        $infoStr = \implode(' ', $info);
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
         if ($product && \mb_strpos($name, $product) === false && \mb_strpos($product, 'Filled') === false) {
-            return $product . ' (' . $infostr . ')';
+            return $product . ' (' . $infoStr . ')';
         } else {
-            return $infostr;
+            return $infoStr;
         }
     }
 }

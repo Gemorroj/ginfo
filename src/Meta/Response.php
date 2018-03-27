@@ -160,8 +160,22 @@ class Response extends \ArrayObject //fixes for old api
         return $this->os->getTemps();
     }
 
-    public function getProcess()
+    /**
+     * Processes
+     * @return array
+     */
+    public function getProcesses()
     {
-        //todo
+        return $this->os->getProcesses();
+    }
+
+    /**
+     * Services
+     *
+     * @return array
+     */
+    public function getServices()
+    {
+        return $this->os->getServices();
     }
 }

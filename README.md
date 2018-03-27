@@ -37,15 +37,16 @@ print_r($info); // and a whole lot more
  - CPU type/speed; Architecture
  - Mount point usage
  - Hard/optical/flash drives
- - Hardware devices (PCI) (need `pciutils`)
- - USB devices (need `usbutils`)
+ - Hardware devices (PCI) (linux: need `pciutils`)
+ - USB devices (linux: need `usbutils`)
  - Network devices and stats
  - Uptime/date booted
  - Hostname
  - Memory usage (physical and swap, need `free`)
- - Temperatures/voltages/fan speeds (need `hddtemp` as daemon, `mbmon` as daemon, `sensord` (part of `lm-sensors`), `hwmon`, `acpi themal zone`)
- - RAID arrays (need `mdadm`)
- - Motherboard (need dimedecode for linux)
+ - Temperatures/voltages/fan speeds (linux: need `hddtemp` as daemon, `mbmon` as daemon, `sensord` (part of `lm-sensors`), `hwmon`, `acpi themal zone`)
+ - RAID arrays (linux: need `mdadm`)
+ - Motherboard (linux: need `dimedecode`)
+ - Processes
  - Via included extensions:
    - Nvidia GPU temps
    - DHCPD leases

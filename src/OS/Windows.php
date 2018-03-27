@@ -443,18 +443,55 @@ class Windows extends OS
      *
      * @return array of process stats
      */
-    public function getProcessStats()
+    public function getProcesses()
     {
-        $result = array(
-            'exists' => true,
-            'proc_total' => 0,
-            'threads' => 0,
-        );
+        $displayState = function ($numberState) {
+            switch ($numberState) {
+                case 1:
+                    return 'other';
+                    break;
+                case 2:
+                    return 'ready';
+                    break;
+                case 3:
+                    return 'running';
+                    break;
+                case 4:
+                    return 'blocked';
+                    break;
+                case 5:
+                    return 'suspended blocked';
+                    break;
+                case 6:
+                    return 'suspended ready';
+                    break;
+                case 7:
+                    return 'terminated';
+                    break;
+                case 8:
+                    return 'stopped';
+                    break;
+                case 9:
+                    return 'growing';
+                    break;
+            }
+
+            return null;
+        };
 
         $info = $this->getInfo('Process');
+        $result = [];
         foreach ($info as $proc) {
-            $result['threads'] += $proc['ThreadCount'];
-            ++$result['proc_total'];
+            $result[] = [
+                'name' => $proc['Name'],
+                'commandLine' => $proc['CommandLine'],
+                'threads' => $proc['ThreadCount'],
+                'state' => $displayState($proc['ExecutionState']),
+                'memory' => $proc['VirtualSize'],
+                'peakMemory' => $proc['PeakVirtualSize'],
+                'pid' => $proc['ProcessId'],
+                'user' => $proc['Owner'],
+            ];
         }
 
         return $result;
