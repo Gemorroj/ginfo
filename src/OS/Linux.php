@@ -518,8 +518,8 @@ class Linux extends OS
                 'commandLine' => null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
                 'threads' => $info['Threads'],
                 'state' => $info['State'],
-                'memory' => $info['VmSize'],
-                'peakMemory' => $info['VmPeak'],
+                'memory' => isset($info['VmSize']) ? $info['VmSize'] : null,
+                'peakMemory' => isset($info['VmPeak']) ? $info['VmPeak'] : null,
                 'pid' => \basename(\dirname($process)),
                 'user' => $user ? $user['name'] : $uid,
             ];

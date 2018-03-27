@@ -45,6 +45,7 @@ class Systemd implements Parser
         unset($lines[0]);
 
         foreach ($lines as $line) {
+            $line = \ltrim('●', $line);
             $line = \trim($line);
             list($unit, $load, $active, $sub, $description) = \preg_split('/\s+/', $line, 5);
 
