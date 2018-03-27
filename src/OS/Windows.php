@@ -100,7 +100,7 @@ class Windows extends OS
 
         return [
             'memoryTotal' => $info['TotalVisibleMemorySize'],
-            'memoryUsed' => null, // todo
+            'memoryUsed' => $info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory'],
             'memoryFree' => $info['FreePhysicalMemory'],
             'memoryShared' => null, // todo
             'memoryBuffers' => null, // todo
@@ -335,7 +335,7 @@ class Windows extends OS
                 'portSpeed' => null, //todo
             ];
 
-            switch ($net['NetConnectionStatus']) {
+            switch ($net['B']) {
                 case 0:
                     $return[$net['Name']]['state'] = 'down';
                     break;
@@ -497,14 +497,22 @@ class Windows extends OS
         return $result;
     }
 
-    /**
-     * getServices.
-     *
-     * @return array the services
-     */
     public function getServices()
     {
-        return []; // TODO
+        $return = [];
+        $services = $this->getInfo('Service');
+
+        foreach ($services as $service) {
+            $return[] = [
+                'name' => $service['Name'],
+                'load' => null,
+                'active' => null,
+                'sub' => $service['State'],
+                'description' => $service['DisplayName'],
+            ];
+        }
+
+        return $return;
     }
 
 

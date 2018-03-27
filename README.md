@@ -41,7 +41,7 @@ print_r($info); // and a whole lot more
  - USB devices (linux: need `usbutils`)
  - Network devices and stats
  - Uptime
- - Memory usage (physical and swap, need `free`)
+ - Memory usage (physical and swap, linux: need `free`)
  - Temperatures/voltages/fan speeds (linux: need `hddtemp` as daemon, `mbmon` as daemon, `sensord` (part of `lm-sensors`), `hwmon`, `acpi themal zone`)
  - RAID arrays (linux: need `mdadm`)
  - Motherboard (linux: need `dimedecode`)
