@@ -151,6 +151,15 @@ class Response extends \ArrayObject //fixes for old api
         ];
     }
 
+    /**
+     * Temperatures
+     * @return array
+     */
+    public function getTemps()
+    {
+        return $this->os->getTemps();
+    }
+
     public function getProcess()
     {
         //todo

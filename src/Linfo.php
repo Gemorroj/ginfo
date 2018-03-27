@@ -69,12 +69,6 @@ class Linfo
     {
         // Array fields, tied to method names and default values...
         $fields = array(
-            'Temps' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['temps']),
-                'default' => array(),
-                'method' => 'getTemps',
-            ),
-
             'processStats' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['process_stats']),
                 'default' => array(),

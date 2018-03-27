@@ -250,7 +250,7 @@ class Smb implements Extension
                     // See if we can turn the uid into a username
                     $username = false;
                     if (function_exists('posix_getpwuid')) {
-                        if ($user_info = @posix_getpwuid($f['uid'])) {
+                        if ($user_info = posix_getpwuid($f['uid'])) {
                             $username = $user_info['name'];
                         }
                     }

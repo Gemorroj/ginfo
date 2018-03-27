@@ -100,7 +100,7 @@ class Dhcpd3_leases implements Extension
         // Make sure we have what we need. Stuff this requires doesn't exist on certain php installations
         if (function_exists('date_default_timezone_get') && class_exists('DateTime') && class_exists('DateTimeZone')) {
             // I only want this called once, hence value stored here. It also might fail
-            $local_timezone = @date_default_timezone_get();
+            $local_timezone = date_default_timezone_get();
 
             // Make sure it didn't fail
             if ($local_timezone !== false && is_string($local_timezone)) {

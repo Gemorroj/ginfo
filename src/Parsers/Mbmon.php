@@ -52,18 +52,18 @@ class Mbmon
     private function getSock()
     {
         // Try connecting
-        if (!($sock = @fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
+        if (!($sock = fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
             throw new \Exception('Error connecting');
         }
 
         // Try getting stuff
         $buffer = '';
-        while ($mid = @fgets($sock)) {
+        while ($mid = fgets($sock)) {
             $buffer .= $mid;
         }
 
         // Quit
-        @fclose($sock);
+        fclose($sock);
 
         // Output:
         return $buffer;

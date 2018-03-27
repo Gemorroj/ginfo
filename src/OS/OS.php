@@ -133,4 +133,9 @@ abstract class OS
      * @return array
      */
     public abstract function getWifi();
+
+    /**
+     * @return array
+     */
+    public abstract function getTemps();
 }

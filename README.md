@@ -44,7 +44,7 @@ print_r($info); // and a whole lot more
  - Uptime/date booted
  - Hostname
  - Memory usage (physical and swap, need `free`)
- - Temperatures/voltages/fan speeds
+ - Temperatures/voltages/fan speeds (need `hddtemp`, `mbmon`, `sensord`, `hwmon`, `acpi`)
  - RAID arrays (need `mdadm`)
  - Motherboard (need dimedecode for linux)
  - Via included extensions:

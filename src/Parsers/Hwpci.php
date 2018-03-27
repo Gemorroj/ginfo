@@ -49,7 +49,7 @@ class Hwpci
      */
     public function fetchUsbIdsLinux()
     {
-        foreach ((array)@\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
 
             // First try uevent
             if (\is_readable($path . '/uevent') &&
@@ -68,7 +68,7 @@ class Hwpci
      */
     public function fetchPciIdsLinux()
     {
-        foreach ((array)@\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
 
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($f_device = Common::getContents($path . '/device', '')) && ($f_vend = Common::getContents($path . '/vendor', '')) && $f_device && $f_vend) {
@@ -90,7 +90,7 @@ class Hwpci
      */
     public function fetchPciNames()
     {
-        for ($v = false, $file = @\fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
+        for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
@@ -99,7 +99,7 @@ class Hwpci
                 }
             }
         }
-        $file && @\fclose($file);
+        $file && \fclose($file);
     }
 
     /**
@@ -107,7 +107,7 @@ class Hwpci
      */
     public function fetchUsbNames()
     {
-        for ($v = false, $file = @\fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
+        for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
@@ -116,7 +116,7 @@ class Hwpci
                 }
             }
         }
-        $file && @fclose($file);
+        $file && fclose($file);
     }
 
     /**

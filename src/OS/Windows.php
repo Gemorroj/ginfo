@@ -400,6 +400,11 @@ class Windows extends OS
         return []; //todo
     }
 
+    public function getTemps()
+    {
+        return []; //todo
+    }
+
     public function getSoundCards()
     {
         $cards = [];

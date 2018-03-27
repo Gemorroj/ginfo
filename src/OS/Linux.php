@@ -138,7 +138,7 @@ class Linux extends OS
     {
         $partitions = [];
         $partitions_contents = Common::getContents('/proc/partitions');
-        if (@\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, \PREG_SET_ORDER) > 0) {
+        if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, \PREG_SET_ORDER) > 0) {
             foreach ($partitions_match as $partition) {
                 $partitions[$partition[2]][] = [
                     'size' => $partition[1] * 1024,
@@ -148,7 +148,7 @@ class Linux extends OS
         }
 
         $drives = [];
-        foreach ((array)@\glob('/sys/block/*/device/model', \GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/block/*/device/model', \GLOB_NOSORT) as $path) {
             $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
@@ -180,7 +180,7 @@ class Linux extends OS
             return [];
         }
 
-        if (@\preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER) === false) {
+        if (\preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER) === false) {
             return [];
         }
 
@@ -189,8 +189,8 @@ class Linux extends OS
             // Spaces and other things in the mount path are escaped C style. Fix that.
             $mount[2] = \stripcslashes($mount[2]);
 
-            $size = @\disk_total_space($mount[2]);
-            $free = @\disk_free_space($mount[2]);
+            $size = \disk_total_space($mount[2]);
+            $free = \disk_free_space($mount[2]);
             $used = $size !== false && $free !== false ? $size - $free : false;
 
             $mounts[] = [
@@ -309,13 +309,13 @@ class Linux extends OS
             $hwmon_vals = array();
 
             // Wacky location
-            foreach ((array)@glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            foreach (glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $initpath = rtrim($path, 'input');
                 $value = Common::getContents($path);
                 $base = basename($path);
                 $labelpath = $initpath . 'label';
                 $showemptyfans = isset(Settings::getInstance()->getSettings()['temps_show0rpmfans']) ? Settings::getInstance()->getSettings()['temps_show0rpmfans'] : false;
-                $drivername = @basename(@readlink(dirname($path) . '/driver')) ?: false;
+                $drivername = basename(readlink(dirname($path) . '/driver')) ?: false;
 
                 // Temperatures
                 if (is_file($labelpath) && \mb_strpos($base, 'temp') === 0) {
@@ -354,14 +354,14 @@ class Linux extends OS
             }
         }
 
-        // thermal_zone?
+        // thermal_zone? (acpi)
         if (array_key_exists('thermal_zone', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['thermal_zone'])) {
 
             // Store them here
             $thermal_zone_vals = array();
 
             // Wacky location
-            foreach ((array)@glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            foreach (glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
                 $labelpath = $path . DIRECTORY_SEPARATOR . 'type';
                 $valuepath = $path . DIRECTORY_SEPARATOR . 'temp';
 
@@ -390,7 +390,7 @@ class Linux extends OS
         }
 
         // Laptop backlight percentage
-        foreach ((array)@glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
+        foreach (glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
             $dir = dirname($bl);
             if (!is_file($dir . '/actual_brightness')) {
                 continue;
@@ -452,7 +452,7 @@ class Linux extends OS
     {
         $return = [];
 
-        foreach ((array)@\glob('/sys/class/net/*', \GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/class/net/*', \GLOB_NOSORT) as $path) {
             $nic = \basename($path);
 
             $operstateContents = Common::getContents($path . '/operstate');
@@ -493,7 +493,7 @@ class Linux extends OS
                 if (\in_array($typeMatch, ['PCI', 'USB'])) {
                     $type = 'Ethernet (' . $typeMatch . ')';
 
-                    if (($ueventContents = @\parse_ini_file($path . '/device/uevent')) && isset($ueventContents['DRIVER'])) {
+                    if (($ueventContents = \parse_ini_file($path . '/device/uevent')) && isset($ueventContents['DRIVER'])) {
                         $type .= ' (' . $ueventContents['DRIVER'] . ')';
                     }
                 } elseif ($typeMatch === 'VIRTIO') {
@@ -541,7 +541,7 @@ class Linux extends OS
     {
         $return = [];
 
-        $bats = (array)@\glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
+        $bats = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
         foreach ($bats as $b) {
             foreach ([$b . '/manufacturer', $b . '/status'] as $f) {
                 if (!\is_file($f)) {
@@ -581,7 +581,7 @@ class Linux extends OS
             return [];
         }
 
-        if (false === @\preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, \PREG_SET_ORDER)) {
+        if (false === \preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, \PREG_SET_ORDER)) {
             return [];
         }
 
@@ -648,7 +648,7 @@ class Linux extends OS
         );
 
         // Get all the paths to each process' status file
-        $processes = (array)@glob('/proc/*/status', GLOB_NOSORT);
+        $processes = glob('/proc/*/status', GLOB_NOSORT);
 
         // Total
         $result['proc_total'] = count($processes);
@@ -665,7 +665,7 @@ class Linux extends OS
             $status_contents = Common::getContents($process);
 
             // Try getting state
-            @preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
+            preg_match('/^State:\s+(\w)/m', $status_contents, $state_match);
 
             // Well? Determine state
             switch ($state_match[1]) {
@@ -685,7 +685,7 @@ class Linux extends OS
             }
 
             // Try getting number of threads
-            @preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
+            preg_match('/^Threads:\s+(\d+)/m', $status_contents, $threads_match);
 
             // Well?
             if ($threads_match) {
@@ -725,7 +725,7 @@ class Linux extends OS
         $pids = array();
         $do_process_search = false;
         if (count(Settings::getInstance()->getSettings()['services']['executables']) > 0) {
-            $potential_paths = @glob('/proc/*/cmdline');
+            $potential_paths = glob('/proc/*/cmdline');
             if (is_array($potential_paths)) {
                 $num_paths = count($potential_paths);
                 $do_process_search = true;
@@ -966,7 +966,7 @@ class Linux extends OS
         }
 
         // Sometimes /proc/modules is missing what is in this dir on VMs
-        foreach (@\glob('/sys/bus/pci/drivers/*') as $name) {
+        foreach (\glob('/sys/bus/pci/drivers/*') as $name) {
             $modules[] = \basename($name);
         }
 
