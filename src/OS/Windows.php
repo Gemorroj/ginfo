@@ -335,7 +335,7 @@ class Windows extends OS
                 'portSpeed' => null, //todo
             ];
 
-            switch ($net['B']) {
+            switch ($net['NetConnectionStatus']) {
                 case 0:
                     $return[$net['Name']]['state'] = 'down';
                     break;
