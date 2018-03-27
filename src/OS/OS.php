@@ -84,4 +84,9 @@ abstract class OS
      * @return array
      */
     public abstract function getMemory();
+
+    /**
+     * @return array
+     */
+    public abstract function getSoundCards();
 }

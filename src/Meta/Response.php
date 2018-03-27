@@ -85,6 +85,16 @@ class Response extends \ArrayObject //fixes for old api
         ];
     }
 
+
+    /**
+     * Sound cards
+     */
+    public function getSoundCard()
+    {
+        return $this->os->getSoundCards();
+    }
+
+
     public function getDisk()
     {
         //todo
@@ -101,11 +111,6 @@ class Response extends \ArrayObject //fixes for old api
     }
 
     public function getPci()
-    {
-        //todo
-    }
-
-    public function getSoundCard()
     {
         //todo
     }

@@ -828,33 +828,19 @@ class Linux extends OS
         return $return;
     }
 
-    /**
-     * getSoundCards.
-     *
-     * @return array of soundcards
-     */
+
     public function getSoundCards()
     {
-        // This should be it
-        $file = '/proc/asound/cards';
-
-        // eh?
-        if (!is_file($file)) {
-            Errors::add('Linux sound card detector', '/proc/asound/cards does not exist');
+        $contents = Common::getContents('/proc/asound/cards');
+        if (null === $contents) {
+            return [];
         }
 
-        // Get contents and parse
-        $contents = Common::getContents($file);
-
-        // Parse
-        if (preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, PREG_SET_ORDER) == 0) {
-            return array();
+        if (\preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, \PREG_SET_ORDER) === 0) {
+            return [];
         }
 
-        // eh?
-        $cards = array();
-
-        // Deal with results
+        $cards = [];
         foreach ($matches as $card) {
             $cards[] = array(
                 'number' => $card[1],
@@ -862,7 +848,6 @@ class Linux extends OS
             );
         }
 
-        // Give cards
         return $cards;
     }
 

@@ -403,11 +403,7 @@ class Windows extends OS
         return [];
     }
 
-    /**
-     * getSoundCards.
-     *
-     * @return array of soundcards
-     */
+
     public function getSoundCards()
     {
         $cards = [];
@@ -417,12 +413,11 @@ class Windows extends OS
             $info = [$info]; // if one SoundDevice convert to many SoundDevices
         }
 
-        foreach ($info as $key => $card) {
-            $cards[] = array(
-                'number' => $key,
+        foreach ($info as $card) {
+            $cards[] = [
                 'vendor' => $card['Manufacturer'],
                 'card' => $card['Caption'],
-            );
+            ];
         }
 
         return $cards;

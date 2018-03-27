@@ -49,6 +49,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         //\print_r($info->getGeneral());
         //\print_r($info->getCpu());
-        \print_r($info->getMemory());
+        //\print_r($info->getMemory());
+        \print_r($info->getSoundCard());
     }
 }
