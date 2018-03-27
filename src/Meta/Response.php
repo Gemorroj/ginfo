@@ -117,13 +117,26 @@ class Response extends \ArrayObject //fixes for old api
     }
 
     /**
-     * Network devices
+     * Network devices and wifi
      * @return array
      */
     public function getNetwork()
     {
-        return $this->os->getNetwork();
+        return [
+            'network' => $this->os->getNetwork(),
+            'wifi' => $this->os->getWifi(),
+        ];
     }
+
+    /**
+     * Battery status
+     * @return array
+     */
+    public function getBattery()
+    {
+        return $this->os->getBattery();
+    }
+
 
     /**
      * Hard disk info

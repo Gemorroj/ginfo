@@ -19,8 +19,6 @@
 
 namespace Linfo;
 
-use Linfo\Meta\Settings;
-
 class Common
 {
     /**
@@ -67,7 +65,7 @@ class Common
         }
 
         // Get the notation
-        $notation = Settings::getInstance()->getSettings()['byte_notation'] == 1000 ? 1000 : 1024;
+        $notation = 1024;
 
         // Fixes large disk size overflow issue
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207

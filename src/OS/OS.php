@@ -123,4 +123,14 @@ abstract class OS
      * @return array
      */
     public abstract function getRaid();
+
+    /**
+     * @return array
+     */
+    public abstract function getBattery();
+
+    /**
+     * @return array
+     */
+    public abstract function getWifi();
 }

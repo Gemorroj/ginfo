@@ -75,18 +75,6 @@ class Linfo
                 'method' => 'getTemps',
             ),
 
-            'Battery' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['battery']),
-                'default' => array(),
-                'method' => 'getBattery',
-            ),
-
-            'Wifi' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['wifi']),
-                'default' => array(),
-                'method' => 'getWifi',
-            ),
-
             'processStats' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['process_stats']),
                 'default' => array(),

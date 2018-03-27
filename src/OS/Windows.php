@@ -20,7 +20,6 @@
 
 namespace Linfo\OS;
 
-use Linfo\Common;
 use Symfony\Component\Process\Process;
 
 /**
@@ -390,16 +389,16 @@ class Windows extends OS
         return $return;
     }
 
-    /**
-     * getWifi.
-     *
-     * @return array of wifi devices
-     */
+
     public function getWifi()
     {
-        return [];
+        return []; // todo
     }
 
+    public function getBattery()
+    {
+        return []; //todo
+    }
 
     public function getSoundCards()
     {

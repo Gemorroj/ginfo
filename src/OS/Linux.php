@@ -536,100 +536,71 @@ class Linux extends OS
         return $return;
     }
 
-    /**
-     * getBattery.
-     *
-     * @return array of battery status
-     */
+
     public function getBattery()
     {
-        // Return values
-        $return = array();
+        $return = [];
 
-        // Here they should be
-        $bats = (array)@glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
-
-        // Get vals for each battery
+        $bats = (array)@\glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
         foreach ($bats as $b) {
-            foreach (array($b . '/manufacturer', $b . '/status') as $f) {
-                if (!is_file($f)) {
-                    continue 2;
+            foreach ([$b . '/manufacturer', $b . '/status'] as $f) {
+                if (!\is_file($f)) {
+                    continue 2; // http://php.net/continue
                 }
             }
 
-            // Get these from the simple text files
-            switch (true) {
-                case is_file($b . '/energy_full'):
-                    $charge_full = Common::getIntFromFile($b . '/energy_full');
-                    $charge_now = Common::getIntFromFile($b . '/energy_now');
-                    break;
-                case is_file($b . '/charge_full'):
-                    $charge_full = Common::getIntFromFile($b . '/charge_full');
-                    $charge_now = Common::getIntFromFile($b . '/charge_now');
-                    break;
-                default:
-                    continue;
-                    break;
+            if (\is_file($b . '/energy_full')) {
+                $chargeFull = Common::getContents($b . '/energy_full');
+                $chargeNow = Common::getContents($b . '/energy_now');
+            } else if (\is_file($b . '/charge_full')) {
+                $chargeFull = Common::getContents($b . '/charge_full');
+                $chargeNow = Common::getContents($b . '/charge_now');
+            } else {
+                continue;
             }
 
-            // Alleged percentage
-            $percentage = $charge_now != 0 && $charge_full != 0 ? (round($charge_now / $charge_full, 4) * 100) : '?';
+            $percentage = $chargeNow != 0 && $chargeFull != 0 ? (\round($chargeNow / $chargeFull, 4) * 100) : '?';
 
-            // Save result set
-            $return[] = array(
-                'charge_full' => $charge_full,
-                'charge_now' => $charge_now,
-                'percentage' => (is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
+            $return[] = [
+                'charge_full' => $chargeFull,
+                'charge_now' => $chargeNow,
+                'percentage' => (\is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
                 'device' => Common::getContents($b . '/manufacturer') . ' ' . Common::getContents($b . '/model_name', 'Unknown'),
                 'state' => Common::getContents($b . '/status', 'Unknown'),
-            );
+            ];
         }
 
-        // Give it
         return $return;
     }
 
-    /**
-     * getWifi.
-     *
-     * @return array of wifi devices
-     */
     public function getWifi()
     {
-        // Return these
-        $return = array();
-
-        // In here
+        $return = [];
         $contents = Common::getContents('/proc/net/wireless');
-
-        // Oi
-        if ($contents == false) {
-            Errors::add('Linux WiFi info parser', '/proc/net/wireless does not exist');
-
-            return $return;
+        if (null === $contents) {
+            return [];
         }
 
-        // Parse
-        @preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, PREG_SET_ORDER);
+        if (false === @\preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, \PREG_SET_ORDER)) {
+            return [];
+        }
 
-        // Match
         foreach ($match as $wlan) {
-            $return[] = array(
+            $return[] = [
                 'device' => $wlan[1],
                 'status' => $wlan[2],
-                'quality_link' => $wlan[3],
-                'quality_level' => $wlan[4],
-                'quality_noise' => $wlan[5],
-                'dis_nwid' => $wlan[6],
-                'dis_crypt' => $wlan[7],
-                'dis_frag' => $wlan[8],
-                'dis_retry' => $wlan[9],
-                'dis_misc' => $wlan[10],
-                'mis_beac' => $wlan[11],
-            );
+                'qualityLink' => $wlan[3],
+                'qualityLevel' => $wlan[4],
+                'qualityNoise' => $wlan[5],
+                'disNwid' => $wlan[6],
+                'disCrypt' => $wlan[7],
+                'disFrag' => $wlan[8],
+                'disRetry' => $wlan[9],
+                'disMisc' => $wlan[10],
+                'misBeac' => $wlan[11],
+            ];
         }
 
-        // Done
         return $return;
     }
 
