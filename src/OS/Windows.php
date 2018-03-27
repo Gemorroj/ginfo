@@ -276,32 +276,50 @@ class Windows extends OS
         return $volumes;
     }
 
-    /**
-     * getDevs.
-     *
-     * @return array of devices
-     */
-    public function getDevs()
+
+    public function getPci()
     {
         $devs = [];
 
         $info = $this->getInfo('PnPEntity');
 
         foreach ($info as $pnpDev) {
-            $type = explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (($type != 'USB' && $type != 'PCI') || (empty($pnpDev['Caption']) || mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
+            $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
+            if (($type !== 'PCI') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
                 continue;
             }
 
-            $devs[] = array(
+            $devs[] = [
                 'vendor' => $pnpDev['Manufacturer'],
                 'device' => $pnpDev['Caption'],
-                'type' => $type,
-            );
+            ];
         }
 
         return $devs;
     }
+
+
+    public function getUsb()
+    {
+        $devs = [];
+
+        $info = $this->getInfo('PnPEntity');
+
+        foreach ($info as $pnpDev) {
+            $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
+            if (($type !== 'USB') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
+                continue;
+            }
+
+            $devs[] = [
+                'vendor' => $pnpDev['Manufacturer'],
+                'device' => $pnpDev['Caption'],
+            ];
+        }
+
+        return $devs;
+    }
+
 
     /**
      * getNet.

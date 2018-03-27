@@ -19,7 +19,6 @@
 
 namespace Linfo\Parsers;
 
-use Linfo\Meta\Errors;
 use Linfo\Common;
 
 /**
@@ -29,41 +28,37 @@ use Linfo\Common;
  */
 class Hwpci
 {
-    private $_usb_file = '';
-    private $_pci_file = '';
-    private $_usb_entries = array();
-    private $_pci_entries = array();
-    private $_usb_devices = array();
-    private $_pci_devices = array();
-    private $_result = array();
+    private $file;
+    private $entries = [];
+    private $devices = [];
 
     /**
-     * Constructor.
-     * @param string $usb_file
-     * @param string $pci_file
+     * @param string $file
      */
-    public function __construct($usb_file, $pci_file)
+    final private function __construct($file)
     {
-        // Localize paths to the ids files
-        $this->_pci_file = $pci_file;
-        $this->_usb_file = $usb_file;
+        $this->file = $file;
+    }
+
+    final private function __clone()
+    {
     }
 
     /**
      * Get the USB ids from /sys.
      */
-    private function _fetchUsbIdsLinux()
+    public function fetchUsbIdsLinux()
     {
-        foreach ((array)@glob('/sys/bus/usb/devices/*', GLOB_NOSORT) as $path) {
+        foreach ((array)@\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
 
             // First try uevent
-            if (is_readable($path . '/uevent') &&
-                preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', strtolower(Common::getContents($path . '/uevent')), $match)) {
-                $this->_usb_entries[str_pad($match[1], 4, '0', STR_PAD_LEFT)][str_pad($match[2], 4, '0', STR_PAD_LEFT)] = 1;
+            if (\is_readable($path . '/uevent') &&
+                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \strtolower(Common::getContents($path . '/uevent')), $match)) {
+                $this->entries[\str_pad($match[1], 4, '0', \STR_PAD_LEFT)][\str_pad($match[2], 4, '0', \STR_PAD_LEFT)] = 1;
             } // And next modalias 
-            elseif (is_readable($path . '/modalias') &&
-                preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
-                $this->_usb_entries[strtolower($match[1])][strtolower($match[2])] = 1;
+            elseif (\is_readable($path . '/modalias') &&
+                \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
+                $this->entries[\strtolower($match[1])][\strtolower($match[2])] = 1;
             }
         }
     }
@@ -71,24 +66,21 @@ class Hwpci
     /**
      * Get the PCI ids from /sys.
      */
-    private function _fetchPciIdsLinux()
+    public function fetchPciIdsLinux()
     {
-        foreach ((array)@glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
+        foreach ((array)@\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
 
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($f_device = Common::getContents($path . '/device', '')) && ($f_vend = Common::getContents($path . '/vendor', '')) &&
-                $f_device != '' && $f_vend != '') {
-                list(, $v_id) = explode('x', $f_vend, 2);
-                list(, $d_id) = explode('x', $f_device, 2);
-                $this->_pci_entries[$v_id][$d_id] = 1;
+            if (($f_device = Common::getContents($path . '/device', '')) && ($f_vend = Common::getContents($path . '/vendor', '')) && $f_device && $f_vend) {
+                list(, $v_id) = \explode('x', $f_vend, 2);
+                list(, $d_id) = \explode('x', $f_device, 2);
+                $this->entries[$v_id][$d_id] = 1;
             } // Try uevent nextly
-            elseif (is_readable($path . '/uevent') &&
-                preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', strtolower(Common::getContents($path . '/uevent')), $match)) {
-                $this->_pci_entries[$match[1]][$match[2]] = 1;
+            elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \strtolower(Common::getContents($path . '/uevent')), $match)) {
+                $this->entries[$match[1]][$match[2]] = 1;
             } // Now for modalias
-            elseif (is_readable($path . '/modalias') &&
-                preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
-                $this->_pci_entries[strtolower($match[1])][strtolower($match[2])] = 1;
+            elseif (\is_readable($path . '/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
+                $this->entries[\strtolower($match[1])][\strtolower($match[2])] = 1;
             }
         }
     }
@@ -96,31 +88,31 @@ class Hwpci
     /**
      * Use the pci.ids file to translate the ids to names.
      */
-    private function _fetchPciNames()
+    public function fetchPciNames()
     {
-        for ($v = false, $file = @fopen($this->_pci_file, 'r'); $file != false && $contents = fgets($file);) {
-            if (preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) == 1) {
+        for ($v = false, $file = @\fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
+            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
-            } elseif (preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) == 1) {
-                if ($v && isset($this->_pci_entries[strtolower($v[1])][strtolower($dev_match[1])])) {
-                    $this->_pci_devices[$v[1]][$dev_match[1]] = array('vendor' => rtrim($v[2]), 'device' => rtrim($dev_match[2]));
+            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
+                if ($v && isset($this->entries[\strtolower($v[1])][\strtolower($dev_match[1])])) {
+                    $this->devices[$v[1]][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
                 }
             }
         }
-        $file && @fclose($file);
+        $file && @\fclose($file);
     }
 
     /**
      * Use the usb.ids file to translate the ids to names.
      */
-    private function _fetchUsbNames()
+    public function fetchUsbNames()
     {
-        for ($v = false, $file = @fopen($this->_usb_file, 'r'); $file != false && $contents = fgets($file);) {
-            if (preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) == 1) {
+        for ($v = false, $file = @\fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
+            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
                 $v = $vend_match;
-            } elseif (preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) == 1) {
-                if ($v && isset($this->_usb_entries[strtolower($v[1])][strtolower($dev_match[1])])) {
-                    $this->_usb_devices[strtolower($v[1])][$dev_match[1]] = array('vendor' => rtrim($v[2]), 'device' => rtrim($dev_match[2]));
+            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
+                if ($v && isset($this->entries[\strtolower($v[1])][\strtolower($dev_match[1])])) {
+                    $this->devices[\strtolower($v[1])][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
                 }
             }
         }
@@ -128,23 +120,30 @@ class Hwpci
     }
 
     /**
-     * Do its goddam job.
-     * @param string $os
+     * @param string $file
+     * @return array
      */
-    public function work($os)
+    public static function workUsb($file)
     {
-        switch (strtolower($os)) {
-            case 'linux':
-                $this->_fetchPciIdsLinux();
-                $this->_fetchUsbIdsLinux();
-                break;
-            default:
-                return;
-                break;
-        }
+        $obj = new self($file);
+        $obj->fetchUsbIdsLinux();
+        $obj->fetchUsbNames();
 
-        $this->_fetchPciNames();
-        $this->_fetchUsbNames();
+        return $obj->result();
+    }
+
+    /**
+     * @param string $file
+     * @return array
+     */
+    public static function workPci($file)
+    {
+        $obj = new self($file);
+
+        $obj->fetchPciIdsLinux();
+        $obj->fetchPciNames();
+
+        return $obj->result();
     }
 
     /**
@@ -154,17 +153,14 @@ class Hwpci
      */
     public function result()
     {
-        foreach (array_keys((array)$this->_pci_devices) as $v) {
-            foreach ($this->_pci_devices[$v] as $d) {
-                $this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'PCI');
-            }
-        }
-        foreach (array_keys((array)$this->_usb_devices) as $v) {
-            foreach ($this->_usb_devices[$v] as $d) {
-                $this->_result[] = array('vendor' => $d['vendor'], 'device' => $d['device'], 'type' => 'USB');
+        $result = [];
+
+        foreach (\array_keys($this->devices) as $v) {
+            foreach ($this->devices[$v] as $d) {
+                $result[] = ['vendor' => $d['vendor'], 'device' => $d['device']];
             }
         }
 
-        return $this->_result;
+        return $result;
     }
 }

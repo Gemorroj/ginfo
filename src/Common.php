@@ -30,12 +30,11 @@ class Common
      * none are found, it returns false
      * @param string[] $paths
      * @return null|string
-     * @deprecated
      */
     public static function locateActualPath(array $paths)
     {
         foreach ($paths as $path) {
-            if (is_file($path)) {
+            if (\file_exists($path)) {
                 return $path;
             }
         }

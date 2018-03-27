@@ -81,29 +81,10 @@ class Linfo
                 'method' => 'getMounts',
             ),
 
-            'Load' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['load']),
-                'default' => array(),
-                'method' => 'getLoad',
-            ),
-
-
-            'Model' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['model']),
-                'default' => array(),
-                'method' => 'getModel',
-            ),
-
             'Network Devices' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['network']),
                 'default' => array(),
                 'method' => 'getNet',
-            ),
-
-            'Devices' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['devices']),
-                'default' => array(),
-                'method' => 'getDevs',
             ),
 
             'Temps' => array(
@@ -130,12 +111,6 @@ class Linfo
                 'method' => 'getWifi',
             ),
 
-            'SoundCards' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['sound']),
-                'default' => array(),
-                'method' => 'getSoundCards',
-            ),
-
             'processStats' => array(
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['process_stats']),
                 'default' => array(),
@@ -146,12 +121,6 @@ class Linfo
                 'show' => !empty(Settings::getInstance()->getSettings()['show']['services']),
                 'default' => array(),
                 'method' => 'getServices',
-            ),
-
-            'numLoggedIn' => array(
-                'show' => !empty(Settings::getInstance()->getSettings()['show']['numLoggedIn']),
-                'default' => false,
-                'method' => 'getnumLoggedIn',
             ),
 
             'phpVersion' => array(

@@ -38,11 +38,12 @@ print_r($info); // and a whole lot more
  - CPU type/speed; Architecture
  - Mount point usage
  - Hard/optical/flash drives
- - Hardware Devices
+ - Hardware devices (PCI) (need `pciutils`)
+ - USB devices (need `usbutils`)
  - Network devices and stats
  - Uptime/date booted
  - Hostname
- - Memory usage (physical and swap, if possible)
+ - Memory usage (physical and swap, need `free`)
  - Temperatures/voltages/fan speeds
  - RAID arrays
  - Motherboard (need dimedecode for linux)

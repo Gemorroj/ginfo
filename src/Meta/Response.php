@@ -33,6 +33,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * General info
+     * @return array
      */
     public function getGeneral()
     {
@@ -52,6 +53,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * CPU info
+     * @return array
      */
     public function getCpu()
     {
@@ -69,6 +71,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * Memory info
+     * @return array
      */
     public function getMemory()
     {
@@ -87,9 +90,26 @@ class Response extends \ArrayObject //fixes for old api
         ];
     }
 
+    /**
+     * USB devices
+     */
+    public function getUsb()
+    {
+        return $this->os->getUsb();
+    }
+
+    /**
+     * PCI devices
+     * @return array
+     */
+    public function getPci()
+    {
+        return $this->os->getPci();
+    }
 
     /**
      * Sound cards
+     * @return array
      */
     public function getSoundCard()
     {
@@ -103,16 +123,6 @@ class Response extends \ArrayObject //fixes for old api
     }
 
     public function getNetwork()
-    {
-        //todo
-    }
-
-    public function getUsb()
-    {
-        //todo
-    }
-
-    public function getPci()
     {
         //todo
     }

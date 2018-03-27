@@ -484,34 +484,43 @@ class Linux extends OS
         return $mounts;
     }
 
+
     /**
-     * getDevs.
-     *
-     * @return array of devices
+     * usbutils wrapper
+     * @return array|null
      */
-    public function getDevs()
+    public function getUsb()
     {
-        // Location of useful paths
-        $pci_ids = Common::locateActualPath(array(
-            '/usr/share/misc/pci.ids',    // debian/ubuntu
-            '/usr/share/pci.ids',        // opensuse
-            '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
-        ));
-        $usb_ids = Common::locateActualPath(array(
+        $usbIds = Common::locateActualPath([
             '/usr/share/misc/usb.ids',    // debian/ubuntu
             '/usr/share/usb.ids',        // opensuse
             '/usr/share/hwdata/usb.ids',    // centos. maybe also redhat/fedora
-        ));
+        ]);
 
-        // Did we not get them?
-        $pci_ids || Errors::add('Linux Device Finder', 'Cannot find pci.ids; ensure pciutils is installed.');
-        $usb_ids || Errors::add('Linux Device Finder', 'Cannot find usb.ids; ensure usbutils is installed.');
+        if (!$usbIds) {
+            return null;
+        }
 
-        // Class that does it
-        $hw = new Hwpci($usb_ids, $pci_ids);
-        $hw->work('linux');
+        return Hwpci::workUsb($usbIds);
+    }
 
-        return $hw->result();
+    /**
+     * pciutils wrapper
+     * @return array|null
+     */
+    public function getPci()
+    {
+        $pciIds = Common::locateActualPath([
+            '/usr/share/misc/pci.ids',    // debian/ubuntu
+            '/usr/share/pci.ids',        // opensuse
+            '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
+        ]);
+
+        if (!$pciIds) {
+            return null;
+        }
+
+        return Hwpci::workPci($pciIds);
     }
 
     /**
