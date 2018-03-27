@@ -21,10 +21,6 @@ namespace Linfo\Tests;
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
 
-if (class_exists('\PHPUnit_Framework_TestCase')) {
-    class_alias('\PHPUnit_Framework_TestCase', '\PHPUnit\Framework\TestCase');
-}
-
 class LinfoTest extends \PHPUnit\Framework\TestCase
 {
     /*
@@ -51,6 +47,8 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $linfo->scan();
         $info = $linfo->getInfo();
 
+        //\print_r($info->getGeneral());
+        //\print_r($info->getCpu());
         \print_r($info->getMemory());
     }
 }

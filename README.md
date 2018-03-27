@@ -10,6 +10,7 @@
 - no need `COM` extension on Windows, but need powershell
 - minimal windows 10 support
 - minor code improvements
+- minimal php version 7.1
 
 
 ### PHP library usage
@@ -56,7 +57,7 @@ print_r($info); // and a whole lot more
    - more
 
 ## System requirements:
- - At least PHP 5.6
+ - At least PHP 7.1
  - If you are using PHP 7.1.9 or lower, you might need to disable the opcache extension.
  - pcre extension
 
@@ -69,5 +70,5 @@ print_r($info); // and a whole lot more
  - Tested with the 2.6.x/3.x kernels
 
 ### Extensions
- - See a list of php files in src/Linfo/Extensions/
+ - See a list of php files in src/Extensions/
  - Open them and look at the comment at the top of the file for usage
