@@ -88,7 +88,7 @@ class Linux extends OS
             return \count($out);
         };
         $detectVirtual = function (array $cpuData) {
-            echo \count($cpuData);
+            return \count($cpuData);
         };
         $detectCores = function (array $cpuData) {
             $out = [];
