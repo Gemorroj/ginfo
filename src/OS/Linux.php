@@ -690,7 +690,7 @@ class Linux extends OS
                 ],
                 'state' => $state,
                 'type' => $type,
-                'port_speed' => $speed,
+                'portSpeed' => $speed,
             ];
         }
 

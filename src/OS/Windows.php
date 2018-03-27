@@ -341,8 +341,9 @@ class Windows extends OS
                     'errors' => 0,
                     'packets' => 0,
                 ],
-                'state' => 0,
+                'state' => null,
                 'type' => $net['AdapterType'],
+                'portSpeed' => null, //todo
             ];
 
             switch ($net['NetConnectionStatus']) {
