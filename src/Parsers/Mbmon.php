@@ -20,53 +20,38 @@
 
 namespace Linfo\Parsers;
 
-/**
- * Deal with MbMon
- */
-class Mbmon
+class Mbmon implements Parser
 {
-    // Store these
-    protected $host;
-    protected $port;
-
-    // Default socket connect timeout
-    const TIMEOUT = 3;
-
-    /**
-     * Localize host and port
-     * @param string $host
-     * @param int $port
-     */
-    public function setAddress($host, $port = 411)
+    final private function __construct()
     {
-        $this->host = $host;
-        $this->port = $port;
+    }
+
+    final private function __clone()
+    {
     }
 
     /**
      * Connect to host/port and get info
      *
-     * @return string
-     * @throws \Exception
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     * @return null|string
      */
-    private function getSock()
+    private function getData($host, $port, $timeout)
     {
-        // Try connecting
-        if (!($sock = fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
-            throw new \Exception('Error connecting');
+        $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
+        if (!$sock) {
+            return null;
         }
 
-        // Try getting stuff
-        $buffer = '';
-        while ($mid = fgets($sock)) {
-            $buffer .= $mid;
+        $data = '';
+        while ($mid = \fgets($sock)) {
+            $data .= $mid;
         }
+        \fclose($sock);
 
-        // Quit
-        fclose($sock);
-
-        // Output:
-        return $buffer;
+        return $data;
     }
 
     /**
@@ -77,18 +62,17 @@ class Mbmon
      */
     private function parseSockData($data)
     {
-        $return = array();
+        $return = [];
 
-        $lines = (array)explode("\n", trim($data));
-
+        $lines = \explode("\n", \trim($data));
         foreach ($lines as $line) {
-            if (preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) == 1) {
-                $return[] = array(
+            if (\preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) === 1) {
+                $return[] = [
                     'path' => 'N/A',
                     'name' => $match[1],
                     'temp' => $match[2],
-                    'unit' => '', // TODO
-                );
+                    'unit' => null, // todo
+                ];
             }
         }
 
@@ -96,15 +80,19 @@ class Mbmon
     }
 
     /**
-     * Do work and return temps
-     * @return array
-     * @throws \Exception
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     * @return array|null
      */
-    public function work()
+    public static function work($host = 'localhost', $port = 411, $timeout = 1)
     {
-        $sockResult = $this->getSock();
-        $temps = $this->parseSockData($sockResult);
+        $obj = new self();
+        $data = $obj->getData($host, $port, $timeout);
+        if (null === $data) {
+            return null;
+        }
 
-        return $temps;
+        return $obj->parseSockData($data);
     }
 }

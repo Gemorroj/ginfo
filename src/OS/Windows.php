@@ -20,6 +20,7 @@
 
 namespace Linfo\OS;
 
+use Linfo\Exceptions\FatalException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -29,7 +30,26 @@ use Symfony\Component\Process\Process;
  */
 class Windows extends OS
 {
+    private $process;
     private $infoCache = [];
+
+    /**
+     * Windows constructor.
+     * @throws FatalException
+     */
+    public function __construct()
+    {
+        try {
+            $powershellDirectory = \getenv('SystemRoot') . '\\System32\\WindowsPowerShell\\v1.0';
+            if (!\is_dir($powershellDirectory)) {
+                $powershellDirectory = null;
+            }
+
+            $this->process = new Process(null, $powershellDirectory);
+        } catch (\Exception $e) {
+            throw new FatalException($e->getMessage());
+        }
+    }
 
     /**
      * @param string $name
@@ -41,13 +61,7 @@ class Windows extends OS
             return $this->infoCache[$name];
         }
 
-        $powershellDirectory = \getenv('SystemRoot') . '\\System32\\WindowsPowerShell\\v1.0';
-        if (!\is_dir($powershellDirectory)) {
-            $powershellDirectory = null;
-        }
-
-
-        $process = new Process('chcp 65001 | powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1', $powershellDirectory);
+        $process = $this->process->setCommandLine('chcp 65001 | powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1');
         $process->mustRun();
 
         $this->infoCache[$name] = \json_decode($process->getOutput(), true);

@@ -22,49 +22,55 @@ namespace Linfo\Parsers;
 
 use Linfo\Common;
 
-/**
- * Main class
- */
-class Sensord
+
+class Sensord implements Parser
 {
-    /**
-     * @return array
-     */
-    public function work()
+    final private function __construct()
     {
-        return $this->parseSysLog();
+    }
+
+    final private function __clone()
+    {
     }
 
     /**
      * @return array
      */
+    public static function work()
+    {
+        $obj = new self();
+        return $obj->parseSysLog();
+    }
+
+    /**
+     * For parsing the syslog looking for sensord entries
+     * POTENTIALLY BUGGY -- only tested on debian/ubuntu flavored syslogs
+     * Also slow as balls as it parses the entire syslog instead of
+     * using something like tail
+     * @return array
+     */
     private function parseSysLog()
     {
-        /*
-         * For parsing the syslog looking for sensord entries
-         * POTENTIALLY BUGGY -- only tested on debian/ubuntu flavored syslogs
-         * Also slow as balls as it parses the entire syslog instead of
-         * using something like tail
-         */
-        $file = '/var/log/syslog';
-        if (!is_file($file) || !is_readable($file)) {
-            return array();
+        $lines = Common::getLines('/var/log/syslog');
+        if (!$lines) {
+            return null;
         }
-        $devices = array();
-        foreach (Common::getLines($file) as $line) {
-            if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ sensord:\s*(.+):\s*(.+)/i', trim($line), $match) == 1) {
+
+        $devices = [];
+        foreach ($lines as $line) {
+            if (\preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ sensord:\s*(.+):\s*(.+)/i', \trim($line), $match) === 1) {
                 // Replace current record of dev with updated temp
                 $devices[$match[1]] = $match[2];
             }
         }
-        $return = array();
+        $return = [];
         foreach ($devices as $dev => $stat) {
-            $return[] = array(
+            $return[] = [
                 'path' => 'N/A', // These likely won't have paths
                 'name' => $dev,
                 'temp' => $stat,
-                'unit' => '', // Usually included in above
-            );
+                'unit' => null, // Usually included in above
+            ];
         }
 
         return $return;

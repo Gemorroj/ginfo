@@ -20,63 +20,39 @@
 
 namespace Linfo\Parsers;
 
-use Linfo\Common;
-use Linfo\Meta\Settings;
-
-/**
- * Deal with hddtemp
- */
-class Hddtemp
+class Hddtemp implements Parser
 {
-    // Store these
-    protected $mode;
-    protected $host;
-    protected $port;
-
-    // Default socket connect timeout
-    const TIMEOUT = 3;
-
-    // Localize mode
-    public function setMode($mode)
+    final private function __construct()
     {
-        $this->mode = $mode;
     }
 
-    /**
-     * Localize host and port for connecting to HDDTemp daemon
-     * @param string $host
-     * @param int $port
-     */
-    public function setAddress($host, $port = 7634)
+    final private function __clone()
     {
-        $this->host = $host;
-        $this->port = $port;
     }
+
 
     /**
      * Connect to host/port and get info
      *
-     * @return string
-     * @throws \Exception
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     * @return null|string
      */
-    private function getSock()
+    private function getData($host, $port, $timeout)
     {
-        // Try connecting
-        if (!($sock = fsockopen($this->host, $this->port, $errno, $errstr, self::TIMEOUT))) {
-            throw new \Exception('Error connecting');
+        $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
+        if (!$sock) {
+            return null;
         }
 
-        // Try getting stuff
-        $buffer = '';
-        while ($mid = fgets($sock)) {
-            $buffer .= $mid;
+        $data = '';
+        while ($mid = \fgets($sock)) {
+            $data .= $mid;
         }
+        \fclose($sock);
 
-        // Quit
-        fclose($sock);
-
-        // Output:
-        return $buffer;
+        return $data;
     }
 
     /**
@@ -87,106 +63,48 @@ class Hddtemp
      */
     private function parseSockData($data)
     {
-
         // Kill surounding ||'s and split it by pipes
-        $drives = explode('||', trim($data, '|'));
+        $drives = \explode('||', \trim($data, '|'));
 
-        // Return our stuff here
-        $return = array();
-
-        // Go through each
+        $return = [];
         foreach ($drives as $drive) {
-
-            // Extract stuff from it
-            list($path, $name, $temp, $unit) = explode('|', trim($drive));
+            list($path, $name, $temp, $unit) = \explode('|', \trim($drive));
 
             // Ignore garbled output from SSDs that hddtemp cant parse
             if (\mb_strpos($temp, 'UNK') !== false) {
                 continue;
             }
 
-            // Ignore /dev/sg?
-            if (!empty(Settings::getInstance()->getSettings()['hide']['sg']) && \mb_substr($path, 0, 7) == '/dev/sg') {
-                continue;
-            }
-
             // Ignore no longer existant devices?
-            if (!file_exists($path) && is_readable('/dev')) {
+            if (!\file_exists($path) && \is_readable('/dev')) {
                 continue;
             }
 
-            // Save it
-            $return[] = array(
+            $return[] = [
                 'path' => $path,
                 'name' => $name,
                 'temp' => $temp,
                 'unit' => \mb_strtoupper($unit),
-            );
-        }
-
-        // Give off results
-        return $return;
-    }
-
-    /**
-     * For parsing the syslog looking for hddtemp entries
-     * POTENTIALLY BUGGY -- only tested on debian/ubuntu flavored syslogs
-     * Also slow as balls as it parses the entire syslog instead of
-     * using something like tail
-     * @return array
-     */
-    private function parseSysLogData()
-    {
-        $file = '/var/log/syslog';
-        if (!is_file($file) || !is_readable($file)) {
-            return array();
-        }
-        $devices = array();
-        foreach (Common::getLines($file) as $line) {
-            if (preg_match('/\w+\s*\d+ \d{2}:\d{2}:\d{2} \w+ hddtemp\[\d+\]: (.+): (.+): (\d+) ([CF])/i', trim($line), $match) == 1) {
-                // Replace current record of dev with updated temp
-                $devices[$match[1]] = array($match[2], $match[3], $match[4]);
-            }
-        }
-        $return = array();
-        foreach ($devices as $dev => $stat) {
-            $return[] = array(
-                'path' => $dev,
-                'name' => $stat[0],
-                'temp' => $stat[1],
-                'unit' => \mb_strtoupper($stat[2]),
-            );
+            ];
         }
 
         return $return;
     }
 
     /**
-     * Wrapper function around the private ones here which do the
-     * actual work, and returns temps
-     * Use supplied mode, and optionally host/port, to get temps and return them
-     * @throws \Exception
-     * @return array
+     * @param string $host
+     * @param int $port
+     * @param int $timeout
+     * @return array|null
      */
-    public function work()
+    public static function work($host = 'localhost', $port = 7634, $timeout = 1)
     {
-        // Deal with differences in mode
-        switch ($this->mode) {
-
-            // Connect to daemon mode
-            case 'daemon':
-                return $this->parseSockData($this->getSock());
-                break;
-
-            // Syslog every n seconds
-            case 'syslog':
-                return $this->parseSysLogData();
-                break;
-
-            // Some other mode
-            default:
-                throw new \Exception('Not supported mode');
-                break;
+        $obj = new self();
+        $data = $obj->getData($host, $port, $timeout);
+        if (null === $data) {
+            return null;
         }
+
+        return $obj->parseSockData($data);
     }
 }

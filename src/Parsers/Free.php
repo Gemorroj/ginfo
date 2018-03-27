@@ -22,8 +22,16 @@ namespace Linfo\Parsers;
 
 use Symfony\Component\Process\Process;
 
-class Free
+class Free implements Parser
 {
+    final private function __construct()
+    {
+    }
+
+    final private function __clone()
+    {
+    }
+
     public static function work()
     {
         $free = (new Process('free -bw'))->mustRun()->getOutput();

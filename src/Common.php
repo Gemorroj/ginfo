@@ -41,17 +41,6 @@ class Common
     }
 
     /**
-     * Get a file who's contents should just be an int. Returns zero on failure.
-     * @param string $file
-     * @return string
-     * @deprecated
-     */
-    public static function getIntFromFile($file)
-    {
-        return self::getContents($file, 0);
-    }
-
-    /**
      * Convert bytes to stuff like KB MB GB TB etc
      * @param int $size
      * @param int $precision

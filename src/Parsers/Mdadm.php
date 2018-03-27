@@ -19,11 +19,18 @@
 
 namespace Linfo\Parsers;
 
-
 use Linfo\Common;
 
-class Mdadm
+class Mdadm implements Parser
 {
+    final private function __construct()
+    {
+    }
+
+    final private function __clone()
+    {
+    }
+
     public static function work()
     {
         $mdadmContents = Common::getContents('/proc/mdstat');
@@ -36,7 +43,7 @@ class Mdadm
         }
 
         $mdadmArrays = [];
-        foreach ((array)$match as $array) {
+        foreach ($match as $array) {
 
             $drives = [];
             foreach (\explode(' ', $array[4]) as $drive) {

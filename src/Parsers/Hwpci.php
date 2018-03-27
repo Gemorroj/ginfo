@@ -26,8 +26,11 @@ use Linfo\Common;
  *
  * @author Joe Gillotti
  */
-class Hwpci
+class Hwpci implements Parser
 {
+    const MODE_PCI = 'pci';
+    const MODE_USB = 'usb';
+
     private $file;
     private $entries = [];
     private $devices = [];
@@ -47,7 +50,7 @@ class Hwpci
     /**
      * Get the USB ids from /sys.
      */
-    public function fetchUsbIdsLinux()
+    private function fetchUsbIdsLinux()
     {
         foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
 
@@ -66,15 +69,15 @@ class Hwpci
     /**
      * Get the PCI ids from /sys.
      */
-    public function fetchPciIdsLinux()
+    private function fetchPciIdsLinux()
     {
         foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
 
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($f_device = Common::getContents($path . '/device', '')) && ($f_vend = Common::getContents($path . '/vendor', '')) && $f_device && $f_vend) {
-                list(, $v_id) = \explode('x', $f_vend, 2);
-                list(, $d_id) = \explode('x', $f_device, 2);
-                $this->entries[$v_id][$d_id] = 1;
+            if (($fDevice = Common::getContents($path . '/device', '')) && ($fVend = Common::getContents($path . '/vendor', '')) && $fDevice && $fVend) {
+                list(, $vId) = \explode('x', $fVend, 2);
+                list(, $dId) = \explode('x', $fDevice, 2);
+                $this->entries[$vId][$dId] = 1;
             } // Try uevent nextly
             elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
                 $this->entries[$match[1]][$match[2]] = 1;
@@ -88,14 +91,14 @@ class Hwpci
     /**
      * Use the pci.ids file to translate the ids to names.
      */
-    public function fetchPciNames()
+    private function fetchPciNames()
     {
         for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
-            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
-                $v = $vend_match;
-            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
-                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($dev_match[1])])) {
-                    $this->devices[$v[1]][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
+            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
+                $v = $vendMatch;
+            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
+                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
+                    $this->devices[$v[1]][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($devMatch[2])];
                 }
             }
         }
@@ -105,14 +108,14 @@ class Hwpci
     /**
      * Use the usb.ids file to translate the ids to names.
      */
-    public function fetchUsbNames()
+    private function fetchUsbNames()
     {
         for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
-            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vend_match) === 1) {
-                $v = $vend_match;
-            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $dev_match) === 1) {
-                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($dev_match[1])])) {
-                    $this->devices[\mb_strtolower($v[1])][$dev_match[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($dev_match[2])];
+            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
+                $v = $vendMatch;
+            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
+                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
+                    $this->devices[\mb_strtolower($v[1])][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($devMatch[2])];
                 }
             }
         }
@@ -120,48 +123,50 @@ class Hwpci
     }
 
     /**
+     * @param string $mode
      * @return array|null
+     * @throws \InvalidArgumentException
      */
-    public static function workUsb()
+    public static function work($mode = Hwpci::MODE_PCI)
     {
-        $usbIds = Common::locateActualPath([
-            '/usr/share/misc/usb.ids',    // debian/ubuntu
-            '/usr/share/usb.ids',        // opensuse
-            '/usr/share/hwdata/usb.ids',    // centos. maybe also redhat/fedora
-        ]);
+        if (Hwpci::MODE_PCI === $mode) {
+            $pciIds = Common::locateActualPath([
+                '/usr/share/misc/pci.ids',    // debian/ubuntu
+                '/usr/share/pci.ids',        // opensuse
+                '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
+            ]);
 
-        if (!$usbIds) {
-            return null;
+            if (!$pciIds) {
+                return null;
+            }
+
+            $obj = new self($pciIds);
+
+            $obj->fetchPciIdsLinux();
+            $obj->fetchPciNames();
+
+            return $obj->result();
         }
 
-        $obj = new self($usbIds);
-        $obj->fetchUsbIdsLinux();
-        $obj->fetchUsbNames();
+        if (Hwpci::MODE_USB === $mode) {
+            $usbIds = Common::locateActualPath([
+                '/usr/share/misc/usb.ids',    // debian/ubuntu
+                '/usr/share/usb.ids',        // opensuse
+                '/usr/share/hwdata/usb.ids',    // centos. maybe also redhat/fedora
+            ]);
 
-        return $obj->result();
-    }
+            if (!$usbIds) {
+                return null;
+            }
 
-    /**
-     * @return array
-     */
-    public static function workPci()
-    {
-        $pciIds = Common::locateActualPath([
-            '/usr/share/misc/pci.ids',    // debian/ubuntu
-            '/usr/share/pci.ids',        // opensuse
-            '/usr/share/hwdata/pci.ids',    // centos. maybe also redhat/fedora
-        ]);
+            $obj = new self($usbIds);
+            $obj->fetchUsbIdsLinux();
+            $obj->fetchUsbNames();
 
-        if (!$pciIds) {
-            return null;
+            return $obj->result();
         }
 
-        $obj = new self($pciIds);
-
-        $obj->fetchPciIdsLinux();
-        $obj->fetchPciNames();
-
-        return $obj->result();
+        throw new \InvalidArgumentException('Unknown mode "' . $mode . '"');
     }
 
     /**
@@ -169,7 +174,7 @@ class Hwpci
      *
      * @return array
      */
-    public function result()
+    private function result()
     {
         $result = [];
 

@@ -20,16 +20,17 @@
 
 namespace Linfo\OS;
 
-use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Settings;
 use Linfo\Parsers\Free;
+use Linfo\Parsers\Hwmon;
 use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Mdadm;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
+use Linfo\Parsers\ThermalZone;
 use Symfony\Component\Process\Process;
 
 
@@ -218,198 +219,56 @@ class Linux extends OS
         return Mdadm::work();
     }
 
-    /**
-     * getTemps.
-     *
-     * @return array the temps
-     */
+
     public function getTemps()
     {
-        // Hold them here
-        $return = array();
+        $return = [];
 
-        // hddtemp?
-        if (array_key_exists('hddtemp', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['hddtemp']) && isset(Settings::getInstance()->getSettings()['hddtemp'])) {
-            try {
-                // Initiate class
-                $hddtemp = new Hddtemp();
-
-                // Set mode, as in either daemon or syslog
-                $hddtemp->setMode(Settings::getInstance()->getSettings()['hddtemp']['mode']);
-
-                // If we're daemon, save host and port
-                if (Settings::getInstance()->getSettings()['hddtemp']['mode'] == 'daemon') {
-                    $hddtemp->setAddress(
-                        Settings::getInstance()->getSettings()['hddtemp']['address']['host'],
-                        Settings::getInstance()->getSettings()['hddtemp']['address']['port']);
-                }
-
-                // Result after working it
-                $hddtemp_res = $hddtemp->work();
-
-                // If it's an array, it worked
-                if (is_array($hddtemp_res)) {
-                    // Save result
-                    $return = array_merge($return, $hddtemp_res);
-                }
-            } // There was an issue
-            catch (\Exception $e) {
-                Errors::add('hddtemp parser', $e->getMessage());
-            }
+        $hddtempRes = Hddtemp::work();
+        if ($hddtempRes) {
+            $return = \array_merge($return, $hddtempRes);
         }
 
-        // mbmon?
-        if (array_key_exists('mbmon', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['mbmon']) && isset(Settings::getInstance()->getSettings()['mbmon'])) {
-            try {
-                // Initiate class
-                $mbmon = new Mbmon();
-
-                // Set host and port
-                $mbmon->setAddress(
-                    Settings::getInstance()->getSettings()['mbmon']['address']['host'],
-                    Settings::getInstance()->getSettings()['mbmon']['address']['port']);
-
-                // Get result after working it
-                $mbmon_res = $mbmon->work();
-
-                // If it's an array, it worked
-                if (is_array($mbmon_res)) {
-                    // Save result
-                    $return = array_merge($return, $mbmon_res);
-                }
-            } catch (\Exception $e) {
-                Errors::add('mbmon parser', $e->getMessage());
-            }
+        $mbmonRes = Mbmon::work();
+        if ($mbmonRes) {
+            $return = \array_merge($return, $mbmonRes);
         }
 
-        // sensord? (part of lm-sensors)
-        if (array_key_exists('sensord', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['sensord'])) {
-            try {
-                // Iniatate class
-                $sensord = new Sensord();
-
-                // Work it
-                $sensord_res = $sensord->work();
-
-                // If it's an array, it worked
-                if (is_array($sensord_res)) {
-                    // Save result
-                    $return = array_merge($return, $sensord_res);
-                }
-            } catch (\Exception $e) {
-                Errors::add('sensord parser', $e->getMessage());
-            }
+        $sensordRes = Sensord::work();
+        if ($sensordRes) {
+            $return = \array_merge($return, $sensordRes);
         }
 
-        // hwmon? (probably the fastest of what's here)
-        // too simple to be in its own class
-        if (array_key_exists('hwmon', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['hwmon'])) {
-
-            // Store them here
-            $hwmon_vals = array();
-
-            // Wacky location
-            foreach (glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE) as $path) {
-                $initpath = rtrim($path, 'input');
-                $value = Common::getContents($path);
-                $base = basename($path);
-                $labelpath = $initpath . 'label';
-                $showemptyfans = isset(Settings::getInstance()->getSettings()['temps_show0rpmfans']) ? Settings::getInstance()->getSettings()['temps_show0rpmfans'] : false;
-                $drivername = basename(readlink(dirname($path) . '/driver')) ?: false;
-
-                // Temperatures
-                if (is_file($labelpath) && \mb_strpos($base, 'temp') === 0) {
-                    $label = Common::getContents($labelpath);
-                    $value /= $value > 10000 ? 1000 : 1;
-                    $unit = 'C'; // I don't think this is ever going to be in F
-                } // Fan RPMs
-                elseif (preg_match('/^fan(\d+)_/', $base, $m)) {
-                    $label = 'fan' . $m[1];
-                    $unit = 'RPM';
-
-                    if ($value == 0 && !$showemptyfans) {
-                        continue;
-                    }
-                } // Volts
-                elseif (preg_match('/^in(\d+)_/', $base, $m)) {
-                    $unit = 'V';
-                    $value /= 1000;
-                    $label = Common::getContents($labelpath) ?: 'in' . $m[1];
-                } else {
-                    continue;
-                }
-
-                // Append values
-                $hwmon_vals[] = array(
-                    'path' => '',
-                    'name' => $label . ($drivername ? ' (' . $drivername . ')' : ''),
-                    'temp' => $value,
-                    'unit' => $unit,
-                );
-            }
-
-            // Save any if we have any
-            if (count($hwmon_vals) > 0) {
-                $return = array_merge($return, $hwmon_vals);
-            }
+        $hwmonRes = Hwmon::work();
+        if ($hwmonRes) {
+            $return = \array_merge($return, $hwmonRes);
         }
 
-        // thermal_zone? (acpi)
-        if (array_key_exists('thermal_zone', (array)Settings::getInstance()->getSettings()['temps']) && !empty(Settings::getInstance()->getSettings()['temps']['thermal_zone'])) {
-
-            // Store them here
-            $thermal_zone_vals = array();
-
-            // Wacky location
-            foreach (glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE) as $path) {
-                $labelpath = $path . DIRECTORY_SEPARATOR . 'type';
-                $valuepath = $path . DIRECTORY_SEPARATOR . 'temp';
-
-                if (!is_file($labelpath) || !is_file($valuepath)) {
-                    continue;
-                }
-
-                // Temperatures
-                $label = Common::getContents($labelpath);
-                $value = Common::getIntFromFile($valuepath);
-                $value /= $value > 10000 ? 1000 : 1;
-
-                // Append values
-                $thermal_zone_vals[] = array(
-                    'path' => $path,
-                    'name' => $label,
-                    'temp' => $value,
-                    'unit' => 'C', // I don't think this is ever going to be in F
-                );
-            }
-
-            // Save any if we have any
-            if (count($thermal_zone_vals) > 0) {
-                $return = array_merge($return, $thermal_zone_vals);
-            }
+        $thermalZoneRes = ThermalZone::work();
+        if ($thermalZoneRes) {
+            $return = \array_merge($return, $thermalZoneRes);
         }
 
         // Laptop backlight percentage
-        foreach (glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
-            $dir = dirname($bl);
-            if (!is_file($dir . '/actual_brightness')) {
+        foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE) as $bl) {
+            $max = Common::getContents($bl);
+            $cur = Common::getContents(\dirname($bl) . '/actual_brightness');
+            if (null === $cur) {
                 continue;
             }
-            $max = Common::getIntFromFile($bl);
-            $cur = Common::getIntFromFile($dir . '/actual_brightness');
+
             if ($max < 0 || $cur < 0) {
                 continue;
             }
-            $return[] = array(
+            $return[] = [
                 'name' => 'Backlight brightness',
-                'temp' => round($cur / $max, 2) * 100,
+                'temp' => \round($cur / $max, 2) * 100,
                 'unit' => '%',
                 'path' => 'N/A',
                 'bar' => true,
-            );
+            ];
         }
 
-        // Done
         return $return;
     }
 
@@ -419,7 +278,7 @@ class Linux extends OS
      */
     public function getUsb()
     {
-        return Hwpci::workUsb();
+        return Hwpci::work(Hwpci::MODE_USB);
     }
 
     /**
@@ -428,7 +287,7 @@ class Linux extends OS
      */
     public function getPci()
     {
-        return Hwpci::workPci();
+        return Hwpci::work(Hwpci::MODE_PCI);
     }
 
 

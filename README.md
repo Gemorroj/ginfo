@@ -10,7 +10,7 @@
 - no need `COM` extension on Windows, but need powershell
 - minimal windows 10 support
 - minor code improvements
-- minimal php version 7.1
+- minimal php version 7.1.10
 
 
 ### PHP library usage
@@ -22,7 +22,6 @@ composer require gemorroj/linfo
 ```php
 <?php
 $linfo = new \Linfo\Linfo();
-$linfo->scan();
 $info = $linfo->getInfo();
 
 print_r($info); // and a whole lot more
@@ -44,7 +43,7 @@ print_r($info); // and a whole lot more
  - Uptime/date booted
  - Hostname
  - Memory usage (physical and swap, need `free`)
- - Temperatures/voltages/fan speeds (need `hddtemp`, `mbmon`, `sensord`, `hwmon`, `acpi`)
+ - Temperatures/voltages/fan speeds (need `hddtemp` as daemon, `mbmon` as daemon, `sensord` (part of `lm-sensors`), `hwmon`, `acpi themal zone`)
  - RAID arrays (need `mdadm`)
  - Motherboard (need dimedecode for linux)
  - Via included extensions:
@@ -59,9 +58,9 @@ print_r($info); // and a whole lot more
    - more
 
 ## System requirements:
- - At least PHP 7.1
- - If you are using PHP 7.1.9 or lower, you might need to disable the opcache extension.
+ - PHP >= 7.1.10
  - pcre extension
+ - proc_open
 
 #### Windows
  - You need to have `powershell`
