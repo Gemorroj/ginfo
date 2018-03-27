@@ -24,6 +24,7 @@ use Linfo\Meta\Errors;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Meta\Settings;
+use Linfo\Parsers\Free;
 use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
@@ -46,29 +47,7 @@ class Linux extends OS
 
     public function getMemory()
     {
-        $free = (new Process('free -bw'))->mustRun()->getOutput();
-
-        $arr = \explode("\n", $free);
-        unset($arr[0]); // remove header
-
-        $memStr = \trim(\ltrim($arr[1], 'Mem:'));
-        $swapStr = \trim(\ltrim($arr[2], 'Swap:'));
-
-        list($memTotal, $memUsed, $memFree, $memShared, $memBuffers, $memCached, $memAvailable) = \preg_split('/\s+/', $memStr);
-        list($swapTotal, $swapUsed, $swapFree) = \preg_split('/\s+/', $swapStr);
-
-        return [
-            'memoryTotal' => $memTotal,
-            'memoryUsed' => $memUsed,
-            'memoryFree' => $memFree,
-            'memoryShared' => $memShared,
-            'memoryBuffers' => $memBuffers,
-            'memoryCached' => $memCached,
-
-            'swapTotal' => $swapTotal,
-            'swapUsed' => $swapUsed,
-            'swapFree' => $swapFree,
-        ];
+        return Free::work();
     }
 
     /**
