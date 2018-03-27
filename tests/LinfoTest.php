@@ -22,25 +22,7 @@ use Linfo\Linfo;
 
 class LinfoTest extends \PHPUnit\Framework\TestCase
 {
-    /*
     public function testTodo()
-    {
-        $linfo = new Linfo();
-        $linfo->scan();
-        $info = $linfo->getInfo();
-        print_r($info);
-
-        //$errors = Errors::show();
-        //print_r($errors);
-        //$this->assertEmpty($errors);
-
-        $this->assertInternalType('array', $info);
-        //self::markTestSkipped('not implemented');
-    }
-    */
-
-
-    public function testNew()
     {
         $linfo = new Linfo();
         $info = $linfo->getInfo();
@@ -55,7 +37,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         //\print_r($info->getDisk());
         //\print_r($info->getBattery());
         //\print_r($info->getTemps());
-        \print_r($info->getProcesses());
+        //\print_r($info->getProcesses());
         \print_r($info->getServices());
     }
 }

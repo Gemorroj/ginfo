@@ -30,6 +30,7 @@ use Linfo\Parsers\Mdadm;
 use Linfo\Parsers\Sensord;
 use Linfo\Parsers\Hddtemp;
 use Linfo\Parsers\Mbmon;
+use Linfo\Parsers\Systemd;
 use Linfo\Parsers\ThermalZone;
 use Symfony\Component\Process\Process;
 
@@ -528,166 +529,13 @@ class Linux extends OS
     }
 
 
+    /**
+     * Systemd wrapper
+     * @return array
+     */
     public function getServices()
     {
-        // We allowed?
-        if (empty(Settings::getInstance()->getSettings()['show']['services']) || !is_array(Settings::getInstance()->getSettings()['services']) || count(Settings::getInstance()->getSettings()['services']) == 0) {
-            return array();
-        }
-
-        // Temporarily keep statuses here
-        $statuses = array();
-
-        Settings::getInstance()->getSettings()['services']['executables'] = (array)Settings::getInstance()->getSettings()['services']['executables'];
-        Settings::getInstance()->getSettings()['services']['pidFiles'] = (array)Settings::getInstance()->getSettings()['services']['pidFiles'];
-        Settings::getInstance()->getSettings()['services']['systemdServices'] = (array)Settings::getInstance()->getSettings()['services']['systemdServices'];
-
-        // Convert paths of executables to PID files
-        $pids = array();
-        $do_process_search = false;
-        if (count(Settings::getInstance()->getSettings()['services']['executables']) > 0) {
-            $potential_paths = glob('/proc/*/cmdline');
-            if (is_array($potential_paths)) {
-                $num_paths = count($potential_paths);
-                $do_process_search = true;
-            }
-        }
-
-        // Should we go ahead and do the PID search based on executables?
-        if ($do_process_search) {
-            // Precache all process cmdlines
-            for ($i = 0; $i < $num_paths; ++$i) {
-                $cmdline_cache[$i] = explode("\x00", Common::getContents($potential_paths[$i]));
-            }
-
-            // Go through the list of executables to search for
-            foreach (Settings::getInstance()->getSettings()['services']['executables'] as $service => $exec) {
-                // Go through pid file list. for loops are faster than foreach
-                for ($i = 0; $i < $num_paths; ++$i) {
-                    $cmdline = $cmdline_cache[$i];
-                    $match = false;
-                    if (is_array($exec)) {
-                        $match = true;
-                        foreach ($exec as $argn => $argv) {
-                            if (isset($cmdline[$argn]) && $cmdline[$argn] != $argv) {
-                                $match = false;
-                            }
-                        }
-                    } elseif ($cmdline[0] == $exec) {
-                        $match = true;
-                    }
-                    // If this one matches, stop here and save it
-                    if ($match) {
-                        // Get pid out of path to cmdline file
-                        $pids[$service] = \mb_substr($potential_paths[$i], 6 /*\mb_strlen('/proc/')*/, \mb_strpos($potential_paths[$i], '/', 7) - 6);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // PID files
-        foreach (Settings::getInstance()->getSettings()['services']['pidFiles'] as $service => $file) {
-            $pid = Common::getContents($file, false);
-            if ($pid != false && is_numeric($pid)) {
-                $pids[$service] = $pid;
-            }
-        }
-
-        // systemd services
-        foreach (Settings::getInstance()->getSettings()['services']['systemdServices'] as $service => $systemdService) {
-            $process = new Process('systemctl show -p MainPID ' . $systemdService);
-            $process->mustRun();
-            $command = $process->getOutput();
-
-            $command = trim($command);
-            $pid = str_replace('MainPID=', '', $command);
-            if ($pid != '' && is_numeric($pid)) {
-                $pids[$service] = $pid;
-            }
-        }
-
-
-        // Deal with PIDs
-        foreach ($pids as $service => $pid) {
-            $path = '/proc/' . $pid . '/status';
-            $status_contents = Common::getContents($path, false);
-            if ($status_contents == false) {
-                $statuses[$service] = array('state' => 'Down', 'threads' => 'N/A', 'pid' => $pid);
-                continue;
-            }
-
-            // Attempt getting info out of it
-            if (!preg_match_all('/^(\w+):\s+(\w+)/m', $status_contents, $status_matches, PREG_SET_ORDER)) {
-                continue;
-            }
-
-            // Initially set these as pointless
-            $state = false;
-            $threads = false;
-            $mem = false;
-
-            // Go through
-            for ($i = 0, $num = count($status_matches); $i < $num; ++$i) {
-
-                // What have we here?
-                switch ($status_matches[$i][1]) {
-
-                    // State section
-                    case 'State':
-                        switch ($status_matches[$i][2]) {
-                            case 'D': // disk sleep? wtf?
-                            case 'S':
-                                $state = 'Up (Sleeping)';
-                                break;
-                            case 'Z':
-                                $state = 'Zombie';
-                                break;
-                            // running
-                            case 'R':
-                                $state = 'Up (Running)';
-                                break;
-                            // stopped
-                            case 'T':
-                                $state = 'Up (Stopped)';
-                                break;
-                            default:
-                                continue;
-                                break;
-                        }
-                        break;
-
-                    // Mem usage
-                    case 'VmRSS':
-                        if (is_numeric($status_matches[$i][2])) {
-                            $mem = $status_matches[$i][2] * 1024;
-                        } // Measured in kilobytes; we want bytes
-                        break;
-
-                    // Thread count
-                    case 'Threads':
-                        if (is_numeric($status_matches[$i][2])) {
-                            $threads = $status_matches[$i][2];
-                        }
-
-                        // Thread count should be last. Stop here to possibly save time assuming we have the other values
-                        if ($state !== false && $mem !== false && $threads !== false) {
-                            break;
-                        }
-                        break;
-                }
-            }
-
-            // Save info
-            $statuses[$service] = array(
-                'state' => $state ? $state : '?',
-                'threads' => $threads,
-                'pid' => $pid,
-                'memory_usage' => $mem,
-            );
-        }
-
-        return $statuses;
+        return Systemd::work();
     }
 
 

@@ -40,13 +40,13 @@ print_r($info); // and a whole lot more
  - Hardware devices (PCI) (linux: need `pciutils`)
  - USB devices (linux: need `usbutils`)
  - Network devices and stats
- - Uptime/date booted
- - Hostname
+ - Uptime
  - Memory usage (physical and swap, need `free`)
  - Temperatures/voltages/fan speeds (linux: need `hddtemp` as daemon, `mbmon` as daemon, `sensord` (part of `lm-sensors`), `hwmon`, `acpi themal zone`)
  - RAID arrays (linux: need `mdadm`)
  - Motherboard (linux: need `dimedecode`)
  - Processes
+ - Systemd services
  - Via included extensions:
    - Nvidia GPU temps
    - DHCPD leases
