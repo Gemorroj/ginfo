@@ -94,10 +94,11 @@ class Linux extends OS
         $detectInfo = function (array $cpuData) : array {
             $out = [];
             foreach ($cpuData as $block) {
-                $out[] = (new Cpu\Processor())
+                // overwrite data for physical processors
+                $out[$block['physical id']] = (new Cpu\Processor())
                     ->setModel($block['model name'])
                     ->setSpeed($block['cpu MHz'])
-                    ->setL2Cache($block['cache size']) // L2 cache
+                    ->setL2Cache((float)$block['cache size'] * 1024) // L2 cache, drop KB
                     ->setFlags(\explode(' ', $block['flags']));
             }
             return $out;
