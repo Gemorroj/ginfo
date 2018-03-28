@@ -179,4 +179,15 @@ class Response extends \ArrayObject //fixes for old api
     {
         return $this->os->getServices();
     }
+
+
+    /**
+     * UPS status
+     *
+     * @return array|null
+     */
+    public function getUps()
+    {
+        return $this->os->getUps();
+    }
 }

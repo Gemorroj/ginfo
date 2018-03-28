@@ -148,4 +148,9 @@ abstract class OS
      * @return array|null
      */
     public abstract function getServices();
+
+    /**
+     * @return array|null
+     */
+    public abstract function getUps();
 }

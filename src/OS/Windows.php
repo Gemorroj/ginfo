@@ -523,4 +523,9 @@ class Windows extends OS
     {
         return null; // TODO
     }
+
+    public function getUps()
+    {
+        return null; //todo
+    }
 }

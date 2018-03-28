@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
+use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Free;
 use Linfo\Parsers\Temps\Hwmon;
 use Linfo\Parsers\Hwpci;
@@ -700,5 +701,11 @@ class Linux extends OS
         } else {
             return $infoStr;
         }
+    }
+
+
+    public function getUps()
+    {
+        return Apcaccess::work();
     }
 }
