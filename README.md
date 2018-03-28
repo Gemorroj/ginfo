@@ -29,7 +29,21 @@ composer require gemorroj/linfo
 $linfo = new \Linfo\Linfo();
 $info = $linfo->getInfo();
 
-print_r($info);
+\print_r($info->getGeneral());
+\print_r($info->getCpu());
+\print_r($info->getMemory());
+\print_r($info->getSoundCard());
+\print_r($info->getUsb());
+\print_r($info->getPci());
+\print_r($info->getNetwork());
+\print_r($info->getDisk());
+\print_r($info->getBattery());
+\print_r($info->getTemps());
+\print_r($info->getProcesses());
+\print_r($info->getServices());
+\print_r($info->getPrinters());
+\print_r($info->getSamba());
+\print_r($info->getSelinux());
 ```
 
 
@@ -51,7 +65,7 @@ print_r($info);
 - Motherboard (linux: need `dimedecode`)
 - Processes
 - Systemd services (linux: need `systemctl`)
-- logged users (linux: need `who`)'
+- logged users (linux: need `who`)
 - UPS status (linux: need `apcaccess`)
 - Printer status (linux: need `lpstat`)
 - Samba status (linux: need `smbstatus`)
