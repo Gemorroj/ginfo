@@ -57,4 +57,12 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         \print_r($general);
     }
+
+    public function testCpu()
+    {
+        $cpu = $this->info->getCpu();
+        $this->assertInstanceOf(Info\Cpu::class, $cpu);
+
+        \print_r($cpu);
+    }
 }

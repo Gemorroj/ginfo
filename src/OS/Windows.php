@@ -21,6 +21,7 @@
 namespace Linfo\OS;
 
 use Linfo\Exceptions\FatalException;
+use Linfo\Info\Cpu;
 use Symfony\Component\Process\Process;
 
 /**
@@ -123,7 +124,7 @@ class Windows extends OS
     }
 
 
-    public function getCpu() : ?array
+    public function getCpu() : ?Cpu
     {
         $cpuInfo = $this->getInfo('Processor');
         if (null === $cpuInfo) {
@@ -133,25 +134,24 @@ class Windows extends OS
 
         $cores = 0;
         $virtual = 0;
-        $processor = [];
+        $processors = [];
         foreach ($cpuInfo as $cpu) {
             $cores += $cpu['NumberOfCores'];
             $virtual += $cpu['NumberOfLogicalProcessors'];
 
-            $processor[] = [
-                'model' => $cpu['Name'],
-                'speed' => $cpu['CurrentClockSpeed'],
-                'cache' => $cpu['L2CacheSize'], // L2 cache size
-                'flags' => null, //todo
-            ];
+            $processors[] = (new Cpu\Processor())
+                ->setModel($cpu['Name'])
+                ->setSpeed($cpu['CurrentClockSpeed'])
+                ->setL2Cache($cpu['L2CacheSize'])
+                ->setFlags(null); //todo
         }
 
-        return [
-            'physical' => \count($cpuInfo),
-            'virtual' => $virtual,
-            'cores' => $cores,
-            'processor' => $processor,
-        ];
+        return (new Cpu())
+            ->setPhysical(\count($cpuInfo))
+            ->setVirtual($virtual)
+            ->setCores($cores)
+            ->setHyperThreading($cores < $virtual)
+            ->setProcessors($processors);
     }
 
     public function getLoad() : ?array

@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Extension\Smbstatus;
+use Linfo\Info\Cpu;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
@@ -58,7 +59,7 @@ class Linux extends OS
         return Free::work();
     }
 
-    public function getCpu(): ?array
+    public function getCpu(): ?Cpu
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
         if (null === $cpuInfo) {
@@ -71,7 +72,7 @@ class Linux extends OS
         }
 
 
-        $detectPhysical = function (array $cpuData) {
+        $detectPhysical = function (array $cpuData) : int {
             $out = [];
             foreach ($cpuData as $block) {
                 if (isset($out[$block['physical id']])) {
@@ -80,39 +81,37 @@ class Linux extends OS
                     $out[$block['physical id']] = 1;
                 }
             }
-
             return \count($out);
         };
-        $detectVirtual = function (array $cpuData) {
-            return \count($cpuData);
-        };
-        $detectCores = function (array $cpuData) {
+        $detectCores = function (array $cpuData) : int {
             $out = [];
             foreach ($cpuData as $block) {
                 $out[$block['physical id']] = $block['cpu cores'];
             }
-
             return \array_sum($out);
         };
 
-        $detectInfo = function (array $cpuData) {
+        $detectInfo = function (array $cpuData) : array {
             $out = [];
             foreach ($cpuData as $block) {
-                $out[$block['physical id']]['model'] = $block['model name'];
-                $out[$block['physical id']]['speed'] = $block['cpu MHz'];
-                $out[$block['physical id']]['cache'] = $block['cache size']; // L2 cache
-                $out[$block['physical id']]['flags'] = $block['flags'];
+                $out[] = (new Cpu\Processor())
+                    ->setModel($block['model name'])
+                    ->setSpeed($block['cpu MHz'])
+                    ->setL2Cache($block['cache size']) // L2 cache
+                    ->setFlags(\explode(' ', $block['flags']));
             }
-
             return $out;
         };
 
-        return [
-            'physical' => $detectPhysical($cpuData),
-            'virtual' => $detectVirtual($cpuData),
-            'cores' => $detectCores($cpuData),
-            'processor' => $detectInfo($cpuData),
-        ];
+        $cores = $detectCores($cpuData);
+        $virtual = \count($cpuData);
+
+        return (new Cpu())
+            ->setPhysical($detectPhysical($cpuData))
+            ->setVirtual($virtual)
+            ->setCores($cores)
+            ->setHyperThreading($cores < $virtual)
+            ->setProcessors($detectInfo($cpuData));
     }
 
 

@@ -21,6 +21,8 @@
 namespace Linfo\OS;
 
 
+use Linfo\Info\Cpu;
+
 abstract class OS
 {
     /**
@@ -63,9 +65,9 @@ abstract class OS
     public abstract function getVirtualization() : ?string;
 
     /**
-     * @return array|null
+     * @return Cpu|null
      */
-    public abstract function getCpu() : ?array;
+    public abstract function getCpu() : ?Cpu;
 
     /**
      * @return float[]|null

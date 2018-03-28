@@ -20,6 +20,7 @@
 
 namespace Linfo;
 
+use Linfo\Info\Cpu;
 use Linfo\Info\General;
 use Linfo\OS\OS;
 
@@ -57,19 +58,11 @@ class Info
 
     /**
      * CPU info
-     * @return array
+     * @return Cpu
      */
     public function getCpu()
     {
-        $cpuInfo = $this->os->getCpu();
-        return [
-            'physical' => $cpuInfo['physical'],
-            'virtual' => $cpuInfo['virtual'],
-            'cores' => $cpuInfo['cores'],
-            'hyperthreading' => $cpuInfo['cores'] < $cpuInfo['virtual'],
-
-            'processor' => $cpuInfo['processor'], //physical processors info
-        ];
+        return $this->os->getCpu();
     }
 
     /**
