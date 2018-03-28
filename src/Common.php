@@ -29,7 +29,7 @@ class Common
      * @param string[] $paths
      * @return null|string
      */
-    public static function locateActualPath(array $paths)
+    public static function locateActualPath(array $paths) : ?string
     {
         foreach ($paths as $path) {
             if (\file_exists($path)) {
@@ -45,9 +45,9 @@ class Common
      *
      * @param string $file
      * @param mixed $default
-     * @return string
+     * @return string|mixed|null
      */
-    public static function getContents($file, $default = null)
+    public static function getContents(string $file, $default = null)
     {
         if (\file_exists($file) && \is_readable($file)) {
             return \trim(\file_get_contents($file));
@@ -59,9 +59,9 @@ class Common
      * Like above, but in lines instead of a big string
      * @param string $file
      * @param mixed $default
-     * @return array|null
+     * @return string[]|mixed|null
      */
-    public static function getLines($file, $default = null)
+    public static function getLines(string $file, $default = null)
     {
         if (\file_exists($file) && \is_readable($file)) {
             return \file($file, \FILE_SKIP_EMPTY_LINES);
@@ -77,7 +77,7 @@ class Common
      * @param array $haystack
      * @return bool
      */
-    public static function anyInArray(array $needles, array $haystack)
+    public static function anyInArray(array $needles, array $haystack) : bool
     {
         return \count(\array_intersect($needles, $haystack)) > 0;
     }
@@ -86,9 +86,9 @@ class Common
     /**
      * @param string $block
      * @param string $delimiter
-     * @return array
+     * @return string[]
      */
-    public static function parseKeyValueBlock($block, $delimiter = ':')
+    public static function parseKeyValueBlock(string $block, string $delimiter = ':') : array
     {
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {

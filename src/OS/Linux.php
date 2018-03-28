@@ -53,12 +53,12 @@ class Linux extends OS
     }
 
 
-    public function getMemory()
+    public function getMemory() : ?array
     {
         return Free::work();
     }
 
-    public function getCpu()
+    public function getCpu(): ?array
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
         if (null === $cpuInfo) {
@@ -116,8 +116,7 @@ class Linux extends OS
     }
 
 
-
-    public function getUptime()
+    public function getUptime(): ?int
     {
         $uptime = Common::getContents('/proc/uptime');
 
@@ -129,7 +128,7 @@ class Linux extends OS
     }
 
 
-    public function getPartitions()
+    public function getPartitions(): ?array
     {
         $partitions = [];
         $partitionsContents = Common::getContents('/proc/partitions');
@@ -177,7 +176,7 @@ class Linux extends OS
         return $drives;
     }
 
-    public function getMounts()
+    public function getMounts(): ?array
     {
         $contents = Common::getContents('/proc/mounts');
         if (null === $contents) {
@@ -217,13 +216,13 @@ class Linux extends OS
      * mdadm wrapper
      * @return array|null
      */
-    public function getRaid()
+    public function getRaid(): ?array
     {
         return Mdadm::work();
     }
 
 
-    public function getTemps()
+    public function getTemps(): ?array
     {
         $return = [];
 
@@ -288,7 +287,7 @@ class Linux extends OS
      * usbutils wrapper
      * @return array|null
      */
-    public function getUsb()
+    public function getUsb(): ?array
     {
         return Hwpci::work(Hwpci::MODE_USB);
     }
@@ -297,13 +296,13 @@ class Linux extends OS
      * pciutils wrapper
      * @return array|null
      */
-    public function getPci()
+    public function getPci(): ?array
     {
         return Hwpci::work(Hwpci::MODE_PCI);
     }
 
 
-    public function getLoad()
+    public function getLoad(): ?array
     {
         $loadAvg = \sys_getloadavg();
 
@@ -315,7 +314,7 @@ class Linux extends OS
     }
 
 
-    public function getNetwork()
+    public function getNetwork(): ?array
     {
         $paths = \glob('/sys/class/net/*', \GLOB_NOSORT);
         if (false === $paths) {
@@ -407,7 +406,7 @@ class Linux extends OS
     }
 
 
-    public function getBattery()
+    public function getBattery(): ?array
     {
         $paths = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
         if (false === $paths) {
@@ -446,7 +445,7 @@ class Linux extends OS
         return $return;
     }
 
-    public function getWifi()
+    public function getWifi(): ?array
     {
         $contents = Common::getContents('/proc/net/wireless');
         if (null === $contents) {
@@ -478,7 +477,7 @@ class Linux extends OS
     }
 
 
-    public function getSoundCards()
+    public function getSoundCards(): ?array
     {
         $contents = Common::getContents('/proc/asound/cards');
         if (null === $contents) {
@@ -501,7 +500,7 @@ class Linux extends OS
     }
 
 
-    public function getProcesses()
+    public function getProcesses(): ?array
     {
         $processes = \glob('/proc/*/status', \GLOB_NOSORT);
         if (null === $processes) {
@@ -563,13 +562,13 @@ class Linux extends OS
      * Systemd wrapper
      * @return array|null
      */
-    public function getServices()
+    public function getServices(): ?array
     {
         return Systemd::work();
     }
 
 
-    public function getOsName()
+    public function getOsName(): string
     {
         $stringReleases = [
             '/etc/centos-release',
@@ -607,13 +606,13 @@ class Linux extends OS
         return \php_uname('s');
     }
 
-    public function getLoggedUsers()
+    public function getLoggedUsers(): ?array
     {
         return Who::work();
     }
 
 
-    public function getVirtualization()
+    public function getVirtualization(): ?string
     {
         if (\is_file('/proc/vz/veinfo')) {
             return 'OpenVZ';
@@ -675,7 +674,7 @@ class Linux extends OS
     /**
      * through /sys' interface to dmidecode
      */
-    public function getModel()
+    public function getModel() : ?string
     {
         $info = [];
         $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor');
@@ -705,22 +704,22 @@ class Linux extends OS
     }
 
 
-    public function getUps()
+    public function getUps() : ?array
     {
         return Apcaccess::work();
     }
 
-    public function getPrinters()
+    public function getPrinters() : ?array
     {
         return Lpstat::work();
     }
 
-    public function getSamba()
+    public function getSamba() : ?array
     {
         return Smbstatus::work();
     }
 
-    public function getSelinux()
+    public function getSelinux() : ?array
     {
         return Sestatus::work();
     }

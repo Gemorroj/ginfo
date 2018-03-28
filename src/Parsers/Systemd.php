@@ -33,7 +33,7 @@ class Systemd implements Parser
     {
     }
 
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('systemctl list-units --type service --all');
         $process->run();

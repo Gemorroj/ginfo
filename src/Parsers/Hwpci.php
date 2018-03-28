@@ -50,10 +50,9 @@ class Hwpci implements Parser
     /**
      * Get the USB ids from /sys.
      */
-    private function fetchUsbIdsLinux()
+    private function fetchUsbIdsLinux() : void
     {
         foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
-
             // First try uevent
             if (\is_readable($path . '/uevent') &&
                 \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
@@ -69,10 +68,9 @@ class Hwpci implements Parser
     /**
      * Get the PCI ids from /sys.
      */
-    private function fetchPciIdsLinux()
+    private function fetchPciIdsLinux() : void
     {
         foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
-
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($fDevice = Common::getContents($path . '/device', '')) && ($fVend = Common::getContents($path . '/vendor', '')) && $fDevice && $fVend) {
                 list(, $vId) = \explode('x', $fVend, 2);
@@ -91,7 +89,7 @@ class Hwpci implements Parser
     /**
      * Use the pci.ids file to translate the ids to names.
      */
-    private function fetchPciNames()
+    private function fetchPciNames() : void
     {
         for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
@@ -108,7 +106,7 @@ class Hwpci implements Parser
     /**
      * Use the usb.ids file to translate the ids to names.
      */
-    private function fetchUsbNames()
+    private function fetchUsbNames() : void
     {
         for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
             if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
@@ -119,7 +117,7 @@ class Hwpci implements Parser
                 }
             }
         }
-        $file && fclose($file);
+        $file && \fclose($file);
     }
 
     /**
@@ -127,7 +125,7 @@ class Hwpci implements Parser
      * @return array|null
      * @throws \InvalidArgumentException
      */
-    public static function work($mode = Hwpci::MODE_PCI)
+    public static function work(string $mode = Hwpci::MODE_PCI) : ?array
     {
         if (Hwpci::MODE_PCI === $mode) {
             $pciIds = Common::locateActualPath([
@@ -174,13 +172,16 @@ class Hwpci implements Parser
      *
      * @return array
      */
-    private function result()
+    private function result() : array
     {
         $result = [];
 
         foreach (\array_keys($this->devices) as $v) {
             foreach ($this->devices[$v] as $d) {
-                $result[] = ['vendor' => $d['vendor'], 'device' => $d['device']];
+                $result[] = [
+                    'vendor' => $d['vendor'],
+                    'device' => $d['device'],
+                ];
             }
         }
 

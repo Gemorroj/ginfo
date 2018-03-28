@@ -28,7 +28,7 @@ use Symfony\Component\Process\Process;
  */
 class Smbstatus implements Parser
 {
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('smbstatus');
         $process->run();

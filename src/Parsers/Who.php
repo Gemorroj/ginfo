@@ -33,7 +33,7 @@ class Who implements Parser
     {
     }
 
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('who --count');
         $process->run();

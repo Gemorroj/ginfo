@@ -30,7 +30,7 @@ use Symfony\Component\Process\Process;
  */
 class Ipmi implements Parser
 {
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('ipmitool sdr');
         $process->run();

@@ -47,7 +47,7 @@ class Linfo
     /**
      * @return Info
      */
-    public function getInfo()
+    public function getInfo() : Info
     {
         return new Info($this->os);
     }
@@ -56,7 +56,7 @@ class Linfo
     /**
      * @return Linux|Windows
      */
-    public function getOs()
+    public function getOs() : OS
     {
         return $this->os;
     }

@@ -25,7 +25,7 @@ use Symfony\Component\Process\Process;
 
 class Apcaccess implements Parser
 {
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('apcaccess');
         $process->run();

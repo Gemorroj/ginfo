@@ -24,5 +24,5 @@ interface Parser
     /**
      * @return array|null
      */
-    public static function work();
+    public static function work() : ?array;
 }

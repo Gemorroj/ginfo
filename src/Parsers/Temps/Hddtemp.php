@@ -41,7 +41,7 @@ class Hddtemp implements Parser
      * @param int $timeout
      * @return null|string
      */
-    private function getData($host, $port, $timeout)
+    private function getData(string $host, int $port, int $timeout) : ?string
     {
         $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$sock) {
@@ -63,7 +63,7 @@ class Hddtemp implements Parser
      * @param string $data
      * @return array
      */
-    private function parseSockData($data)
+    private function parseSockData(string $data) : array
     {
         // Kill surounding ||'s and split it by pipes
         $drives = \explode('||', \trim($data, '|'));
@@ -99,7 +99,7 @@ class Hddtemp implements Parser
      * @param int $timeout
      * @return array|null
      */
-    public static function work($host = 'localhost', $port = 7634, $timeout = 1)
+    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1) : ?array
     {
         $obj = new self();
         $data = $obj->getData($host, $port, $timeout);

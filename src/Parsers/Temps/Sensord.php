@@ -34,7 +34,7 @@ class Sensord implements Parser
     {
     }
 
-    public static function work()
+    public static function work() : ?array
     {
         $obj = new self();
         return $obj->parseSysLog();
@@ -47,7 +47,7 @@ class Sensord implements Parser
      * using something like tail
      * @return array
      */
-    private function parseSysLog()
+    private function parseSysLog() : ?array
     {
         $lines = Common::getLines('/var/log/syslog');
         if (!$lines) {

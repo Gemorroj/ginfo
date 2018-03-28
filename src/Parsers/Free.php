@@ -32,7 +32,7 @@ class Free implements Parser
     {
     }
 
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('free -bw');
         $process->run();

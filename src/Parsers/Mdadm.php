@@ -31,7 +31,7 @@ class Mdadm implements Parser
     {
     }
 
-    public static function work()
+    public static function work() : ?array
     {
         $mdadmContents = Common::getContents('/proc/mdstat');
         if (null === $mdadmContents) {

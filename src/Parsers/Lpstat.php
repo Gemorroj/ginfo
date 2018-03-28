@@ -27,7 +27,7 @@ use Symfony\Component\Process\Process;
  */
 class Lpstat implements Parser
 {
-    public static function work()
+    public static function work() : ?array
     {
         $process = new Process('lpstat -p -o -l');
         $process->run();

@@ -27,6 +27,10 @@ class Info
 {
     /** @var OS */
     private $os;
+
+    /**
+     * @param OS $os
+     */
     public function __construct(OS $os)
     {
         $this->os = $os;
