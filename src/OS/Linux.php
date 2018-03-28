@@ -22,16 +22,17 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
-use Linfo\Meta\Settings;
 use Linfo\Parsers\Free;
-use Linfo\Parsers\Hwmon;
+use Linfo\Parsers\Temps\Hwmon;
 use Linfo\Parsers\Hwpci;
+use Linfo\Parsers\Temps\Ipmi;
 use Linfo\Parsers\Mdadm;
-use Linfo\Parsers\Sensord;
-use Linfo\Parsers\Hddtemp;
-use Linfo\Parsers\Mbmon;
+use Linfo\Parsers\Temps\Sensord;
+use Linfo\Parsers\Temps\Hddtemp;
+use Linfo\Parsers\Temps\Mbmon;
 use Linfo\Parsers\Systemd;
-use Linfo\Parsers\ThermalZone;
+use Linfo\Parsers\Temps\ThermalZone;
+use Linfo\Parsers\Who;
 use Symfony\Component\Process\Process;
 
 
@@ -72,6 +73,10 @@ class Linux extends OS
     public function getCpu()
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
+        if (null === $cpuInfo) {
+            return null;
+        }
+
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
             $cpuData[] = $this->parseProcBlock($block);
@@ -139,9 +144,13 @@ class Linux extends OS
     public function getPartitions()
     {
         $partitions = [];
-        $partitions_contents = Common::getContents('/proc/partitions');
-        if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitions_contents, $partitions_match, \PREG_SET_ORDER) > 0) {
-            foreach ($partitions_match as $partition) {
+        $partitionsContents = Common::getContents('/proc/partitions');
+        if (null === $partitionsContents) {
+            return null;
+        }
+
+        if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
+            foreach ($partitionsMatch as $partition) {
                 $partitions[$partition[2]][] = [
                     'size' => $partition[1] * 1024,
                     'number' => $partition[3],
@@ -149,8 +158,13 @@ class Linux extends OS
             }
         }
 
+        $paths = \glob('/sys/block/*/device/model', \GLOB_NOSORT);
+        if (false === $paths) {
+            return null;
+        }
+
         $drives = [];
-        foreach (\glob('/sys/block/*/device/model', \GLOB_NOSORT) as $path) {
+        foreach ($paths as $path) {
             $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
@@ -161,7 +175,7 @@ class Linux extends OS
                 list(, $reads, $writes) = $statMatches;
             }
 
-            $drives[] = array(
+            $drives[] = [
                 'name' => Common::getContents($path, 'Unknown') . (Common::getContents(\dirname(\dirname($path)) . '/queue/rotational') === '0' ? ' (SSD)' : ''),
                 'vendor' => Common::getContents(\dirname($path) . '/vendor', 'Unknown'),
                 'device' => '/dev/' . $parts[3],
@@ -169,7 +183,7 @@ class Linux extends OS
                 'writes' => $writes,
                 'size' => Common::getContents(\dirname(\dirname($path)) . '/size', 0) * 512,
                 'partitions' => \array_key_exists($parts[3], $partitions) && \is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : null,
-            );
+            ];
         }
 
         return $drives;
@@ -179,11 +193,11 @@ class Linux extends OS
     {
         $contents = Common::getContents('/proc/mounts');
         if (null === $contents) {
-            return [];
+            return null;
         }
 
         if (\preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER) === false) {
-            return [];
+            return null;
         }
 
         $mounts = [];
@@ -250,6 +264,11 @@ class Linux extends OS
             $return = \array_merge($return, $thermalZoneRes);
         }
 
+        $ipmi = Ipmi::work();
+        if ($ipmi) {
+            $return = \array_merge($return, $ipmi);
+        }
+
         // Laptop backlight percentage
         foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE) as $bl) {
             $max = Common::getContents($bl);
@@ -265,12 +284,11 @@ class Linux extends OS
                 'name' => 'Backlight brightness',
                 'temp' => \round($cur / $max, 2) * 100,
                 'unit' => '%',
-                'path' => 'N/A',
-                'bar' => true,
+                'path' => null,
             ];
         }
 
-        return $return;
+        return $return ?: null;
     }
 
     /**
@@ -294,25 +312,25 @@ class Linux extends OS
 
     public function getLoad()
     {
-        $contents = Common::getContents('/proc/loadavg');
-        if (null === $contents) {
-            return [];
-        }
+        $loadAvg = \sys_getloadavg();
 
-        $parts = \array_slice(\explode(' ', $contents), 0, 3);
-        if (!$parts) {
-            return [];
-        }
-
-        return \array_combine(['now', '5min', '15min'], $parts);
+        return [
+            '1min' => $loadAvg[0],
+            '5min' => $loadAvg[1],
+            '15min' => $loadAvg[2],
+        ];
     }
 
 
     public function getNetwork()
     {
-        $return = [];
+        $paths = \glob('/sys/class/net/*', \GLOB_NOSORT);
+        if (false === $paths) {
+            return null;
+        }
 
-        foreach (\glob('/sys/class/net/*', \GLOB_NOSORT) as $path) {
+        $return = [];
+        foreach ($paths as $path) {
             $nic = \basename($path);
 
             $operstateContents = Common::getContents($path . '/operstate');
@@ -328,7 +346,7 @@ class Linux extends OS
                     break;
             }
 
-            if ($state === 'unknown' && \file_exists($path . '/carrier')) {
+            if ('unknown' === $state && \file_exists($path . '/carrier')) {
                 $carrier = Common::getContents($path . '/carrier');
                 if (!empty($carrier)) {
                     $state = 'up';
@@ -392,17 +410,19 @@ class Linux extends OS
             ];
         }
 
-        // Return array of info
         return $return;
     }
 
 
     public function getBattery()
     {
-        $return = [];
+        $paths = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
+        if (false === $paths) {
+            return null;
+        }
 
-        $bats = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
-        foreach ($bats as $b) {
+        $return = [];
+        foreach ($paths as $b) {
             foreach ([$b . '/manufacturer', $b . '/status'] as $f) {
                 if (!\is_file($f)) {
                     continue 2; // http://php.net/continue
@@ -435,16 +455,16 @@ class Linux extends OS
 
     public function getWifi()
     {
-        $return = [];
         $contents = Common::getContents('/proc/net/wireless');
         if (null === $contents) {
-            return [];
+            return null;
         }
 
         if (false === \preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, \PREG_SET_ORDER)) {
-            return [];
+            return null;
         }
 
+        $return = [];
         foreach ($match as $wlan) {
             $return[] = [
                 'device' => $wlan[1],
@@ -469,19 +489,19 @@ class Linux extends OS
     {
         $contents = Common::getContents('/proc/asound/cards');
         if (null === $contents) {
-            return [];
+            return null;
         }
 
         if (\preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, \PREG_SET_ORDER) === 0) {
-            return [];
+            return null;
         }
 
         $cards = [];
         foreach ($matches as $card) {
-            $cards[] = array(
+            $cards[] = [
                 'number' => $card[1],
                 'card' => $card[2],
-            );
+            ];
         }
 
         return $cards;
@@ -490,9 +510,12 @@ class Linux extends OS
 
     public function getProcesses()
     {
-        $result = [];
-
         $processes = \glob('/proc/*/status', \GLOB_NOSORT);
+        if (null === $processes) {
+            return null;
+        }
+
+        $result = [];
         foreach ($processes as $process) {
             $statusContents = Common::getContents($process);
             if (null === $statusContents) {
@@ -531,7 +554,7 @@ class Linux extends OS
 
     /**
      * Systemd wrapper
-     * @return array
+     * @return array|null
      */
     public function getServices()
     {
@@ -579,31 +602,7 @@ class Linux extends OS
 
     public function getLoggedUsers()
     {
-        // Snag command line of every process in system
-        $procs = \glob('/proc/*/cmdline', \GLOB_NOSORT);
-
-        $users = [];
-        foreach ($procs as $proc) {
-            // Does the process match a popular shell, such as bash, csh, etc?
-            if (\preg_match('/(?:bash|csh|zsh|ksh)$/', Common::getContents($proc))) {
-
-                // Who owns it, anyway? 
-                $owner = \fileowner(\dirname($proc));
-                if (!\is_numeric($owner)) {
-                    continue;
-                }
-                if (!\in_array($owner, $users)) {
-                    $users[] = $owner;
-                }
-            }
-        }
-
-        \array_walk($users, function (&$item) {
-            $user = \posix_getpwuid($item);
-            $item = $user ? $user['name'] : $item;
-        });
-
-        return $users;
+        return Who::work();
     }
 
 

@@ -48,21 +48,19 @@ class Common
      */
     public static function byteConvert($size, $precision = 2)
     {
-        // Sanity check
-        if (!is_numeric($size)) {
+        if (!\is_numeric($size)) {
             return '?';
         }
 
-        // Get the notation
         $notation = 1024;
 
         // Fixes large disk size overflow issue
         // Found at http://www.php.net/manual/en/function.disk-free-space.php#81207
-        $types = array('B', 'KB', 'MB', 'GB', 'TB');
-        $types_i = array('B', 'KiB', 'MiB', 'GiB', 'TiB');
-        for ($i = 0; $size >= $notation && $i < (count($types) - 1); $size /= $notation, $i++);
+        $types = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $types_i = ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
+        for ($i = 0; $size >= $notation && $i < (\count($types) - 1); $size /= $notation, $i++);
 
-        return (round($size, $precision) . ' ' . ($notation == 1000 ? $types[$i] : $types_i[$i]));
+        return (\round($size, $precision) . ' ' . ($notation == 1000 ? $types[$i] : $types_i[$i]));
     }
 
     /**

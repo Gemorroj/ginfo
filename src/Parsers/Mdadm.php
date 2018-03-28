@@ -44,7 +44,6 @@ class Mdadm implements Parser
 
         $mdadmArrays = [];
         foreach ($match as $array) {
-
             $drives = [];
             foreach (\explode(' ', $array[4]) as $drive) {
                 if (\preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $matchDrive) === 1) {

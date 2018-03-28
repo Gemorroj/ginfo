@@ -18,9 +18,10 @@
  *
  */
 
-namespace Linfo\Parsers;
+namespace Linfo\Parsers\Temps;
 
 use Linfo\Common;
+use Linfo\Parsers\Parser;
 
 
 class Sensord implements Parser
@@ -33,9 +34,6 @@ class Sensord implements Parser
     {
     }
 
-    /**
-     * @return array
-     */
     public static function work()
     {
         $obj = new self();
@@ -66,7 +64,7 @@ class Sensord implements Parser
         $return = [];
         foreach ($devices as $dev => $stat) {
             $return[] = [
-                'path' => 'N/A', // These likely won't have paths
+                'path' => null, // These likely won't have paths
                 'name' => $dev,
                 'temp' => $stat,
                 'unit' => null, // Usually included in above

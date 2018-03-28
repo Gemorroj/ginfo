@@ -38,6 +38,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         //\print_r($info->getBattery());
         //\print_r($info->getTemps());
         //\print_r($info->getProcesses());
-        \print_r($info->getServices());
+        //\print_r($info->getServices());
     }
 }

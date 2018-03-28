@@ -18,7 +18,7 @@
  *
  */
 
-namespace Linfo\Meta;
+namespace Linfo;
 
 use Linfo\OS\OS;
 
@@ -92,6 +92,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * USB devices
+     * @return array|null
      */
     public function getUsb()
     {
@@ -100,7 +101,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * PCI devices
-     * @return array
+     * @return array|null
      */
     public function getPci()
     {
@@ -109,7 +110,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * Sound cards
-     * @return array
+     * @return array|null
      */
     public function getSoundCard()
     {
@@ -130,7 +131,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * Battery status
-     * @return array
+     * @return array|null
      */
     public function getBattery()
     {
@@ -153,7 +154,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * Temperatures
-     * @return array
+     * @return array|null
      */
     public function getTemps()
     {
@@ -162,7 +163,7 @@ class Response extends \ArrayObject //fixes for old api
 
     /**
      * Processes
-     * @return array
+     * @return array|null
      */
     public function getProcesses()
     {
@@ -172,7 +173,7 @@ class Response extends \ArrayObject //fixes for old api
     /**
      * Services
      *
-     * @return array
+     * @return array|null
      */
     public function getServices()
     {

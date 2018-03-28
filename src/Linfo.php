@@ -19,7 +19,6 @@
 
 namespace Linfo;
 
-use Linfo\Meta\Response;
 use Linfo\OS\Linux;
 use Linfo\OS\OS;
 use Linfo\Exceptions\FatalException;

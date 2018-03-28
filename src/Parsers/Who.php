@@ -20,10 +20,10 @@
 
 namespace Linfo\Parsers;
 
+use Symfony\Component\Process\Process;
 
-use Linfo\Common;
 
-class ThermalZone implements Parser
+class Who implements Parser
 {
     final private function __construct()
     {
@@ -33,35 +33,24 @@ class ThermalZone implements Parser
     {
     }
 
-    /**
-     * @return array
-     */
     public static function work()
     {
-        $thermalZoneVals = [];
+        $process = new Process('who --count');
+        $process->run();
 
-        foreach (\glob('/sys/class/thermal/thermal_zone*', \GLOB_NOSORT | \GLOB_BRACE) as $path) {
-            $labelPath = $path . DIRECTORY_SEPARATOR . 'type';
-            $valuePath = $path . DIRECTORY_SEPARATOR . 'temp';
-
-
-            $label = Common::getContents($labelPath);
-            $value = Common::getContents($valuePath);
-
-            if (null === $label || null === $value) {
-                continue;
-            }
-
-            $value /= $value > 10000 ? 1000 : 1;
-
-            $thermalZoneVals[] = array(
-                'path' => $path,
-                'name' => $label,
-                'temp' => $value,
-                'unit' => 'C', // I don't think this is ever going to be in F
-            );
+        if (!$process->isSuccessful()) {
+            return null;
         }
 
-        return $thermalZoneVals;
+        $list = $process->getOutput();
+        $list = \explode("\n", $list);
+        \array_pop($list); // remove footer
+
+        $out = [];
+        foreach ($list as $line) {
+            $out[] = \trim($line);
+        }
+
+        return $out;
     }
 }

@@ -47,6 +47,7 @@ print_r($info); // and a whole lot more
  - Motherboard (linux: need `dimedecode`)
  - Processes
  - Systemd services
+ - logged users (linux: need `who`)
  - Via included extensions:
    - Nvidia GPU temps
    - DHCPD leases

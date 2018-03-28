@@ -18,12 +18,13 @@
  *
  */
 
-namespace Linfo\Parsers;
-
-use Symfony\Component\Process\Process;
+namespace Linfo\Parsers\Temps;
 
 
-class Systemd implements Parser
+use Linfo\Common;
+use Linfo\Parsers\Parser;
+
+class ThermalZone implements Parser
 {
     final private function __construct()
     {
@@ -35,33 +36,33 @@ class Systemd implements Parser
 
     public static function work()
     {
-        $process = new Process('systemctl list-units --type service --all');
-        $process->run();
-
-        if (!$process->isSuccessful()) {
+        $paths = \glob('/sys/class/thermal/thermal_zone*', \GLOB_NOSORT | \GLOB_BRACE);
+        if (false === $paths) {
             return null;
         }
 
-        $list = $process->getOutput();
+        $thermalZoneVals = [];
+        foreach ($paths as $path) {
+            $labelPath = $path . '/type';
+            $valuePath = $path . '/temp';
 
-        $lines = \explode("\n", \explode("\n\n", $list, 2)[0]);
-        \array_shift($lines); //remove header
+            $label = Common::getContents($labelPath);
+            $value = Common::getContents($valuePath);
 
-        $out = [];
-        foreach ($lines as $line) {
-            $line = \ltrim($line, '●');
-            $line = \trim($line);
-            list($unit, $load, $active, $sub, $description) = \preg_split('/\s+/', $line, 5);
+            if (null === $label || null === $value) {
+                continue;
+            }
 
-            $out[] = [
-                'name' => $unit,
-                'load' => $load,
-                'active' => $active,
-                'sub' => $sub,
-                'description' => $description,
+            $value /= $value > 10000 ? 1000 : 1;
+
+            $thermalZoneVals[] = [
+                'path' => $path,
+                'name' => $label,
+                'temp' => $value,
+                'unit' => 'C', // I don't think this is ever going to be in F
             ];
         }
 
-        return $out;
+        return $thermalZoneVals;
     }
 }

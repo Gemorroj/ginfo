@@ -31,10 +31,11 @@ Installation:
  * 
  */
 
-namespace Linfo\Extension;
+namespace Linfo\Parsers\Temps;
 
 use Linfo\Linfo;
 use Linfo\Meta\Errors;
+use Linfo\Parsers\Parser;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -43,76 +44,47 @@ use Symfony\Component\Process\Process;
  *
  * @author Joseph Gillotti
  */
-class Ipmi implements Extension
+class Ipmi implements Parser
 {
-    // Minimum version of Linfo required
-    const LINFO_INTEGRATE = true;
-    const EXTENSION_NAME = 'ipmi';
-
-    private $linfo;
-
-    // Start us off
-    public function __construct(Linfo $linfo)
+    public static function work()
     {
-        $this->linfo = $linfo;
-    }
+        $process = new Process('ipmitool sdr');
+        $process->run();
 
-    // Work it, baby
-    public function work()
-    {
-        $info = $this->linfo->getInfo();
-
-        // Make sure this is an array
-        $info['Temps'] = (array)@$info['Temps'];
-
-        // Deal with calling it
-        try {
-            $process = new Process('ipmitool sdr');
-            $process->mustRun();
-            $result = $process->getOutput();
-        } catch (ProcessFailedException $e) {
-            // messed up somehow
-            Errors::add(self::EXTENSION_NAME . ' Extension', $e->getMessage());
-            return;
+        if (!$process->isSuccessful()) {
+            return null;
         }
 
-        // Match it up
-        if (!preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $result, $matches, PREG_SET_ORDER)) {
-            return;
+        $result = $process->getOutput();
+
+        if (!\preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $result, $matches, \PREG_SET_ORDER)) {
+            return null;
         }
 
-        // Go through with it
+        $out = [];
         foreach ($matches as $m) {
+            $vParts = \explode(' ', \trim($m[2]));
 
-            // Separate them by normal spaces
-            $v_parts = explode(' ', trim($m[2]));
-
-            // Deal with the type of it
-            switch ($v_parts[1]) {
+            switch ($vParts[1]) {
                 case 'Volts':
                     $unit = 'v';
                     break;
                 case 'degrees':
-                    $unit = $v_parts[2];
+                    $unit = $vParts[2];
                     break;
                 default:
-                    $unit = '';
+                    $unit = null;
                     break;
             }
 
-            // Save this one
-            $info['Temps'][] = array(
-                'path' => 'N/A',
-                'name' => trim($m[1]),
-                'temp' => $v_parts[0],
+            $out[] = [
+                'path' => null,
+                'name' => \trim($m[1]),
+                'temp' => $vParts[0],
                 'unit' => $unit,
-            );
+            ];
         }
-    }
 
-    // Not needed
-    public function result()
-    {
-        return false;
+        return $out;
     }
 }

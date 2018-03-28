@@ -17,10 +17,11 @@
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Linfo\Parsers;
+namespace Linfo\Parsers\Temps;
 
 
 use Linfo\Common;
+use Linfo\Parsers\Parser;
 
 class Hwmon implements Parser
 {
@@ -32,14 +33,16 @@ class Hwmon implements Parser
     {
     }
 
-    /**
-     * @return array
-     */
+
     public static function work()
     {
-        $hwmonVals = [];
+        $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);
+        if (false === $paths) {
+            return null;
+        }
 
-        foreach (\glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE) as $path) {
+        $hwmonVals = [];
+        foreach ($paths as $path) {
             $initPath = \rtrim($path, 'input');
             $value = Common::getContents($path);
             $base = \basename($path);

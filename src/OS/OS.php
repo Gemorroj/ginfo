@@ -53,22 +53,22 @@ abstract class OS
     public abstract function getOsName();
 
     /**
-     * @return int seconds
+     * @return int|null seconds
      */
     public abstract function getUptime();
 
     /**
-     * @return string
+     * @return string|null
      */
     public abstract function getVirtualization();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getCpu();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getLoad();
 
@@ -78,74 +78,74 @@ abstract class OS
     public abstract function getMemory();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getSoundCards();
 
     /**
-     * @return string[]
+     * @return string[]|null
      */
     public abstract function getLoggedUsers();
 
     /**
      * Get brand/name of motherboard/server
      *
-     * return string
+     * return string|null
      */
     public abstract function getModel();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getUsb();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getPci();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getNetwork();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getPartitions();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getMounts();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getRaid();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getBattery();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getWifi();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getTemps();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getProcesses();
 
     /**
-     * @return array
+     * @return array|null
      */
     public abstract function getServices();
 }

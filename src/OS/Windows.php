@@ -116,7 +116,7 @@ class Windows extends OS
     public function getCpu()
     {
         $cpuInfo = $this->getInfo('Processor');
-        if (!isset($cpuInfo[0])) { // if one processor convert to many drives
+        if (!isset($cpuInfo[0])) { // if one processor convert to many processors
             $cpuInfo = [$cpuInfo];
         }
 
@@ -145,8 +145,7 @@ class Windows extends OS
 
     public function getLoad()
     {
-        return [];
-        // TODO: Implement getLoad() method.
+        return null; //todo
     }
 
     public function getUptime()
@@ -263,15 +262,14 @@ class Windows extends OS
 
     public function getRaid()
     {
-        return []; //todo
+        return null; //todo
     }
 
     public function getPci()
     {
-        $devs = [];
-
         $info = $this->getInfo('PnPEntity');
 
+        $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
             if (($type !== 'PCI') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
@@ -290,10 +288,9 @@ class Windows extends OS
 
     public function getUsb()
     {
-        $devs = [];
-
         $info = $this->getInfo('PnPEntity');
 
+        $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
             if (($type !== 'USB') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
@@ -380,7 +377,7 @@ class Windows extends OS
                     break;
             }
 
-            $canonName = preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
+            $canonName = \preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
             $isatapName = 'isatap.' . $net['GUID'];
 
 
@@ -406,17 +403,17 @@ class Windows extends OS
 
     public function getWifi()
     {
-        return []; // todo
+        return null; // todo
     }
 
     public function getBattery()
     {
-        return []; //todo
+        return null; //todo
     }
 
     public function getTemps()
     {
-        return []; //todo
+        return null; //todo
     }
 
     public function getSoundCards()

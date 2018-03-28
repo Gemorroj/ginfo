@@ -34,10 +34,17 @@ class Free implements Parser
 
     public static function work()
     {
-        $free = (new Process('free -bw'))->mustRun()->getOutput();
+        $process = new Process('free -bw');
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return null;
+        }
+
+        $free = $process->getOutput();
 
         $arr = \explode("\n", $free);
-        unset($arr[0]); // remove header
+        \array_shift($arr); // remove header
 
         $memStr = \trim(\ltrim($arr[1], 'Mem:'));
         $swapStr = \trim(\ltrim($arr[2], 'Swap:'));
