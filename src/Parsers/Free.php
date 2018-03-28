@@ -43,11 +43,11 @@ class Free implements Parser
 
         $free = $process->getOutput();
 
-        $arr = \explode("\n", $free);
+        $arr = \explode("\n", \trim($free));
         \array_shift($arr); // remove header
 
-        $memStr = \trim(\ltrim($arr[1], 'Mem:'));
-        $swapStr = \trim(\ltrim($arr[2], 'Swap:'));
+        $memStr = \trim(\ltrim($arr[0], 'Mem:'));
+        $swapStr = \trim(\ltrim($arr[1], 'Swap:'));
 
         list($memTotal, $memUsed, $memFree, $memShared, $memBuffers, $memCached, $memAvailable) = \preg_split('/\s+/', $memStr);
         list($swapTotal, $swapUsed, $swapFree) = \preg_split('/\s+/', $swapStr);
