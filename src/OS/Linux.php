@@ -529,13 +529,27 @@ class Linux extends OS
             $uid = \explode("\t", $info['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
 
+            if (isset($info['VmSize'])) {
+                $vmSize = \preg_replace('/^([0-9]+).*/', '$1', $info['VmSize']);
+                $vmSize *= 1024;
+            } else {
+                $vmSize = null;
+            }
+
+            if (isset($info['VmPeak'])) {
+                $vmPeak = \preg_replace('/^([0-9]+).*/', '$1', $info['VmPeak']);
+                $vmPeak *= 1024;
+            } else {
+                $vmPeak = null;
+            }
+
             $result[] = [
                 'name' => $info['Name'],
                 'commandLine' => null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
                 'threads' => $info['Threads'],
                 'state' => $info['State'],
-                'memory' => isset($info['VmSize']) ? $info['VmSize'] : null,
-                'peakMemory' => isset($info['VmPeak']) ? $info['VmPeak'] : null,
+                'memory' => $vmSize,
+                'peakMemory' => $vmPeak,
                 'pid' => \basename(\dirname($process)),
                 'user' => $user ? $user['name'] : $uid,
             ];
