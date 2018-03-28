@@ -26,7 +26,6 @@ use Symfony\Component\Process\Process;
 /**
  * Get info on Windows systems
  * Written and maintained by Oliver Kuckertz (mologie).
- * Modify by Gemorroj
  */
 class Windows extends OS
 {

@@ -1,18 +1,5 @@
 <?php
 
-/*
-This implements a ipmi status checker for temps/voltages
-
-Installation: 
- - The following lines must be added to your settings:
-   $settings['extensions']['ipmi'] = true; 
-
- - The ipmitool command most likely needs to be run as root, so, 
-   if you don't have php running as root, configure sudo appropriately
-   for the user the php scripts are running as, comment out 'Defaults    requiretty' in your sudoers
-   file, and add 'ipmitool' to the $settings['sudo_apps'] array in settings
-*/
-
 /**
  * This file is part of Linfo (c) 2011 Joseph Gillotti.
  * 
@@ -33,10 +20,7 @@ Installation:
 
 namespace Linfo\Parsers\Temps;
 
-use Linfo\Linfo;
-use Linfo\Meta\Errors;
 use Linfo\Parsers\Parser;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**

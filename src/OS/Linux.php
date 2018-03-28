@@ -27,13 +27,13 @@ use Linfo\Parsers\Temps\Hwmon;
 use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Temps\Ipmi;
 use Linfo\Parsers\Mdadm;
+use Linfo\Parsers\Temps\Nvidia;
 use Linfo\Parsers\Temps\Sensord;
 use Linfo\Parsers\Temps\Hddtemp;
 use Linfo\Parsers\Temps\Mbmon;
 use Linfo\Parsers\Systemd;
 use Linfo\Parsers\Temps\ThermalZone;
 use Linfo\Parsers\Who;
-use Symfony\Component\Process\Process;
 
 
 class Linux extends OS
@@ -267,6 +267,11 @@ class Linux extends OS
         $ipmi = Ipmi::work();
         if ($ipmi) {
             $return = \array_merge($return, $ipmi);
+        }
+
+        $nvidia = Nvidia::work();
+        if ($nvidia) {
+            $return = \array_merge($return, $nvidia);
         }
 
         // Laptop backlight percentage
