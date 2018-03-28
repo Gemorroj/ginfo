@@ -43,7 +43,7 @@ class Who implements Parser
         }
 
         $list = $process->getOutput();
-        $list = \explode("\n", $list);
+        $list = \explode("\n", \trim($list));
         \array_pop($list); // remove footer
 
         $out = [];
