@@ -33,7 +33,6 @@ print_r($info);
 ```
 
 
-
 ## Runs on
 - Linux
 - Windows >= 10

@@ -22,7 +22,7 @@ namespace Linfo;
 
 use Linfo\OS\OS;
 
-class Response extends \ArrayObject //fixes for old api
+class Info
 {
     /** @var OS */
     private $os;

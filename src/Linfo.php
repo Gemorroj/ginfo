@@ -45,11 +45,11 @@ class Linfo
 
 
     /**
-     * @return Response
+     * @return Info
      */
     public function getInfo()
     {
-        return new Response($this->os);
+        return new Info($this->os);
     }
 
 
