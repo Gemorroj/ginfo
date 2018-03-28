@@ -153,4 +153,9 @@ abstract class OS
      * @return array|null
      */
     public abstract function getUps();
+
+    /**
+     * @return array|null
+     */
+    public abstract function getPrinters();
 }

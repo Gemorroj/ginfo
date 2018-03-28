@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Parsers\Apcaccess;
+use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
 use Linfo\Parsers\Temps\Hwmon;
 use Linfo\Parsers\Hwpci;
@@ -707,5 +708,10 @@ class Linux extends OS
     public function getUps()
     {
         return Apcaccess::work();
+    }
+
+    public function getPrinters()
+    {
+        return Lpstat::work();
     }
 }

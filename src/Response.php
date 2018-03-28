@@ -190,4 +190,14 @@ class Response extends \ArrayObject //fixes for old api
     {
         return $this->os->getUps();
     }
+
+    /**
+     * Printers
+     *
+     * @return array|null
+     */
+    public function getPrinters()
+    {
+        return $this->os->getPrinters();
+    }
 }

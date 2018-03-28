@@ -49,11 +49,11 @@ print_r($info); // and a whole lot more
  - Systemd services
  - logged users (linux: need `who`)
  - Via included extensions:
-   - Nvidia GPU temps
+   - Nvidia GPU temps (linux: need `nvidia-smi`)
    - DHCPD leases
    - Samba status
-   - APC UPS status
-   - CUPS printer status
+   - UPS status (linux: need `apcaccess`)
+   - Printer status (linux: need `lpstat`)
    - IPMI
    - libvirt VMs
    - lxd Containers

@@ -528,4 +528,9 @@ class Windows extends OS
     {
         return null; //todo
     }
+
+    public function getPrinters()
+    {
+        return null; //todo
+    }
 }
