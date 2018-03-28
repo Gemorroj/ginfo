@@ -40,6 +40,8 @@ class General
     private $loggedUsers;
     /** @var string|null */
     private $model;
+    /** @var float[]|null */
+    private $load;
 
     /**
      * @return \DateTime
@@ -212,6 +214,24 @@ class General
     public function setModel(?string $model): self
     {
         $this->model = $model;
+        return $this;
+    }
+
+    /**
+     * @return float[]|null
+     */
+    public function getLoad(): ?array
+    {
+        return $this->load;
+    }
+
+    /**
+     * @param float[]|null $load
+     * @return $this
+     */
+    public function setLoad(?array $load): self
+    {
+        $this->load = $load;
         return $this;
     }
 }

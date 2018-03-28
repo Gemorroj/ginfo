@@ -304,13 +304,7 @@ class Linux extends OS
 
     public function getLoad(): ?array
     {
-        $loadAvg = \sys_getloadavg();
-
-        return [
-            '1min' => $loadAvg[0],
-            '5min' => $loadAvg[1],
-            '15min' => $loadAvg[2],
-        ];
+        return \sys_getloadavg();
     }
 
 

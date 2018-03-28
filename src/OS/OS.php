@@ -68,7 +68,7 @@ abstract class OS
     public abstract function getCpu() : ?array;
 
     /**
-     * @return array|null
+     * @return float[]|null
      */
     public abstract function getLoad() : ?array;
 

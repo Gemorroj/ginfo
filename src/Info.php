@@ -51,7 +51,8 @@ class Info
             ->setArchitecture($this->os->getArchitecture())
             ->setVirtualization($this->os->getVirtualization())
             ->setModel($this->os->getModel())
-            ->setLoggedUsers($this->os->getLoggedUsers());
+            ->setLoggedUsers($this->os->getLoggedUsers())
+            ->setLoad($this->os->getLoad());
     }
 
     /**
@@ -68,7 +69,6 @@ class Info
             'hyperthreading' => $cpuInfo['cores'] < $cpuInfo['virtual'],
 
             'processor' => $cpuInfo['processor'], //physical processors info
-            'load' => $this->os->getLoad(),
         ];
     }
 
