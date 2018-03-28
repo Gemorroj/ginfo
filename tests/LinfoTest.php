@@ -18,15 +18,19 @@
  */
 namespace Linfo\Tests;
 
+use Linfo\Info;
 use Linfo\Linfo;
 
 class LinfoTest extends \PHPUnit\Framework\TestCase
 {
-    public function testTodo()
+    /** @var Info */
+    private $info;
+
+    public function setUp()
     {
         $linfo = new Linfo();
-        $info = $linfo->getInfo();
-
+        $this->info = $linfo->getInfo();
+/*
         \print_r($info->getGeneral());
         \print_r($info->getCpu());
         \print_r($info->getMemory());
@@ -42,5 +46,15 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         \print_r($info->getPrinters());
         \print_r($info->getSamba());
         \print_r($info->getSelinux());
+*/
+    }
+
+
+    public function testGeneral()
+    {
+        $general = $this->info->getGeneral();
+        $this->assertInstanceOf(Info\General::class, $general);
+
+        \print_r($general);
     }
 }

@@ -90,7 +90,7 @@ abstract class OS
     /**
      * Get brand/name of motherboard/server
      *
-     * return string|null
+     * @return string|null
      */
     public abstract function getModel();
 

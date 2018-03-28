@@ -20,6 +20,7 @@
 
 namespace Linfo;
 
+use Linfo\Info\General;
 use Linfo\OS\OS;
 
 class Info
@@ -33,21 +34,20 @@ class Info
 
     /**
      * General info
-     * @return array
+     * @return General
      */
     public function getGeneral()
     {
-        return [
-            'date' => new \DateTime(),
-            'osName' => $this->os->getOsName(),
-            'kernel' => $this->os->getKernel(),
-            'hostname' => $this->os->getHostName(),
-            'uptime' => $this->os->getUptime(),
-            'architecture' => $this->os->getArchitecture(),
-            'virtualization' => $this->os->getVirtualization(),
-            'loggedUsers' => $this->os->getLoggedUsers(),
-            'model' => $this->os->getModel(),
-        ];
+        return (new General())
+            ->setDate(new \DateTime())
+            ->setUptime($this->os->getUptime())
+            ->setOsName($this->os->getOsName())
+            ->setKernel($this->os->getKernel())
+            ->setHostname($this->os->getHostName())
+            ->setArchitecture($this->os->getArchitecture())
+            ->setVirtualization($this->os->getVirtualization())
+            ->setModel($this->os->getModel())
+            ->setLoggedUsers($this->os->getLoggedUsers());
     }
 
     /**
