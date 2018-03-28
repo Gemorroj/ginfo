@@ -530,14 +530,14 @@ class Linux extends OS
             $user = \posix_getpwuid($uid);
 
             if (isset($info['VmSize'])) {
-                $vmSize = \preg_replace('/^([0-9]+).*/', '$1', $info['VmSize']);
+                $vmSize = (float)$info['VmSize']; // drop kB
                 $vmSize *= 1024;
             } else {
                 $vmSize = null;
             }
 
             if (isset($info['VmPeak'])) {
-                $vmPeak = \preg_replace('/^([0-9]+).*/', '$1', $info['VmPeak']);
+                $vmPeak = (float)$info['VmPeak']; // drop kB
                 $vmPeak *= 1024;
             } else {
                 $vmPeak = null;
