@@ -81,4 +81,22 @@ class Common
     {
         return \count(\array_intersect($needles, $haystack)) > 0;
     }
+
+
+    /**
+     * @param string $block
+     * @param string $delimiter
+     * @return array
+     */
+    public static function parseKeyValueBlock($block, $delimiter = ':')
+    {
+        $tmp = [];
+        foreach (\explode("\n", $block) as $line) {
+            if (false !== \mb_strpos($line, $delimiter)) {
+                @list($key, $value) = \explode(':', $line, 2);
+                $tmp[\trim($key)] = \trim($value);
+            }
+        }
+        return $tmp;
+    }
 }

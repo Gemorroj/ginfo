@@ -163,4 +163,9 @@ abstract class OS
      * @return array|null
      */
     public abstract function getSamba();
+
+    /**
+     * @return array|null
+     */
+    public abstract function getSelinux();
 }

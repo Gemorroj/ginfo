@@ -15,6 +15,7 @@
 - minimal windows 10 support
 - minor code improvements
 - minimal php version 7.1.10
+- add selinux status info
 
 
 ### PHP library usage
@@ -55,6 +56,7 @@ print_r($info);
 - UPS status (linux: need `apcaccess`)
 - Printer status (linux: need `lpstat`)
 - Samba status (linux: need `smbstatus`)
+- Selinux status (linux: need `sestatus`)
 
 
 ## System requirements:

@@ -538,4 +538,9 @@ class Windows extends OS
     {
         return null; //todo
     }
+
+    public function getSelinux()
+    {
+        return null;
+    }
 }

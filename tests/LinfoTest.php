@@ -41,5 +41,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         //\print_r($info->getServices());
         //\print_r($info->getPrinters());
         //\print_r($info->getSamba());
+        //\print_r($info->getSelinux());
     }
 }

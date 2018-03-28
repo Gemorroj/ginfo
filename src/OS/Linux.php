@@ -26,6 +26,7 @@ use Linfo\Extension\Smbstatus;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
+use Linfo\Parsers\Sestatus;
 use Linfo\Parsers\Temps\Hwmon;
 use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Temps\Ipmi;
@@ -57,22 +58,6 @@ class Linux extends OS
         return Free::work();
     }
 
-    /**
-     * @param string $block
-     * @return array
-     */
-    private function parseProcBlock($block)
-    {
-        $tmp = [];
-        foreach (\explode("\n", $block) as $line) {
-            if (false !== \mb_strpos($line, ':')) {
-                @list($key, $value) = \explode(':', $line, 2);
-                $tmp[\trim($key)] = \trim($value);
-            }
-        }
-        return $tmp;
-    }
-
     public function getCpu()
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
@@ -82,7 +67,7 @@ class Linux extends OS
 
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
-            $cpuData[] = $this->parseProcBlock($block);
+            $cpuData[] = Common::parseKeyValueBlock($block);
         }
 
 
@@ -538,7 +523,7 @@ class Linux extends OS
                 continue;
             }
 
-            $info = $this->parseProcBlock($statusContents);
+            $info = Common::parseKeyValueBlock($statusContents);
 
             $cmdlineContents = Common::getContents(\dirname($process) . '/cmdline');
             $uid = \explode("\t", $info['Uid'], 2)[0];
@@ -719,5 +704,10 @@ class Linux extends OS
     public function getSamba()
     {
         return Smbstatus::work();
+    }
+
+    public function getSelinux()
+    {
+        return Sestatus::work();
     }
 }

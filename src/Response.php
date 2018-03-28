@@ -47,7 +47,6 @@ class Response extends \ArrayObject //fixes for old api
             'virtualization' => $this->os->getVirtualization(),
             'loggedUsers' => $this->os->getLoggedUsers(),
             'model' => $this->os->getModel(),
-            //'selinux' => '', // todo: parse ini file /etc/sysconfig/selinux
         ];
     }
 
@@ -210,5 +209,16 @@ class Response extends \ArrayObject //fixes for old api
     public function getSamba()
     {
         return $this->os->getSamba();
+    }
+
+
+    /**
+     * Selinux status
+     *
+     * @return array|null
+     */
+    public function getSelinux()
+    {
+        return $this->os->getSelinux();
     }
 }
