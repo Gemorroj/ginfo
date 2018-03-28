@@ -28,7 +28,7 @@ composer require gemorroj/linfo
 $linfo = new \Linfo\Linfo();
 $info = $linfo->getInfo();
 
-print_r($info); // and a whole lot more
+print_r($info);
 ```
 
 
@@ -50,11 +50,11 @@ print_r($info); // and a whole lot more
 - RAID arrays (linux: need `mdadm`)
 - Motherboard (linux: need `dimedecode`)
 - Processes
-- Systemd services
+- Systemd services (linux: need `systemctl`)
 - logged users (linux: need `who`)'
 - UPS status (linux: need `apcaccess`)
 - Printer status (linux: need `lpstat`)
-- Samba status
+- Samba status (linux: need `smbstatus`)
 
 
 ## System requirements:
@@ -67,9 +67,5 @@ print_r($info); // and a whole lot more
 - Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
 
 #### Linux
-- /proc and /sys mounted and readable by PHP
+- `/proc` and `/sys` mounted and readable by PHP
 - Tested with the 2.6.x/3.x kernels
-
-### Extensions
-- See a list of php files in src/Extensions/
-- Open them and look at the comment at the top of the file for usage

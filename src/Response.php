@@ -38,7 +38,7 @@ class Response extends \ArrayObject //fixes for old api
     public function getGeneral()
     {
         return [
-            'datetime' => new \DateTime(),
+            'date' => new \DateTime(),
             'osName' => $this->os->getOsName(),
             'kernel' => $this->os->getKernel(),
             'hostname' => $this->os->getHostName(),
@@ -199,5 +199,16 @@ class Response extends \ArrayObject //fixes for old api
     public function getPrinters()
     {
         return $this->os->getPrinters();
+    }
+
+
+    /**
+     * Samba status
+     *
+     * @return array|null
+     */
+    public function getSamba()
+    {
+        return $this->os->getSamba();
     }
 }

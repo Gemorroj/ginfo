@@ -158,4 +158,9 @@ abstract class OS
      * @return array|null
      */
     public abstract function getPrinters();
+
+    /**
+     * @return array|null
+     */
+    public abstract function getSamba();
 }

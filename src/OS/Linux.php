@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
+use Linfo\Extension\Smbstatus;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
@@ -713,5 +714,10 @@ class Linux extends OS
     public function getPrinters()
     {
         return Lpstat::work();
+    }
+
+    public function getSamba()
+    {
+        return Smbstatus::work();
     }
 }
