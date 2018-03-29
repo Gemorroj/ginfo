@@ -25,11 +25,12 @@ use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
+use Linfo\Info\Process;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Process as SymfonyProcess;
 
 /**
  * Get info on Windows systems
@@ -52,7 +53,7 @@ class Windows extends OS
                 $powershellDirectory = null;
             }
 
-            $this->process = new Process(null, $powershellDirectory);
+            $this->process = new SymfonyProcess(null, $powershellDirectory);
         } catch (\Exception $e) {
             throw new FatalException($e->getMessage());
         }
@@ -489,16 +490,17 @@ class Windows extends OS
 
         $result = [];
         foreach ($info as $proc) {
-            $result[] = [
-                'name' => $proc['Name'],
-                'commandLine' => $proc['CommandLine'],
-                'threads' => $proc['ThreadCount'],
-                'state' => $displayState($proc['ExecutionState']),
-                'memory' => $proc['VirtualSize'],
-                'peakMemory' => $proc['PeakVirtualSize'],
-                'pid' => $proc['ProcessId'],
-                'user' => $proc['Owner'],
-            ];
+            $result[] = (new Process())
+                ->setName($proc['Name'])
+                ->setCommandLine($proc['CommandLine'])
+                ->setThreads($proc['ThreadCount'])
+                ->setState($displayState($proc['ExecutionState']))
+                ->setMemory($proc['VirtualSize'])
+                ->setPeakMemory($proc['PeakVirtualSize'])
+                ->setPid($proc['ProcessId'])
+                ->setUser($proc['Owner'])
+                ->setIoRead(null) //todo
+                ->setIoWrite(null); // todo
         }
 
         return $result;

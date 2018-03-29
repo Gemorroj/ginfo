@@ -24,6 +24,7 @@ use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
 use Linfo\Info\Network;
+use Linfo\Info\Process;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Parsers\Smbstatus;
@@ -488,47 +489,38 @@ class Linux extends OS
         foreach ($processes as $process) {
             $statusContents = Common::getContents($process);
             if (null === $statusContents) {
-                $result[] = [
-                    'name' => null,
-                    'commandLine' => null,
-                    'threads' => null,
-                    'state' => null,
-                    'workingSet' => null,
-                    'pid' => \basename(\dirname($process)),
-                ];
                 continue;
             }
 
-            $info = Common::parseKeyValueBlock($statusContents);
-
             $cmdlineContents = Common::getContents(\dirname($process) . '/cmdline');
-            $uid = \explode("\t", $info['Uid'], 2)[0];
+            $ioContents = Common::getContents(\dirname($process) . '/io');
+
+
+            $blockIo = Common::parseKeyValueBlock($ioContents);
+            $blockStatus = Common::parseKeyValueBlock($statusContents);
+
+
+            $uid = \explode("\t", $blockStatus['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
 
-            if (isset($info['VmSize'])) {
-                $vmSize = (float)$info['VmSize']; // drop kB
-                $vmSize *= 1024;
-            } else {
-                $vmSize = null;
-            }
+            $vmSize = (float)$blockStatus['VmSize']; // drop kB
+            $vmSize *= 1024;
 
-            if (isset($info['VmPeak'])) {
-                $vmPeak = (float)$info['VmPeak']; // drop kB
-                $vmPeak *= 1024;
-            } else {
-                $vmPeak = null;
-            }
+            $vmPeak = (float)$blockStatus['VmPeak']; // drop kB
+            $vmPeak *= 1024;
 
-            $result[] = [
-                'name' => $info['Name'],
-                'commandLine' => null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
-                'threads' => $info['Threads'],
-                'state' => $info['State'],
-                'memory' => $vmSize,
-                'peakMemory' => $vmPeak,
-                'pid' => \basename(\dirname($process)),
-                'user' => $user ? $user['name'] : $uid,
-            ];
+
+            $result[] = (new Process())
+                ->setName($blockStatus['Name'])
+                ->setCommandLine(null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null)
+                ->setThreads($blockStatus['Threads'])
+                ->setState($blockStatus['State'])
+                ->setMemory($vmSize)
+                ->setPeakMemory($vmPeak)
+                ->setPid(\basename(\dirname($process)))
+                ->setUser($user ? $user['name'] : $uid)
+                ->setIoRead($blockIo['read_bytes'])
+                ->setIoWrite($blockIo['write_bytes']);
         }
 
         return $result;

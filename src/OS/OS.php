@@ -26,6 +26,7 @@ use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
+use Linfo\Info\Process;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
@@ -145,7 +146,7 @@ abstract class OS
     public abstract function getTemps() : ?array;
 
     /**
-     * @return array|null
+     * @return Process[]|null
      */
     public abstract function getProcesses() : ?array;
 

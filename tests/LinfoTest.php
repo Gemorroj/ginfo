@@ -33,7 +33,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 /*
         \print_r($info->getDisk());
         \print_r($info->getTemps());
-        \print_r($info->getProcesses());
         \print_r($info->getPrinters());
         \print_r($info->getSamba());
 */
@@ -62,6 +61,14 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Info\Memory::class, $memory);
 
         \print_r($memory);
+    }
+
+    public function testProcesses()
+    {
+        $processes = $this->info->getProcesses();
+        $this->assertInternalType('array', $processes);
+
+        \print_r($processes);
     }
 
     public function testNetwork()

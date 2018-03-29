@@ -26,6 +26,7 @@ use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
+use Linfo\Info\Process;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
@@ -152,7 +153,7 @@ class Info
 
     /**
      * Processes
-     * @return array|null
+     * @return Process[]|null
      */
     public function getProcesses()
     {
