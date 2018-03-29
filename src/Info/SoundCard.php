@@ -20,7 +20,7 @@
 
 namespace Linfo\Info;
 
-class Pci
+class SoundCard
 {
     /** @var string */
     private $vendor;

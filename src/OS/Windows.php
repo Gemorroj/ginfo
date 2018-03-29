@@ -24,6 +24,7 @@ use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Symfony\Component\Process\Process;
 
@@ -296,7 +297,7 @@ class Windows extends OS
 
             $devs[] = (new Pci())
                 ->setVendor($pnpDev['Manufacturer'])
-                ->setDevice($pnpDev['Caption']);
+                ->setName($pnpDev['Caption']);
         }
 
         return $devs;
@@ -319,7 +320,7 @@ class Windows extends OS
 
             $devs[] = (new Usb())
                 ->setVendor($pnpDev['Manufacturer'])
-                ->setDevice($pnpDev['Caption']);
+                ->setName($pnpDev['Caption']);
         }
 
         return $devs;
@@ -450,10 +451,9 @@ class Windows extends OS
 
         $cards = [];
         foreach ($info as $card) {
-            $cards[] = [
-                'vendor' => $card['Manufacturer'],
-                'card' => $card['Caption'],
-            ];
+            $cards[] = (new SoundCard())
+                ->setVendor($card['Manufacturer'])
+                ->setName($card['Caption']);
         }
 
         return $cards;

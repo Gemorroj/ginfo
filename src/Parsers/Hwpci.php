@@ -96,7 +96,7 @@ class Hwpci implements Parser
                 $v = $vendMatch;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
                 if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
-                    $this->devices[$v[1]][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($devMatch[2])];
+                    $this->devices[$v[1]][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
                 }
             }
         }
@@ -113,7 +113,7 @@ class Hwpci implements Parser
                 $v = $vendMatch;
             } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
                 if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
-                    $this->devices[\mb_strtolower($v[1])][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'device' => \rtrim($devMatch[2])];
+                    $this->devices[\mb_strtolower($v[1])][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
                 }
             }
         }
@@ -180,7 +180,7 @@ class Hwpci implements Parser
             foreach ($this->devices[$v] as $d) {
                 $result[] = [
                     'vendor' => $d['vendor'],
-                    'device' => $d['device'],
+                    'name' => $d['name'],
                 ];
             }
         }

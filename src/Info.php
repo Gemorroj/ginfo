@@ -24,6 +24,7 @@ use Linfo\Info\Cpu;
 use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Linfo\OS\OS;
 
@@ -97,9 +98,9 @@ class Info
 
     /**
      * Sound cards
-     * @return array|null
+     * @return SoundCard[]|null
      */
-    public function getSoundCard()
+    public function getSoundCard() : ?array
     {
         return $this->os->getSoundCards();
     }

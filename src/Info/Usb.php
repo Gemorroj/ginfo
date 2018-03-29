@@ -25,7 +25,7 @@ class Usb
     /** @var string */
     private $vendor;
     /** @var string */
-    private $device;
+    private $name;
 
     /**
      * @return string
@@ -48,18 +48,18 @@ class Usb
     /**
      * @return string
      */
-    public function getDevice(): string
+    public function getName(): string
     {
-        return $this->device;
+        return $this->name;
     }
 
     /**
-     * @param string $device
+     * @param string $name
      * @return $this
      */
-    public function setDevice(string $device): self
+    public function setName(string $name): self
     {
-        $this->device = $device;
+        $this->name = $name;
         return $this;
     }
 }

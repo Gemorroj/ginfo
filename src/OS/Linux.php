@@ -26,6 +26,7 @@ use Linfo\Extension\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
@@ -312,7 +313,7 @@ class Linux extends OS
         foreach ($data as $v) {
             $out[] = (new Usb())
                 ->setVendor($v['vendor'])
-                ->setDevice($v['device']);
+                ->setName($v['device']);
         }
         return $out;
     }
@@ -329,7 +330,7 @@ class Linux extends OS
         foreach ($data as $v) {
             $out[] = (new Pci())
                 ->setVendor($v['vendor'])
-                ->setDevice($v['device']);
+                ->setName($v['device']);
         }
         return $out;
     }
@@ -506,21 +507,19 @@ class Linux extends OS
 
     public function getSoundCards(): ?array
     {
-        $contents = Common::getContents('/proc/asound/cards');
-        if (null === $contents) {
-            return null;
-        }
-
-        if (\preg_match_all('/^\s*(\d+)\s\[[\s\w]+\]:\s(.+)$/m', $contents, $matches, \PREG_SET_ORDER) === 0) {
+        $lines = Common::getLines('/proc/asound/cards');
+        if (null === $lines) {
             return null;
         }
 
         $cards = [];
-        foreach ($matches as $card) {
-            $cards[] = [
-                'number' => $card[1],
-                'card' => $card[2],
-            ];
+        for ($i = 0, $l = \count($lines); $i < $l; $i +=2) {
+            $name = \trim(\explode(']:', $lines[$i], 2)[1]);
+            $vendor = \trim(\explode(' at ', $lines[$i], 2)[0]);
+
+            $cards[] = (new SoundCard())
+                ->setVendor($vendor)
+                ->setName($name);
         }
 
         return $cards;

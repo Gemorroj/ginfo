@@ -24,6 +24,7 @@ namespace Linfo\OS;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 
 abstract class OS
@@ -83,7 +84,7 @@ abstract class OS
     public abstract function getMemory() : ?Memory;
 
     /**
-     * @return array|null
+     * @return SoundCard[]|null
      */
     public abstract function getSoundCards() : ?array;
 

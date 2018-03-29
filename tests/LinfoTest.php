@@ -31,12 +31,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $linfo = new Linfo();
         $this->info = $linfo->getInfo();
 /*
-        \print_r($info->getGeneral());
-        \print_r($info->getCpu());
-        \print_r($info->getMemory());
-        \print_r($info->getSoundCard());
-        \print_r($info->getUsb());
-        \print_r($info->getPci());
         \print_r($info->getNetwork());
         \print_r($info->getDisk());
         \print_r($info->getBattery());
@@ -88,5 +82,13 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->assertInternalType('array', $pci);
 
         \print_r($pci);
+    }
+
+    public function testSoundCard()
+    {
+        $soundCard = $this->info->getSoundCard();
+        $this->assertInternalType('array', $soundCard);
+
+        \print_r($soundCard);
     }
 }
