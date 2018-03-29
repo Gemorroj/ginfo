@@ -30,9 +30,9 @@ class Process
     private $threads;
     /** @var string|null */
     private $state;
-    /** @var float */
+    /** @var float|null */
     private $memory;
-    /** @var float */
+    /** @var float|null */
     private $peakMemory;
     /** @var int */
     private $pid;
@@ -116,36 +116,36 @@ class Process
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getMemory(): float
+    public function getMemory(): ?float
     {
         return $this->memory;
     }
 
     /**
-     * @param float $memory
+     * @param float|null $memory
      * @return $this
      */
-    public function setMemory(float $memory): self
+    public function setMemory(?float $memory): self
     {
         $this->memory = $memory;
         return $this;
     }
 
     /**
-     * @return float
+     * @return float|null
      */
-    public function getPeakMemory(): float
+    public function getPeakMemory(): ?float
     {
         return $this->peakMemory;
     }
 
     /**
-     * @param float $peakMemory
+     * @param float|null $peakMemory
      * @return $this
      */
-    public function setPeakMemory(float $peakMemory): self
+    public function setPeakMemory(?float $peakMemory): self
     {
         $this->peakMemory = $peakMemory;
         return $this;

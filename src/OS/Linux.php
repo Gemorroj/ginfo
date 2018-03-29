@@ -503,11 +503,19 @@ class Linux extends OS
             $uid = \explode("\t", $blockStatus['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
 
-            $vmSize = (float)$blockStatus['VmSize']; // drop kB
-            $vmSize *= 1024;
+            if (isset($blockStatus['VmSize'])) {
+                $vmSize = (float)$blockStatus['VmSize']; // drop kB
+                $vmSize *= 1024;
+            } else {
+                $vmSize = null;
+            }
 
-            $vmPeak = (float)$blockStatus['VmPeak']; // drop kB
-            $vmPeak *= 1024;
+            if (isset($blockStatus['VmSize'])) {
+                $vmPeak = (float)$blockStatus['VmPeak']; // drop kB
+                $vmPeak *= 1024;
+            } else {
+                $vmPeak = null;
+            }
 
 
             $result[] = (new Process())
@@ -517,7 +525,7 @@ class Linux extends OS
                 ->setState($blockStatus['State'])
                 ->setMemory($vmSize)
                 ->setPeakMemory($vmPeak)
-                ->setPid(\basename(\dirname($process)))
+                ->setPid($blockStatus['Pid'])
                 ->setUser($user ? $user['name'] : $uid)
                 ->setIoRead($blockIo['read_bytes'])
                 ->setIoWrite($blockIo['write_bytes']);
