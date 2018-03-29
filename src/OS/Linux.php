@@ -515,7 +515,7 @@ class Linux extends OS
         $cards = [];
         for ($i = 0, $l = \count($lines); $i < $l; $i +=2) {
             $name = \trim(\explode(']:', $lines[$i], 2)[1]);
-            $vendor = \trim(\explode(' at ', $lines[$i], 2)[0]);
+            $vendor = \trim(\explode(' at ', $lines[$i + 1], 2)[0]);
 
             $cards[] = (new SoundCard())
                 ->setVendor($vendor)
