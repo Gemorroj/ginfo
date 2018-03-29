@@ -22,7 +22,7 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
-use Linfo\Extension\Smbstatus;
+use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;

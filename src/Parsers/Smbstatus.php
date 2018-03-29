@@ -18,9 +18,8 @@
  * 
  */
 
-namespace Linfo\Extension;
+namespace Linfo\Parsers;
 
-use Linfo\Parsers\Parser;
 use Symfony\Component\Process\Process;
 
 /**
