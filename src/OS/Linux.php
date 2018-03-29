@@ -25,6 +25,8 @@ use Linfo\Exceptions\FatalException;
 use Linfo\Extension\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
+use Linfo\Info\Pci;
+use Linfo\Info\Usb;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
@@ -58,6 +60,9 @@ class Linux extends OS
     public function getMemory() : ?Memory
     {
         $data = Free::work();
+        if (null === $data) {
+            return null;
+        }
 
         return (new Memory())
             ->setTotal($data['total'])
@@ -295,22 +300,38 @@ class Linux extends OS
         return $return ?: null;
     }
 
-    /**
-     * usbutils wrapper
-     * @return array|null
-     */
+
     public function getUsb(): ?array
     {
-        return Hwpci::work(Hwpci::MODE_USB);
+        $data = Hwpci::work(Hwpci::MODE_USB);
+        if (null === $data) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($data as $v) {
+            $out[] = (new Usb())
+                ->setVendor($v['vendor'])
+                ->setDevice($v['device']);
+        }
+        return $out;
     }
 
-    /**
-     * pciutils wrapper
-     * @return array|null
-     */
+
     public function getPci(): ?array
     {
-        return Hwpci::work(Hwpci::MODE_PCI);
+        $data = Hwpci::work(Hwpci::MODE_PCI);
+        if (null === $data) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($data as $v) {
+            $out[] = (new Pci())
+                ->setVendor($v['vendor'])
+                ->setDevice($v['device']);
+        }
+        return $out;
     }
 
 

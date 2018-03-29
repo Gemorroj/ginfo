@@ -23,6 +23,8 @@ namespace Linfo\OS;
 
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
+use Linfo\Info\Pci;
+use Linfo\Info\Usb;
 
 abstract class OS
 {
@@ -98,12 +100,12 @@ abstract class OS
     public abstract function getModel() : ?string;
 
     /**
-     * @return array|null
+     * @return Usb[]|null
      */
     public abstract function getUsb() : ?array;
 
     /**
-     * @return array|null
+     * @return Pci[]|null
      */
     public abstract function getPci() : ?array;
 

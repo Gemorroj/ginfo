@@ -23,6 +23,8 @@ namespace Linfo;
 use Linfo\Info\Cpu;
 use Linfo\Info\General;
 use Linfo\Info\Memory;
+use Linfo\Info\Pci;
+use Linfo\Info\Usb;
 use Linfo\OS\OS;
 
 class Info
@@ -77,18 +79,18 @@ class Info
 
     /**
      * USB devices
-     * @return array|null
+     * @return Usb[]|null
      */
-    public function getUsb()
+    public function getUsb() : ?array
     {
         return $this->os->getUsb();
     }
 
     /**
      * PCI devices
-     * @return array|null
+     * @return Pci[]|null
      */
-    public function getPci()
+    public function getPci() : ?array
     {
         return $this->os->getPci();
     }

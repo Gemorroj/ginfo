@@ -23,6 +23,8 @@ namespace Linfo\OS;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
+use Linfo\Info\Pci;
+use Linfo\Info\Usb;
 use Symfony\Component\Process\Process;
 
 /**
@@ -292,10 +294,9 @@ class Windows extends OS
                 continue;
             }
 
-            $devs[] = [
-                'vendor' => $pnpDev['Manufacturer'],
-                'device' => $pnpDev['Caption'],
-            ];
+            $devs[] = (new Pci())
+                ->setVendor($pnpDev['Manufacturer'])
+                ->setDevice($pnpDev['Caption']);
         }
 
         return $devs;
@@ -316,10 +317,9 @@ class Windows extends OS
                 continue;
             }
 
-            $devs[] = [
-                'vendor' => $pnpDev['Manufacturer'],
-                'device' => $pnpDev['Caption'],
-            ];
+            $devs[] = (new Usb())
+                ->setVendor($pnpDev['Manufacturer'])
+                ->setDevice($pnpDev['Caption']);
         }
 
         return $devs;

@@ -73,4 +73,20 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         \print_r($memory);
     }
+
+    public function testUsb()
+    {
+        $usb = $this->info->getUsb();
+        $this->assertInternalType('array', $usb);
+
+        \print_r($usb);
+    }
+
+    public function testPci()
+    {
+        $pci = $this->info->getPci();
+        $this->assertInternalType('array', $pci);
+
+        \print_r($pci);
+    }
 }
