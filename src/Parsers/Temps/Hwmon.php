@@ -47,7 +47,7 @@ class Hwmon implements Parser
             $value = Common::getContents($path);
             $base = \basename($path);
             $labelPath = $initPath . 'label';
-            $driverName = \basename(\readlink(\dirname($path) . '/driver')) ?: null;
+            $driverName = Common::getContents(\dirname($path) . '/name');
 
             // Temperatures
             if (\is_file($labelPath) && \mb_strpos($base, 'temp') === 0) {
