@@ -93,7 +93,7 @@ class Common
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {
             if (false !== \mb_strpos($line, $delimiter)) {
-                @list($key, $value) = \explode(':', $line, 2);
+                @list($key, $value) = \explode($delimiter, $line, 2);
                 $tmp[\trim($key)] = \trim($value);
             }
         }
