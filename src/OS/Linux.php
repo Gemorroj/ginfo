@@ -315,7 +315,7 @@ class Linux extends OS
         foreach ($data as $v) {
             $out[] = (new Usb())
                 ->setVendor($v['vendor'])
-                ->setName($v['device']);
+                ->setName($v['name']);
         }
         return $out;
     }
@@ -332,7 +332,7 @@ class Linux extends OS
         foreach ($data as $v) {
             $out[] = (new Pci())
                 ->setVendor($v['vendor'])
-                ->setName($v['device']);
+                ->setName($v['name']);
         }
         return $out;
     }
