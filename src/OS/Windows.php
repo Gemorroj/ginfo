@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
+use Linfo\Info\Memory;
 use Symfony\Component\Process\Process;
 
 /**
@@ -102,25 +103,18 @@ class Windows extends OS
     }
 
 
-    public function getMemory() : ?array
+    public function getMemory() : ?Memory
     {
         $info = $this->getInfo('OperatingSystem');
         if (null === $info) {
             return null;
         }
 
-        return [
-            'memoryTotal' => $info['TotalVisibleMemorySize'],
-            'memoryUsed' => $info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory'],
-            'memoryFree' => $info['FreePhysicalMemory'],
-            'memoryShared' => null, // todo
-            'memoryBuffers' => null, // todo
-            'memoryCached' => null, // todo
-
-            'swapTotal' => null, // todo
-            'swapUsed' => null, // todo
-            'swapFree' => null, // todo
-        ];
+        // todo: swap and other
+        return (new Memory())
+            ->setTotal($info['TotalVisibleMemorySize'])
+            ->setFree($info['FreePhysicalMemory'])
+            ->setUsed($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']);
     }
 
 

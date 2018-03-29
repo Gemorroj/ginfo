@@ -53,12 +53,13 @@ class Free implements Parser
         list($swapTotal, $swapUsed, $swapFree) = \preg_split('/\s+/', $swapStr);
 
         return [
-            'memoryTotal' => $memTotal,
-            'memoryUsed' => $memUsed,
-            'memoryFree' => $memFree,
-            'memoryShared' => $memShared,
-            'memoryBuffers' => $memBuffers,
-            'memoryCached' => $memCached,
+            'total' => $memTotal,
+            'used' => $memUsed,
+            'free' => $memFree,
+            'shared' => $memShared,
+            'buffers' => $memBuffers,
+            'cached' => $memCached,
+            'available' => $memAvailable,
 
             'swapTotal' => $swapTotal,
             'swapUsed' => $swapUsed,

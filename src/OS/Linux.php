@@ -24,6 +24,7 @@ use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Extension\Smbstatus;
 use Linfo\Info\Cpu;
+use Linfo\Info\Memory;
 use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
@@ -54,9 +55,20 @@ class Linux extends OS
     }
 
 
-    public function getMemory() : ?array
+    public function getMemory() : ?Memory
     {
-        return Free::work();
+        $data = Free::work();
+
+        return (new Memory())
+            ->setTotal($data['total'])
+            ->setFree($data['free'])
+            ->setUsed($data['used'])
+            ->setShared($data['shared'])
+            ->setBuffers($data['buffers'])
+            ->setCached($data['cached'])
+            ->setSwapTotal($data['swapTotal'])
+            ->setSwapUsed($data['swapUsed'])
+            ->setSwapFree($data['swapFree']);
     }
 
     public function getCpu(): ?Cpu

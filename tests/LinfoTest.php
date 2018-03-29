@@ -65,4 +65,12 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         \print_r($cpu);
     }
+
+    public function testMemory()
+    {
+        $memory = $this->info->getMemory();
+        $this->assertInstanceOf(Info\Memory::class, $memory);
+
+        \print_r($memory);
+    }
 }

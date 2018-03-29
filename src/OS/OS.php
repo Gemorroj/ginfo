@@ -22,6 +22,7 @@ namespace Linfo\OS;
 
 
 use Linfo\Info\Cpu;
+use Linfo\Info\Memory;
 
 abstract class OS
 {
@@ -75,9 +76,9 @@ abstract class OS
     public abstract function getLoad() : ?array;
 
     /**
-     * @return array|null
+     * @return Memory|null
      */
-    public abstract function getMemory() : ?array;
+    public abstract function getMemory() : ?Memory;
 
     /**
      * @return array|null

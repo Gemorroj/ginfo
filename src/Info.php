@@ -22,6 +22,7 @@ namespace Linfo;
 
 use Linfo\Info\Cpu;
 use Linfo\Info\General;
+use Linfo\Info\Memory;
 use Linfo\OS\OS;
 
 class Info
@@ -58,32 +59,20 @@ class Info
 
     /**
      * CPU info
-     * @return Cpu
+     * @return Cpu|null
      */
-    public function getCpu()
+    public function getCpu() : ?Cpu
     {
         return $this->os->getCpu();
     }
 
     /**
      * Memory info
-     * @return array
+     * @return Memory|null
      */
-    public function getMemory()
+    public function getMemory() : ?Memory
     {
-        $memory = $this->os->getMemory();
-        return [
-            'memoryTotal' => $memory['memoryTotal'],
-            'memoryUsed' => $memory['memoryUsed'],
-            'memoryFree' => $memory['memoryFree'],
-            'memoryShared' => $memory['memoryShared'],
-            'memoryBuffers' => $memory['memoryBuffers'],
-            'memoryCached' => $memory['memoryCached'],
-
-            'swapTotal' => $memory['swapTotal'],
-            'swapUsed' => $memory['swapUsed'],
-            'swapFree' => $memory['swapFree'],
-        ];
+        return $this->os->getMemory();
     }
 
     /**
