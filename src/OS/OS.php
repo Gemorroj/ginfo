@@ -21,9 +21,11 @@
 namespace Linfo\OS;
 
 
+use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\Selinux;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 
@@ -131,7 +133,7 @@ abstract class OS
     public abstract function getRaid() : ?array;
 
     /**
-     * @return array|null
+     * @return Battery[]|null
      */
     public abstract function getBattery() : ?array;
 
@@ -171,7 +173,7 @@ abstract class OS
     public abstract function getSamba() : ?array;
 
     /**
-     * @return array|null
+     * @return Selinux|null
      */
-    public abstract function getSelinux() : ?array;
+    public abstract function getSelinux() : ?Selinux;
 }

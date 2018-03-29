@@ -24,6 +24,7 @@ use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\Selinux;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Symfony\Component\Process\Process;
@@ -570,7 +571,7 @@ class Windows extends OS
         return null; //todo
     }
 
-    public function getSelinux() : ?array
+    public function getSelinux() : ?Selinux
     {
         return null;
     }

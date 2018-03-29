@@ -45,8 +45,9 @@ class Sestatus implements Parser
         $block = Common::parseKeyValueBlock($result);
 
         return [
-            'status' => $block['SELinux status'],
-            'mode' => isset($block['Current mode']) ? $block['Current mode'] : null,
+            'enabled' => 'enabled' === $block['SELinux status'],
+            'mode' => $block['Current mode'] ?? null,
+            'policy' => $block['Loaded policy name'] ?? null,
         ];
     }
 }

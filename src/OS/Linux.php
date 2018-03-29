@@ -22,6 +22,8 @@ namespace Linfo\OS;
 
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
+use Linfo\Info\Battery;
+use Linfo\Info\Selinux;
 use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
@@ -443,31 +445,24 @@ class Linux extends OS
 
         $return = [];
         foreach ($paths as $b) {
-            foreach ([$b . '/manufacturer', $b . '/status'] as $f) {
-                if (!\is_file($f)) {
-                    continue 2; // http://php.net/continue
-                }
-            }
-
-            if (\is_file($b . '/energy_full')) {
-                $chargeFull = Common::getContents($b . '/energy_full');
-                $chargeNow = Common::getContents($b . '/energy_now');
-            } else if (\is_file($b . '/charge_full')) {
-                $chargeFull = Common::getContents($b . '/charge_full');
-                $chargeNow = Common::getContents($b . '/charge_now');
-            } else {
+            $uevent = Common::getContents($b . '/uevent');
+            if (null === $uevent) {
                 continue;
             }
 
-            $percentage = $chargeNow != 0 && $chargeFull != 0 ? (\round($chargeNow / $chargeFull, 4) * 100) : '?';
+            $block = Common::parseKeyValueBlock($uevent, '=');
 
-            $return[] = [
-                'charge_full' => $chargeFull,
-                'charge_now' => $chargeNow,
-                'percentage' => (\is_numeric($percentage) && $percentage > 100 ? 100 : $percentage),
-                'device' => Common::getContents($b . '/manufacturer') . ' ' . Common::getContents($b . '/model_name', 'Unknown'),
-                'state' => Common::getContents($b . '/status', 'Unknown'),
-            ];
+            $return[] = (new Battery())
+                ->setVendor($block['POWER_SUPPLY_MANUFACTURER'])
+                ->setModel($block['POWER_SUPPLY_MODEL_NAME'])
+                ->setStatus($block['POWER_SUPPLY_STATUS'])
+                ->setTechnology($block['POWER_SUPPLY_TECHNOLOGY'] ?? null)
+                ->setChargeFull($block['POWER_SUPPLY_CHARGE_FULL'] ?? null)
+                ->setChargeNow($block['POWER_SUPPLY_CHARGE_NOW'] ?? null)
+                ->setEnergyFull($block['POWER_SUPPLY_ENERGY_FULL'] ?? null)
+                ->setEnergyNow($block['POWER_SUPPLY_ENERGY_NOW'] ?? null)
+                ->setVoltageNow($block['POWER_SUPPLY_VOLTAGE_NOW'])
+                ->setPercentage($block['POWER_SUPPLY_CAPACITY']);
         }
 
         return $return;
@@ -745,8 +740,16 @@ class Linux extends OS
         return Smbstatus::work();
     }
 
-    public function getSelinux() : ?array
+    public function getSelinux() : ?Selinux
     {
-        return Sestatus::work();
+        $data = Sestatus::work();
+        if (null === $data) {
+            return null;
+        }
+
+        return (new Selinux())
+            ->setEnabled($data['enabled'])
+            ->setPolicy($data['policy'])
+            ->setMode($data['mode']);
     }
 }

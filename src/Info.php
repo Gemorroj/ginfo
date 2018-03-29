@@ -20,10 +20,12 @@
 
 namespace Linfo;
 
+use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
 use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
+use Linfo\Info\Selinux;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Linfo\OS\OS;
@@ -119,9 +121,9 @@ class Info
 
     /**
      * Battery status
-     * @return array|null
+     * @return Battery[]|null
      */
-    public function getBattery()
+    public function getBattery() : ?array
     {
         return $this->os->getBattery();
     }
@@ -204,9 +206,9 @@ class Info
     /**
      * Selinux status
      *
-     * @return array|null
+     * @return Selinux|null
      */
-    public function getSelinux()
+    public function getSelinux() : ?Selinux
     {
         return $this->os->getSelinux();
     }

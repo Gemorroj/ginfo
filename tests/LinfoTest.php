@@ -91,4 +91,28 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 
         \print_r($soundCard);
     }
+
+    public function testSelinux()
+    {
+        $selinux = $this->info->getSelinux();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($selinux);
+        } else {
+            $this->assertInstanceOf(Info\Selinux::class, $selinux);
+        }
+
+        \print_r($selinux);
+    }
+
+    public function testBattery()
+    {
+        $battery = $this->info->getBattery();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($battery); //todo
+        } else {
+            $this->assertInternalType('array', $battery);
+        }
+
+        \print_r($battery);
+    }
 }
