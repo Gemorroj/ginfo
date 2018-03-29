@@ -358,7 +358,7 @@ class Linux extends OS
         foreach ($paths as $path) {
             $tmp = (new Network())
                 ->setName(\basename($path))
-                ->setPortSpeed(Common::getContents($path . '/speed'));
+                ->setPortSpeed(Common::getContents($path . '/speed') ?: null);
 
             $operstateContents = Common::getContents($path . '/operstate');
             $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
