@@ -55,9 +55,9 @@ class Systemd implements Parser
 
             $out[] = [
                 'name' => $unit,
-                'load' => $load,
-                'active' => $active,
-                'sub' => $sub,
+                'loaded' => 'loaded' === $load,
+                'started' => 'active' === $active,
+                'state' => $sub,
                 'description' => $description,
             ];
         }

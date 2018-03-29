@@ -26,6 +26,7 @@ use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
+use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Linfo\OS\OS;
@@ -163,9 +164,9 @@ class Info
     /**
      * Services
      *
-     * @return array|null
+     * @return Service[]|null
      */
-    public function getServices()
+    public function getServices() : ?array
     {
         return $this->os->getServices();
     }

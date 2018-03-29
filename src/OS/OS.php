@@ -26,6 +26,7 @@ use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
+use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 
@@ -153,7 +154,7 @@ abstract class OS
     public abstract function getProcesses() : ?array;
 
     /**
-     * @return array|null
+     * @return Service[]|null
      */
     public abstract function getServices() : ?array;
 

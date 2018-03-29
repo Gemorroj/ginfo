@@ -25,6 +25,7 @@ use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
+use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
 use Symfony\Component\Process\Process;
@@ -528,13 +529,12 @@ class Windows extends OS
 
         $return = [];
         foreach ($services as $service) {
-            $return[] = [
-                'name' => $service['Name'],
-                'load' => null,
-                'active' => null,
-                'sub' => $service['State'],
-                'description' => $service['DisplayName'],
-            ];
+            $return[] = (new Service())
+                ->setName($service['Name'])
+                ->setDescription($service['DisplayName'])
+                ->setLoaded(true)
+                ->setStarted($service['Started'])
+                ->setState($service['State']);
         }
 
         return $return;

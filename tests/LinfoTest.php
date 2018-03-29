@@ -33,13 +33,10 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
 /*
         \print_r($info->getNetwork());
         \print_r($info->getDisk());
-        \print_r($info->getBattery());
         \print_r($info->getTemps());
         \print_r($info->getProcesses());
-        \print_r($info->getServices());
         \print_r($info->getPrinters());
         \print_r($info->getSamba());
-        \print_r($info->getSelinux());
 */
     }
 
@@ -90,6 +87,14 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->assertInternalType('array', $soundCard);
 
         \print_r($soundCard);
+    }
+
+    public function testServices()
+    {
+        $services = $this->info->getServices();
+        $this->assertInternalType('array', $services);
+
+        \print_r($services);
     }
 
     public function testSelinux()

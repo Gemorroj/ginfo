@@ -24,6 +24,7 @@ use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
 use Linfo\Info\Selinux;
+use Linfo\Info\Service;
 use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
@@ -579,13 +580,24 @@ class Linux extends OS
     }
 
 
-    /**
-     * Systemd wrapper
-     * @return array|null
-     */
     public function getServices(): ?array
     {
-        return Systemd::work();
+        $services = Systemd::work();
+        if (null === $services) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($services as $service) {
+            $out[] = (new Service())
+                ->setName($service['name'])
+                ->setDescription($service['description'])
+                ->setLoaded($service['loaded'])
+                ->setStarted($service['started'])
+                ->setState($service['state']);
+        }
+
+        return $out;
     }
 
 
