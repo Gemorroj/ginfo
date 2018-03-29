@@ -31,7 +31,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $linfo = new Linfo();
         $this->info = $linfo->getInfo();
 /*
-        \print_r($info->getWifi());
         \print_r($info->getDisk());
         \print_r($info->getTemps());
         \print_r($info->getProcesses());

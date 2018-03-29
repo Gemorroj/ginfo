@@ -142,11 +142,6 @@ abstract class OS
     /**
      * @return array|null
      */
-    public abstract function getWifi() : ?array;
-
-    /**
-     * @return array|null
-     */
     public abstract function getTemps() : ?array;
 
     /**

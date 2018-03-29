@@ -455,37 +455,6 @@ class Linux extends OS
         return $return;
     }
 
-    public function getWifi(): ?array
-    {
-        $contents = Common::getContents('/proc/net/wireless');
-        if (null === $contents) {
-            return null;
-        }
-
-        if (false === \preg_match_all('/^ (\S+)\:\s*(\d+)\s*(\S+)\s*(\S+)\s*(\S+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*(\d+)\s*$/m', $contents, $match, \PREG_SET_ORDER)) {
-            return null;
-        }
-
-        $return = [];
-        foreach ($match as $wlan) {
-            $return[] = [
-                'device' => $wlan[1],
-                'status' => $wlan[2],
-                'qualityLink' => $wlan[3],
-                'qualityLevel' => $wlan[4],
-                'qualityNoise' => $wlan[5],
-                'disNwid' => $wlan[6],
-                'disCrypt' => $wlan[7],
-                'disFrag' => $wlan[8],
-                'disRetry' => $wlan[9],
-                'disMisc' => $wlan[10],
-                'misBeac' => $wlan[11],
-            ];
-        }
-
-        return $return;
-    }
-
 
     public function getSoundCards(): ?array
     {

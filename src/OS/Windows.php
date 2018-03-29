@@ -417,12 +417,6 @@ class Windows extends OS
         return $return;
     }
 
-
-    public function getWifi() : ?array
-    {
-        return null; // todo
-    }
-
     public function getBattery() : ?array
     {
         return null; //todo

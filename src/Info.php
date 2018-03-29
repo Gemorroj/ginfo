@@ -119,15 +119,6 @@ class Info
     }
 
     /**
-     * wifi info
-     * @return array|null
-     */
-    public function getWifi()
-    {
-        return $this->os->getWifi();
-    }
-
-    /**
      * Battery status
      * @return Battery[]|null
      */
