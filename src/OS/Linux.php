@@ -357,8 +357,12 @@ class Linux extends OS
         $return = [];
         foreach ($paths as $path) {
             $tmp = (new Network())
-                ->setName(\basename($path))
-                ->setPortSpeed(Common::getContents($path . '/speed') ?: null);
+                ->setName(\basename($path));
+
+            $speed = Common::getContents($path . '/speed'); // Mbits/sec
+            if ($speed) {
+                $tmp->setSpeed($speed * 1000000);
+            }
 
             $operstateContents = Common::getContents($path . '/operstate');
             $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;

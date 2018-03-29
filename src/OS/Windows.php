@@ -347,7 +347,7 @@ class Windows extends OS
         foreach ($networkAdapters as $net) {
             $tmp = (new Network())
                 ->setName($net['Name'])
-                ->setPortSpeed(null) //todo
+                ->setSpeed($net['Speed'])
                 ->setType($net['AdapterType']);
 
             switch ($net['NetConnectionStatus']) {

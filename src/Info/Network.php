@@ -26,8 +26,8 @@ class Network
 {
     /** @var string */
     private $name;
-    /** @var int|null */
-    private $portSpeed;
+    /** @var float|null */
+    private $speed;
     /** @var string|null */
     private $type;
     /** @var string|null */
@@ -92,20 +92,20 @@ class Network
     }
 
     /**
-     * @return int|null
+     * @return float|null bit/s
      */
-    public function getPortSpeed(): ?int
+    public function getSpeed(): ?float
     {
-        return $this->portSpeed;
+        return $this->speed;
     }
 
     /**
-     * @param int|null $portSpeed
+     * @param float|null $speed bit/s
      * @return $this
      */
-    public function setPortSpeed(?int $portSpeed): self
+    public function setSpeed(?float $speed): self
     {
-        $this->portSpeed = $portSpeed;
+        $this->speed = $speed;
         return $this;
     }
 
