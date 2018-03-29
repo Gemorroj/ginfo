@@ -24,6 +24,7 @@ namespace Linfo\OS;
 use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
+use Linfo\Info\Network;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
@@ -114,7 +115,7 @@ abstract class OS
     public abstract function getPci() : ?array;
 
     /**
-     * @return array|null
+     * @return Network[]|null
      */
     public abstract function getNetwork() : ?array;
 

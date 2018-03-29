@@ -31,7 +31,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $linfo = new Linfo();
         $this->info = $linfo->getInfo();
 /*
-        \print_r($info->getNetwork());
+        \print_r($info->getWifi());
         \print_r($info->getDisk());
         \print_r($info->getTemps());
         \print_r($info->getProcesses());
@@ -63,6 +63,14 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Info\Memory::class, $memory);
 
         \print_r($memory);
+    }
+
+    public function testNetwork()
+    {
+        $network = $this->info->getNetwork();
+        $this->assertInternalType('array', $network);
+
+        \print_r($network);
     }
 
     public function testUsb()

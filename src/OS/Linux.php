@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
+use Linfo\Info\Network;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Parsers\Smbstatus;
@@ -354,29 +355,17 @@ class Linux extends OS
 
         $return = [];
         foreach ($paths as $path) {
-            $nic = \basename($path);
+            $tmp = (new Network())
+                ->setName(\basename($path))
+                ->setPortSpeed(Common::getContents($path . '/speed'));
 
             $operstateContents = Common::getContents($path . '/operstate');
-            switch ($operstateContents) {
-                case 'down':
-                case 'up':
-                case 'unknown':
-                    $state = $operstateContents;
-                    break;
+            $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
 
-                default:
-                    $state = 'unknown';
-                    break;
+            if (null === $state && \file_exists($path . '/carrier')) {
+                $state = Common::getContents($path . '/carrier') ? 'up' : 'down';
             }
-
-            if ('unknown' === $state && \file_exists($path . '/carrier')) {
-                $carrier = Common::getContents($path . '/carrier');
-                if (!empty($carrier)) {
-                    $state = 'up';
-                } else {
-                    $state = 'down';
-                }
-            }
+            $tmp->setState($state);
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
             $typeCode = Common::getContents($path . '/type');
@@ -391,7 +380,7 @@ class Linux extends OS
                 $typeContents = \mb_strtoupper(Common::getContents($path . '/device/modalias'));
                 list($typeMatch) = \explode(':', $typeContents, 2);
 
-                if (\in_array($typeMatch, ['PCI', 'USB'])) {
+                if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                     $type = 'Ethernet (' . $typeMatch . ')';
 
                     if (($ueventContents = \parse_ini_file($path . '/device/uevent')) && isset($ueventContents['DRIVER'])) {
@@ -408,29 +397,26 @@ class Linux extends OS
                 } elseif (\is_dir($path . '/bonding')) {
                     $type = 'Bond';
                 } else {
-                    $type = 'Unknown';
+                    $type = null;
                 }
 
                 // TODO find some way of finding out what provides the virt-specific kvm vnet devices
             }
+            $tmp->setType($type);
+            $tmp->setStatsReceived(
+                (new Network\Stats())
+                    ->setBytes(Common::getContents($path . '/statistics/rx_bytes'))
+                    ->setErrors(Common::getContents($path . '/statistics/rx_errors'))
+                    ->setPackets(Common::getContents($path . '/statistics/rx_packets'))
+            );
+            $tmp->setStatsSent(
+                (new Network\Stats())
+                    ->setBytes(Common::getContents($path . '/statistics/tx_bytes'))
+                    ->setErrors(Common::getContents($path . '/statistics/tx_errors'))
+                    ->setPackets(Common::getContents($path . '/statistics/tx_packets'))
+            );
 
-            $speed = Common::getContents($path . '/speed');
-
-            $return[$nic] = [
-                'recieved' => [
-                    'bytes' => Common::getContents($path . '/statistics/rx_bytes'),
-                    'errors' => Common::getContents($path . '/statistics/rx_errors'),
-                    'packets' => Common::getContents($path . '/statistics/rx_packets'),
-                ],
-                'sent' => [
-                    'bytes' => Common::getContents($path . '/statistics/tx_bytes'),
-                    'errors' => Common::getContents($path . '/statistics/tx_errors'),
-                    'packets' => Common::getContents($path . '/statistics/tx_packets'),
-                ],
-                'state' => $state,
-                'type' => $type,
-                'portSpeed' => $speed,
-            ];
+            $return[] = $tmp;
         }
 
         return $return;

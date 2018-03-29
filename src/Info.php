@@ -24,6 +24,7 @@ use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
 use Linfo\Info\General;
 use Linfo\Info\Memory;
+use Linfo\Info\Network;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
@@ -109,15 +110,21 @@ class Info
     }
 
     /**
-     * Network devices and wifi
-     * @return array
+     * Network devices
+     * @return Network[]|null
      */
     public function getNetwork()
     {
-        return [
-            'network' => $this->os->getNetwork(),
-            'wifi' => $this->os->getWifi(),
-        ];
+        return $this->os->getNetwork();
+    }
+
+    /**
+     * wifi info
+     * @return array|null
+     */
+    public function getWifi()
+    {
+        return $this->os->getWifi();
     }
 
     /**

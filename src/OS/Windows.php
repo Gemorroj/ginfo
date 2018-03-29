@@ -23,6 +23,7 @@ namespace Linfo\OS;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
+use Linfo\Info\Network;
 use Linfo\Info\Pci;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
@@ -343,85 +344,74 @@ class Windows extends OS
 
         $return = [];
         foreach ($networkAdapters as $net) {
-            $return[$net['Name']] = [
-                'recieved' => [
-                    'bytes' => 0,
-                    'errors' => 0,
-                    'packets' => 0,
-                ],
-                'sent' => [
-                    'bytes' => 0,
-                    'errors' => 0,
-                    'packets' => 0,
-                ],
-                'state' => null,
-                'type' => $net['AdapterType'],
-                'portSpeed' => null, //todo
-            ];
+            $tmp = (new Network())
+                ->setName($net['Name'])
+                ->setPortSpeed(null) //todo
+                ->setType($net['AdapterType']);
 
             switch ($net['NetConnectionStatus']) {
                 case 0:
-                    $return[$net['Name']]['state'] = 'down';
+                    $tmp->setState('down');
                     break;
                 case 1:
-                    $return[$net['Name']]['state'] = 'Connecting';
+                    $tmp->setState('connecting');
                     break;
                 case 2:
-                    $return[$net['Name']]['state'] = 'up';
+                    $tmp->setState('up');
                     break;
                 case 3:
-                    $return[$net['Name']]['state'] = 'Disconnecting';
+                    $tmp->setState('disconnecting');
                     break;
                 case 4:
-                    $return[$net['Name']]['state'] = 'down'; // MSDN 'Hardware not present'
+                    $tmp->setState('down'); // MSDN 'Hardware not present'
                     break;
                 case 5:
-                    $return[$net['Name']]['state'] = 'Hardware disabled';
+                    $tmp->setState('hardware disabled');
                     break;
                 case 6:
-                    $return[$net['Name']]['state'] = 'Hardware malfunction';
+                    $tmp->setState('hardware malfunction');
                     break;
                 case 7:
-                    $return[$net['Name']]['state'] = 'Media disconnected';
+                    $tmp->setState('media disconnected');
                     break;
                 case 8:
-                    $return[$net['Name']]['state'] = 'Authenticating';
+                    $tmp->setState('authenticating');
                     break;
                 case 9:
-                    $return[$net['Name']]['state'] = 'Authentication succeeded';
+                    $tmp->setState('authentication succeeded');
                     break;
                 case 10:
-                    $return[$net['Name']]['state'] = 'Authentication failed';
+                    $tmp->setState('authentication failed');
                     break;
                 case 11:
-                    $return[$net['Name']]['state'] = 'Invalid address';
+                    $tmp->setState('invalid address');
                     break;
                 case 12:
-                    $return[$net['Name']]['state'] = 'Credentials required';
-                    break;
-                default:
-                    $return[$net['Name']]['state'] = 'unknown';
+                    $tmp->setState('credentials required');
                     break;
             }
 
             $canonName = \preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
             $isatapName = 'isatap.' . $net['GUID'];
 
-
             foreach ($perfRawData as $netSpeed) {
                 if ($netSpeed['Name'] === $canonName || $netSpeed['Name'] === $isatapName) {
-                    $return[$net['Name']]['recieved'] = [
-                        'bytes' => (int)$netSpeed['BytesReceivedPersec'],
-                        'errors' => (int)$netSpeed['PacketsReceivedErrors'],
-                        'packets' => (int)$netSpeed['PacketsReceivedPersec'],
-                    ];
-                    $return[$net['Name']]['sent'] = [
-                        'bytes' => (int)$netSpeed['BytesSentPersec'],
-                        'errors' => 0,
-                        'packets' => (int)$netSpeed['PacketsSentPersec'],
-                    ];
+                    $tmp->setStatsReceived(
+                        (new Network\Stats())
+                            ->setBytes($netSpeed['BytesReceivedPersec'])
+                            ->setErrors($netSpeed['PacketsReceivedErrors'])
+                            ->setPackets($netSpeed['PacketsReceivedPersec'])
+                    );
+                    $tmp->setStatsSent(
+                        (new Network\Stats())
+                            ->setBytes($netSpeed['BytesSentPersec'])
+                            ->setErrors($netSpeed['PacketsOutboundErrors'])
+                            ->setPackets($netSpeed['PacketsSentPersec'])
+                    );
                 }
             }
+
+            $return[] = $tmp;
         }
 
         return $return;
