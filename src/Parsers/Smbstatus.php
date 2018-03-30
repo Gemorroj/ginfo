@@ -52,24 +52,26 @@ class Smbstatus implements Parser
             if ($line === '' || '-' === $line[0]) {
                 continue;
             }
+
             if (\preg_match('/^PID\s+Username\s+Group\s+Machine/', $line)) { // Beginning connections list?
                 $currentLocation = 'c';
-                continue;
-            }
-            if ('c' === $currentLocation) { // A connection?
-                $res['connections'][] = self::parseConnection($line);
                 continue;
             }
             if (\preg_match('/^Service\s+pid\s+machine\s+Connected at/', $line)) { // Beginning services list?
                 $currentLocation = 's';
                 continue;
             }
-            if ('s' === $currentLocation) { // A service?
-                $res['services'][] = self::parseService($line);
-                continue;
-            }
             if (\preg_match('/^Pid\s+Uid\s+DenyMode\s+Access\s+R\/W\s+Oplock\s+SharePath\s+Name\s+Time/', $line)) { // Beginning locked files list?
                 $currentLocation = 'f';
+                continue;
+            }
+
+            if ('c' === $currentLocation) { // A connection?
+                $res['connections'][] = self::parseConnection($line);
+                continue;
+            }
+            if ('s' === $currentLocation) { // A service?
+                $res['services'][] = self::parseService($line);
                 continue;
             }
             if ('f' === $currentLocation) { // A locked file?
