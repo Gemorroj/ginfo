@@ -49,8 +49,11 @@ class Smbstatus implements Parser
         foreach ($lines as $line) {
             $line = \trim($line);
 
-            if ($line === '' || '-' === $line[0]) {
+            if ($line === '') {
                 $currentLocation = null;
+                continue;
+            }
+            if ('-' === $line[0]) {
                 continue;
             }
 
