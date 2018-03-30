@@ -34,7 +34,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         \print_r($info->getDisk());
         \print_r($info->getTemps());
         \print_r($info->getPrinters());
-        \print_r($info->getSamba());
 */
     }
 
@@ -109,6 +108,18 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->assertInternalType('array', $services);
 
         \print_r($services);
+    }
+
+    public function testSamba()
+    {
+        $samba = $this->info->getSamba();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($samba);
+        } else {
+            $this->assertInstanceOf(Info\Samba::class, $samba);
+        }
+
+        \print_r($samba);
     }
 
     public function testSelinux()

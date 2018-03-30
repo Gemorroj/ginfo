@@ -25,6 +25,7 @@ use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
 use Linfo\Info\Network;
 use Linfo\Info\Process;
+use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Parsers\Smbstatus;
@@ -714,9 +715,50 @@ class Linux extends OS
         return Lpstat::work();
     }
 
-    public function getSamba() : ?array
+    public function getSamba() : ?Samba
     {
-        return Smbstatus::work();
+        $data = Smbstatus::work();
+
+        return (new Samba())
+            ->setConnections((function (array $connections) {
+                $out = [];
+                foreach ($connections as $connection) {
+                    $out[] = (new Samba\Connection())
+                        ->setPid($connection['pid'])
+                        ->setGroup($connection['group'])
+                        ->setMachine($connection['machine'])
+                        ->setProtocolVersion($connection['protocolVersion'])
+                        ->setUser($connection['user']);
+                }
+                return $out;
+            })($data['connections']))
+            ->setServices((function (array $services) {
+                $out = [];
+                foreach ($services as $service) {
+                    $out[] = (new Samba\Service())
+                        ->setPid($service['pid'])
+                        ->setMachine($service['machine'])
+                        ->setDate($service['date'])
+                        ->setService($service['service']);
+                }
+                return $out;
+            })($data['services']))
+            ->setFiles((function (array $files) {
+                $out = [];
+                foreach ($files as $file) {
+                    $out[] = (new Samba\File())
+                        ->setPid($file['pid'])
+                        ->setUser($file['user'])
+                        ->setDate($file['date'])
+                        ->setName($file['name'])
+                        ->setAccess($file['access'])
+                        ->setDenyMode($file['denyMode'])
+                        ->setOplock($file['oplock'])
+                        ->setRw($file['rw'])
+                        ->setSharePath($file['sharePath']);
+                }
+                return $out;
+            })($data['files']));
     }
 
     public function getSelinux() : ?Selinux

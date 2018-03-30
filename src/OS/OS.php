@@ -27,6 +27,7 @@ use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
 use Linfo\Info\Process;
+use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
@@ -166,9 +167,9 @@ abstract class OS
     public abstract function getPrinters() : ?array;
 
     /**
-     * @return array|null
+     * @return Samba|null
      */
-    public abstract function getSamba() : ?array;
+    public abstract function getSamba() : ?Samba;
 
     /**
      * @return Selinux|null

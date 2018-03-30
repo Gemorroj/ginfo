@@ -26,6 +26,7 @@ use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
 use Linfo\Info\Process;
+use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
@@ -583,7 +584,7 @@ class Windows extends OS
         return null; //todo
     }
 
-    public function getSamba() : ?array
+    public function getSamba() : ?Samba
     {
         return null; //todo
     }

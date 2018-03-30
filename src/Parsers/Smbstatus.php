@@ -60,8 +60,8 @@ class Smbstatus implements Parser
                     'pid' => $connectionMatch[1],
                     'username' => $connectionMatch[2],
                     'group' => $connectionMatch[3],
-                    'hostname' => $connectionMatch[4],
-                    'ip' => $connectionMatch[5],
+                    'machine' => $connectionMatch[4],
+                    'protocolVersion' => $connectionMatch[5],
                 ];
             } // Beginning services list?
             elseif (\preg_match('/^Service\s+pid\s+machine\s+Connected at$/', $line)) {
@@ -81,14 +81,13 @@ class Smbstatus implements Parser
             elseif ($currentLocation === 'f' && \preg_match('/^(\d+)\s+(\d+)\s+(\S+)\s+(\S+)\s+([A-Z]+)\s+([A-Z+]+)\s+(\S+)\s+(.+)\s+([a-zA-Z]+ [a-zA-Z]+ \d+ \d+:\d+:\d+ \d+)$/', $line, $fileMatch)) {
                 $res['files'][] = [
                     'pid' => $fileMatch[1],
-                    'uid' => $fileMatch[2],
-                    'username' => \posix_getpwuid($fileMatch[2])['name'],
-                    'deny_mode' => $fileMatch[3],
+                    'user' => \posix_getpwuid($fileMatch[2])['name'],
+                    'denyMode' => $fileMatch[3],
                     'access' => $fileMatch[4],
                     'rw' => $fileMatch[5],
                     'oplock' => $fileMatch[6],
-                    'share' => $fileMatch[7],
-                    'filename' => $fileMatch[8],
+                    'sharePath' => $fileMatch[7],
+                    'name' => $fileMatch[8],
                     'date' => new \DateTime($fileMatch[9]),
                 ];
             }
