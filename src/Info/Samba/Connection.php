@@ -29,9 +29,51 @@ class Connection
     /** @var string */
     private $group;
     /** @var string */
-    private $machine;
+    private $host;
+    /** @var string */
+    private $ip;
     /** @var string */
     private $protocolVersion;
+    /** @var string|null */
+    private $encryption;
+    /** @var string|null */
+    private $signing;
+
+    /**
+     * @return null|string after samba 4.4
+     */
+    public function getEncryption(): ?string
+    {
+        return $this->encryption;
+    }
+
+    /**
+     * @param null|string $encryption
+     * @return $this
+     */
+    public function setEncryption(?string $encryption): self
+    {
+        $this->encryption = $encryption;
+        return $this;
+    }
+
+    /**
+     * @return null|string after samba 4.4
+     */
+    public function getSigning(): ?string
+    {
+        return $this->signing;
+    }
+
+    /**
+     * @param null|string $signing
+     * @return $this
+     */
+    public function setSigning(?string $signing): self
+    {
+        $this->signing = $signing;
+        return $this;
+    }
 
     /**
      * @return int
@@ -90,23 +132,41 @@ class Connection
     /**
      * @return string
      */
-    public function getMachine(): string
+    public function getHost(): string
     {
-        return $this->machine;
+        return $this->host;
     }
 
     /**
-     * @param string $machine
+     * @param string $host
      * @return $this
      */
-    public function setMachine(string $machine): self
+    public function setHost(string $host): self
     {
-        $this->machine = $machine;
+        $this->host = $host;
         return $this;
     }
 
     /**
      * @return string
+     */
+    public function getIp(): string
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param string $ip
+     * @return $this
+     */
+    public function setIp(string $ip): self
+    {
+        $this->ip = $ip;
+        return $this;
+    }
+
+    /**
+     * @return string after samba 4
      */
     public function getProtocolVersion(): string
     {

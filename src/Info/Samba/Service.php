@@ -29,7 +29,47 @@ class Service
     /** @var string */
     private $machine;
     /** @var \DateTime */
-    private $date;
+    private $connectedAt;
+    /** @var string|null */
+    private $encryption;
+    /** @var string|null */
+    private $signing;
+
+    /**
+     * @return null|string after samba 4.4
+     */
+    public function getEncryption(): ?string
+    {
+        return $this->encryption;
+    }
+
+    /**
+     * @param null|string $encryption
+     * @return $this
+     */
+    public function setEncryption(?string $encryption): self
+    {
+        $this->encryption = $encryption;
+        return $this;
+    }
+
+    /**
+     * @return null|string after samba 4.4
+     */
+    public function getSigning(): ?string
+    {
+        return $this->signing;
+    }
+
+    /**
+     * @param null|string $signing
+     * @return $this
+     */
+    public function setSigning(?string $signing): self
+    {
+        $this->signing = $signing;
+        return $this;
+    }
 
     /**
      * @return string
@@ -88,18 +128,18 @@ class Service
     /**
      * @return \DateTime
      */
-    public function getDate(): \DateTime
+    public function getConnectedAt(): \DateTime
     {
-        return $this->date;
+        return $this->connectedAt;
     }
 
     /**
-     * @param \DateTime $date
+     * @param \DateTime $connectedAt
      * @return $this
      */
-    public function setDate(\DateTime $date): self
+    public function setConnectedAt(\DateTime $connectedAt): self
     {
-        $this->date = $date;
+        $this->connectedAt = $connectedAt;
         return $this;
     }
 }

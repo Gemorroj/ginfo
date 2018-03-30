@@ -726,9 +726,12 @@ class Linux extends OS
                     $out[] = (new Samba\Connection())
                         ->setPid($connection['pid'])
                         ->setGroup($connection['group'])
-                        ->setMachine($connection['machine'])
+                        ->setHost($connection['host'])
+                        ->setIp($connection['ip'])
                         ->setProtocolVersion($connection['protocolVersion'])
-                        ->setUser($connection['user']);
+                        ->setUser($connection['user'])
+                        ->setEncryption($connection['encryption'])
+                        ->setSigning($connection['signing']);
                 }
                 return $out;
             })($data['connections']))
@@ -738,8 +741,10 @@ class Linux extends OS
                     $out[] = (new Samba\Service())
                         ->setPid($service['pid'])
                         ->setMachine($service['machine'])
-                        ->setDate($service['date'])
-                        ->setService($service['service']);
+                        ->setConnectedAt($service['connectedAt'])
+                        ->setService($service['service'])
+                        ->setEncryption($service['encryption'])
+                        ->setSigning($service['signing']);
                 }
                 return $out;
             })($data['services']))
@@ -748,7 +753,7 @@ class Linux extends OS
                 foreach ($files as $file) {
                     $out[] = (new Samba\File())
                         ->setPid($file['pid'])
-                        ->setUser($file['user'])
+                        ->setUser(\posix_getpwuid($file['uid'])['name'])
                         ->setDate($file['date'])
                         ->setName($file['name'])
                         ->setAccess($file['access'])
