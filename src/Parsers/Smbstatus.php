@@ -36,8 +36,8 @@ class Smbstatus implements Parser
             return null;
         }
 
-        $result = $process->getOutput();
-        $lines = \explode("\n", $result);
+        $lines = \explode("\n", \trim($process->getOutput()));
+        \array_shift($lines); // remove header
 
         $res = [
             'connections' => [],
@@ -49,20 +49,32 @@ class Smbstatus implements Parser
         foreach ($lines as $line) {
             $line = \trim($line);
 
-            if ($line === '' || \preg_match('/^\-+$/', $line)) {
+            if ($line === '' || '-' === $line[0]) {
                 continue;
-            } elseif (\preg_match('/^PID\s+Username\s+Group\s+Machine/', $line)) { // Beginning connections list?
+            }
+            if (\preg_match('/^PID\s+Username\s+Group\s+Machine/', $line)) { // Beginning connections list?
                 $currentLocation = 'c';
-            } elseif ('c' === $currentLocation) { // A connection?
+                continue;
+            }
+            if ('c' === $currentLocation) { // A connection?
                 $res['connections'][] = self::parseConnection($currentLocation);
-            } elseif (\preg_match('/^Service\s+pid\s+machine\s+Connected at/', $line)) { // Beginning services list?
+                continue;
+            }
+            if (\preg_match('/^Service\s+pid\s+machine\s+Connected at/', $line)) { // Beginning services list?
                 $currentLocation = 's';
-            } elseif ('s' === $currentLocation) { // A service?
+                continue;
+            }
+            if ('s' === $currentLocation) { // A service?
                 $res['services'][] = self::parseService($line);
-            } elseif (\preg_match('/^Pid\s+Uid\s+DenyMode\s+Access\s+R\/W\s+Oplock\s+SharePath\s+Name\s+Time/', $line)) { // Beginning locked files list?
+                continue;
+            }
+            if (\preg_match('/^Pid\s+Uid\s+DenyMode\s+Access\s+R\/W\s+Oplock\s+SharePath\s+Name\s+Time/', $line)) { // Beginning locked files list?
                 $currentLocation = 'f';
-            } elseif ('f' === $currentLocation) { // A locked file?
+                continue;
+            }
+            if ('f' === $currentLocation) { // A locked file?
                 $res['files'][] = self::parseFile($line);
+                continue;
             }
         }
 
