@@ -754,7 +754,7 @@ class Linux extends OS
                     $out[] = (new Samba\File())
                         ->setPid($file['pid'])
                         ->setUser(\posix_getpwuid($file['uid'])['name'])
-                        ->setDate($file['date'])
+                        ->setTime($file['time'])
                         ->setName($file['name'])
                         ->setAccess($file['access'])
                         ->setDenyMode($file['denyMode'])

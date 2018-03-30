@@ -39,7 +39,7 @@ class File
     /** @var string */
     private $name;
     /** @var \DateTime */
-    private $date;
+    private $time;
 
     /**
      * @return int
@@ -188,18 +188,18 @@ class File
     /**
      * @return \DateTime
      */
-    public function getDate(): \DateTime
+    public function getTime(): \DateTime
     {
-        return $this->date;
+        return $this->time;
     }
 
     /**
-     * @param \DateTime $date
+     * @param \DateTime $time
      * @return $this
      */
-    public function setDate(\DateTime $date): self
+    public function setTime(\DateTime $time): self
     {
-        $this->date = $date;
+        $this->time = $time;
         return $this;
     }
 
