@@ -57,7 +57,7 @@ class Smbstatus implements Parser
                 continue;
             }
             if ('c' === $currentLocation) { // A connection?
-                $res['connections'][] = self::parseConnection($currentLocation);
+                $res['connections'][] = self::parseConnection($line);
                 continue;
             }
             if (\preg_match('/^Service\s+pid\s+machine\s+Connected at/', $line)) { // Beginning services list?
