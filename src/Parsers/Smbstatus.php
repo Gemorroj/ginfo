@@ -44,12 +44,13 @@ class Smbstatus implements Parser
             'services' => [],
             'files' => [],
         ];
-        $currentLocation = null;
 
+        $currentLocation = null;
         foreach ($lines as $line) {
             $line = \trim($line);
 
             if ($line === '' || '-' === $line[0]) {
+                $currentLocation = null;
                 continue;
             }
 
