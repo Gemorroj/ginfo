@@ -94,48 +94,56 @@ class Linux extends OS
             $cpuData[] = Common::parseKeyValueBlock($block);
         }
 
-
-        $detectPhysical = function (array $cpuData) : int {
-            $out = [];
-            foreach ($cpuData as $block) {
-                if (isset($out[$block['physical id']])) {
-                    $out[$block['physical id']]++;
-                } else {
-                    $out[$block['physical id']] = 1;
-                }
-            }
-            return \count($out);
-        };
-        $detectCores = function (array $cpuData) : int {
+        $cores = (function () use ($cpuData) : int {
             $out = [];
             foreach ($cpuData as $block) {
                 $out[$block['physical id']] = $block['cpu cores'];
             }
             return \array_sum($out);
-        };
-
-        $detectInfo = function (array $cpuData) : array {
-            $out = [];
-            foreach ($cpuData as $block) {
-                // overwrite data for physical processors
-                $out[$block['physical id']] = (new Cpu\Processor())
-                    ->setModel($block['model name'])
-                    ->setSpeed($block['cpu MHz'])
-                    ->setL2Cache((float)$block['cache size'] * 1024) // L2 cache, drop KB
-                    ->setFlags(\explode(' ', $block['flags']));
-            }
-            return $out;
-        };
-
-        $cores = $detectCores($cpuData);
+        })();
         $virtual = \count($cpuData);
 
         return (new Cpu())
-            ->setPhysical($detectPhysical($cpuData))
+            ->setPhysical((function () use ($cpuData): int {
+                $out = [];
+                foreach ($cpuData as $block) {
+                    if (isset($out[$block['physical id']])) {
+                        $out[$block['physical id']]++;
+                    } else {
+                        $out[$block['physical id']] = 1;
+                    }
+                }
+                return \count($out);
+            })())
             ->setVirtual($virtual)
             ->setCores($cores)
             ->setHyperThreading($cores < $virtual)
-            ->setProcessors($detectInfo($cpuData));
+            ->setProcessors((function () use ($cpuData): array {
+                $out = [];
+                foreach ($cpuData as $block) {
+                    // overwrite data for physical processors
+                    $out[$block['physical id']] = (new Cpu\Processor())
+                        ->setModel($block['model name'])
+                        ->setSpeed($block['cpu MHz'])
+                        ->setL2Cache((float)$block['cache size'] * 1024) // L2 cache, drop KB
+                        ->setFlags(\explode(' ', $block['flags']));
+
+                    // todo: mips, arm
+                    $out[$block['physical id']]->setArchitecture('x86'); // default x86
+                    foreach ($out[$block['physical id']]->getFlags() as $flag) {
+                        if ('lm' === $flag || '_lm' === \substr($flag, -3)) { // lm, lahf_lm
+                            $out[$block['physical id']]->setArchitecture('x64');
+                            break;
+                        }
+                        if ('ia64' === $flag) {
+                            $out[$block['physical id']]->setArchitecture('ia64');
+                            break;
+                        }
+                    }
+
+                }
+                return $out;
+            })());
     }
 
 

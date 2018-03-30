@@ -144,6 +144,32 @@ class Windows extends OS
                 ->setModel($cpu['Name'])
                 ->setSpeed($cpu['CurrentClockSpeed'])
                 ->setL2Cache($cpu['L2CacheSize'])
+                ->setArchitecture((function () use ($cpu): ?string {
+                    switch ($cpu['Architecture']) {
+                        case 0:
+                            return 'x86';
+                            break;
+                        case 1:
+                            return 'MIPS';
+                            break;
+                        case 2:
+                            return 'Alpha';
+                            break;
+                        case 3:
+                            return 'PowerPC';
+                            break;
+                        case 5:
+                            return 'ARM';
+                            break;
+                        case 6:
+                            return 'ia64';
+                            break;
+                        case 9:
+                            return 'x64';
+                            break;
+                    }
+                    return null;
+                })())
                 ->setFlags(null); //todo
         }
 
@@ -342,55 +368,60 @@ class Windows extends OS
         if (null === $networkAdapters) {
             return null;
         }
+        $networkAdapters = isset($networkAdapters[0]) ? $networkAdapters : [$networkAdapters]; // if one NetworkAdapter convert to many NetworkAdapters
 
         $return = [];
         foreach ($networkAdapters as $net) {
             $tmp = (new Network())
                 ->setName($net['Name'])
                 ->setSpeed($net['Speed'])
-                ->setType($net['AdapterType']);
+                ->setType($net['AdapterType'])
+                ->setState((function () use ($net): ?string {
+                    switch ($net['NetConnectionStatus']) {
+                        case 0:
+                            return 'down';
+                            break;
+                        case 1:
+                            return 'connecting';
+                            break;
+                        case 2:
+                            return 'up';
+                            break;
+                        case 3:
+                            return 'disconnecting';
+                            break;
+                        case 4:
+                            return 'down'; // MSDN 'Hardware not present'
+                            break;
+                        case 5:
+                            return 'hardware disabled';
+                            break;
+                        case 6:
+                            return 'hardware malfunction';
+                            break;
+                        case 7:
+                            return 'media disconnected';
+                            break;
+                        case 8:
+                            return 'authenticating';
+                            break;
+                        case 9:
+                            return 'authentication succeeded';
+                            break;
+                        case 10:
+                            return 'authentication failed';
+                            break;
+                        case 11:
+                            return 'invalid address';
+                            break;
+                        case 12:
+                            return 'credentials required';
+                            break;
+                    }
+                    return null;
+                })());
 
-            switch ($net['NetConnectionStatus']) {
-                case 0:
-                    $tmp->setState('down');
-                    break;
-                case 1:
-                    $tmp->setState('connecting');
-                    break;
-                case 2:
-                    $tmp->setState('up');
-                    break;
-                case 3:
-                    $tmp->setState('disconnecting');
-                    break;
-                case 4:
-                    $tmp->setState('down'); // MSDN 'Hardware not present'
-                    break;
-                case 5:
-                    $tmp->setState('hardware disabled');
-                    break;
-                case 6:
-                    $tmp->setState('hardware malfunction');
-                    break;
-                case 7:
-                    $tmp->setState('media disconnected');
-                    break;
-                case 8:
-                    $tmp->setState('authenticating');
-                    break;
-                case 9:
-                    $tmp->setState('authentication succeeded');
-                    break;
-                case 10:
-                    $tmp->setState('authentication failed');
-                    break;
-                case 11:
-                    $tmp->setState('invalid address');
-                    break;
-                case 12:
-                    $tmp->setState('credentials required');
-                    break;
-            }
+
 
             $canonName = \preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
             $isatapName = 'isatap.' . $net['GUID'];
