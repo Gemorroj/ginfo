@@ -26,7 +26,7 @@ class Sensor
     private $path;
     /** @var string */
     private $name;
-    /** @var int */
+    /** @var float */
     private $value; // temp
     /** @var string|null */
     private $unit; // C - celsius, F - Fahrenheit, V - Volt, W - Watt, RPM - revolution per minute
@@ -68,18 +68,18 @@ class Sensor
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getValue(): int
+    public function getValue(): float
     {
         return $this->value;
     }
 
     /**
-     * @param int $value
+     * @param float $value
      * @return $this
      */
-    public function setValue(int $value): self
+    public function setValue(float $value): self
     {
         $this->value = $value;
         return $this;

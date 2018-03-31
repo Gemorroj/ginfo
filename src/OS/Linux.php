@@ -29,6 +29,7 @@ use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Sensor;
 use Linfo\Info\Service;
+use Linfo\Parsers\Sensors\Sensors;
 use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
@@ -272,6 +273,11 @@ class Linux extends OS
         $sensordRes = Sensord::work();
         if ($sensordRes) {
             $return = \array_merge($return, $sensordRes);
+        }
+
+        $sensorsRes = Sensors::work();
+        if ($sensorsRes) {
+            $return = \array_merge($return, $sensorsRes);
         }
 
         $hwmonRes = Hwmon::work();
