@@ -45,7 +45,6 @@ use Linfo\Parsers\Hwpci;
 use Linfo\Parsers\Sensors\Ipmi;
 use Linfo\Parsers\Mdadm;
 use Linfo\Parsers\Sensors\Nvidia;
-use Linfo\Parsers\Sensors\Sensord;
 use Linfo\Parsers\Sensors\Hddtemp;
 use Linfo\Parsers\Sensors\Mbmon;
 use Linfo\Parsers\Systemd;
@@ -268,11 +267,6 @@ class Linux extends OS
         $mbmonRes = Mbmon::work();
         if ($mbmonRes) {
             $return = \array_merge($return, $mbmonRes);
-        }
-
-        $sensordRes = Sensord::work();
-        if ($sensordRes) {
-            $return = \array_merge($return, $sensordRes);
         }
 
         $sensorsRes = Sensors::work();
