@@ -38,7 +38,7 @@ $info = $linfo->getInfo();
 \print_r($info->getNetwork());
 \print_r($info->getDisk());
 \print_r($info->getBattery());
-\print_r($info->getTemps());
+\print_r($info->getSensors());
 \print_r($info->getProcesses());
 \print_r($info->getServices());
 \print_r($info->getPrinters());

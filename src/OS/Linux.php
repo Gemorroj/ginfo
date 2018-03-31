@@ -27,6 +27,7 @@ use Linfo\Info\Network;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
+use Linfo\Info\Sensor;
 use Linfo\Info\Service;
 use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
@@ -38,16 +39,16 @@ use Linfo\Parsers\Apcaccess;
 use Linfo\Parsers\Lpstat;
 use Linfo\Parsers\Free;
 use Linfo\Parsers\Sestatus;
-use Linfo\Parsers\Temps\Hwmon;
+use Linfo\Parsers\Sensors\Hwmon;
 use Linfo\Parsers\Hwpci;
-use Linfo\Parsers\Temps\Ipmi;
+use Linfo\Parsers\Sensors\Ipmi;
 use Linfo\Parsers\Mdadm;
-use Linfo\Parsers\Temps\Nvidia;
-use Linfo\Parsers\Temps\Sensord;
-use Linfo\Parsers\Temps\Hddtemp;
-use Linfo\Parsers\Temps\Mbmon;
+use Linfo\Parsers\Sensors\Nvidia;
+use Linfo\Parsers\Sensors\Sensord;
+use Linfo\Parsers\Sensors\Hddtemp;
+use Linfo\Parsers\Sensors\Mbmon;
 use Linfo\Parsers\Systemd;
-use Linfo\Parsers\Temps\ThermalZone;
+use Linfo\Parsers\Sensors\ThermalZone;
 use Linfo\Parsers\Who;
 
 
@@ -254,7 +255,7 @@ class Linux extends OS
     }
 
 
-    public function getTemps(): ?array
+    public function getSensors(): ?array
     {
         $return = [];
 
@@ -306,13 +307,23 @@ class Linux extends OS
             }
             $return[] = [
                 'name' => 'Backlight brightness',
-                'temp' => \round($cur / $max, 2) * 100,
+                'value' => \round($cur / $max, 2) * 100,
                 'unit' => '%',
                 'path' => null,
             ];
         }
 
-        return $return ?: null;
+
+        $out = [];
+        foreach ($return as $v) {
+            $out[] = (new Sensor())
+                ->setName($v['name'])
+                ->setPath($v['path'])
+                ->setUnit($v['unit'])
+                ->setValue($v['value']);
+        }
+
+        return $out ?: null;
     }
 
 

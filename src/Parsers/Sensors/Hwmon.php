@@ -17,7 +17,7 @@
  * along with Linfo. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Linfo\Parsers\Temps;
+namespace Linfo\Parsers\Sensors;
 
 
 use Linfo\Common;
@@ -71,7 +71,7 @@ class Hwmon implements Parser
             $hwmonVals[] = [
                 'path' => null,
                 'name' => $label . ($driverName ? ' (' . $driverName . ')' : ''),
-                'temp' => $value,
+                'value' => $value,
                 'unit' => $unit,
             ];
         }

@@ -18,7 +18,7 @@
  * 
  */
 
-namespace Linfo\Parsers\Temps;
+namespace Linfo\Parsers\Sensors;
 
 use Linfo\Parsers\Parser;
 use Symfony\Component\Process\Process;
@@ -51,7 +51,7 @@ class Ipmi implements Parser
 
             switch ($vParts[1]) {
                 case 'Volts':
-                    $unit = 'v';
+                    $unit = 'V';
                     break;
                 case 'degrees':
                     $unit = $vParts[2];
@@ -64,7 +64,7 @@ class Ipmi implements Parser
             $out[] = [
                 'path' => null,
                 'name' => \trim($m[1]),
-                'temp' => $vParts[0],
+                'value' => $vParts[0],
                 'unit' => $unit,
             ];
         }

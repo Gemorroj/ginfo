@@ -18,7 +18,7 @@
  *
  */
 
-namespace Linfo\Parsers\Temps;
+namespace Linfo\Parsers\Sensors;
 
 
 use Linfo\Common;
@@ -58,7 +58,7 @@ class ThermalZone implements Parser
             $thermalZoneVals[] = [
                 'path' => $path,
                 'name' => $label,
-                'temp' => $value,
+                'value' => $value,
                 'unit' => 'C', // I don't think this is ever going to be in F
             ];
         }

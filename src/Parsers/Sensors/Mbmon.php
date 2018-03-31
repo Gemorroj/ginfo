@@ -18,11 +18,11 @@
  *
  */
 
-namespace Linfo\Parsers\Temps;
+namespace Linfo\Parsers\Sensors;
 
 use Linfo\Parsers\Parser;
 
-class Hddtemp implements Parser
+class Mbmon implements Parser
 {
     final private function __construct()
     {
@@ -31,7 +31,6 @@ class Hddtemp implements Parser
     final private function __clone()
     {
     }
-
 
     /**
      * Connect to host/port and get info
@@ -65,29 +64,18 @@ class Hddtemp implements Parser
      */
     private function parseSockData(string $data) : array
     {
-        // Kill surounding ||'s and split it by pipes
-        $drives = \explode('||', \trim($data, '|'));
-
         $return = [];
-        foreach ($drives as $drive) {
-            list($path, $name, $temp, $unit) = \explode('|', \trim($drive));
 
-            // Ignore garbled output from SSDs that hddtemp cant parse
-            if (\mb_strpos($temp, 'UNK') !== false) {
-                continue;
+        $lines = \explode("\n", \trim($data));
+        foreach ($lines as $line) {
+            if (\preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) === 1) {
+                $return[] = [
+                    'path' => null,
+                    'name' => $match[1],
+                    'value' => $match[2],
+                    'unit' => null, // todo
+                ];
             }
-
-            // Ignore no longer existant devices?
-            if (!\file_exists($path) && \is_readable('/dev')) {
-                continue;
-            }
-
-            $return[] = [
-                'path' => $path,
-                'name' => $name,
-                'temp' => $temp,
-                'unit' => \mb_strtoupper($unit),
-            ];
         }
 
         return $return;
@@ -99,7 +87,7 @@ class Hddtemp implements Parser
      * @param int $timeout
      * @return array|null
      */
-    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1) : ?array
+    public static function work(string $host = 'localhost', int $port = 411, int $timeout = 1) : ?array
     {
         $obj = new self();
         $data = $obj->getData($host, $port, $timeout);

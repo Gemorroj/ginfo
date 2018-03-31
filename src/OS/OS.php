@@ -29,6 +29,7 @@ use Linfo\Info\Pci;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
+use Linfo\Info\Sensor;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
@@ -142,9 +143,9 @@ abstract class OS
     public abstract function getBattery() : ?array;
 
     /**
-     * @return array|null
+     * @return Sensor[]|null
      */
-    public abstract function getTemps() : ?array;
+    public abstract function getSensors() : ?array;
 
     /**
      * @return Process[]|null

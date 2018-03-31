@@ -455,7 +455,7 @@ class Windows extends OS
         return null; //todo
     }
 
-    public function getTemps() : ?array
+    public function getSensors() : ?array
     {
         return null; //todo
     }

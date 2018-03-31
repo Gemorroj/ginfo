@@ -18,7 +18,7 @@
  *
  */
 
-namespace Linfo\Parsers\Temps;
+namespace Linfo\Parsers\Sensors;
 
 use Linfo\Parsers\Parser;
 use Symfony\Component\Process\Process;
@@ -66,13 +66,13 @@ class Nvidia implements Parser
                 $result[] = [
                     'path' => null,
                     'name' => $name . ' Power',
-                    'temp' => $match[2],
+                    'value' => $match[2],
                     'unit' => 'W',
                 ];
                 $result[] = [
                     'path' => null,
                     'name' => $name . ' Temperature',
-                    'temp' => $match[3],
+                    'value' => $match[3],
                     'unit' => 'C',
                 ];
             }

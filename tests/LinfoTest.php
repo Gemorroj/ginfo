@@ -30,11 +30,9 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
     {
         $linfo = new Linfo();
         $this->info = $linfo->getInfo();
-/*
-        \print_r($info->getDisk());
-        \print_r($info->getTemps());
-        \print_r($info->getPrinters());
-*/
+
+        //\print_r($this->info->getDisk());
+        //\print_r($this->info->getPrinters());
     }
 
 
@@ -144,5 +142,17 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         }
 
         \print_r($battery);
+    }
+
+    public function testSensors()
+    {
+        $sensors = $this->info->getSensors();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($sensors); //todo
+        } else {
+            $this->assertInternalType('array', $sensors);
+        }
+
+        \print_r($sensors);
     }
 }

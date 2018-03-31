@@ -29,6 +29,7 @@ use Linfo\Info\Pci;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
+use Linfo\Info\Sensor;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
 use Linfo\Info\Usb;
@@ -144,12 +145,12 @@ class Info
     }
 
     /**
-     * Temperatures
-     * @return array|null
+     * Temperatures|Voltages
+     * @return Sensor[]|null
      */
-    public function getTemps()
+    public function getSensors()
     {
-        return $this->os->getTemps();
+        return $this->os->getSensors();
     }
 
     /**
