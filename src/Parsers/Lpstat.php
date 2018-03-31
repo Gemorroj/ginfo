@@ -29,7 +29,7 @@ class Lpstat implements Parser
 {
     public static function work() : ?array
     {
-        $process = new Process('lpstat -p -o -l');
+        $process = new Process('LANG=C lpstat -p -o -l');
         $process->run();
         if (!$process->isSuccessful()) {
             return null;
