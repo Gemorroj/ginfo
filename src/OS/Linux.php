@@ -24,6 +24,7 @@ use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
 use Linfo\Info\Network;
+use Linfo\Info\Printer;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
@@ -723,7 +724,19 @@ class Linux extends OS
 
     public function getPrinters() : ?array
     {
-        return Lpstat::work();
+        $printers = Lpstat::work();
+        if (null === $printers) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($printers as $printer) {
+            $out[] = (new Printer())
+                ->setName($printer['name'])
+                ->setEnabled($printer['enabled']);
+        }
+
+        return $out;
     }
 
     public function getSamba() : ?Samba

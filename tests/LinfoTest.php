@@ -32,7 +32,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->info = $linfo->getInfo();
 
         //\print_r($this->info->getDisk());
-        //\print_r($this->info->getPrinters());
+        //\print_r($this->info->getUps());
     }
 
 
@@ -113,6 +113,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $samba = $this->info->getSamba();
         if (\DIRECTORY_SEPARATOR === '\\') {
             $this->assertNull($samba);
+            $this->markTestSkipped('Not implemented for windows');
         } else {
             $this->assertInstanceOf(Info\Samba::class, $samba);
         }
@@ -125,6 +126,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $selinux = $this->info->getSelinux();
         if (\DIRECTORY_SEPARATOR === '\\') {
             $this->assertNull($selinux);
+            $this->markTestSkipped('Not implemented for windows');
         } else {
             $this->assertInstanceOf(Info\Selinux::class, $selinux);
         }
@@ -137,6 +139,7 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $battery = $this->info->getBattery();
         if (\DIRECTORY_SEPARATOR === '\\') {
             $this->assertNull($battery); //todo
+            $this->markTestSkipped('Not implemented for windows');
         } else {
             $this->assertInternalType('array', $battery);
         }
@@ -149,10 +152,24 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $sensors = $this->info->getSensors();
         if (\DIRECTORY_SEPARATOR === '\\') {
             $this->assertNull($sensors); //todo
+            $this->markTestSkipped('Not implemented for windows');
         } else {
             $this->assertInternalType('array', $sensors);
         }
 
         \print_r($sensors);
+    }
+
+    public function testPrinters()
+    {
+        $printers = $this->info->getPrinters();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($printers); //todo
+            $this->markTestSkipped('Not implemented for windows');
+        } else {
+            $this->assertInternalType('array', $printers);
+        }
+
+        \print_r($printers);
     }
 }

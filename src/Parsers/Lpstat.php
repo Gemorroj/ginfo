@@ -23,57 +23,28 @@ namespace Linfo\Parsers;
 use Symfony\Component\Process\Process;
 
 /**
- * Get info on a cups install by running lpq
+ * Get info on a cups install by running lpstat
  */
 class Lpstat implements Parser
 {
     public static function work() : ?array
     {
-        $process = new Process('lpstat -p -o -l', null, ['LANG' => 'C']);
+        $process = new Process('lpstat -p', null, ['LANG' => 'C']);
         $process->run();
         if (!$process->isSuccessful()) {
             return null;
         }
 
-        $result = $process->getOutput();
+        $lines = \explode("\n", \trim($process->getOutput()));
 
-        $lines = \explode("\n", $result);
-
-
-        $res = [
-            'printers' => [],
-            'queue' => [],
-        ];
-        $beginQueueList = false;
-
+        $res = [];
         foreach ($lines as $line) {
             $line = \trim($line);
 
-            // If there are no entries, don't waste time and end here
-            if ($line === 'no entries') {
-                break;
-            } elseif (\preg_match('/^printer (.+) is idle\. (.+)$/', $line, $printersMatch) === 1) {
-                $res['printers'][] = [
+            if (\preg_match('/^printer (\w+) .*([enabled|disabled]+) since .+?/Uu', $line, $printersMatch)) {
+                $res[] = [
                     'name' => \str_replace('_', ' ', $printersMatch[1]),
-                    'status' => $printersMatch[2],
-                ];
-            } // A printer entry
-            elseif (\preg_match('/^(.+)+ is (ready|ready and printing|not ready)$/', $line, $printersMatch) === 1) {
-                $res['printers'][] = [
-                    'name' => \str_replace('_', ' ', $printersMatch[1]),
-                    'status' => $printersMatch[2],
-                ];
-            } // The beginning of the queue list
-            elseif (\preg_match('/^Rank\s+Owner\s+Job\s+File\(s\)\s+Total Size$/', $line)) {
-                $beginQueueList = true;
-            } // A job in the queue
-            elseif ($beginQueueList && \preg_match('/^([a-z0-9]+)\s+(\S+)\s+(\d+)\s+(.+)\s+(\d+) bytes$/', $line, $queueMatch)) {
-                $res['queue'][] = [
-                    'rank' => $queueMatch[1],
-                    'owner' => $queueMatch[2],
-                    'job' => $queueMatch[3],
-                    'files' => $queueMatch[4],
-                    'size' => $queueMatch[5],
+                    'enabled' => 'enabled' === $printersMatch[2],
                 ];
             }
         }

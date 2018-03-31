@@ -26,6 +26,7 @@ use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
+use Linfo\Info\Printer;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
@@ -52,7 +53,7 @@ class Info
      * General info
      * @return General
      */
-    public function getGeneral()
+    public function getGeneral() : General
     {
         return (new General())
             ->setDate(new \DateTime())
@@ -116,7 +117,7 @@ class Info
      * Network devices
      * @return Network[]|null
      */
-    public function getNetwork()
+    public function getNetwork() : ?array
     {
         return $this->os->getNetwork();
     }
@@ -135,7 +136,7 @@ class Info
      * Hard disk info
      * @return array
      */
-    public function getDisk()
+    public function getDisk() : array
     {
         return [
             'partitions' => $this->os->getPartitions(),
@@ -148,7 +149,7 @@ class Info
      * Temperatures|Voltages
      * @return Sensor[]|null
      */
-    public function getSensors()
+    public function getSensors() : ?array
     {
         return $this->os->getSensors();
     }
@@ -157,7 +158,7 @@ class Info
      * Processes
      * @return Process[]|null
      */
-    public function getProcesses()
+    public function getProcesses() : ?array
     {
         return $this->os->getProcesses();
     }
@@ -178,7 +179,7 @@ class Info
      *
      * @return array|null
      */
-    public function getUps()
+    public function getUps() : ?array
     {
         return $this->os->getUps();
     }
@@ -186,9 +187,9 @@ class Info
     /**
      * Printers
      *
-     * @return array|null
+     * @return Printer[]|null
      */
-    public function getPrinters()
+    public function getPrinters() : ?array
     {
         return $this->os->getPrinters();
     }
@@ -199,7 +200,7 @@ class Info
      *
      * @return Samba|null
      */
-    public function getSamba()
+    public function getSamba() : ?Samba
     {
         return $this->os->getSamba();
     }

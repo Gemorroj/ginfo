@@ -26,6 +26,7 @@ use Linfo\Info\Cpu;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
+use Linfo\Info\Printer;
 use Linfo\Info\Process;
 use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
@@ -163,7 +164,7 @@ abstract class OS
     public abstract function getUps() : ?array;
 
     /**
-     * @return array|null
+     * @return Printer[]|null
      */
     public abstract function getPrinters() : ?array;
 
