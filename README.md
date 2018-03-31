@@ -14,7 +14,7 @@
 - no need `COM` extension on Windows, but need powershell
 - minimal windows 10 support
 - adapt the code to modern standards
-- minimal php version 7.1.10
+- minimal php version 7.1.3
 - add selinux status info
 
 
