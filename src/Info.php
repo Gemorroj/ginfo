@@ -33,6 +33,7 @@ use Linfo\Info\Selinux;
 use Linfo\Info\Sensor;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
+use Linfo\Info\Ups;
 use Linfo\Info\Usb;
 use Linfo\OS\OS;
 
@@ -177,9 +178,9 @@ class Info
     /**
      * UPS status
      *
-     * @return array|null
+     * @return Ups|null
      */
-    public function getUps() : ?array
+    public function getUps() : ?Ups
     {
         return $this->os->getUps();
     }

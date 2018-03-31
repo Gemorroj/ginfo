@@ -33,6 +33,7 @@ use Linfo\Info\Selinux;
 use Linfo\Info\Sensor;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
+use Linfo\Info\Ups;
 use Linfo\Info\Usb;
 
 abstract class OS
@@ -159,9 +160,9 @@ abstract class OS
     public abstract function getServices() : ?array;
 
     /**
-     * @return array|null
+     * @return Ups|null
      */
-    public abstract function getUps() : ?array;
+    public abstract function getUps() : ?Ups;
 
     /**
      * @return Printer[]|null

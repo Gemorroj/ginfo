@@ -30,6 +30,7 @@ use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Service;
 use Linfo\Info\SoundCard;
+use Linfo\Info\Ups;
 use Linfo\Info\Usb;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
@@ -574,7 +575,7 @@ class Windows extends OS
         return null; // TODO
     }
 
-    public function getUps() : ?array
+    public function getUps() : ?Ups
     {
         return null; //todo
     }

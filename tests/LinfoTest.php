@@ -32,7 +32,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         $this->info = $linfo->getInfo();
 
         //\print_r($this->info->getDisk());
-        //\print_r($this->info->getUps());
     }
 
 
@@ -119,6 +118,19 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         }
 
         \print_r($samba);
+    }
+
+    public function testUps()
+    {
+        $ups = $this->info->getUps();
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($ups);
+            $this->markTestSkipped('Not implemented for windows');
+        } else {
+            $this->assertInstanceOf(Info\Ups::class, $ups);
+        }
+
+        \print_r($ups);
     }
 
     public function testSelinux()

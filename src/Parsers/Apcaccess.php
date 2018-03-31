@@ -20,6 +20,7 @@
 
 namespace Linfo\Parsers;
 
+use Linfo\Common;
 use Symfony\Component\Process\Process;
 
 
@@ -27,62 +28,28 @@ class Apcaccess implements Parser
 {
     public static function work() : ?array
     {
-        $process = new Process('apcaccess', null, ['LANG' => 'C']);
+        $process = new Process('apcaccess status', null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {
             return null;
         }
 
-        $result = $process->getOutput();
-
-
-        $res = [];
-
-        if (\preg_match('/^UPSNAME\s+:\s+(.+)$/m', $result, $m)) {
-            $res['name'] = $m[1];
-        }
-        if (\preg_match('/^MODEL\s+:\s+(.+)$/m', $result, $m)) {
-            $res['model'] = $m[1];
-        }
-        if (\preg_match('/^BATTV\s+:\s+(\d+\.\d+)/m', $result, $m)) {
-            $res['volts'] = $m[1];
-        }
-        if (\preg_match('/^BCHARGE\s+:\s+(\d+(?:\.\d+)?)/m', $result, $m)) {
-            $charge = (int)$m[1];
-            $res['charge'] = $charge ? $charge . '%' : null;
-        }
-        if (\preg_match('/^TIMELEFT\s+:\s+([\d\.]+)/m', $result, $m)) {
-            $res['timeLeft'] = $m[1] * 60;
-        }
-        if (\preg_match('/^STATUS\s+:\s+([A-Z]+)/m', $result, $m)) {
-            $res['status'] = $m[1] === 'ONBATT' ? 'On Battery' : \ucfirst(\mb_strtolower($m[1]));
-        }
-        if (\preg_match('/^LOADPCT\s+:\s+(\d+\.\d+)/m', $result, $m)) {
-            $load = (int)$m[1];
-            $res['load'] = $load ? $load . '%' : null;
-        }
-
-        if (isset($load) && \preg_match('/^NOMPOWER\s+:\s+(\d+)/m', $result, $m)) {
-            $watts = (int)$m[1];
-            $res['wattsUsed'] = $load * \round($watts / 100);
-        } else {
-            $res['wattsUsed'] = null;
-        }
-
-        if (!$res) {
+        $result = \trim($process->getOutput());
+        if ('Error' === \substr($result, 0, 5)) {
             return null;
         }
 
+        $block = Common::parseKeyValueBlock($result);
+
         return [
-            'name' => $res['name'],
-            'model' => $res['model'],
-            'batteryVolts' => $res['volts'],
-            'batteryCharge' => $res['charge'],
-            'timeLeft' => $res['time_left'],
-            'currentLoad' => $res['load'],
-            'currentUsage' => $res['watts_used'] ? $res['watts_used'] . 'W' : null,
-            'status' => $res['status'],
+            'name' => $block['UPSNAME'],
+            'model' => $block['MODEL'],
+            'batteryVolts' => \rtrim($block['BATTV'], ' Volts'),
+            'batteryCharge' => \rtrim($block['BCHARGE'], ' Percent'),
+            'timeLeft' => \rtrim($block['Minutes'], ' Minutes') * 60,
+            'currentLoad' => \rtrim($block['LOADPCT'], ' Percent'),
+            'status' => $block['STATUS'],
         ];
     }
 }

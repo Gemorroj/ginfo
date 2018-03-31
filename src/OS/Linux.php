@@ -30,6 +30,7 @@ use Linfo\Info\Samba;
 use Linfo\Info\Selinux;
 use Linfo\Info\Sensor;
 use Linfo\Info\Service;
+use Linfo\Info\Ups;
 use Linfo\Parsers\Sensors\Sensors;
 use Linfo\Parsers\Smbstatus;
 use Linfo\Info\Cpu;
@@ -717,9 +718,21 @@ class Linux extends OS
     }
 
 
-    public function getUps() : ?array
+    public function getUps() : ?Ups
     {
-        return Apcaccess::work();
+        $ups = Apcaccess::work();
+        if (null === $ups) {
+            return null;
+        }
+
+        return (new Ups())
+            ->setName($ups['name'])
+            ->setModel($ups['model'])
+            ->setBatteryCharge($ups['batteryCharge'])
+            ->setBatteryVolts($ups['batteryVolts'])
+            ->setCurrentLoad($ups['currentLoad'])
+            ->setTimeLeft($ups['timeLeft'])
+            ->setStatus($ups['status']);
     }
 
     public function getPrinters() : ?array
