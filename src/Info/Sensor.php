@@ -27,9 +27,9 @@ class Sensor
     /** @var string */
     private $name;
     /** @var float */
-    private $value; // temp
+    private $value;
     /** @var string|null */
-    private $unit; // C - celsius, F - Fahrenheit, V - Volt, W - Watt, RPM - revolution per minute, % - Percent
+    private $unit;
 
     /**
      * @return null|string
@@ -86,6 +86,7 @@ class Sensor
     }
 
     /**
+     * C - celsius, F - Fahrenheit, V - Volt, W - Watt, RPM - revolution per minute, % - Percent
      * @return null|string
      */
     public function getUnit(): ?string

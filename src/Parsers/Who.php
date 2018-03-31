@@ -35,7 +35,7 @@ class Who implements Parser
 
     public static function work() : ?array
     {
-        $process = new Process('who --count');
+        $process = new Process('who --count', null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {

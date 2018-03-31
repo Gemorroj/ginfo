@@ -37,7 +37,7 @@ class Sensors implements Parser
 
     public static function work() : ?array
     {
-        $process = new Process('sensors');
+        $process = new Process('sensors', null, ['LANG=C']);
         $process->run();
         if (!$process->isSuccessful()) {
             return null;

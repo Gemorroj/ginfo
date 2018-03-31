@@ -27,7 +27,7 @@ class Apcaccess implements Parser
 {
     public static function work() : ?array
     {
-        $process = new Process('apcaccess');
+        $process = new Process('apcaccess', null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {

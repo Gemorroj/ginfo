@@ -29,7 +29,7 @@ class Smbstatus implements Parser
 {
     public static function work() : ?array
     {
-        $process = new Process('smbstatus');
+        $process = new Process('smbstatus', null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {
