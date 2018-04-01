@@ -62,7 +62,7 @@ class Mdadm implements Parser
 
                             // I'm not sure if there are status codes other than the above
                             default:
-                                $driveState = 'unknown';
+                                $driveState = null;
                                 break;
                         }
                     } else {
@@ -70,7 +70,7 @@ class Mdadm implements Parser
                     }
 
                     $drives[] = [
-                        'drive' => '/dev/' . $matchDrive[1],
+                        'path' => '/dev/' . $matchDrive[1],
                         'state' => $driveState,
                     ];
                 }

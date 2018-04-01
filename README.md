@@ -34,6 +34,7 @@ $info = $linfo->getInfo();
 \print_r($info->getMemory());
 \print_r($info->getSoundCard());
 \print_r($info->getUsb());
+\print_r($info->getUps());
 \print_r($info->getPci());
 \print_r($info->getNetwork());
 \print_r($info->getDisk());
@@ -73,7 +74,7 @@ $info = $linfo->getInfo();
 
 
 ## System requirements:
-- PHP >= 7.1.10
+- PHP >= 7.1.3
 - pcre extension
 - proc_open
 
@@ -83,4 +84,4 @@ $info = $linfo->getInfo();
 
 #### Linux
 - `/proc` and `/sys` mounted and readable by PHP
-- Tested with the 2.6.x/3.x kernels
+- Tested with the 2.6.x/3.x/4.x kernels

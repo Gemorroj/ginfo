@@ -23,6 +23,9 @@ namespace Linfo\OS;
 
 use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
+use Linfo\Info\Disk\Drive;
+use Linfo\Info\Disk\Mount;
+use Linfo\Info\Disk\Raid;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
@@ -125,19 +128,19 @@ abstract class OS
     public abstract function getNetwork() : ?array;
 
     /**
-     * @return array|null
+     * @return Drive[]|null
      */
-    public abstract function getPartitions() : ?array;
+    public abstract function getDrives() : ?array;
 
     /**
-     * @return array|null
+     * @return Mount[]|null
      */
     public abstract function getMounts() : ?array;
 
     /**
-     * @return array|null
+     * @return Raid[]|null
      */
-    public abstract function getRaid() : ?array;
+    public abstract function getRaids() : ?array;
 
     /**
      * @return Battery[]|null

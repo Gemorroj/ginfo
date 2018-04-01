@@ -23,6 +23,9 @@ namespace Linfo\OS;
 use Linfo\Common;
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Battery;
+use Linfo\Info\Disk\Drive;
+use Linfo\Info\Disk\Mount;
+use Linfo\Info\Disk\Raid;
 use Linfo\Info\Network;
 use Linfo\Info\Printer;
 use Linfo\Info\Process;
@@ -163,7 +166,7 @@ class Linux extends OS
     }
 
 
-    public function getPartitions(): ?array
+    public function getDrives(): ?array
     {
         $partitions = [];
         $partitionsContents = Common::getContents('/proc/partitions');
@@ -173,10 +176,9 @@ class Linux extends OS
 
         if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
-                $partitions[$partition[2]][] = [
-                    'size' => $partition[1] * 1024,
-                    'number' => $partition[3],
-                ];
+                $partitions[$partition[2]][] = (new Drive\Partition())
+                    ->setName($partition[2] . $partition[3])
+                    ->setSize($partition[1] * 1024);
             }
         }
 
@@ -197,15 +199,16 @@ class Linux extends OS
                 list(, $reads, $writes) = $statMatches;
             }
 
-            $drives[] = [
-                'name' => Common::getContents($path, 'Unknown') . (Common::getContents(\dirname(\dirname($path)) . '/queue/rotational') === '0' ? ' (SSD)' : ''),
-                'vendor' => Common::getContents(\dirname($path) . '/vendor', 'Unknown'),
-                'device' => '/dev/' . $parts[3],
-                'reads' => $reads,
-                'writes' => $writes,
-                'size' => Common::getContents(\dirname(\dirname($path)) . '/size', 0) * 512,
-                'partitions' => \array_key_exists($parts[3], $partitions) && \is_array($partitions[$parts[3]]) ? $partitions[$parts[3]] : null,
-            ];
+            $drives[] = (new Drive())
+                ->setSize(Common::getContents(\dirname(\dirname($path)) . '/size', 0) * 512)
+                ->setDevice('/dev/' . $parts[3])
+                ->setPartitions((function (string $namePartition) use ($partitions) : ?array {
+                    return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
+                })($parts[3]))
+                ->setName(Common::getContents($path) . (Common::getContents(\dirname(\dirname($path)) . '/queue/rotational') === '0' ? ' (SSD)' : ''))
+                ->setReads($reads)
+                ->setVendor(Common::getContents(\dirname($path) . '/vendor'))
+                ->setWrites($writes);
         }
 
         return $drives;
@@ -227,33 +230,57 @@ class Linux extends OS
             // Spaces and other things in the mount path are escaped C style. Fix that.
             $mount[2] = \stripcslashes($mount[2]);
 
-            $size = \disk_total_space($mount[2]);
-            $free = \disk_free_space($mount[2]);
-            $used = $size !== false && $free !== false ? $size - $free : false;
+            $size = @\disk_total_space($mount[2]);
+            $size = false === $size ? null : $size;
 
-            $mounts[] = [
-                'device' => $mount[1],
-                'mount' => $mount[2],
-                'type' => $mount[3],
-                'size' => $size,
-                'used' => $used,
-                'free' => $free,
-                'freePercent' => ($free !== false && $size !== false && $size > 0 ? \round($free / $size, 2) * 100 : null),
-                'usedPercent' => ($used !== false && $size !== false && $size > 0 ? \round($used / $size, 2) * 100 : null),
-                'options' => \explode(',', $mount[4]),
-            ];
+            $free = @\disk_free_space($mount[2]);
+            $free = false === $free ? null : $free;
+
+            $used = (null !== $size && null !== $free) ? $size - $free : null;
+
+            $mounts[] = (new Mount())
+                ->setSize($size)
+                ->setDevice($mount[1])
+                ->setType($mount[3])
+                ->setFree($free)
+                ->setFreePercent(null !== $size && null !== $free ? \round($free / $size, 2) * 100 : null)
+                ->setMount($mount[2])
+                ->setOptions(\explode(',', $mount[4]))
+                ->setUsed($used)
+                ->setUsedPercent(null !== $size && null !== $used ? \round($used / $size, 2) * 100 : null);
         }
 
         return $mounts;
     }
 
-    /**
-     * mdadm wrapper
-     * @return array|null
-     */
-    public function getRaid(): ?array
+    public function getRaids(): ?array
     {
-        return Mdadm::work();
+        $data = Mdadm::work();
+        if (null === $data) {
+            return null;
+        }
+
+        $out = [];
+        foreach ($data as $raid) {
+            $out[] = (new Raid())
+                ->setStatus($raid['status'])
+                ->setChart($raid['chart'])
+                ->setCount($raid['count'])
+                ->setDevice($raid['device'])
+                ->setDrives((function () use ($raid) : array {
+                    $out = [];
+                    foreach ($raid['drives'] as $drive) {
+                        $out[] = (new Raid\Drive())
+                            ->setPath($drive['path'])
+                            ->setState($drive['state']);
+                    }
+                    return $out;
+                })())
+                ->setLevel($raid['level'])
+                ->setSize($raid['size']);
+        }
+
+        return $out;
     }
 
 

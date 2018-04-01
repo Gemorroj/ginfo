@@ -30,8 +30,6 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
     {
         $linfo = new Linfo();
         $this->info = $linfo->getInfo();
-
-        //\print_r($this->info->getDisk());
     }
 
 
@@ -183,5 +181,22 @@ class LinfoTest extends \PHPUnit\Framework\TestCase
         }
 
         \print_r($printers);
+    }
+
+    public function testDisk()
+    {
+        $disk = $this->info->getDisk();
+        $this->assertInstanceOf(Info\Disk::class, $disk);
+        $this->assertInternalType('array', $disk->getDrives());
+        $this->assertInternalType('array', $disk->getMounts());
+
+        if (\DIRECTORY_SEPARATOR === '\\') {
+            $this->assertNull($disk->getRaids()); //todo
+            //$this->markTestSkipped('Not implemented for windows');
+        } else {
+            $this->assertInternalType('array', $disk->getRaids());
+        }
+
+        \print_r($disk);
     }
 }

@@ -22,6 +22,8 @@ namespace Linfo\OS;
 
 use Linfo\Exceptions\FatalException;
 use Linfo\Info\Cpu;
+use Linfo\Info\Disk\Drive;
+use Linfo\Info\Disk\Mount;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
 use Linfo\Info\Pci;
@@ -205,7 +207,7 @@ class Windows extends OS
     }
 
 
-    public function getPartitions() : ?array
+    public function getDrives() : ?array
     {
         $infoDiskPartition = $this->getInfo('DiskPartition');
         if (null === $infoDiskPartition) {
@@ -222,22 +224,22 @@ class Windows extends OS
         $partitions = [];
 
         foreach ($infoDiskPartition as $partitionInfo) {
-            $partitions[$partitionInfo['DiskIndex']][] = [
-                'size' => $partitionInfo['Size'],
-                'name' => $partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')',
-            ];
+            $partitions[$partitionInfo['DiskIndex']][] = (new Drive\Partition())
+                ->setSize($partitionInfo['Size'])
+                ->setName($partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')');
         }
 
         foreach ($infoDiskDrive as $driveInfo) {
-            $drives[] = [
-                'name' => $driveInfo['Caption'],
-                'vendor' => \explode(' ', $driveInfo['Caption'], 1)[0],
-                'device' => $driveInfo['DeviceID'],
-                'reads' => null, //todo
-                'writes' => null, //todo
-                'size' => $driveInfo['Size'],
-                'partitions' => \array_key_exists($driveInfo['Index'], $partitions) && \is_array($partitions[$driveInfo['Index']]) ? $partitions[$driveInfo['Index']] : null,
-            ];
+            $drives[] = (new Drive())
+                ->setSize($driveInfo['Size'])
+                ->setDevice($driveInfo['DeviceID'])
+                ->setPartitions((function (string $namePartition) use ($partitions) : ?array {
+                    return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
+                })($driveInfo['Index']))
+                ->setName($driveInfo['Caption'])
+                ->setReads(null)
+                ->setVendor(false !== \strpos($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
+                ->setWrites(null);
         }
 
         return $drives;
@@ -252,63 +254,58 @@ class Windows extends OS
 
         $volumes = [];
         foreach ($info as $volume) {
-            $options = [];
+            $volumes[] = (new Mount())
+                ->setSize($volume['Capacity'])
+                ->setDevice((function () use ($volume) : string {
+                    $name = $volume['Label'];
+                    switch ($volume['DriveType']) {
+                        case 2:
+                            $name .= ' (Removable drive)';
+                            break;
+                        case 3:
+                            $name .= ' (Fixed drive)';
+                            break;
+                        case 4:
+                            $name .= ' (Remote drive)';
+                            break;
+                        case 5:
+                            $name .= ' (CD-ROM)';
+                            break;
+                        case 6:
+                            $name .= ' (RAM disk)';
+                            break;
+                    }
+                    return $name;
+                })())
+                ->setType($volume['FileSystem'])
+                ->setFree($volume['FreeSpace'])
+                ->setMount($volume['Caption'])
+                ->setOptions((function () use ($volume) : array {
+                    $options = [];
 
-            if ($volume['Automount']) {
-                $options[] = 'automount';
-            }
-            if ($volume['BootVolume']) {
-                $options[] = 'boot';
-            }
-            if ($volume['IndexingEnabled']) {
-                $options[] = 'indexed';
-            }
-            if ($volume['Compressed']) {
-                $options[] = 'compressed';
-            }
-
-            $a = [
-                'device' => $volume['Label'],
-                'mount' => $volume['Caption'],
-                'type' => $volume['FileSystem'],
-                'size' => $volume['Capacity'],
-                'used' => $volume['Capacity'] - $volume['FreeSpace'],
-                'free' => $volume['FreeSpace'],
-                'freePercent' => null,
-                'usedPercent' => null,
-                'options' => $options,
-            ];
-
-            switch ($volume['DriveType']) {
-                case 2:
-                    $a['device'] .= ' (Removable drive)';
-                    break;
-                case 3:
-                    //$a['device'] .= ' (Fixed drive)';
-                    break;
-                case 4:
-                    $a['device'] .= ' (Remote drive)';
-                    break;
-                case 5:
-                    $a['device'] .= ' (CD-ROM)';
-                    break;
-                case 6:
-                    $a['device'] .= ' (RAM disk)';
-                    break;
-            }
-
-            if ($volume['Capacity'] != 0) {
-                $a['freePercent'] = \round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100;
-                $a['usedPercent'] = \round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100;
-            }
-
-            $volumes[] = $a;
+                    if ($volume['Automount']) {
+                        $options[] = 'automount';
+                    }
+                    if ($volume['BootVolume']) {
+                        $options[] = 'boot';
+                    }
+                    if ($volume['IndexingEnabled']) {
+                        $options[] = 'indexed';
+                    }
+                    if ($volume['Compressed']) {
+                        $options[] = 'compressed';
+                    }
+                    return $options;
+                })())
+                ->setUsed($volume['Capacity'] - $volume['FreeSpace'])
+                ->setFreePercent($volume['Capacity'] > 0 ? \round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100 : null)
+                ->setUsedPercent($volume['Capacity'] > 0 ? \round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100 : null);
         }
 
         return $volumes;
     }
 
-    public function getRaid() : ?array
+    public function getRaids() : ?array
     {
         return null; //todo
     }
@@ -527,7 +524,39 @@ class Windows extends OS
                 ->setName($proc['Name'])
                 ->setCommandLine($proc['CommandLine'])
                 ->setThreads($proc['ThreadCount'])
-                ->setState($displayState($proc['ExecutionState']))
+                ->setState((function () use ($proc) : ?string{
+                    switch ($proc['ExecutionState']) {
+                        case 1:
+                            return 'other';
+                            break;
+                        case 2:
+                            return 'ready';
+                            break;
+                        case 3:
+                            return 'running';
+                            break;
+                        case 4:
+                            return 'blocked';
+                            break;
+                        case 5:
+                            return 'suspended blocked';
+                            break;
+                        case 6:
+                            return 'suspended ready';
+                            break;
+                        case 7:
+                            return 'terminated';
+                            break;
+                        case 8:
+                            return 'stopped';
+                            break;
+                        case 9:
+                            return 'growing';
+                            break;
+                    }
+
+                    return null;
+                })())
                 ->setMemory($proc['VirtualSize'])
                 ->setPeakMemory($proc['PeakVirtualSize'])
                 ->setPid($proc['ProcessId'])

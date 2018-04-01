@@ -22,6 +22,7 @@ namespace Linfo;
 
 use Linfo\Info\Battery;
 use Linfo\Info\Cpu;
+use Linfo\Info\Disk;
 use Linfo\Info\General;
 use Linfo\Info\Memory;
 use Linfo\Info\Network;
@@ -135,15 +136,14 @@ class Info
 
     /**
      * Hard disk info
-     * @return array
+     * @return Disk
      */
-    public function getDisk() : array
+    public function getDisk() : Disk
     {
-        return [
-            'partitions' => $this->os->getPartitions(),
-            'mounts' => $this->os->getMounts(),
-            'raid' => $this->os->getRaid(),
-        ];
+        return (new Disk())
+            ->setMounts($this->os->getMounts())
+            ->setDrives($this->os->getDrives())
+            ->setRaids($this->os->getRaids());
     }
 
     /**
