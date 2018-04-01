@@ -243,11 +243,11 @@ class Linux extends OS
                 ->setDevice($mount[1])
                 ->setType($mount[3])
                 ->setFree($free)
-                ->setFreePercent(null !== $size && null !== $free ? \round($free / $size, 2) * 100 : null)
                 ->setMount($mount[2])
                 ->setOptions(\explode(',', $mount[4]))
                 ->setUsed($used)
-                ->setUsedPercent(null !== $size && null !== $used ? \round($used / $size, 2) * 100 : null);
+                ->setFreePercent(null !== $size && null !== $free && $size > 0 ? \round($free / $size, 2) * 100 : null)
+                ->setUsedPercent(null !== $size && null !== $used && $size > 0? \round($used / $size, 2) * 100 : null);
         }
 
         return $mounts;
