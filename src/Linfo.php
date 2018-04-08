@@ -2,9 +2,9 @@
 
 namespace Linfo;
 
+use Linfo\Exceptions\FatalException;
 use Linfo\OS\Linux;
 use Linfo\OS\OS;
-use Linfo\Exceptions\FatalException;
 use Linfo\OS\Windows;
 
 class Linfo

@@ -2,8 +2,8 @@
 
 namespace Linfo\Info;
 
-use Linfo\Info\Disk\Mount;
 use Linfo\Info\Disk\Drive;
+use Linfo\Info\Disk\Mount;
 use Linfo\Info\Disk\Raid;
 
 class Disk
