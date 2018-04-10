@@ -4,7 +4,7 @@ namespace Ginfo\Info\Php;
 
 class Opcache
 {
-    /** @var bool|null */
+    /** @var bool */
     private $enabled;
     /** @var bool|null */
     private $configEnable;
@@ -22,18 +22,18 @@ class Opcache
     private $misses;
 
     /**
-     * @return bool|null
+     * @return bool
      */
-    public function getEnabled(): ?bool
+    public function getEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
-     * @param bool|null $enabled
+     * @param bool $enabled
      * @return $this
      */
-    public function setEnabled(?bool $enabled): self
+    public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
         return $this;

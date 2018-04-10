@@ -220,9 +220,9 @@ class Info
                 $opcacheStatus || $opcacheConfiguration ?
                 (new Php\Opcache())
                     ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null)
-                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'] ?? null)
+                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'] ?? false)
                     ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'] ?? null)
-                    ->setEnabled($opcacheStatus['opcache_enabled'] ?? null)
+                    ->setEnabled($opcacheStatus['opcache_enabled'] ?? false)
                     ->setFreeMemory($opcacheStatus['memory_usage']['free_memory'] ?? null)
                     ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'] ?? null)
                     ->setHits($opcacheStatus['opcache_statistics']['hits'] ?? null)
