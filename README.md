@@ -19,18 +19,19 @@
 - add php info (basic, opcache, apcu)
 
 
-### PHP library usage
-
+### Installation:
 ```bash
 composer require gemorroj/ginfo
 ```
 
+### Example:
 ```php
 <?php
 $ginfo = new \Ginfo\Ginfo();
 $info = $ginfo->getInfo();
 
 \print_r($info->getGeneral());
+\print_r($info->getPhp());
 \print_r($info->getCpu());
 \print_r($info->getMemory());
 \print_r($info->getSoundCard());
@@ -49,11 +50,11 @@ $info = $ginfo->getInfo();
 ```
 
 
-## Runs on
+### Runs on
 - Linux
 - Windows >= 10
 
-## Information reported
+### Information reported
 - CPU type/speed; Architecture
 - Mount point usage
 - Hard/optical/flash drives
@@ -72,9 +73,10 @@ $info = $ginfo->getInfo();
 - Printer status (linux: need `lpstat`)
 - Samba status (linux: need `smbstatus`)
 - Selinux status (linux: need `sestatus`)
+- PHP (basic info, `opcache`, `apcu`)
 
 
-## System requirements:
+### System requirements:
 - PHP >= 7.1.3
 - pcre extension
 - proc_open

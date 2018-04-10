@@ -531,7 +531,7 @@ class Linux extends OS
             $ioContents = Common::getContents(\dirname($process) . '/io');
 
 
-            $blockIo = Common::parseKeyValueBlock($ioContents);
+            $blockIo = $ioContents ? Common::parseKeyValueBlock($ioContents) : null;
             $blockStatus = Common::parseKeyValueBlock($statusContents);
 
 
@@ -562,8 +562,8 @@ class Linux extends OS
                 ->setPeakMemory($vmPeak)
                 ->setPid($blockStatus['Pid'])
                 ->setUser($user ? $user['name'] : $uid)
-                ->setIoRead($blockIo['read_bytes'])
-                ->setIoWrite($blockIo['write_bytes']);
+                ->setIoRead($blockIo['read_bytes'] ?? null)
+                ->setIoWrite($blockIo['write_bytes'] ?? null);
         }
 
         return $result;
@@ -764,6 +764,9 @@ class Linux extends OS
     public function getSamba() : ?Samba
     {
         $data = Smbstatus::work();
+        if (null === $data) {
+            return null;
+        }
 
         return (new Samba())
             ->setConnections((function (array $connections) {
