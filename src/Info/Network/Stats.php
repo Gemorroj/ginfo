@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Info\Network;
+namespace Ginfo\Info\Network;
 
 class Stats
 {

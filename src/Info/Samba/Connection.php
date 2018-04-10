@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Info\Samba;
+namespace Ginfo\Info\Samba;
 
 class Connection
 {

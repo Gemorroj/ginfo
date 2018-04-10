@@ -1,6 +1,6 @@
-# Linfo - Server stats library
+# Ginfo - Server stats library
 
-### Linfo is a:
+### Ginfo is a:
  - Extensible, easy (composer) to use PHP Library to get extensive system stats programmatically from your PHP app
 
 ### Fork changes:
@@ -21,13 +21,13 @@
 ### PHP library usage
 
 ```bash
-composer require gemorroj/linfo
+composer require gemorroj/ginfo
 ```
 
 ```php
 <?php
-$linfo = new \Linfo\Linfo();
-$info = $linfo->getInfo();
+$ginfo = new \Ginfo\Ginfo();
+$info = $ginfo->getInfo();
 
 \print_r($info->getGeneral());
 \print_r($info->getCpu());

@@ -1,10 +1,10 @@
 <?php
 
-namespace Linfo\Parsers\Sensors;
+namespace Ginfo\Parsers\Sensors;
 
 
-use Linfo\Common;
-use Linfo\Parsers\Parser;
+use Ginfo\Common;
+use Ginfo\Parsers\Parser;
 
 class ThermalZone implements Parser
 {

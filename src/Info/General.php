@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Info;
+namespace Ginfo\Info;
 
 class General
 {

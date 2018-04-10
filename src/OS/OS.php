@@ -1,24 +1,24 @@
 <?php
 
-namespace Linfo\OS;
+namespace Ginfo\OS;
 
-use Linfo\Info\Battery;
-use Linfo\Info\Cpu;
-use Linfo\Info\Disk\Drive;
-use Linfo\Info\Disk\Mount;
-use Linfo\Info\Disk\Raid;
-use Linfo\Info\Memory;
-use Linfo\Info\Network;
-use Linfo\Info\Pci;
-use Linfo\Info\Printer;
-use Linfo\Info\Process;
-use Linfo\Info\Samba;
-use Linfo\Info\Selinux;
-use Linfo\Info\Sensor;
-use Linfo\Info\Service;
-use Linfo\Info\SoundCard;
-use Linfo\Info\Ups;
-use Linfo\Info\Usb;
+use Ginfo\Info\Battery;
+use Ginfo\Info\Cpu;
+use Ginfo\Info\Disk\Drive;
+use Ginfo\Info\Disk\Mount;
+use Ginfo\Info\Disk\Raid;
+use Ginfo\Info\Memory;
+use Ginfo\Info\Network;
+use Ginfo\Info\Pci;
+use Ginfo\Info\Printer;
+use Ginfo\Info\Process;
+use Ginfo\Info\Samba;
+use Ginfo\Info\Selinux;
+use Ginfo\Info\Sensor;
+use Ginfo\Info\Service;
+use Ginfo\Info\SoundCard;
+use Ginfo\Info\Ups;
+use Ginfo\Info\Usb;
 
 abstract class OS
 {

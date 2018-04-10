@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Tests\Parsers\Sensors;
+namespace Ginfo\Tests\Parsers\Sensors;
 
-use Linfo\Parsers\Sensors\Sensors;
+use Ginfo\Parsers\Sensors\Sensors;
 
 class SensorsTest extends \PHPUnit\Framework\TestCase
 {

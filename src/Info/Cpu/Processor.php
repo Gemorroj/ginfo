@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Info\Cpu;
+namespace Ginfo\Info\Cpu;
 
 class Processor
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Parsers;
+namespace Ginfo\Parsers;
 
-use Linfo\Common;
+use Ginfo\Common;
 
 /**
  * Deal with pci.ids and usb.ids workings.

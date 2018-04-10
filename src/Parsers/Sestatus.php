@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Parsers;
+namespace Ginfo\Parsers;
 
-use Linfo\Common;
+use Ginfo\Common;
 use Symfony\Component\Process\Process;
 
 class Sestatus implements Parser

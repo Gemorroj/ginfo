@@ -1,15 +1,15 @@
 <?php
 
-namespace Linfo\Info;
+namespace Ginfo\Info;
 
-use Linfo\Info\Samba\Connection;
-use Linfo\Info\Samba\File;
+use Ginfo\Info\Samba\Connection;
+use Ginfo\Info\Samba\File;
 
 class Samba
 {
     /** @var File[] */
     private $files;
-    /** @var \Linfo\Info\Samba\Service[] */
+    /** @var \Ginfo\Info\Samba\Service[] */
     private $services;
     /** @var Connection[] */
     private $connections;

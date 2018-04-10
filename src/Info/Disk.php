@@ -1,10 +1,10 @@
 <?php
 
-namespace Linfo\Info;
+namespace Ginfo\Info;
 
-use Linfo\Info\Disk\Drive;
-use Linfo\Info\Disk\Mount;
-use Linfo\Info\Disk\Raid;
+use Ginfo\Info\Disk\Drive;
+use Ginfo\Info\Disk\Mount;
+use Ginfo\Info\Disk\Raid;
 
 class Disk
 {

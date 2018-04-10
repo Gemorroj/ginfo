@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Tests\Parsers;
+namespace Ginfo\Tests\Parsers;
 
-use Linfo\Parsers\Smbstatus;
+use Ginfo\Parsers\Smbstatus;
 
 class SmbatatusTest extends \PHPUnit\Framework\TestCase
 {

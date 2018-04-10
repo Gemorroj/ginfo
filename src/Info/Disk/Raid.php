@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Info\Disk;
+namespace Ginfo\Info\Disk;
 
-use Linfo\Info\Disk\Raid\Drive;
+use Ginfo\Info\Disk\Raid\Drive;
 
 class Raid
 {

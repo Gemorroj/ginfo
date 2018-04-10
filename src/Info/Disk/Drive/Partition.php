@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Info\Disk\Drive;
+namespace Ginfo\Info\Disk\Drive;
 
 class Partition
 {

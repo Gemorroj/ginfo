@@ -1,19 +1,18 @@
 <?php
 
-namespace Linfo;
+namespace Ginfo;
 
-use Linfo\Exceptions\FatalException;
-use Linfo\OS\Linux;
-use Linfo\OS\OS;
-use Linfo\OS\Windows;
+use Ginfo\Exceptions\FatalException;
+use Ginfo\OS\Linux;
+use Ginfo\OS\OS;
+use Ginfo\OS\Windows;
 
-class Linfo
+class Ginfo
 {
     /** @var OS */
     protected $os;
 
     /**
-     * Linfo constructor.
      * @throws FatalException
      */
     public function __construct()

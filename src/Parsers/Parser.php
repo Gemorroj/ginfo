@@ -1,6 +1,6 @@
 <?php
 
-namespace Linfo\Parsers;
+namespace Ginfo\Parsers;
 
 interface Parser
 {

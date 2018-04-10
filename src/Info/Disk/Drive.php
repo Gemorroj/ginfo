@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Info\Disk;
+namespace Ginfo\Info\Disk;
 
-use Linfo\Info\Disk\Drive\Partition;
+use Ginfo\Info\Disk\Drive\Partition;
 
 class Drive
 {

@@ -11,7 +11,7 @@
   </php>
 
   <testsuites>
-    <testsuite name="Linfo">
+    <testsuite name="Ginfo">
       <directory>tests</directory>
     </testsuite>
   </testsuites>

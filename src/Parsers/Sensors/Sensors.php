@@ -1,8 +1,8 @@
 <?php
 
-namespace Linfo\Parsers\Sensors;
+namespace Ginfo\Parsers\Sensors;
 
-use Linfo\Parsers\Parser;
+use Ginfo\Parsers\Parser;
 use Symfony\Component\Process\Process;
 
 

@@ -1,5 +1,5 @@
 {
-    "name": "gemorroj/linfo",
+    "name": "gemorroj/ginfo",
     "description": "App and library for easily parsing system information, like network/cpu/memory/usb/pci/sound cards/filesystems/raid array/ipmi/etc.",
     "keywords": [
         "health",
@@ -36,12 +36,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Linfo\\": "src/"
+            "Ginfo\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Linfo\\Tests\\": "tests/"
+            "Ginfo\\Tests\\": "tests/"
         }
     }
 }

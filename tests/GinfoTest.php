@@ -1,19 +1,19 @@
 <?php
 
-namespace Linfo\Tests;
+namespace Ginfo\Tests;
 
-use Linfo\Info;
-use Linfo\Linfo;
+use Ginfo\Info;
+use Ginfo\Ginfo;
 
-class LinfoTest extends \PHPUnit\Framework\TestCase
+class GinfoTest extends \PHPUnit\Framework\TestCase
 {
     /** @var Info */
     private $info;
 
     public function setUp()
     {
-        $linfo = new Linfo();
-        $this->info = $linfo->getInfo();
+        $ginfo = new Ginfo();
+        $this->info = $ginfo->getInfo();
     }
 
 
