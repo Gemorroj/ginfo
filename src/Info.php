@@ -213,6 +213,7 @@ class Info
         $apcuSmaInfo = \function_exists('apcu_sma_info') ? @\apcu_sma_info(true) : null;
 
         $disabledFunctions = \ini_get('disable_functions');
+        $disabledClasses = \ini_get('disable_classes');
 
         return (new Php())
             ->setVersion(\PHP_VERSION)
@@ -222,6 +223,7 @@ class Info
             ->setIncludePath(\get_include_path())
             ->setSapiName(\php_sapi_name())
             ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
+            ->setDisabledClasses($disabledClasses ? \explode(',', $disabledClasses) : [])
             ->setOpcache(
                 (new Php\Opcache())
                     ->setVersion(\phpversion('Zend Opcache') ?: null)

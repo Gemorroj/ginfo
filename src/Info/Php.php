@@ -25,6 +25,8 @@ class Php
     private $apcu;
     /** @var string[] */
     private $disabledFunctions;
+    /** @var string[] */
+    private $disabledClasses;
 
     /**
      * @return string
@@ -185,6 +187,24 @@ class Php
     public function setDisabledFunctions(array $disabledFunctions): self
     {
         $this->disabledFunctions = $disabledFunctions;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDisabledClasses(): array
+    {
+        return $this->disabledClasses;
+    }
+
+    /**
+     * @param string[] $disabledClasses
+     * @return $this
+     */
+    public function setDisabledClasses(array $disabledClasses): self
+    {
+        $this->disabledClasses = $disabledClasses;
         return $this;
     }
 }
