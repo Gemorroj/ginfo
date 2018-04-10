@@ -16,6 +16,7 @@
 - adapt the code to modern standards
 - minimal php version 7.1.3
 - add selinux status info
+- add php info
 
 
 ### PHP library usage

@@ -16,6 +16,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         $this->info = $ginfo->getInfo();
     }
 
+    public function testPhp()
+    {
+        $php = $this->info->getPhp();
+        $this->assertInstanceOf(Info\Php::class, $php);
+
+        \print_r($php);
+    }
 
     public function testGeneral()
     {

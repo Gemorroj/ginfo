@@ -9,6 +9,7 @@ use Ginfo\Info\General;
 use Ginfo\Info\Memory;
 use Ginfo\Info\Network;
 use Ginfo\Info\Pci;
+use Ginfo\Info\Php;
 use Ginfo\Info\Printer;
 use Ginfo\Info\Process;
 use Ginfo\Info\Samba;
@@ -197,5 +198,20 @@ class Info
     public function getSelinux() : ?Selinux
     {
         return $this->os->getSelinux();
+    }
+
+
+    /**
+     * @return Php
+     */
+    public function getPhp() : Php
+    {
+        return (new Php())
+            ->setVersion(\PHP_VERSION)
+            ->setExtensions(\get_loaded_extensions())
+            ->setZendExtensions(\get_loaded_extensions(true))
+            ->setIniFile(\php_ini_loaded_file())
+            ->setIncludePath(\get_include_path())
+            ->setSapiName(\php_sapi_name());
     }
 }
