@@ -209,6 +209,9 @@ class Info
         $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status(false) : null;
         $opcacheConfiguration = \function_exists('opcache_get_configuration') ? \opcache_get_configuration() : null;
 
+        $apcuCacheInfo = \function_exists('apcu_cache_info') ? @\apcu_cache_info(true) : null;
+        $apcuSmaInfo = \function_exists('apcu_sma_info') ? @\apcu_sma_info(true) : null;
+
         return (new Php())
             ->setVersion(\PHP_VERSION)
             ->setExtensions(\get_loaded_extensions())
@@ -217,8 +220,8 @@ class Info
             ->setIncludePath(\get_include_path())
             ->setSapiName(\php_sapi_name())
             ->setOpcache(
-                $opcacheStatus || $opcacheConfiguration ?
                 (new Php\Opcache())
+                    ->setVersion(\phpversion('Zend Opcache') ?: null)
                     ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null)
                     ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'] ?? false)
                     ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'] ?? null)
@@ -227,7 +230,18 @@ class Info
                     ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'] ?? null)
                     ->setHits($opcacheStatus['opcache_statistics']['hits'] ?? null)
                     ->setMisses($opcacheStatus['opcache_statistics']['misses'] ?? null)
-                : null
+            )
+            ->setApcu(
+                (new Php\Apcu())
+                    ->setVersion(\phpversion('apcu') ?: null)
+                    ->setCachedVariables($apcuCacheInfo['num_entries'] ?? null)
+                    ->setConfigEnable(false !== \ini_get('apc.enabled') ? \ini_get('apc.enabled') : null)
+                    ->setConfigEnableCli(false !== \ini_get('apc.enable_cli') ? \ini_get('apc.enable_cli') : null)
+                    ->setEnabled($apcuCacheInfo && $apcuSmaInfo)
+                    ->setFreeMemory($apcuSmaInfo['avail_mem'] ?? null)
+                    ->setUsedMemory(isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? $apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem'] : null)
+                    ->setHits($apcuCacheInfo['num_hits'] ?? null)
+                    ->setMisses($apcuCacheInfo['num_misses'] ?? null)
             );
     }
 }

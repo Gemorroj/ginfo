@@ -2,8 +2,10 @@
 
 namespace Ginfo\Info\Php;
 
-class Opcache
+class Apcu
 {
+    /** @var string|null */
+    private $version;
     /** @var bool */
     private $enabled;
     /** @var bool|null */
@@ -11,22 +13,38 @@ class Opcache
     /** @var bool|null */
     private $configEnableCli;
     /** @var int|null */
+    private $hits;
+    /** @var int|null */
+    private $misses;
+    /** @var int|null */
     private $usedMemory;
     /** @var int|null */
     private $freeMemory;
     /** @var int|null */
-    private $cachedScripts;
-    /** @var int|null */
-    private $hits;
-    /** @var int|null */
-    private $misses;
-    /** @var string|null */
-    private $version;
+    private $cachedVariables;
+
+    /**
+     * @return string|null
+     */
+    public function getVersion(): ?string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @param string|null $version
+     * @return $this
+     */
+    public function setVersion(?string $version): self
+    {
+        $this->version = $version;
+        return $this;
+    }
 
     /**
      * @return bool
      */
-    public function getEnabled(): bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
@@ -80,6 +98,42 @@ class Opcache
     /**
      * @return int|null
      */
+    public function getHits(): ?int
+    {
+        return $this->hits;
+    }
+
+    /**
+     * @param int|null $hits
+     * @return $this
+     */
+    public function setHits(?int $hits): self
+    {
+        $this->hits = $hits;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getMisses(): ?int
+    {
+        return $this->misses;
+    }
+
+    /**
+     * @param int|null $misses
+     * @return $this
+     */
+    public function setMisses(?int $misses): self
+    {
+        $this->misses = $misses;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
     public function getUsedMemory(): ?int
     {
         return $this->usedMemory;
@@ -116,72 +170,18 @@ class Opcache
     /**
      * @return int|null
      */
-    public function getCachedScripts(): ?int
+    public function getCachedVariables(): ?int
     {
-        return $this->cachedScripts;
+        return $this->cachedVariables;
     }
 
     /**
-     * @param int|null $cachedScripts
+     * @param int|null $cachedVariables
      * @return $this
      */
-    public function setCachedScripts(?int $cachedScripts): self
+    public function setCachedVariables(?int $cachedVariables): self
     {
-        $this->cachedScripts = $cachedScripts;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getHits(): ?int
-    {
-        return $this->hits;
-    }
-
-    /**
-     * @param int|null $hits
-     * @return $this
-     */
-    public function setHits(?int $hits): self
-    {
-        $this->hits = $hits;
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getMisses(): ?int
-    {
-        return $this->misses;
-    }
-
-    /**
-     * @param int|null $misses
-     * @return $this
-     */
-    public function setMisses(?int $misses): self
-    {
-        $this->misses = $misses;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getVersion(): ?string
-    {
-        return $this->version;
-    }
-
-    /**
-     * @param string|null $version
-     * @return $this
-     */
-    public function setVersion(?string $version): self
-    {
-        $this->version = $version;
+        $this->cachedVariables = $cachedVariables;
         return $this;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Ginfo\Info;
 
+use Ginfo\Info\Php\Apcu;
 use Ginfo\Info\Php\Opcache;
 
 class Php
@@ -18,8 +19,10 @@ class Php
     private $includePath;
     /** @var string */
     private $sapiName;
-    /** @var Opcache|null */
+    /** @var Opcache */
     private $opcache;
+    /** @var Apcu */
+    private $apcu;
 
     /**
      * @return string
@@ -130,20 +133,38 @@ class Php
     }
 
     /**
-     * @return Opcache|null
+     * @return Opcache
      */
-    public function getOpcache(): ?Opcache
+    public function getOpcache(): Opcache
     {
         return $this->opcache;
     }
 
     /**
-     * @param Opcache|null $opcache
+     * @param Opcache $opcache
      * @return $this
      */
-    public function setOpcache(?Opcache $opcache): self
+    public function setOpcache(Opcache $opcache): self
     {
         $this->opcache = $opcache;
+        return $this;
+    }
+
+    /**
+     * @return Apcu
+     */
+    public function getApcu(): Apcu
+    {
+        return $this->apcu;
+    }
+
+    /**
+     * @param Apcu $apcu
+     * @return $this
+     */
+    public function setApcu(Apcu $apcu): self
+    {
+        $this->apcu = $apcu;
         return $this;
     }
 }
