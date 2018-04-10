@@ -1,5 +1,8 @@
 # Ginfo - Server stats library
 
+[![Build Status](https://secure.travis-ci.org/Gemorroj/ginfo.png?branch=master)](https://travis-ci.org/Gemorroj/ginfo)
+
+
 ### Ginfo is a:
  - Extensible, easy (composer) to use PHP Library to get extensive system stats programmatically from your PHP app
 
