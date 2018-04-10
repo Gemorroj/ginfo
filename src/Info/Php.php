@@ -2,6 +2,8 @@
 
 namespace Ginfo\Info;
 
+use Ginfo\Info\Php\Opcache;
+
 class Php
 {
     /** @var string */
@@ -16,6 +18,8 @@ class Php
     private $includePath;
     /** @var string */
     private $sapiName;
+    /** @var Opcache|null */
+    private $opcache;
 
     /**
      * @return string
@@ -122,6 +126,24 @@ class Php
     public function setSapiName(string $sapiName): self
     {
         $this->sapiName = $sapiName;
+        return $this;
+    }
+
+    /**
+     * @return Opcache|null
+     */
+    public function getOpcache(): ?Opcache
+    {
+        return $this->opcache;
+    }
+
+    /**
+     * @param Opcache|null $opcache
+     * @return $this
+     */
+    public function setOpcache(?Opcache $opcache): self
+    {
+        $this->opcache = $opcache;
         return $this;
     }
 }

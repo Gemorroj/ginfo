@@ -206,12 +206,28 @@ class Info
      */
     public function getPhp() : Php
     {
+        $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status() : null;
+        $opcacheConfiguration = \function_exists('opcache_get_configuration') ? \opcache_get_configuration() : null;
+
         return (new Php())
             ->setVersion(\PHP_VERSION)
             ->setExtensions(\get_loaded_extensions())
             ->setZendExtensions(\get_loaded_extensions(true))
             ->setIniFile(\php_ini_loaded_file())
             ->setIncludePath(\get_include_path())
-            ->setSapiName(\php_sapi_name());
+            ->setSapiName(\php_sapi_name())
+            ->setOpcache(
+                $opcacheStatus && $opcacheConfiguration ?
+                (new Php\Opcache())
+                    ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'])
+                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'])
+                    ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'])
+                    ->setEnabled($opcacheStatus['opcache_enabled'])
+                    ->setFreeMemory($opcacheStatus['memory_usage']['free_memory'])
+                    ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'])
+                    ->setHits($opcacheStatus['opcache_statistics']['hits'])
+                    ->setMisses($opcacheStatus['opcache_statistics']['misses'])
+                : null
+            );
     }
 }
