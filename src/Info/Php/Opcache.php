@@ -4,198 +4,162 @@ namespace Ginfo\Info\Php;
 
 class Opcache
 {
-/*
-Array (
-    [opcache_enabled] => 1
-    [cache_full] =>
-    [restart_pending] =>
-    [restart_in_progress] =>
-    [memory_usage] => Array (
-        [used_memory] => 18734928
-        [free_memory] => 115482800
-        [wasted_memory] => 0
-        [current_wasted_percentage] => 0
-    )
-    [interned_strings_usage] => Array (
-        [buffer_size] => 8388608
-        [used_memory] => 237000
-        [free_memory] => 8151608
-        [number_of_strings] => 5547
-    )
-    [opcache_statistics] => Array (
-        [num_cached_scripts] => 0
-        [num_cached_keys] => 0
-        [max_cached_keys] => 16229
-        [hits] => 0
-        [start_time] => 1523342080
-        [last_restart_time] => 0
-        [oom_restarts] => 0
-        [hash_restarts] => 0
-        [manual_restarts] => 0
-        [misses] => 1
-        [blacklist_misses] => 0
-        [blacklist_miss_ratio] => 0
-        [opcache_hit_rate] => 0
-    )
-)
- */
-
-    /** @var bool */
+    /** @var bool|null */
     private $enabled;
-    /** @var bool */
+    /** @var bool|null */
     private $configEnable;
-    /** @var bool */
+    /** @var bool|null */
     private $configEnableCli;
-    /** @var int */
+    /** @var int|null */
     private $usedMemory;
-    /** @var int */
+    /** @var int|null */
     private $freeMemory;
-    /** @var int */
+    /** @var int|null */
     private $cachedScripts;
-    /** @var int */
+    /** @var int|null */
     private $hits;
-    /** @var int */
+    /** @var int|null */
     private $misses;
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isEnabled(): bool
+    public function getEnabled(): ?bool
     {
         return $this->enabled;
     }
 
     /**
-     * @param bool $enabled
+     * @param bool|null $enabled
      * @return $this
      */
-    public function setEnabled(bool $enabled): self
+    public function setEnabled(?bool $enabled): self
     {
         $this->enabled = $enabled;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isConfigEnable(): bool
+    public function getConfigEnable(): ?bool
     {
         return $this->configEnable;
     }
 
     /**
-     * @param bool $configEnable
+     * @param bool|null $configEnable
      * @return $this
      */
-    public function setConfigEnable(bool $configEnable): self
+    public function setConfigEnable(?bool $configEnable): self
     {
         $this->configEnable = $configEnable;
         return $this;
     }
 
     /**
-     * @return bool
+     * @return bool|null
      */
-    public function isConfigEnableCli(): bool
+    public function getConfigEnableCli(): ?bool
     {
         return $this->configEnableCli;
     }
 
     /**
-     * @param bool $configEnableCli
+     * @param bool|null $configEnableCli
      * @return $this
      */
-    public function setConfigEnableCli(bool $configEnableCli): self
+    public function setConfigEnableCli(?bool $configEnableCli): self
     {
         $this->configEnableCli = $configEnableCli;
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getUsedMemory(): int
+    public function getUsedMemory(): ?int
     {
         return $this->usedMemory;
     }
 
     /**
-     * @param int $usedMemory
+     * @param int|null $usedMemory
      * @return $this
      */
-    public function setUsedMemory(int $usedMemory): self
+    public function setUsedMemory(?int $usedMemory): self
     {
         $this->usedMemory = $usedMemory;
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getFreeMemory(): int
+    public function getFreeMemory(): ?int
     {
         return $this->freeMemory;
     }
 
     /**
-     * @param int $freeMemory
+     * @param int|null $freeMemory
      * @return $this
      */
-    public function setFreeMemory(int $freeMemory): self
+    public function setFreeMemory(?int $freeMemory): self
     {
         $this->freeMemory = $freeMemory;
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getCachedScripts(): int
+    public function getCachedScripts(): ?int
     {
         return $this->cachedScripts;
     }
 
     /**
-     * @param int $cachedScripts
+     * @param int|null $cachedScripts
      * @return $this
      */
-    public function setCachedScripts(int $cachedScripts): self
+    public function setCachedScripts(?int $cachedScripts): self
     {
         $this->cachedScripts = $cachedScripts;
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getHits(): int
+    public function getHits(): ?int
     {
         return $this->hits;
     }
 
     /**
-     * @param int $hits
+     * @param int|null $hits
      * @return $this
      */
-    public function setHits(int $hits): self
+    public function setHits(?int $hits): self
     {
         $this->hits = $hits;
         return $this;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getMisses(): int
+    public function getMisses(): ?int
     {
         return $this->misses;
     }
 
     /**
-     * @param int $misses
+     * @param int|null $misses
      * @return $this
      */
-    public function setMisses(int $misses): self
+    public function setMisses(?int $misses): self
     {
         $this->misses = $misses;
         return $this;

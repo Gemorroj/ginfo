@@ -206,7 +206,7 @@ class Info
      */
     public function getPhp() : Php
     {
-        $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status() : null;
+        $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status(false) : null;
         $opcacheConfiguration = \function_exists('opcache_get_configuration') ? \opcache_get_configuration() : null;
 
         return (new Php())
@@ -217,16 +217,16 @@ class Info
             ->setIncludePath(\get_include_path())
             ->setSapiName(\php_sapi_name())
             ->setOpcache(
-                $opcacheStatus && $opcacheConfiguration ?
+                $opcacheStatus || $opcacheConfiguration ?
                 (new Php\Opcache())
-                    ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'])
-                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'])
-                    ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'])
-                    ->setEnabled($opcacheStatus['opcache_enabled'])
-                    ->setFreeMemory($opcacheStatus['memory_usage']['free_memory'])
-                    ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'])
-                    ->setHits($opcacheStatus['opcache_statistics']['hits'])
-                    ->setMisses($opcacheStatus['opcache_statistics']['misses'])
+                    ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null)
+                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'] ?? null)
+                    ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'] ?? null)
+                    ->setEnabled($opcacheStatus['opcache_enabled'] ?? null)
+                    ->setFreeMemory($opcacheStatus['memory_usage']['free_memory'] ?? null)
+                    ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'] ?? null)
+                    ->setHits($opcacheStatus['opcache_statistics']['hits'] ?? null)
+                    ->setMisses($opcacheStatus['opcache_statistics']['misses'] ?? null)
                 : null
             );
     }
