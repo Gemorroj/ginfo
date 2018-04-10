@@ -212,6 +212,8 @@ class Info
         $apcuCacheInfo = \function_exists('apcu_cache_info') ? @\apcu_cache_info(true) : null;
         $apcuSmaInfo = \function_exists('apcu_sma_info') ? @\apcu_sma_info(true) : null;
 
+        $disabledFunctions = \ini_get('disable_functions');
+
         return (new Php())
             ->setVersion(\PHP_VERSION)
             ->setExtensions(\get_loaded_extensions())
@@ -219,6 +221,7 @@ class Info
             ->setIniFile(\php_ini_loaded_file())
             ->setIncludePath(\get_include_path())
             ->setSapiName(\php_sapi_name())
+            ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
             ->setOpcache(
                 (new Php\Opcache())
                     ->setVersion(\phpversion('Zend Opcache') ?: null)

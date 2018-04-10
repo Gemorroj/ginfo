@@ -23,6 +23,8 @@ class Php
     private $opcache;
     /** @var Apcu */
     private $apcu;
+    /** @var string[] */
+    private $disabledFunctions;
 
     /**
      * @return string
@@ -165,6 +167,24 @@ class Php
     public function setApcu(Apcu $apcu): self
     {
         $this->apcu = $apcu;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDisabledFunctions(): array
+    {
+        return $this->disabledFunctions;
+    }
+
+    /**
+     * @param string[] $disabledFunctions
+     * @return $this
+     */
+    public function setDisabledFunctions(array $disabledFunctions): self
+    {
+        $this->disabledFunctions = $disabledFunctions;
         return $this;
     }
 }
