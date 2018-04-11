@@ -103,11 +103,12 @@ class Windows extends OS
             return null;
         }
 
-        // todo: swap and other
+        // todo: more swap info
         return (new Memory())
-            ->setTotal($info['TotalVisibleMemorySize'])
-            ->setFree($info['FreePhysicalMemory'])
-            ->setUsed($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']);
+            ->setSwapTotal($info['TotalSwapSpaceSize'] * 1000)
+            ->setTotal($info['TotalVisibleMemorySize'] * 1000)
+            ->setFree($info['FreePhysicalMemory'] * 1000)
+            ->setUsed(($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']) * 1000);
     }
 
 
