@@ -2,6 +2,8 @@
 
 namespace Ginfo;
 
+use Ginfo\Info\Service;
+
 class Common
 {
     /**
@@ -81,5 +83,19 @@ class Common
             }
         }
         return $tmp;
+    }
+
+    /**
+     * @param Service[] $services
+     * @param string $serviceName
+     * @return Service|null
+     */
+    public static function searchService(array $services, string $serviceName) : ?Service
+    {
+        $neededObject = \array_filter($services, function (Service $service) use ($serviceName) {
+            return $service->getName() === $serviceName;
+        });
+
+        return $neededObject ? $neededObject[0] : null;
     }
 }
