@@ -92,10 +92,14 @@ class Common
      */
     public static function searchService(array $services, string $serviceName) : ?Service
     {
-        $neededObject = \array_filter($services, function (Service $service) use ($serviceName) {
-            return $service->getName() === $serviceName;
-        });
+        $item = null;
+        foreach($services as $service) {
+            if ($service->getName() === $serviceName) {
+                $item = $service;
+                break;
+            }
+        }
 
-        return $neededObject ? $neededObject[0] : null;
+        return $item;
     }
 }
