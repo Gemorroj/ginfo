@@ -221,9 +221,11 @@ class Info
             ->setZendExtensions(\get_loaded_extensions(true))
             ->setIniFile(\php_ini_loaded_file())
             ->setIncludePath(\get_include_path())
-            ->setSapiName(\php_sapi_name())
+            ->setSapiName(\PHP_SAPI)
             ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
             ->setDisabledClasses($disabledClasses ? \explode(',', $disabledClasses) : [])
+            ->setRealpathCacheSizeUsed(\realpath_cache_size())
+            ->setRealpathCacheSizeAllowed(Common::convertHumanSizeToBytes(\ini_get('realpath_cache_size')))
             ->setOpcache(
                 (new Php\Opcache())
                     ->setVersion(\phpversion('Zend Opcache') ?: null)

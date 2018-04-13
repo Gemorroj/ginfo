@@ -102,4 +102,38 @@ class Common
 
         return $item;
     }
+
+
+    /**
+     * @param string $humanSize
+     * @return float|null
+     */
+    public static function convertHumanSizeToBytes(string $humanSize) : ?float
+    {
+        $lastLetter = \substr($humanSize, -1);
+        if (\is_numeric($lastLetter)) {
+            return (float)$humanSize;
+        }
+
+        $size = \substr($humanSize, 0, -1);
+        switch (\strtolower($lastLetter)) {
+            case 'b':
+                return (float)$size;
+                break;
+
+            case 'k':
+                return (float)$size * 1024;
+                break;
+
+            case 'm':
+                return (float)$size * 1024 * 1024;
+                break;
+
+            case 'g':
+                return (float)$size * 1024 * 1024 * 1024;
+                break;
+        }
+
+        return null;
+    }
 }

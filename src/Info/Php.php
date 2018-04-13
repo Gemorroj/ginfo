@@ -27,6 +27,10 @@ class Php
     private $disabledFunctions;
     /** @var string[] */
     private $disabledClasses;
+    /** @var float */
+    private $realpathCacheSizeUsed;
+    /** @var float|null */
+    private $realpathCacheSizeAllowed;
 
     /**
      * @return string
@@ -205,6 +209,42 @@ class Php
     public function setDisabledClasses(array $disabledClasses): self
     {
         $this->disabledClasses = $disabledClasses;
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getRealpathCacheSizeUsed(): float
+    {
+        return $this->realpathCacheSizeUsed;
+    }
+
+    /**
+     * @param float $realpathCacheSizeUsed
+     * @return $this
+     */
+    public function setRealpathCacheSizeUsed(float $realpathCacheSizeUsed): self
+    {
+        $this->realpathCacheSizeUsed = $realpathCacheSizeUsed;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getRealpathCacheSizeAllowed(): ?float
+    {
+        return $this->realpathCacheSizeAllowed;
+    }
+
+    /**
+     * @param float|null $realpathCacheSizeAllowed
+     * @return $this
+     */
+    public function setRealpathCacheSizeAllowed(?float $realpathCacheSizeAllowed): self
+    {
+        $this->realpathCacheSizeAllowed = $realpathCacheSizeAllowed;
         return $this;
     }
 }
