@@ -18,6 +18,8 @@ class Php
     /** @var string */
     private $includePath;
     /** @var string */
+    private $openBasedir;
+    /** @var string */
     private $sapiName;
     /** @var Opcache */
     private $opcache;
@@ -31,6 +33,46 @@ class Php
     private $realpathCacheSizeUsed;
     /** @var float|null */
     private $realpathCacheSizeAllowed;
+    /** @var bool */
+    private $zendThreadSafe;
+    /** @var int */
+    private $memoryLimit;
+
+    /**
+     * @return int
+     */
+    public function getMemoryLimit(): int
+    {
+        return $this->memoryLimit;
+    }
+
+    /**
+     * @param int $memoryLimit
+     * @return $this
+     */
+    public function setMemoryLimit(int $memoryLimit): self
+    {
+        $this->memoryLimit = $memoryLimit;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isZendThreadSafe(): bool
+    {
+        return $this->zendThreadSafe;
+    }
+
+    /**
+     * @param bool $zendThreadSafe
+     * @return $this
+     */
+    public function setZendThreadSafe(bool $zendThreadSafe): self
+    {
+        $this->zendThreadSafe = $zendThreadSafe;
+        return $this;
+    }
 
     /**
      * @return string
@@ -119,6 +161,24 @@ class Php
     public function setIncludePath(string $includePath): self
     {
         $this->includePath = $includePath;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOpenBasedir(): string
+    {
+        return $this->openBasedir;
+    }
+
+    /**
+     * @param string $openBasedir
+     * @return $this
+     */
+    public function setOpenBasedir(string $openBasedir): self
+    {
+        $this->openBasedir = $openBasedir;
         return $this;
     }
 

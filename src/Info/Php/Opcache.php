@@ -22,6 +22,136 @@ class Opcache
     private $misses;
     /** @var string|null */
     private $version;
+    /** @var int|null */
+    private $internedStringsUsedMemory;
+    /** @var int|null */
+    private $internedStringsFreeMemory;
+    /** @var int|null */
+    private $cachedInternedStrings;
+
+    /**
+     * @return int|null
+     */
+    public function getInternedStringsUsedMemory(): ?int
+    {
+        return $this->internedStringsUsedMemory;
+    }
+
+    /**
+     * @param int|null $internedStringsUsedMemory
+     * @return $this
+     */
+    public function setInternedStringsUsedMemory(?int $internedStringsUsedMemory): self
+    {
+        $this->internedStringsUsedMemory = $internedStringsUsedMemory;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getInternedStringsFreeMemory(): ?int
+    {
+        return $this->internedStringsFreeMemory;
+    }
+
+    /**
+     * @param int|null $internedStringsFreeMemory
+     * @return $this
+     */
+    public function setInternedStringsFreeMemory(?int $internedStringsFreeMemory): self
+    {
+        $this->internedStringsFreeMemory = $internedStringsFreeMemory;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCachedInternedStrings(): ?int
+    {
+        return $this->cachedInternedStrings;
+    }
+
+    /**
+     * @param int|null $cachedInternedStrings
+     * @return $this
+     */
+    public function setCachedInternedStrings(?int $cachedInternedStrings): self
+    {
+        $this->cachedInternedStrings = $cachedInternedStrings;
+        return $this;
+    }
+
+    /**
+     * @var int|null
+     * number of restarts because of out of memory
+     */
+    private $oomRestarts;
+    /**
+     * @var int|null
+     * number of restarts because of hash overflow
+     */
+    private $hashRestarts;
+    /**
+     * @var int|null
+     * number of restarts scheduled by opcache_reset()
+     */
+    private $manualRestarts;
+
+    /**
+     * @return int|null
+     */
+    public function getOomRestarts(): ?int
+    {
+        return $this->oomRestarts;
+    }
+
+    /**
+     * @param int|null $oomRestarts
+     * @return $this
+     */
+    public function setOomRestarts(?int $oomRestarts): self
+    {
+        $this->oomRestarts = $oomRestarts;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getHashRestarts(): ?int
+    {
+        return $this->hashRestarts;
+    }
+
+    /**
+     * @param int|null $hashRestarts
+     * @return $this
+     */
+    public function setHashRestarts(?int $hashRestarts): self
+    {
+        $this->hashRestarts = $hashRestarts;
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getManualRestarts(): ?int
+    {
+        return $this->manualRestarts;
+    }
+
+    /**
+     * @param int|null $manualRestarts
+     * @return $this
+     */
+    public function setManualRestarts(?int $manualRestarts): self
+    {
+        $this->manualRestarts = $manualRestarts;
+        return $this;
+    }
 
     /**
      * @return bool
