@@ -120,7 +120,7 @@ class Linux extends OS
                     // todo: mips, arm
                     $out[$block['physical id']]->setArchitecture('x86'); // default x86
                     foreach ($out[$block['physical id']]->getFlags() as $flag) {
-                        if ('lm' === $flag || '_lm' === \substr($flag, -3)) { // lm, lahf_lm
+                        if ('lm' === $flag || '_lm' === \mb_substr($flag, -3)) { // lm, lahf_lm
                             $out[$block['physical id']]->setArchitecture('x64');
                             break;
                         }
@@ -136,7 +136,7 @@ class Linux extends OS
     }
 
 
-    public function getUptime(): ?int
+    public function getUptime(): ?float
     {
         $uptime = Common::getContents('/proc/uptime');
 
@@ -178,7 +178,7 @@ class Linux extends OS
                 $reads = null;
                 $writes = null;
             } else {
-                list(, $reads, $writes) = $statMatches;
+                [, $reads, $writes] = $statMatches;
             }
 
             $drives[] = (new Drive())
@@ -414,7 +414,7 @@ class Linux extends OS
                 $type = 'IPv6 in IPv4';
             } else {
                 $typeContents = \mb_strtoupper(Common::getContents($path . '/device/modalias'));
-                list($typeMatch) = \explode(':', $typeContents, 2);
+                [$typeMatch] = \explode(':', $typeContents, 2);
 
                 if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                     $type = 'Ethernet (' . $typeMatch . ')';
@@ -721,9 +721,9 @@ class Linux extends OS
         // dell latitude e6500 or hp z260
         if ($product && \mb_strpos($name, $product) === false && \mb_strpos($product, 'Filled') === false) {
             return $product . ' (' . $infoStr . ')';
-        } else {
+        }  
             return $infoStr;
-        }
+        
     }
 
 

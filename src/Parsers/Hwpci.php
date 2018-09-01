@@ -56,8 +56,8 @@ class Hwpci implements Parser
         foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($fDevice = Common::getContents($path . '/device', '')) && ($fVend = Common::getContents($path . '/vendor', '')) && $fDevice && $fVend) {
-                list(, $vId) = \explode('x', $fVend, 2);
-                list(, $dId) = \explode('x', $fDevice, 2);
+                [, $vId] = \explode('x', $fVend, 2);
+                [, $dId] = \explode('x', $fDevice, 2);
                 $this->entries[$vId][$dId] = 1;
             } // Try uevent nextly
             elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
@@ -105,8 +105,8 @@ class Hwpci implements Parser
 
     /**
      * @param string $mode
-     * @return array|null
      * @throws \InvalidArgumentException
+     * @return array|null
      */
     public static function work(string $mode = Hwpci::MODE_PCI) : ?array
     {

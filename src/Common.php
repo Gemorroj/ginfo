@@ -35,7 +35,11 @@ class Common
     public static function getContents(string $file, $default = null)
     {
         if (\file_exists($file) && \is_readable($file)) {
-            return \trim(\file_get_contents($file));
+            $data = \file_get_contents($file);
+            if (false === $data) {
+                return $default;
+            }
+            return \trim($data);
         }
         return $default;
     }
@@ -78,7 +82,7 @@ class Common
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {
             if (false !== \mb_strpos($line, $delimiter)) {
-                @list($key, $value) = \explode($delimiter, $line, 2);
+                [$key, $value] = \explode($delimiter, $line, 2);
                 $tmp[\trim($key)] = \trim($value);
             }
         }
@@ -110,13 +114,13 @@ class Common
      */
     public static function convertHumanSizeToBytes(string $humanSize) : ?float
     {
-        $lastLetter = \substr($humanSize, -1);
+        $lastLetter = \mb_substr($humanSize, -1);
         if (\is_numeric($lastLetter)) {
             return (float)$humanSize;
         }
 
-        $size = \substr($humanSize, 0, -1);
-        switch (\strtolower($lastLetter)) {
+        $size = \mb_substr($humanSize, 0, -1);
+        switch (\mb_strtolower($lastLetter)) {
             case 'b':
                 return (float)$size;
                 break;

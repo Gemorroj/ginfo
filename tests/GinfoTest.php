@@ -2,8 +2,8 @@
 
 namespace Ginfo\Tests;
 
-use Ginfo\Info;
 use Ginfo\Ginfo;
+use Ginfo\Info;
 
 class GinfoTest extends \PHPUnit\Framework\TestCase
 {

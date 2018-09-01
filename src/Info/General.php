@@ -106,7 +106,7 @@ class General
     }
 
     /**
-     * @param \DateInterval|int|null $uptime
+     * @param \DateInterval|float|null $uptime
      * @return $this
      */
     public function setUptime($uptime): self
@@ -184,7 +184,7 @@ class General
     /**
      * @return string|null
      */
-    public function getModel(): string
+    public function getModel(): ?string
     {
         return $this->model;
     }

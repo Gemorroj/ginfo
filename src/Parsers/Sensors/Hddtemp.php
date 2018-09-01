@@ -52,7 +52,7 @@ class Hddtemp implements Parser
 
         $return = [];
         foreach ($drives as $drive) {
-            list($path, $name, $temp, $unit) = \explode('|', \trim($drive));
+            [$path, $name, $temp, $unit] = \explode('|', \trim($drive));
 
             // Ignore garbled output from SSDs that hddtemp cant parse
             if (\mb_strpos($temp, 'UNK') !== false) {

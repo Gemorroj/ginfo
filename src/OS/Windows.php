@@ -88,7 +88,7 @@ class Windows extends OS
     public function getKernel() : string
     {
         $info = $this->getInfo('OperatingSystem');
-        if (isset($info['Version']) && isset($info['BuildNumber'])) {
+        if (isset($info['Version'], $info['BuildNumber'])  ) {
             return $info['Version'] . ' Build ' . $info['BuildNumber'];
         }
 
@@ -173,7 +173,7 @@ class Windows extends OS
         return null; //todo
     }
 
-    public function getUptime() : ?int
+    public function getUptime() : ?float
     {
         $info = $this->getInfo('OperatingSystem');
         if (null === $info) {
@@ -181,7 +181,7 @@ class Windows extends OS
         }
 
         // custom windows date format ¯\_(ツ)_/¯
-        list($dateTime, $operand, $modifyMinutes) = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
+        [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
         $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
@@ -221,7 +221,7 @@ class Windows extends OS
                 })($driveInfo['Index']))
                 ->setName($driveInfo['Caption'])
                 ->setReads(null)
-                ->setVendor(false !== \strpos($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
+                ->setVendor(false !== \mb_strpos($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
                 ->setWrites(null);
         }
 

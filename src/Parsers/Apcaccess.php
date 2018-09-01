@@ -18,7 +18,7 @@ class Apcaccess implements Parser
         }
 
         $result = \trim($process->getOutput());
-        if ('Error' === \substr($result, 0, 5)) {
+        if ('Error' === \mb_substr($result, 0, 5)) {
             return null;
         }
 

@@ -32,8 +32,8 @@ class Free implements Parser
         $memStr = \trim(\explode(':', $arr[0], 2)[1]);
         $swapStr = \trim(\explode(':', $arr[1], 2)[1]);
 
-        list($memTotal, $memUsed, $memFree, $memShared, $memBuffers, $memCached, $memAvailable) = \preg_split('/\s+/', $memStr);
-        list($swapTotal, $swapUsed, $swapFree) = \preg_split('/\s+/', $swapStr);
+        [$memTotal, $memUsed, $memFree, $memShared, $memBuffers, $memCached, $memAvailable] = \preg_split('/\s+/', $memStr);
+        [$swapTotal, $swapUsed, $swapFree] = \preg_split('/\s+/', $swapStr);
 
         return [
             'total' => $memTotal,

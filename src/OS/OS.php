@@ -49,117 +49,117 @@ abstract class OS
     /**
      * @return string the OS' name.
      */
-    public abstract function getOsName() : string;
+    abstract public function getOsName() : string;
 
     /**
-     * @return int|null seconds
+     * @return float|null seconds
      */
-    public abstract function getUptime() : ?int;
+    abstract public function getUptime() : ?float;
 
     /**
      * @return string|null
      */
-    public abstract function getVirtualization() : ?string;
+    abstract public function getVirtualization() : ?string;
 
     /**
      * @return Cpu|null
      */
-    public abstract function getCpu() : ?Cpu;
+    abstract public function getCpu() : ?Cpu;
 
     /**
      * @return float[]|null
      */
-    public abstract function getLoad() : ?array;
+    abstract public function getLoad() : ?array;
 
     /**
      * @return Memory|null
      */
-    public abstract function getMemory() : ?Memory;
+    abstract public function getMemory() : ?Memory;
 
     /**
      * @return SoundCard[]|null
      */
-    public abstract function getSoundCards() : ?array;
+    abstract public function getSoundCards() : ?array;
 
     /**
      * @return string[]|null
      */
-    public abstract function getLoggedUsers() : ?array;
+    abstract public function getLoggedUsers() : ?array;
 
     /**
      * Get brand/name of motherboard/server
      *
      * @return string|null
      */
-    public abstract function getModel() : ?string;
+    abstract public function getModel() : ?string;
 
     /**
      * @return Usb[]|null
      */
-    public abstract function getUsb() : ?array;
+    abstract public function getUsb() : ?array;
 
     /**
      * @return Pci[]|null
      */
-    public abstract function getPci() : ?array;
+    abstract public function getPci() : ?array;
 
     /**
      * @return Network[]|null
      */
-    public abstract function getNetwork() : ?array;
+    abstract public function getNetwork() : ?array;
 
     /**
      * @return Drive[]|null
      */
-    public abstract function getDrives() : ?array;
+    abstract public function getDrives() : ?array;
 
     /**
      * @return Mount[]|null
      */
-    public abstract function getMounts() : ?array;
+    abstract public function getMounts() : ?array;
 
     /**
      * @return Raid[]|null
      */
-    public abstract function getRaids() : ?array;
+    abstract public function getRaids() : ?array;
 
     /**
      * @return Battery[]|null
      */
-    public abstract function getBattery() : ?array;
+    abstract public function getBattery() : ?array;
 
     /**
      * @return Sensor[]|null
      */
-    public abstract function getSensors() : ?array;
+    abstract public function getSensors() : ?array;
 
     /**
      * @return Process[]|null
      */
-    public abstract function getProcesses() : ?array;
+    abstract public function getProcesses() : ?array;
 
     /**
      * @return Service[]|null
      */
-    public abstract function getServices() : ?array;
+    abstract public function getServices() : ?array;
 
     /**
      * @return Ups|null
      */
-    public abstract function getUps() : ?Ups;
+    abstract public function getUps() : ?Ups;
 
     /**
      * @return Printer[]|null
      */
-    public abstract function getPrinters() : ?array;
+    abstract public function getPrinters() : ?array;
 
     /**
      * @return Samba|null
      */
-    public abstract function getSamba() : ?Samba;
+    abstract public function getSamba() : ?Samba;
 
     /**
      * @return Selinux|null
      */
-    public abstract function getSelinux() : ?Selinux;
+    abstract public function getSelinux() : ?Selinux;
 }

@@ -33,7 +33,7 @@ class Systemd implements Parser
         foreach ($lines as $line) {
             $line = \ltrim($line, '●');
             $line = \trim($line);
-            list($unit, $load, $active, $sub, $description) = \preg_split('/\s+/', $line, 5);
+            [$unit, $load, $active, $sub, $description] = \preg_split('/\s+/', $line, 5);
 
             $out[] = [
                 'name' => $unit,
