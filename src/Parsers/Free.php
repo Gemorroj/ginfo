@@ -16,7 +16,7 @@ class Free implements Parser
 
     public static function work(): ?array
     {
-        $process = new Process('free -bw', null, ['LANG' => 'C']);
+        $process = new Process(['free', '-bw'], null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {

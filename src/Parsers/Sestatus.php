@@ -17,7 +17,7 @@ class Sestatus implements Parser
 
     public static function work(): ?array
     {
-        $process = new Process('sestatus', null, ['LANG' => 'C']);
+        $process = new Process(['sestatus'], null, ['LANG' => 'C']);
         $process->run();
 
         if (!$process->isSuccessful()) {

@@ -462,40 +462,6 @@ class Windows extends OS
             return null;
         }
 
-        $displayState = function ($numberState) {
-            switch ($numberState) {
-                case 1:
-                    return 'other';
-                    break;
-                case 2:
-                    return 'ready';
-                    break;
-                case 3:
-                    return 'running';
-                    break;
-                case 4:
-                    return 'blocked';
-                    break;
-                case 5:
-                    return 'suspended blocked';
-                    break;
-                case 6:
-                    return 'suspended ready';
-                    break;
-                case 7:
-                    return 'terminated';
-                    break;
-                case 8:
-                    return 'stopped';
-                    break;
-                case 9:
-                    return 'growing';
-                    break;
-            }
-
-            return null;
-        };
-
         $result = [];
         foreach ($info as $proc) {
             $result[] = (new Process())

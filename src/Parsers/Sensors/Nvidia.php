@@ -14,7 +14,7 @@ class Nvidia implements Parser
 {
     public static function work(): ?array
     {
-        $process = new Process('nvidia-smi -L', null, ['LANG' => 'C']);
+        $process = new Process(['nvidia-smi', '-L'], null, ['LANG' => 'C']);
         $process->run();
         if (!$process->isSuccessful()) {
             return null;
@@ -31,7 +31,7 @@ class Nvidia implements Parser
             $id = $card[1];
             $name = \trim($card[2]);
 
-            $processCard = new Process('nvidia-smi dmon -s p -c 1 -i '.$id, null, ['LANG' => 'C']);
+            $processCard = new Process(['nvidia-smi', 'dmon', '-s', 'p', '-c', '1', '-i', $id], null, ['LANG' => 'C']);
             $processCard->run();
             if (!$processCard->isSuccessful()) {
                 continue;
