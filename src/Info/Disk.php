@@ -25,11 +25,13 @@ class Disk
 
     /**
      * @param Mount[] $mounts
+     *
      * @return $this
      */
     public function setMounts(array $mounts): self
     {
         $this->mounts = $mounts;
+
         return $this;
     }
 
@@ -43,11 +45,13 @@ class Disk
 
     /**
      * @param Drive[] $drives
+     *
      * @return $this
      */
     public function setDrives(array $drives): self
     {
         $this->drives = $drives;
+
         return $this;
     }
 
@@ -61,11 +65,13 @@ class Disk
 
     /**
      * @param Raid[]|null $raids
+     *
      * @return $this
      */
     public function setRaids(?array $raids): self
     {
         $this->raids = $raids;
+
         return $this;
     }
 }

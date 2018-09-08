@@ -21,28 +21,28 @@ class Hwpci implements Parser
     /**
      * @param string $file
      */
-    final private function __construct($file)
+    private function __construct($file)
     {
         $this->file = $file;
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
     /**
      * Get the USB ids from /sys.
      */
-    private function fetchUsbIdsLinux() : void
+    private function fetchUsbIdsLinux(): void
     {
         foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
             // First try uevent
-            if (\is_readable($path . '/uevent') &&
-                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
+            if (\is_readable($path.'/uevent') &&
+                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
                 $this->entries[\str_pad($match[1], 4, '0', \STR_PAD_LEFT)][\str_pad($match[2], 4, '0', \STR_PAD_LEFT)] = 1;
-            } // And next modalias 
-            elseif (\is_readable($path . '/modalias') &&
-                \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
+            } // And next modalias
+            elseif (\is_readable($path.'/modalias') &&
+                \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
                 $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
             }
         }
@@ -51,19 +51,19 @@ class Hwpci implements Parser
     /**
      * Get the PCI ids from /sys.
      */
-    private function fetchPciIdsLinux() : void
+    private function fetchPciIdsLinux(): void
     {
         foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($fDevice = Common::getContents($path . '/device', '')) && ($fVend = Common::getContents($path . '/vendor', '')) && $fDevice && $fVend) {
+            if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', '')) && $fDevice && $fVend) {
                 [, $vId] = \explode('x', $fVend, 2);
                 [, $dId] = \explode('x', $fDevice, 2);
                 $this->entries[$vId][$dId] = 1;
             } // Try uevent nextly
-            elseif (\is_readable($path . '/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path . '/uevent')), $match)) {
+            elseif (\is_readable($path.'/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
                 $this->entries[$match[1]][$match[2]] = 1;
             } // Now for modalias
-            elseif (\is_readable($path . '/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path . '/modalias'), $match)) {
+            elseif (\is_readable($path.'/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
                 $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
             }
         }
@@ -72,12 +72,12 @@ class Hwpci implements Parser
     /**
      * Use the pci.ids file to translate the ids to names.
      */
-    private function fetchPciNames() : void
+    private function fetchPciNames(): void
     {
-        for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
-            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
+        for ($v = false, $file = \fopen($this->file, 'rb'); false !== $file && $contents = \fgets($file);) {
+            if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
-            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
+            } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {
                 if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
                     $this->devices[$v[1]][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
                 }
@@ -89,12 +89,12 @@ class Hwpci implements Parser
     /**
      * Use the usb.ids file to translate the ids to names.
      */
-    private function fetchUsbNames() : void
+    private function fetchUsbNames(): void
     {
-        for ($v = false, $file = \fopen($this->file, 'r'); $file !== false && $contents = \fgets($file);) {
-            if (\preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch) === 1) {
+        for ($v = false, $file = \fopen($this->file, 'rb'); false !== $file && $contents = \fgets($file);) {
+            if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
-            } elseif (\preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch) === 1) {
+            } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {
                 if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
                     $this->devices[\mb_strtolower($v[1])][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
                 }
@@ -105,12 +105,14 @@ class Hwpci implements Parser
 
     /**
      * @param string $mode
+     *
      * @throws \InvalidArgumentException
+     *
      * @return array|null
      */
-    public static function work(string $mode = Hwpci::MODE_PCI) : ?array
+    public static function work(string $mode = self::MODE_PCI): ?array
     {
-        if (Hwpci::MODE_PCI === $mode) {
+        if (self::MODE_PCI === $mode) {
             $pciIds = Common::locateActualPath([
                 '/usr/share/misc/pci.ids',    // debian/ubuntu
                 '/usr/share/pci.ids',        // opensuse
@@ -129,7 +131,7 @@ class Hwpci implements Parser
             return $obj->result();
         }
 
-        if (Hwpci::MODE_USB === $mode) {
+        if (self::MODE_USB === $mode) {
             $usbIds = Common::locateActualPath([
                 '/usr/share/misc/usb.ids',    // debian/ubuntu
                 '/usr/share/usb.ids',        // opensuse
@@ -147,7 +149,7 @@ class Hwpci implements Parser
             return $obj->result();
         }
 
-        throw new \InvalidArgumentException('Unknown mode "' . $mode . '"');
+        throw new \InvalidArgumentException('Unknown mode "'.$mode.'"');
     }
 
     /**
@@ -155,7 +157,7 @@ class Hwpci implements Parser
      *
      * @return array
      */
-    private function result() : array
+    private function result(): array
     {
         $result = [];
 

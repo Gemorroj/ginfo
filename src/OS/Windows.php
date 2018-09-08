@@ -29,12 +29,13 @@ class Windows extends OS
 
     /**
      * Windows constructor.
+     *
      * @throws FatalException
      */
     public function __construct()
     {
         try {
-            $powershellDirectory = \getenv('SystemRoot') . '\\System32\\WindowsPowerShell\\v1.0';
+            $powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
             if (!\is_dir($powershellDirectory)) {
                 $powershellDirectory = null;
             }
@@ -47,15 +48,16 @@ class Windows extends OS
 
     /**
      * @param string $name
+     *
      * @return array|null
      */
-    private function getInfo(string $name) : ?array
+    private function getInfo(string $name): ?array
     {
         if (isset($this->infoCache[$name])) {
             return $this->infoCache[$name];
         }
 
-        $process = $this->process->setCommandLine('chcp 65001 | powershell -file ' . __DIR__ . '/../../bin/windows/' . $name . '.ps1');
+        $process = $this->process->setCommandLine('chcp 65001 | powershell -file '.__DIR__.'/../../bin/windows/'.$name.'.ps1');
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -67,14 +69,12 @@ class Windows extends OS
         return $this->infoCache[$name];
     }
 
-
-    public function getLoggedUsers() : ?array
+    public function getLoggedUsers(): ?array
     {
         return $this->getInfo('LoggedOnUser');
     }
 
-
-    public function getOsName() : string
+    public function getOsName(): string
     {
         $info = $this->getInfo('OperatingSystem');
         if (isset($info['Caption'])) {
@@ -84,19 +84,17 @@ class Windows extends OS
         return \php_uname('s');
     }
 
-
-    public function getKernel() : string
+    public function getKernel(): string
     {
         $info = $this->getInfo('OperatingSystem');
-        if (isset($info['Version'], $info['BuildNumber'])  ) {
-            return $info['Version'] . ' Build ' . $info['BuildNumber'];
+        if (isset($info['Version'], $info['BuildNumber'])) {
+            return $info['Version'].' Build '.$info['BuildNumber'];
         }
 
         return parent::getKernel();
     }
 
-
-    public function getMemory() : ?Memory
+    public function getMemory(): ?Memory
     {
         $info = $this->getInfo('OperatingSystem');
         if (null === $info) {
@@ -111,8 +109,7 @@ class Windows extends OS
             ->setUsed(($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']) * 1000);
     }
 
-
-    public function getCpu() : ?Cpu
+    public function getCpu(): ?Cpu
     {
         $cpuInfo = $this->getInfo('Processor');
         if (null === $cpuInfo) {
@@ -155,6 +152,7 @@ class Windows extends OS
                             return 'x64';
                             break;
                     }
+
                     return null;
                 })())
                 ->setFlags(null); //todo
@@ -168,12 +166,12 @@ class Windows extends OS
             ->setProcessors($processors);
     }
 
-    public function getLoad() : ?array
+    public function getLoad(): ?array
     {
         return null; //todo
     }
 
-    public function getUptime() : ?float
+    public function getUptime(): ?float
     {
         $info = $this->getInfo('OperatingSystem');
         if (null === $info) {
@@ -189,8 +187,7 @@ class Windows extends OS
         return \time() - $booted->getTimestamp();
     }
 
-
-    public function getDrives() : ?array
+    public function getDrives(): ?array
     {
         $infoDiskPartition = $this->getInfo('DiskPartition');
         if (null === $infoDiskPartition) {
@@ -209,14 +206,14 @@ class Windows extends OS
         foreach ($infoDiskPartition as $partitionInfo) {
             $partitions[$partitionInfo['DiskIndex']][] = (new Drive\Partition())
                 ->setSize($partitionInfo['Size'])
-                ->setName($partitionInfo['DeviceID'] . ' (' . $partitionInfo['Type'] . ')');
+                ->setName($partitionInfo['DeviceID'].' ('.$partitionInfo['Type'].')');
         }
 
         foreach ($infoDiskDrive as $driveInfo) {
             $drives[] = (new Drive())
                 ->setSize($driveInfo['Size'])
                 ->setDevice($driveInfo['DeviceID'])
-                ->setPartitions((function (string $namePartition) use ($partitions) : ?array {
+                ->setPartitions((function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($driveInfo['Index']))
                 ->setName($driveInfo['Caption'])
@@ -228,7 +225,7 @@ class Windows extends OS
         return $drives;
     }
 
-    public function getMounts() : ?array
+    public function getMounts(): ?array
     {
         $info = $this->getInfo('Volume');
         if (null === $info) {
@@ -239,7 +236,7 @@ class Windows extends OS
         foreach ($info as $volume) {
             $volumes[] = (new Mount())
                 ->setSize($volume['Capacity'])
-                ->setDevice((function () use ($volume) : string {
+                ->setDevice((function () use ($volume): string {
                     $name = $volume['Label'];
                     switch ($volume['DriveType']) {
                         case 2:
@@ -258,12 +255,13 @@ class Windows extends OS
                             $name .= ' (RAM disk)';
                             break;
                     }
+
                     return $name;
                 })())
                 ->setType($volume['FileSystem'])
                 ->setFree($volume['FreeSpace'])
                 ->setMount($volume['Caption'])
-                ->setOptions((function () use ($volume) : array {
+                ->setOptions((function () use ($volume): array {
                     $options = [];
 
                     if ($volume['Automount']) {
@@ -278,6 +276,7 @@ class Windows extends OS
                     if ($volume['Compressed']) {
                         $options[] = 'compressed';
                     }
+
                     return $options;
                 })())
                 ->setUsed($volume['Capacity'] - $volume['FreeSpace'])
@@ -288,12 +287,12 @@ class Windows extends OS
         return $volumes;
     }
 
-    public function getRaids() : ?array
+    public function getRaids(): ?array
     {
         return null; //todo
     }
 
-    public function getPci() : ?array
+    public function getPci(): ?array
     {
         $info = $this->getInfo('PnPEntity');
         if (null === $info) {
@@ -303,7 +302,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (($type !== 'PCI') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
+            if (('PCI' !== $type) || (empty($pnpDev['Caption']) || '(' == \mb_substr($pnpDev['Manufacturer'], 0, 1))) {
                 continue;
             }
 
@@ -315,8 +314,7 @@ class Windows extends OS
         return $devs;
     }
 
-
-    public function getUsb() : ?array
+    public function getUsb(): ?array
     {
         $info = $this->getInfo('PnPEntity');
         if (null === $info) {
@@ -326,7 +324,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (($type !== 'USB') || (empty($pnpDev['Caption']) || \mb_substr($pnpDev['Manufacturer'], 0, 1) == '(')) {
+            if (('USB' !== $type) || (empty($pnpDev['Caption']) || '(' == \mb_substr($pnpDev['Manufacturer'], 0, 1))) {
                 continue;
             }
 
@@ -338,8 +336,7 @@ class Windows extends OS
         return $devs;
     }
 
-
-    public function getNetwork() : ?array
+    public function getNetwork(): ?array
     {
         $perfRawData = $this->getInfo('PerfRawData_Tcpip_NetworkInterface');
         if (null === $perfRawData) {
@@ -400,13 +397,12 @@ class Windows extends OS
                             return 'credentials required';
                             break;
                     }
+
                     return null;
                 })());
 
-
-
             $canonName = \preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
-            $isatapName = 'isatap.' . $net['GUID'];
+            $isatapName = 'isatap.'.$net['GUID'];
 
             foreach ($perfRawData as $netSpeed) {
                 if ($netSpeed['Name'] === $canonName || $netSpeed['Name'] === $isatapName) {
@@ -431,17 +427,17 @@ class Windows extends OS
         return $return;
     }
 
-    public function getBattery() : ?array
+    public function getBattery(): ?array
     {
         return null; //todo
     }
 
-    public function getSensors() : ?array
+    public function getSensors(): ?array
     {
         return null; //todo
     }
 
-    public function getSoundCards() : ?array
+    public function getSoundCards(): ?array
     {
         $info = $this->getInfo('SoundDevice');
         if (null === $info) {
@@ -459,8 +455,7 @@ class Windows extends OS
         return $cards;
     }
 
-
-    public function getProcesses() : ?array
+    public function getProcesses(): ?array
     {
         $info = $this->getInfo('Process');
         if (null === $info) {
@@ -507,7 +502,7 @@ class Windows extends OS
                 ->setName($proc['Name'])
                 ->setCommandLine($proc['CommandLine'])
                 ->setThreads($proc['ThreadCount'])
-                ->setState((function () use ($proc) : ?string{
+                ->setState((function () use ($proc): ?string {
                     switch ($proc['ExecutionState']) {
                         case 1:
                             return 'other';
@@ -551,7 +546,7 @@ class Windows extends OS
         return $result;
     }
 
-    public function getServices() : ?array
+    public function getServices(): ?array
     {
         $services = $this->getInfo('Service');
         if (null === $services) {
@@ -571,38 +566,37 @@ class Windows extends OS
         return $return;
     }
 
-
-    public function getModel() : ?string
+    public function getModel(): ?string
     {
         $info = $this->getInfo('ComputerSystem');
         if (null === $info) {
             return null;
         }
 
-        return $info['Manufacturer'] . ' (' . $info['Model'] . ')';
+        return $info['Manufacturer'].' ('.$info['Model'].')';
     }
 
-    public function getVirtualization() : ?string
+    public function getVirtualization(): ?string
     {
         return null; // TODO
     }
 
-    public function getUps() : ?Ups
+    public function getUps(): ?Ups
     {
         return null; //todo
     }
 
-    public function getPrinters() : ?array
+    public function getPrinters(): ?array
     {
         return null; //todo
     }
 
-    public function getSamba() : ?Samba
+    public function getSamba(): ?Samba
     {
         return null; //todo
     }
 
-    public function getSelinux() : ?Selinux
+    public function getSelinux(): ?Selinux
     {
         return null;
     }

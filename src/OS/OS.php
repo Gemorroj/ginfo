@@ -25,7 +25,7 @@ abstract class OS
     /**
      * @return string the arch OS
      */
-    public function getArchitecture() : string
+    public function getArchitecture(): string
     {
         return \php_uname('m');
     }
@@ -33,133 +33,133 @@ abstract class OS
     /**
      * @return string the OS kernel. A few OS classes override this.
      */
-    public function getKernel() : string
+    public function getKernel(): string
     {
         return \php_uname('r');
     }
 
     /**
-     * @return string the OS' hostname A few OS classes override this.
+     * @return string the OS' hostname A few OS classes override this
      */
-    public function getHostName() : string
+    public function getHostName(): string
     {
         return \php_uname('n');
     }
 
     /**
-     * @return string the OS' name.
+     * @return string the OS' name
      */
-    abstract public function getOsName() : string;
+    abstract public function getOsName(): string;
 
     /**
      * @return float|null seconds
      */
-    abstract public function getUptime() : ?float;
+    abstract public function getUptime(): ?float;
 
     /**
      * @return string|null
      */
-    abstract public function getVirtualization() : ?string;
+    abstract public function getVirtualization(): ?string;
 
     /**
      * @return Cpu|null
      */
-    abstract public function getCpu() : ?Cpu;
+    abstract public function getCpu(): ?Cpu;
 
     /**
      * @return float[]|null
      */
-    abstract public function getLoad() : ?array;
+    abstract public function getLoad(): ?array;
 
     /**
      * @return Memory|null
      */
-    abstract public function getMemory() : ?Memory;
+    abstract public function getMemory(): ?Memory;
 
     /**
      * @return SoundCard[]|null
      */
-    abstract public function getSoundCards() : ?array;
+    abstract public function getSoundCards(): ?array;
 
     /**
      * @return string[]|null
      */
-    abstract public function getLoggedUsers() : ?array;
+    abstract public function getLoggedUsers(): ?array;
 
     /**
-     * Get brand/name of motherboard/server
+     * Get brand/name of motherboard/server.
      *
      * @return string|null
      */
-    abstract public function getModel() : ?string;
+    abstract public function getModel(): ?string;
 
     /**
      * @return Usb[]|null
      */
-    abstract public function getUsb() : ?array;
+    abstract public function getUsb(): ?array;
 
     /**
      * @return Pci[]|null
      */
-    abstract public function getPci() : ?array;
+    abstract public function getPci(): ?array;
 
     /**
      * @return Network[]|null
      */
-    abstract public function getNetwork() : ?array;
+    abstract public function getNetwork(): ?array;
 
     /**
      * @return Drive[]|null
      */
-    abstract public function getDrives() : ?array;
+    abstract public function getDrives(): ?array;
 
     /**
      * @return Mount[]|null
      */
-    abstract public function getMounts() : ?array;
+    abstract public function getMounts(): ?array;
 
     /**
      * @return Raid[]|null
      */
-    abstract public function getRaids() : ?array;
+    abstract public function getRaids(): ?array;
 
     /**
      * @return Battery[]|null
      */
-    abstract public function getBattery() : ?array;
+    abstract public function getBattery(): ?array;
 
     /**
      * @return Sensor[]|null
      */
-    abstract public function getSensors() : ?array;
+    abstract public function getSensors(): ?array;
 
     /**
      * @return Process[]|null
      */
-    abstract public function getProcesses() : ?array;
+    abstract public function getProcesses(): ?array;
 
     /**
      * @return Service[]|null
      */
-    abstract public function getServices() : ?array;
+    abstract public function getServices(): ?array;
 
     /**
      * @return Ups|null
      */
-    abstract public function getUps() : ?Ups;
+    abstract public function getUps(): ?Ups;
 
     /**
      * @return Printer[]|null
      */
-    abstract public function getPrinters() : ?array;
+    abstract public function getPrinters(): ?array;
 
     /**
      * @return Samba|null
      */
-    abstract public function getSamba() : ?Samba;
+    abstract public function getSamba(): ?Samba;
 
     /**
      * @return Selinux|null
      */
-    abstract public function getSelinux() : ?Selinux;
+    abstract public function getSelinux(): ?Selinux;
 }

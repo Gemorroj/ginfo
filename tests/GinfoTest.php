@@ -19,7 +19,11 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testPhp()
     {
         $php = $this->info->getPhp();
-        $this->assertInstanceOf(Info\Php::class, $php);
+
+        $this->assertSame('cli', $php->getSapiName());
+
+        $this->assertInternalType('bool', $php->getApcu()->isEnabled());
+        $this->assertInternalType('bool', $php->getOpcache()->isEnabled());
 
         \print_r($php);
     }
@@ -27,7 +31,8 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testGeneral()
     {
         $general = $this->info->getGeneral();
-        $this->assertInstanceOf(Info\General::class, $general);
+
+        $this->assertInternalType('string', $general->getOsName());
 
         \print_r($general);
     }
@@ -43,9 +48,12 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testMemory()
     {
         $memory = $this->info->getMemory();
-        $this->assertInstanceOf(Info\Memory::class, $memory);
-
-        \print_r($memory);
+        if (null === $memory) {
+            $this->markTestSkipped('Can\'t get memory');
+        } else {
+            $this->assertInstanceOf(Info\Memory::class, $memory);
+            \print_r($memory);
+        }
     }
 
     public function testProcesses()
@@ -83,17 +91,23 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testSoundCard()
     {
         $soundCard = $this->info->getSoundCard();
-        $this->assertInternalType('array', $soundCard);
-
-        \print_r($soundCard);
+        if (null === $soundCard) {
+            $this->markTestSkipped('Can\'t get sound card');
+        } else {
+            $this->assertInternalType('array', $soundCard);
+            \print_r($soundCard);
+        }
     }
 
     public function testServices()
     {
         $services = $this->info->getServices();
-        $this->assertInternalType('array', $services);
-
-        \print_r($services);
+        if (null === $services) {
+            $this->markTestSkipped('Can\'t get services (need systemd)');
+        } else {
+            $this->assertInternalType('array', $services);
+            \print_r($services);
+        }
     }
 
     public function testSamba()
@@ -103,10 +117,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             $this->assertNull($samba);
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInstanceOf(Info\Samba::class, $samba);
+            if (null === $samba) {
+                $this->markTestSkipped('Can\'t get samba');
+            } else {
+                $this->assertInstanceOf(Info\Samba::class, $samba);
+                \print_r($samba);
+            }
         }
-
-        \print_r($samba);
     }
 
     public function testUps()
@@ -116,10 +133,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             $this->assertNull($ups);
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInstanceOf(Info\Ups::class, $ups);
+            if (null === $ups) {
+                $this->markTestSkipped('Can\'t get ups (need apcaccess)');
+            } else {
+                $this->assertInstanceOf(Info\Ups::class, $ups);
+                \print_r($ups);
+            }
         }
-
-        \print_r($ups);
     }
 
     public function testSelinux()
@@ -129,10 +149,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             $this->assertNull($selinux);
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInstanceOf(Info\Selinux::class, $selinux);
+            if (null === $selinux) {
+                $this->markTestSkipped('Can\'t get selinux (need sestatus)');
+            } else {
+                $this->assertInstanceOf(Info\Selinux::class, $selinux);
+                \print_r($selinux);
+            }
         }
-
-        \print_r($selinux);
     }
 
     public function testBattery()
@@ -155,10 +178,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             $this->assertNull($sensors); //todo
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInternalType('array', $sensors);
+            if (null === $sensors) {
+                $this->markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
+            } else {
+                $this->assertInternalType('array', $sensors);
+                \print_r($sensors);
+            }
         }
-
-        \print_r($sensors);
     }
 
     public function testPrinters()
@@ -168,16 +194,18 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             $this->assertNull($printers); //todo
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInternalType('array', $printers);
+            if (null === $printers) {
+                $this->markTestSkipped('Can\'t get printers (need lpstat)');
+            } else {
+                $this->assertInternalType('array', $printers);
+                \print_r($printers);
+            }
         }
-
-        \print_r($printers);
     }
 
     public function testDisk()
     {
         $disk = $this->info->getDisk();
-        $this->assertInstanceOf(Info\Disk::class, $disk);
         $this->assertInternalType('array', $disk->getDrives());
         $this->assertInternalType('array', $disk->getMounts());
 

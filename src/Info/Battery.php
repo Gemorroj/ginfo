@@ -35,11 +35,13 @@ class Battery
 
     /**
      * @param int|null $chargeFull uAh
+     *
      * @return $this
      */
     public function setChargeFull(?int $chargeFull): self
     {
         $this->chargeFull = $chargeFull;
+
         return $this;
     }
 
@@ -53,11 +55,13 @@ class Battery
 
     /**
      * @param int|null $chargeNow uAh
+     *
      * @return $this
      */
     public function setChargeNow(?int $chargeNow): self
     {
         $this->chargeNow = $chargeNow;
+
         return $this;
     }
 
@@ -71,11 +75,13 @@ class Battery
 
     /**
      * @param int|null $energyFull uWh
+     *
      * @return $this
      */
     public function setEnergyFull(?int $energyFull): self
     {
         $this->energyFull = $energyFull;
+
         return $this;
     }
 
@@ -89,11 +95,13 @@ class Battery
 
     /**
      * @param int|null $energyNow uWh
+     *
      * @return $this
      */
     public function setEnergyNow(?int $energyNow): self
     {
         $this->energyNow = $energyNow;
+
         return $this;
     }
 
@@ -107,11 +115,13 @@ class Battery
 
     /**
      * @param int $voltageNow uV
+     *
      * @return $this
      */
     public function setVoltageNow(int $voltageNow): self
     {
         $this->voltageNow = $voltageNow;
+
         return $this;
     }
 
@@ -125,11 +135,13 @@ class Battery
 
     /**
      * @param int $percentage
+     *
      * @return $this
      */
     public function setPercentage(int $percentage): self
     {
         $this->percentage = $percentage;
+
         return $this;
     }
 
@@ -143,11 +155,13 @@ class Battery
 
     /**
      * @param string $vendor
+     *
      * @return $this
      */
     public function setVendor(string $vendor): self
     {
         $this->vendor = $vendor;
+
         return $this;
     }
 
@@ -161,11 +175,13 @@ class Battery
 
     /**
      * @param string $model
+     *
      * @return $this
      */
     public function setModel(string $model): self
     {
         $this->model = $model;
+
         return $this;
     }
 
@@ -179,11 +195,13 @@ class Battery
 
     /**
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -197,11 +215,13 @@ class Battery
 
     /**
      * @param string $technology
+     *
      * @return $this
      */
     public function setTechnology(string $technology): self
     {
         $this->technology = $technology;
+
         return $this;
     }
 }

@@ -29,11 +29,13 @@ class Network
 
     /**
      * @param Stats|null $statsReceived
+     *
      * @return $this
      */
     public function setStatsReceived(?Stats $statsReceived): self
     {
         $this->statsReceived = $statsReceived;
+
         return $this;
     }
 
@@ -47,11 +49,13 @@ class Network
 
     /**
      * @param Stats|null $statsSent
+     *
      * @return $this
      */
     public function setStatsSent(?Stats $statsSent): self
     {
         $this->statsSent = $statsSent;
+
         return $this;
     }
 
@@ -65,11 +69,13 @@ class Network
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -83,11 +89,13 @@ class Network
 
     /**
      * @param float|null $speed bit/s
+     *
      * @return $this
      */
     public function setSpeed(?float $speed): self
     {
         $this->speed = $speed;
+
         return $this;
     }
 
@@ -101,11 +109,13 @@ class Network
 
     /**
      * @param null|string $type
+     *
      * @return $this
      */
     public function setType(?string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -119,11 +129,13 @@ class Network
 
     /**
      * @param string|null $state
+     *
      * @return $this
      */
     public function setState(?string $state): self
     {
         $this->state = $state;
+
         return $this;
     }
 }

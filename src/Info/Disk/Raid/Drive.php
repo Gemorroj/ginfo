@@ -19,11 +19,13 @@ class Drive
 
     /**
      * @param string $path
+     *
      * @return $this
      */
     public function setPath(string $path): self
     {
         $this->path = $path;
+
         return $this;
     }
 
@@ -37,11 +39,13 @@ class Drive
 
     /**
      * @param null|string $state
+     *
      * @return $this
      */
     public function setState(?string $state): self
     {
         $this->state = $state;
+
         return $this;
     }
 }

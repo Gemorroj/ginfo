@@ -17,7 +17,7 @@ class Ginfo
      */
     public function __construct()
     {
-        if ('\\' === DIRECTORY_SEPARATOR) {
+        if ('\\' === \DIRECTORY_SEPARATOR) {
             $this->os = new Windows();
         } else {
             // bsd, linux, darwin, solaris
@@ -25,20 +25,18 @@ class Ginfo
         }
     }
 
-
     /**
      * @return Info
      */
-    public function getInfo() : Info
+    public function getInfo(): Info
     {
         return new Info($this->os);
     }
 
-
     /**
      * @return Linux|Windows
      */
-    public function getOs() : OS
+    public function getOs(): OS
     {
         return $this->os;
     }

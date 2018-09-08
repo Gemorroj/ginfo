@@ -4,18 +4,17 @@ namespace Ginfo\Parsers;
 
 use Symfony\Component\Process\Process;
 
-
 class Systemd implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('systemctl list-units --type service --all', null, ['LANG' => 'C']);
         $process->run();

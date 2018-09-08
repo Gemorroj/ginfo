@@ -24,11 +24,13 @@ class Samba
 
     /**
      * @param File[] $files
+     *
      * @return $this
      */
     public function setFiles(array $files): self
     {
         $this->files = $files;
+
         return $this;
     }
 
@@ -42,11 +44,13 @@ class Samba
 
     /**
      * @param Samba\Service[] $services
+     *
      * @return $this
      */
     public function setServices(array $services): self
     {
         $this->services = $services;
+
         return $this;
     }
 
@@ -60,11 +64,13 @@ class Samba
 
     /**
      * @param Connection[] $connections
+     *
      * @return $this
      */
     public function setConnections(array $connections): self
     {
         $this->connections = $connections;
+
         return $this;
     }
 }

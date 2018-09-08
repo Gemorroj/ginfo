@@ -2,20 +2,19 @@
 
 namespace Ginfo\Parsers;
 
-
 use Symfony\Component\Process\Process;
 
 class Free implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('LANG=C free -bw');
         $process->run();

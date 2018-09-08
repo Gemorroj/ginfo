@@ -5,11 +5,11 @@ namespace Ginfo\Parsers;
 use Symfony\Component\Process\Process;
 
 /**
- * Get info on a cups install by running lpstat
+ * Get info on a cups install by running lpstat.
  */
 class Lpstat implements Parser
 {
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('lpstat -p', null, ['LANG' => 'C']);
         $process->run();

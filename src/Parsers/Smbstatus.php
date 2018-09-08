@@ -5,11 +5,11 @@ namespace Ginfo\Parsers;
 use Symfony\Component\Process\Process;
 
 /**
- * Get info on a samba install by running smbstatus
+ * Get info on a samba install by running smbstatus.
  */
 class Smbstatus implements Parser
 {
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('smbstatus', null, ['LANG' => 'C']);
         $process->run();
@@ -31,7 +31,7 @@ class Smbstatus implements Parser
         foreach ($lines as $line) {
             $line = \trim($line);
 
-            if ($line === '') {
+            if ('' === $line) {
                 $currentLocation = null;
                 continue;
             }
@@ -69,7 +69,6 @@ class Smbstatus implements Parser
         return $res;
     }
 
-
     private static function parseService(string $service): array
     {
         $out = [
@@ -105,29 +104,29 @@ class Smbstatus implements Parser
             if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTime)) {
                 if ($connectedAtYear) { //perhaps timezone
                     if (false === \mb_strpos($token, '-')) { // yes, timezone
-                        $out['connectedAt'] .=  ' ' . $token;
+                        $out['connectedAt'] .= ' '.$token;
                         $out['connectedAt'] = new \DateTime($out['connectedAt']);
                         continue;
-                    }  
-                        $out['connectedAt'] = new \DateTime($out['connectedAt']);
-                    
+                    }
+                    $out['connectedAt'] = new \DateTime($out['connectedAt']);
                 } else {
                     if (\preg_match('/^[0-9]{4}$/', $token)) { //year
                         $connectedAtYear = true;
                     }
-                    $out['connectedAt'] .= ' ' . $token;
+                    $out['connectedAt'] .= ' '.$token;
                     continue;
                 }
             }
             if (!isset($out['encryption'])) {
-                $out['encryption'] = '-' === $token ? null : $token;;
+                $out['encryption'] = '-' === $token ? null : $token;
                 continue;
             }
             if (!isset($out['signing'])) {
-                $out['signing'] = '-' === $token ? null : $token;;
+                $out['signing'] = '-' === $token ? null : $token;
                 continue;
             }
         }
+
         return $out;
     }
 
@@ -169,7 +168,7 @@ class Smbstatus implements Parser
                 continue;
             }
             if (isset($out['protocolVersion']) && 'Unknown' === $out['protocolVersion']) {
-                $out['protocolVersion'] .= ' ' . $token;
+                $out['protocolVersion'] .= ' '.$token;
                 continue;
             }
             if (!isset($out['encryption'])) {
@@ -181,6 +180,7 @@ class Smbstatus implements Parser
                 continue;
             }
         }
+
         return $out;
     }
 
@@ -235,7 +235,7 @@ class Smbstatus implements Parser
                 continue;
             }
             if (isset($out['time']) && !($out['time'] instanceof \DateTime)) {
-                $out['time'] .= ' ' . $token; //add all strings to time
+                $out['time'] .= ' '.$token; //add all strings to time
                 continue;
             }
         }

@@ -34,11 +34,13 @@ class Memory
 
     /**
      * @param float $total
+     *
      * @return $this
      */
     public function setTotal(float $total): self
     {
         $this->total = $total;
+
         return $this;
     }
 
@@ -52,11 +54,13 @@ class Memory
 
     /**
      * @param float $used
+     *
      * @return $this
      */
     public function setUsed(float $used): self
     {
         $this->used = $used;
+
         return $this;
     }
 
@@ -70,11 +74,13 @@ class Memory
 
     /**
      * @param float $free
+     *
      * @return $this
      */
     public function setFree(float $free): self
     {
         $this->free = $free;
+
         return $this;
     }
 
@@ -88,11 +94,13 @@ class Memory
 
     /**
      * @param float|null $shared
+     *
      * @return $this
      */
     public function setShared(?float $shared): self
     {
         $this->shared = $shared;
+
         return $this;
     }
 
@@ -106,11 +114,13 @@ class Memory
 
     /**
      * @param float|null $buffers
+     *
      * @return $this
      */
     public function setBuffers(?float $buffers): self
     {
         $this->buffers = $buffers;
+
         return $this;
     }
 
@@ -124,11 +134,13 @@ class Memory
 
     /**
      * @param float|null $cached
+     *
      * @return $this
      */
     public function setCached(?float $cached): self
     {
         $this->cached = $cached;
+
         return $this;
     }
 
@@ -142,11 +154,13 @@ class Memory
 
     /**
      * @param float|null $swapTotal
+     *
      * @return $this
      */
     public function setSwapTotal(?float $swapTotal): self
     {
         $this->swapTotal = $swapTotal;
+
         return $this;
     }
 
@@ -160,11 +174,13 @@ class Memory
 
     /**
      * @param float|null $swapUsed
+     *
      * @return $this
      */
     public function setSwapUsed(?float $swapUsed): self
     {
         $this->swapUsed = $swapUsed;
+
         return $this;
     }
 
@@ -178,11 +194,13 @@ class Memory
 
     /**
      * @param float|null $swapFree
+     *
      * @return $this
      */
     public function setSwapFree(?float $swapFree): self
     {
         $this->swapFree = $swapFree;
+
         return $this;
     }
 }

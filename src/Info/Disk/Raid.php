@@ -31,11 +31,13 @@ class Raid
 
     /**
      * @param string $device
+     *
      * @return $this
      */
     public function setDevice(string $device): self
     {
         $this->device = $device;
+
         return $this;
     }
 
@@ -49,11 +51,13 @@ class Raid
 
     /**
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -67,11 +71,13 @@ class Raid
 
     /**
      * @param int $level
+     *
      * @return $this
      */
     public function setLevel(int $level): self
     {
         $this->level = $level;
+
         return $this;
     }
 
@@ -85,11 +91,13 @@ class Raid
 
     /**
      * @param Drive[] $drives
+     *
      * @return $this
      */
     public function setDrives(array $drives): self
     {
         $this->drives = $drives;
+
         return $this;
     }
 
@@ -103,11 +111,13 @@ class Raid
 
     /**
      * @param float $size
+     *
      * @return $this
      */
     public function setSize(float $size): self
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -121,11 +131,13 @@ class Raid
 
     /**
      * @param int $count
+     *
      * @return $this
      */
     public function setCount(int $count): self
     {
         $this->count = $count;
+
         return $this;
     }
 
@@ -139,11 +151,13 @@ class Raid
 
     /**
      * @param string $chart
+     *
      * @return $this
      */
     public function setChart(string $chart): self
     {
         $this->chart = $chart;
+
         return $this;
     }
 }

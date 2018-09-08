@@ -5,19 +5,17 @@ namespace Ginfo\Parsers\Sensors;
 use Ginfo\Parsers\Parser;
 use Symfony\Component\Process\Process;
 
-
 class Sensors implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
-
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('sensors', null, ['LANG=C']);
         $process->run();

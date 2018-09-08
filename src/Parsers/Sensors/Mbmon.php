@@ -6,23 +6,24 @@ use Ginfo\Parsers\Parser;
 
 class Mbmon implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
     /**
-     * Connect to host/port and get info
+     * Connect to host/port and get info.
      *
      * @param string $host
-     * @param int $port
-     * @param int $timeout
+     * @param int    $port
+     * @param int    $timeout
+     *
      * @return null|string
      */
-    private function getData(string $host, int $port, int $timeout) : ?string
+    private function getData(string $host, int $port, int $timeout): ?string
     {
         $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$sock) {
@@ -39,18 +40,19 @@ class Mbmon implements Parser
     }
 
     /**
-     * Parse and return info from daemon socket
+     * Parse and return info from daemon socket.
      *
      * @param string $data
+     *
      * @return array
      */
-    private function parseSockData(string $data) : array
+    private function parseSockData(string $data): array
     {
         $return = [];
 
         $lines = \explode("\n", \trim($data));
         foreach ($lines as $line) {
-            if (\preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match) === 1) {
+            if (1 === \preg_match('/(\w+)\s*:\s*([-+]?[\d\.]+)/i', $line, $match)) {
                 $return[] = [
                     'path' => null,
                     'name' => $match[1],
@@ -65,11 +67,12 @@ class Mbmon implements Parser
 
     /**
      * @param string $host
-     * @param int $port
-     * @param int $timeout
+     * @param int    $port
+     * @param int    $timeout
+     *
      * @return array|null
      */
-    public static function work(string $host = 'localhost', int $port = 411, int $timeout = 1) : ?array
+    public static function work(string $host = 'localhost', int $port = 411, int $timeout = 1): ?array
     {
         $obj = new self();
         $data = $obj->getData($host, $port, $timeout);

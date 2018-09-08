@@ -19,7 +19,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
                 'sharePath' => '/home/gemorroj/Общедоступные',
                 'name' => '.',
                 'time' => new \DateTime('Fri Mar 30 15:48:44 2018'),
-            ]]
+            ]],
         ];
     }
 
@@ -103,7 +103,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
      * @dataProvider connectionStrings
      *
      * @param string $data
-     * @param array $expected
+     * @param array  $expected
      */
     public function testParseConnection(string $data, array $expected)
     {
@@ -115,12 +115,11 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expected, $actual);
     }
 
-
     /**
      * @dataProvider serviceStrings
      *
      * @param string $data
-     * @param array $expected
+     * @param array  $expected
      */
     public function testParseService(string $data, array $expected)
     {
@@ -136,7 +135,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
      * @dataProvider fileStrings
      *
      * @param string $data
-     * @param array $expected
+     * @param array  $expected
      */
     public function testParseFile(string $data, array $expected)
     {

@@ -21,11 +21,13 @@ class Stats
 
     /**
      * @param int $bytes
+     *
      * @return $this
      */
     public function setBytes(int $bytes): self
     {
         $this->bytes = $bytes;
+
         return $this;
     }
 
@@ -39,11 +41,13 @@ class Stats
 
     /**
      * @param int $errors
+     *
      * @return $this
      */
     public function setErrors(int $errors): self
     {
         $this->errors = $errors;
+
         return $this;
     }
 
@@ -57,12 +61,13 @@ class Stats
 
     /**
      * @param int $packets
+     *
      * @return $this
      */
     public function setPackets(int $packets): self
     {
         $this->packets = $packets;
+
         return $this;
     }
-
 }

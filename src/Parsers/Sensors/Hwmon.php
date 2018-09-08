@@ -2,22 +2,20 @@
 
 namespace Ginfo\Parsers\Sensors;
 
-
 use Ginfo\Common;
 use Ginfo\Parsers\Parser;
 
 class Hwmon implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
-
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);
         if (false === $paths) {
@@ -29,23 +27,23 @@ class Hwmon implements Parser
             $initPath = \rtrim($path, 'input');
             $value = Common::getContents($path);
             $base = \basename($path);
-            $labelPath = $initPath . 'label';
-            $driverName = Common::getContents(\dirname($path) . '/name');
+            $labelPath = $initPath.'label';
+            $driverName = Common::getContents(\dirname($path).'/name');
 
             // Temperatures
-            if (\mb_strpos($base, 'temp') === 0 && \is_file($labelPath)) {
+            if (0 === \mb_strpos($base, 'temp') && \is_file($labelPath)) {
                 $label = Common::getContents($labelPath);
                 $value /= $value > 10000 ? 1000 : 1;
                 $unit = 'C'; // I don't think this is ever going to be in F
             } // Fan RPMs
             elseif (\preg_match('/^fan(\d+)_/', $base, $m)) {
-                $label = 'fan' . $m[1];
+                $label = 'fan'.$m[1];
                 $unit = 'RPM';
             } // Volts
             elseif (\preg_match('/^in(\d+)_/', $base, $m)) {
                 $unit = 'V';
                 $value /= 1000;
-                $label = Common::getContents($labelPath) ?: 'in' . $m[1];
+                $label = Common::getContents($labelPath) ?: 'in'.$m[1];
             } else {
                 continue;
             }
@@ -53,7 +51,7 @@ class Hwmon implements Parser
             // Append values
             $hwmonVals[] = [
                 'path' => null,
-                'name' => $label . ($driverName ? ' (' . $driverName . ')' : ''),
+                'name' => $label.($driverName ? ' ('.$driverName.')' : ''),
                 'value' => $value,
                 'unit' => $unit,
             ];

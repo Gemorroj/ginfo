@@ -19,6 +19,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
             ['fan3: 0 RPM (min = 1506 RPM, div = 128) ALARM', true],
         ];
     }
+
     public function sensorStrings()
     {
         return [
@@ -59,7 +60,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
      * @dataProvider sensorLineStrings
      *
      * @param string $data
-     * @param bool $expected
+     * @param bool   $expected
      */
     public function testIsSensorLine(string $data, bool $expected)
     {
@@ -75,7 +76,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
      * @dataProvider sensorStrings
      *
      * @param string $data
-     * @param array $expected
+     * @param array  $expected
      */
     public function testParseSensor(string $data, array $expected)
     {

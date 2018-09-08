@@ -10,11 +10,13 @@ class Common
      * Certain files, specifcally the pci/usb ids files, vary in location from
      * linux distro to linux distro. This function, when passed an array of
      * possible file location, picks the first it finds and returns it. When
-     * none are found, it returns false
+     * none are found, it returns false.
+     *
      * @param string[] $paths
+     *
      * @return null|string
      */
-    public static function locateActualPath(array $paths) : ?string
+    public static function locateActualPath(array $paths): ?string
     {
         foreach ($paths as $path) {
             if (\file_exists($path)) {
@@ -26,10 +28,11 @@ class Common
     }
 
     /**
-     * Get a file's contents, or default to second param
+     * Get a file's contents, or default to second param.
      *
      * @param string $file
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return string|mixed|null
      */
     public static function getContents(string $file, $default = null)
@@ -39,15 +42,19 @@ class Common
             if (false === $data) {
                 return $default;
             }
+
             return \trim($data);
         }
+
         return $default;
     }
 
     /**
-     * Like above, but in lines instead of a big string
+     * Like above, but in lines instead of a big string.
+     *
      * @param string $file
-     * @param mixed $default
+     * @param mixed  $default
+     *
      * @return string[]|mixed|null
      */
     public static function getLines(string $file, $default = null)
@@ -55,29 +62,31 @@ class Common
         if (\file_exists($file) && \is_readable($file)) {
             return \file($file, \FILE_SKIP_EMPTY_LINES);
         }
+
         return $default;
     }
 
-
     /**
      * Prevent silly conditionals like if (in_array() || in_array() || in_array())
-     * Poor man's python's any() on a list comprehension kinda
+     * Poor man's python's any() on a list comprehension kinda.
+     *
      * @param array $needles
      * @param array $haystack
+     *
      * @return bool
      */
-    public static function anyInArray(array $needles, array $haystack) : bool
+    public static function anyInArray(array $needles, array $haystack): bool
     {
         return \count(\array_intersect($needles, $haystack)) > 0;
     }
 
-
     /**
      * @param string $block
      * @param string $delimiter
+     *
      * @return string[]
      */
-    public static function parseKeyValueBlock(string $block, string $delimiter = ':') : array
+    public static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
     {
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {
@@ -86,18 +95,20 @@ class Common
                 $tmp[\trim($key)] = \trim($value);
             }
         }
+
         return $tmp;
     }
 
     /**
      * @param Service[] $services
-     * @param string $serviceName
+     * @param string    $serviceName
+     *
      * @return Service|null
      */
-    public static function searchService(array $services, string $serviceName) : ?Service
+    public static function searchService(array $services, string $serviceName): ?Service
     {
         $item = null;
-        foreach($services as $service) {
+        foreach ($services as $service) {
             if ($service->getName() === $serviceName) {
                 $item = $service;
                 break;
@@ -107,34 +118,34 @@ class Common
         return $item;
     }
 
-
     /**
      * @param string $humanSize
+     *
      * @return float|null
      */
-    public static function convertHumanSizeToBytes(string $humanSize) : ?float
+    public static function convertHumanSizeToBytes(string $humanSize): ?float
     {
         $lastLetter = \mb_substr($humanSize, -1);
         if (\is_numeric($lastLetter)) {
-            return (float)$humanSize;
+            return (float) $humanSize;
         }
 
         $size = \mb_substr($humanSize, 0, -1);
         switch (\mb_strtolower($lastLetter)) {
             case 'b':
-                return (float)$size;
+                return (float) $size;
                 break;
 
             case 'k':
-                return (float)$size * 1024;
+                return (float) $size * 1024;
                 break;
 
             case 'm':
-                return (float)$size * 1024 * 1024;
+                return (float) $size * 1024 * 1024;
                 break;
 
             case 'g':
-                return (float)$size * 1024 * 1024 * 1024;
+                return (float) $size * 1024 * 1024 * 1024;
                 break;
         }
 

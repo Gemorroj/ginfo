@@ -35,11 +35,13 @@ class General
 
     /**
      * @param \DateTime $date
+     *
      * @return $this
      */
     public function setDate(\DateTime $date): self
     {
         $this->date = $date;
+
         return $this;
     }
 
@@ -53,11 +55,13 @@ class General
 
     /**
      * @param string $osName
+     *
      * @return $this
      */
     public function setOsName(string $osName): self
     {
         $this->osName = $osName;
+
         return $this;
     }
 
@@ -71,11 +75,13 @@ class General
 
     /**
      * @param string $kernel
+     *
      * @return $this
      */
     public function setKernel(string $kernel): self
     {
         $this->kernel = $kernel;
+
         return $this;
     }
 
@@ -89,11 +95,13 @@ class General
 
     /**
      * @param string $hostName
+     *
      * @return $this
      */
     public function setHostName(string $hostName): self
     {
         $this->hostName = $hostName;
+
         return $this;
     }
 
@@ -107,12 +115,13 @@ class General
 
     /**
      * @param \DateInterval|float|null $uptime
+     *
      * @return $this
      */
     public function setUptime($uptime): self
     {
         if (\is_numeric($uptime)) {
-            $startDate = new \DateTime('now - ' . $uptime . ' seconds');
+            $startDate = new \DateTime('now - '.$uptime.' seconds');
             $endDate = new \DateTime('now');
 
             $this->uptime = $startDate->diff($endDate);
@@ -137,11 +146,13 @@ class General
 
     /**
      * @param string $architecture
+     *
      * @return $this
      */
     public function setArchitecture(string $architecture): self
     {
         $this->architecture = $architecture;
+
         return $this;
     }
 
@@ -155,11 +166,13 @@ class General
 
     /**
      * @param string|null $virtualization
+     *
      * @return $this
      */
     public function setVirtualization(?string $virtualization): self
     {
         $this->virtualization = $virtualization;
+
         return $this;
     }
 
@@ -173,11 +186,13 @@ class General
 
     /**
      * @param string[]|null $loggedUsers
+     *
      * @return $this
      */
     public function setLoggedUsers(?array $loggedUsers): self
     {
         $this->loggedUsers = $loggedUsers;
+
         return $this;
     }
 
@@ -191,11 +206,13 @@ class General
 
     /**
      * @param string|null $model
+     *
      * @return $this
      */
     public function setModel(?string $model): self
     {
         $this->model = $model;
+
         return $this;
     }
 
@@ -209,11 +226,13 @@ class General
 
     /**
      * @param float[]|null $load
+     *
      * @return $this
      */
     public function setLoad(?array $load): self
     {
         $this->load = $load;
+
         return $this;
     }
 }

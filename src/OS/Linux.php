@@ -38,7 +38,6 @@ use Ginfo\Parsers\Smbstatus;
 use Ginfo\Parsers\Systemd;
 use Ginfo\Parsers\Who;
 
-
 class Linux extends OS
 {
     /**
@@ -51,8 +50,7 @@ class Linux extends OS
         }
     }
 
-
-    public function getMemory() : ?Memory
+    public function getMemory(): ?Memory
     {
         $data = Free::work();
         if (null === $data) {
@@ -83,11 +81,12 @@ class Linux extends OS
             $cpuData[] = Common::parseKeyValueBlock($block);
         }
 
-        $cores = (function () use ($cpuData) : int {
+        $cores = (function () use ($cpuData): int {
             $out = [];
             foreach ($cpuData as $block) {
                 $out[$block['physical id']] = $block['cpu cores'];
             }
+
             return \array_sum($out);
         })();
         $virtual = \count($cpuData);
@@ -97,11 +96,12 @@ class Linux extends OS
                 $out = [];
                 foreach ($cpuData as $block) {
                     if (isset($out[$block['physical id']])) {
-                        $out[$block['physical id']]++;
+                        ++$out[$block['physical id']];
                     } else {
                         $out[$block['physical id']] = 1;
                     }
                 }
+
                 return \count($out);
             })())
             ->setVirtual($virtual)
@@ -114,7 +114,7 @@ class Linux extends OS
                     $out[$block['physical id']] = (new Cpu\Processor())
                         ->setModel($block['model name'])
                         ->setSpeed($block['cpu MHz'])
-                        ->setL2Cache((float)$block['cache size'] * 1024) // L2 cache, drop KB
+                        ->setL2Cache((float) $block['cache size'] * 1024) // L2 cache, drop KB
                         ->setFlags(\explode(' ', $block['flags']));
 
                     // todo: mips, arm
@@ -129,12 +129,11 @@ class Linux extends OS
                             break;
                         }
                     }
-
                 }
+
                 return $out;
             })());
     }
-
 
     public function getUptime(): ?float
     {
@@ -147,7 +146,6 @@ class Linux extends OS
         return \round(\explode(' ', $uptime, 2)[0]);
     }
 
-
     public function getDrives(): ?array
     {
         $partitions = [];
@@ -159,7 +157,7 @@ class Linux extends OS
         if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
                 $partitions[$partition[2]][] = (new Drive\Partition())
-                    ->setName($partition[2] . $partition[3])
+                    ->setName($partition[2].$partition[3])
                     ->setSize($partition[1] * 1024);
             }
         }
@@ -174,7 +172,7 @@ class Linux extends OS
             $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
-            if (\preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(\dirname(\dirname($path)) . '/stat'), $statMatches) !== 1) {
+            if (1 !== \preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(\dirname(\dirname($path)).'/stat'), $statMatches)) {
                 $reads = null;
                 $writes = null;
             } else {
@@ -182,14 +180,14 @@ class Linux extends OS
             }
 
             $drives[] = (new Drive())
-                ->setSize(Common::getContents(\dirname(\dirname($path)) . '/size', 0) * 512)
-                ->setDevice('/dev/' . $parts[3])
-                ->setPartitions((function (string $namePartition) use ($partitions) : ?array {
+                ->setSize(Common::getContents(\dirname(\dirname($path)).'/size', 0) * 512)
+                ->setDevice('/dev/'.$parts[3])
+                ->setPartitions((function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($parts[3]))
-                ->setName(Common::getContents($path) . (Common::getContents(\dirname(\dirname($path)) . '/queue/rotational') === '0' ? ' (SSD)' : ''))
+                ->setName(Common::getContents($path).('0' === Common::getContents(\dirname(\dirname($path)).'/queue/rotational') ? ' (SSD)' : ''))
                 ->setReads($reads)
-                ->setVendor(Common::getContents(\dirname($path) . '/vendor'))
+                ->setVendor(Common::getContents(\dirname($path).'/vendor'))
                 ->setWrites($writes);
         }
 
@@ -203,7 +201,7 @@ class Linux extends OS
             return null;
         }
 
-        if (\preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER) === false) {
+        if (false === \preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER)) {
             return null;
         }
 
@@ -229,7 +227,7 @@ class Linux extends OS
                 ->setOptions(\explode(',', $mount[4]))
                 ->setUsed($used)
                 ->setFreePercent(null !== $size && null !== $free && $size > 0 ? \round($free / $size, 2) * 100 : null)
-                ->setUsedPercent(null !== $size && null !== $used && $size > 0? \round($used / $size, 2) * 100 : null);
+                ->setUsedPercent(null !== $size && null !== $used && $size > 0 ? \round($used / $size, 2) * 100 : null);
         }
 
         return $mounts;
@@ -249,13 +247,14 @@ class Linux extends OS
                 ->setChart($raid['chart'])
                 ->setCount($raid['count'])
                 ->setDevice($raid['device'])
-                ->setDrives((function () use ($raid) : array {
+                ->setDrives((function () use ($raid): array {
                     $out = [];
                     foreach ($raid['drives'] as $drive) {
                         $out[] = (new Raid\Drive())
                             ->setPath($drive['path'])
                             ->setState($drive['state']);
                     }
+
                     return $out;
                 })())
                 ->setLevel($raid['level'])
@@ -264,7 +263,6 @@ class Linux extends OS
 
         return $out;
     }
-
 
     public function getSensors(): ?array
     {
@@ -308,7 +306,7 @@ class Linux extends OS
         // Laptop backlight percentage
         foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE) as $bl) {
             $max = Common::getContents($bl);
-            $cur = Common::getContents(\dirname($bl) . '/actual_brightness');
+            $cur = Common::getContents(\dirname($bl).'/actual_brightness');
             if (null === $cur) {
                 continue;
             }
@@ -324,7 +322,6 @@ class Linux extends OS
             ];
         }
 
-
         $out = [];
         foreach ($return as $v) {
             $out[] = (new Sensor())
@@ -336,7 +333,6 @@ class Linux extends OS
 
         return $out ?: null;
     }
-
 
     public function getUsb(): ?array
     {
@@ -351,9 +347,9 @@ class Linux extends OS
                 ->setVendor($v['vendor'])
                 ->setName($v['name']);
         }
+
         return $out;
     }
-
 
     public function getPci(): ?array
     {
@@ -368,15 +364,14 @@ class Linux extends OS
                 ->setVendor($v['vendor'])
                 ->setName($v['name']);
         }
+
         return $out;
     }
-
 
     public function getLoad(): ?array
     {
         return \sys_getloadavg();
     }
-
 
     public function getNetwork(): ?array
     {
@@ -390,47 +385,47 @@ class Linux extends OS
             $tmp = (new Network())
                 ->setName(\basename($path));
 
-            $speed = Common::getContents($path . '/speed'); // Mbits/sec
+            $speed = Common::getContents($path.'/speed'); // Mbits/sec
             if ($speed) {
                 $tmp->setSpeed($speed * 1000000);
             }
 
-            $operstateContents = Common::getContents($path . '/operstate');
+            $operstateContents = Common::getContents($path.'/operstate');
             $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
 
-            if (null === $state && \file_exists($path . '/carrier')) {
-                $state = Common::getContents($path . '/carrier') ? 'up' : 'down';
+            if (null === $state && \file_exists($path.'/carrier')) {
+                $state = Common::getContents($path.'/carrier') ? 'up' : 'down';
             }
             $tmp->setState($state);
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
-            $typeCode = Common::getContents($path . '/type');
+            $typeCode = Common::getContents($path.'/type');
 
-            if ($typeCode === '772') {
+            if ('772' === $typeCode) {
                 $type = 'Loopback';
-            } elseif ($typeCode === '65534') {
+            } elseif ('65534' === $typeCode) {
                 $type = 'Tunnel';
-            } elseif ($typeCode === '776') {
+            } elseif ('776' === $typeCode) {
                 $type = 'IPv6 in IPv4';
             } else {
-                $typeContents = \mb_strtoupper(Common::getContents($path . '/device/modalias'));
+                $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias'));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
                 if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
-                    $type = 'Ethernet (' . $typeMatch . ')';
+                    $type = 'Ethernet ('.$typeMatch.')';
 
-                    if (($ueventContents = \parse_ini_file($path . '/device/uevent')) && isset($ueventContents['DRIVER'])) {
-                        $type .= ' (' . $ueventContents['DRIVER'] . ')';
+                    if (($ueventContents = \parse_ini_file($path.'/device/uevent')) && isset($ueventContents['DRIVER'])) {
+                        $type .= ' ('.$ueventContents['DRIVER'].')';
                     }
-                } elseif ($typeMatch === 'VIRTIO') {
+                } elseif ('VIRTIO' === $typeMatch) {
                     $type = 'VirtIO';
-                } elseif ($typeContents === 'XEN:VIF') {
+                } elseif ('XEN:VIF' === $typeContents) {
                     $type = 'Xen (VIF)';
-                } elseif ($typeContents === 'XEN-BACKEND:VIF') {
+                } elseif ('XEN-BACKEND:VIF' === $typeContents) {
                     $type = 'Xen Backend (VIF)';
-                } elseif (\is_dir($path . '/bridge')) {
+                } elseif (\is_dir($path.'/bridge')) {
                     $type = 'Bridge';
-                } elseif (\is_dir($path . '/bonding')) {
+                } elseif (\is_dir($path.'/bonding')) {
                     $type = 'Bond';
                 } else {
                     $type = null;
@@ -441,15 +436,15 @@ class Linux extends OS
             $tmp->setType($type);
             $tmp->setStatsReceived(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path . '/statistics/rx_bytes', 0))
-                    ->setErrors(Common::getContents($path . '/statistics/rx_errors', 0))
-                    ->setPackets(Common::getContents($path . '/statistics/rx_packets', 0))
+                    ->setBytes(Common::getContents($path.'/statistics/rx_bytes', 0))
+                    ->setErrors(Common::getContents($path.'/statistics/rx_errors', 0))
+                    ->setPackets(Common::getContents($path.'/statistics/rx_packets', 0))
             );
             $tmp->setStatsSent(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path . '/statistics/tx_bytes', 0))
-                    ->setErrors(Common::getContents($path . '/statistics/tx_errors', 0))
-                    ->setPackets(Common::getContents($path . '/statistics/tx_packets', 0))
+                    ->setBytes(Common::getContents($path.'/statistics/tx_bytes', 0))
+                    ->setErrors(Common::getContents($path.'/statistics/tx_errors', 0))
+                    ->setPackets(Common::getContents($path.'/statistics/tx_packets', 0))
             );
 
             $return[] = $tmp;
@@ -457,7 +452,6 @@ class Linux extends OS
 
         return $return;
     }
-
 
     public function getBattery(): ?array
     {
@@ -468,7 +462,7 @@ class Linux extends OS
 
         $return = [];
         foreach ($paths as $b) {
-            $uevent = Common::getContents($b . '/uevent');
+            $uevent = Common::getContents($b.'/uevent');
             if (null === $uevent) {
                 continue;
             }
@@ -491,7 +485,6 @@ class Linux extends OS
         return $return;
     }
 
-
     public function getSoundCards(): ?array
     {
         $lines = Common::getLines('/proc/asound/cards');
@@ -500,7 +493,7 @@ class Linux extends OS
         }
 
         $cards = [];
-        for ($i = 0, $l = \count($lines); $i < $l; $i +=2) {
+        for ($i = 0, $l = \count($lines); $i < $l; $i += 2) {
             $name = \trim(\explode(']:', $lines[$i], 2)[1]);
             $vendor = \trim(\explode(' at ', $lines[$i + 1], 2)[0]);
 
@@ -511,7 +504,6 @@ class Linux extends OS
 
         return $cards;
     }
-
 
     public function getProcesses(): ?array
     {
@@ -527,31 +519,28 @@ class Linux extends OS
                 continue;
             }
 
-            $cmdlineContents = Common::getContents(\dirname($process) . '/cmdline');
-            $ioContents = Common::getContents(\dirname($process) . '/io');
-
+            $cmdlineContents = Common::getContents(\dirname($process).'/cmdline');
+            $ioContents = Common::getContents(\dirname($process).'/io');
 
             $blockIo = $ioContents ? Common::parseKeyValueBlock($ioContents) : null;
             $blockStatus = Common::parseKeyValueBlock($statusContents);
-
 
             $uid = \explode("\t", $blockStatus['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
 
             if (isset($blockStatus['VmSize'])) {
-                $vmSize = (float)$blockStatus['VmSize']; // drop kB
+                $vmSize = (float) $blockStatus['VmSize']; // drop kB
                 $vmSize *= 1024;
             } else {
                 $vmSize = null;
             }
 
             if (isset($blockStatus['VmSize'])) {
-                $vmPeak = (float)$blockStatus['VmPeak']; // drop kB
+                $vmPeak = (float) $blockStatus['VmPeak']; // drop kB
                 $vmPeak *= 1024;
             } else {
                 $vmPeak = null;
             }
-
 
             $result[] = (new Process())
                 ->setName($blockStatus['Name'])
@@ -568,7 +557,6 @@ class Linux extends OS
 
         return $result;
     }
-
 
     public function getServices(): ?array
     {
@@ -590,7 +578,6 @@ class Linux extends OS
         return $out;
     }
 
-
     public function getOsName(): string
     {
         $stringReleases = [
@@ -610,7 +597,6 @@ class Linux extends OS
             }
         }
 
-
         $lsbRelease = Common::getContents('/etc/lsb-release');
         if (null !== $lsbRelease) {
             return \parse_ini_string($lsbRelease)['DISTRIB_DESCRIPTION'];
@@ -623,7 +609,7 @@ class Linux extends OS
 
         $debianVersion = Common::getContents('/etc/debian_version');
         if (null !== $debianVersion) {
-            return 'Debian ' . $debianVersion;
+            return 'Debian '.$debianVersion;
         }
 
         return \php_uname('s');
@@ -634,22 +620,21 @@ class Linux extends OS
         return Who::work();
     }
 
-
     public function getVirtualization(): ?string
     {
         if (\is_file('/proc/vz/veinfo')) {
             return 'OpenVZ';
         }
 
-        if (Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor') === 'Veertu') {
+        if ('Veertu' === Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor')) {
             return 'Veertu';
         }
 
-        if (\mb_strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/') !== false) {
+        if (false !== \mb_strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
             return 'LXC';
         }
 
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \mb_strpos(Common::getContents('/proc/1/cgroup', ''), 'docker') !== false) {
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || false !== \mb_strpos(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
             return 'Docker';
         }
 
@@ -693,11 +678,10 @@ class Linux extends OS
         return null;
     }
 
-
     /**
-     * through /sys' interface to dmidecode
+     * through /sys' interface to dmidecode.
      */
-    public function getModel() : ?string
+    public function getModel(): ?string
     {
         $info = [];
         $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor');
@@ -709,7 +693,7 @@ class Linux extends OS
         }
 
         // Don't add vendor to the mix if the name starts with it
-        if ($vendor && \mb_strpos($name, $vendor) !== 0) {
+        if ($vendor && 0 !== \mb_strpos($name, $vendor)) {
             $info[] = $vendor;
         }
 
@@ -719,15 +703,14 @@ class Linux extends OS
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && \mb_strpos($name, $product) === false && \mb_strpos($product, 'Filled') === false) {
-            return $product . ' (' . $infoStr . ')';
-        }  
-            return $infoStr;
-        
+        if ($product && false === \mb_strpos($name, $product) && false === \mb_strpos($product, 'Filled')) {
+            return $product.' ('.$infoStr.')';
+        }
+
+        return $infoStr;
     }
 
-
-    public function getUps() : ?Ups
+    public function getUps(): ?Ups
     {
         $ups = Apcaccess::work();
         if (null === $ups) {
@@ -744,7 +727,7 @@ class Linux extends OS
             ->setStatus($ups['status']);
     }
 
-    public function getPrinters() : ?array
+    public function getPrinters(): ?array
     {
         $printers = Lpstat::work();
         if (null === $printers) {
@@ -761,7 +744,7 @@ class Linux extends OS
         return $out;
     }
 
-    public function getSamba() : ?Samba
+    public function getSamba(): ?Samba
     {
         $data = Smbstatus::work();
         if (null === $data) {
@@ -782,6 +765,7 @@ class Linux extends OS
                         ->setEncryption($connection['encryption'])
                         ->setSigning($connection['signing']);
                 }
+
                 return $out;
             })($data['connections']))
             ->setServices((function (array $services) {
@@ -795,6 +779,7 @@ class Linux extends OS
                         ->setEncryption($service['encryption'])
                         ->setSigning($service['signing']);
                 }
+
                 return $out;
             })($data['services']))
             ->setFiles((function (array $files) {
@@ -811,11 +796,12 @@ class Linux extends OS
                         ->setRw($file['rw'])
                         ->setSharePath($file['sharePath']);
                 }
+
                 return $out;
             })($data['files']));
     }
 
-    public function getSelinux() : ?Selinux
+    public function getSelinux(): ?Selinux
     {
         $data = Sestatus::work();
         if (null === $data) {

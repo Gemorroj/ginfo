@@ -14,18 +14,20 @@ class Selinux
     /**
      * @return bool
      */
-    public function getEnabled(): bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
      * @param bool $enabled
+     *
      * @return $this
      */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -47,11 +49,13 @@ class Selinux
      * disabled – No SELinux policy is loaded.
      *
      * @param string $mode (enforcing|permissive|disabled)
+     *
      * @return $this
      */
     public function setMode(string $mode): self
     {
         $this->mode = $mode;
+
         return $this;
     }
 
@@ -73,11 +77,13 @@ class Selinux
      * mls – This is for Multi Level Security protection. MLS is pretty complex and pretty much not used in most situations.
      *
      * @param string $policy (targeted|minimum|mls)
+     *
      * @return $this
      */
     public function setPolicy(string $policy): self
     {
         $this->policy = $policy;
+
         return $this;
     }
 }

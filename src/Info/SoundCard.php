@@ -19,11 +19,13 @@ class SoundCard
 
     /**
      * @param string $vendor
+     *
      * @return $this
      */
     public function setVendor(string $vendor): self
     {
         $this->vendor = $vendor;
+
         return $this;
     }
 
@@ -37,11 +39,13 @@ class SoundCard
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 }

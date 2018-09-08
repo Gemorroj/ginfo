@@ -29,11 +29,13 @@ class Ups
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -47,11 +49,13 @@ class Ups
 
     /**
      * @param string $model
+     *
      * @return $this
      */
     public function setModel(string $model): self
     {
         $this->model = $model;
+
         return $this;
     }
 
@@ -65,11 +69,13 @@ class Ups
 
     /**
      * @param float $batteryVolts
+     *
      * @return $this
      */
     public function setBatteryVolts(float $batteryVolts): self
     {
         $this->batteryVolts = $batteryVolts;
+
         return $this;
     }
 
@@ -83,11 +89,13 @@ class Ups
 
     /**
      * @param float $batteryCharge
+     *
      * @return $this
      */
     public function setBatteryCharge(float $batteryCharge): self
     {
         $this->batteryCharge = $batteryCharge;
+
         return $this;
     }
 
@@ -101,11 +109,13 @@ class Ups
 
     /**
      * @param int $timeLeft
+     *
      * @return $this
      */
     public function setTimeLeft(int $timeLeft): self
     {
         $this->timeLeft = $timeLeft;
+
         return $this;
     }
 
@@ -119,11 +129,13 @@ class Ups
 
     /**
      * @param float $currentLoad
+     *
      * @return $this
      */
     public function setCurrentLoad(float $currentLoad): self
     {
         $this->currentLoad = $currentLoad;
+
         return $this;
     }
 
@@ -137,13 +149,13 @@ class Ups
 
     /**
      * @param string $status
+     *
      * @return $this
      */
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
-
-
 }

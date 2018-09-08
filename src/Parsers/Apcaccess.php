@@ -5,10 +5,9 @@ namespace Ginfo\Parsers;
 use Ginfo\Common;
 use Symfony\Component\Process\Process;
 
-
 class Apcaccess implements Parser
 {
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('apcaccess status', null, ['LANG' => 'C']);
         $process->run();

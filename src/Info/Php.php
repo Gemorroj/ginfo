@@ -48,11 +48,13 @@ class Php
 
     /**
      * @param int $memoryLimit
+     *
      * @return $this
      */
     public function setMemoryLimit(int $memoryLimit): self
     {
         $this->memoryLimit = $memoryLimit;
+
         return $this;
     }
 
@@ -66,11 +68,13 @@ class Php
 
     /**
      * @param bool $zendThreadSafe
+     *
      * @return $this
      */
     public function setZendThreadSafe(bool $zendThreadSafe): self
     {
         $this->zendThreadSafe = $zendThreadSafe;
+
         return $this;
     }
 
@@ -84,11 +88,13 @@ class Php
 
     /**
      * @param string $version
+     *
      * @return $this
      */
     public function setVersion(string $version): self
     {
         $this->version = $version;
+
         return $this;
     }
 
@@ -102,11 +108,13 @@ class Php
 
     /**
      * @param string[] $extensions
+     *
      * @return $this
      */
     public function setExtensions(array $extensions): self
     {
         $this->extensions = $extensions;
+
         return $this;
     }
 
@@ -120,11 +128,13 @@ class Php
 
     /**
      * @param string[] $zendExtensions
+     *
      * @return $this
      */
     public function setZendExtensions(array $zendExtensions): self
     {
         $this->zendExtensions = $zendExtensions;
+
         return $this;
     }
 
@@ -138,11 +148,13 @@ class Php
 
     /**
      * @param string $iniFile
+     *
      * @return $this
      */
     public function setIniFile(string $iniFile): self
     {
         $this->iniFile = $iniFile;
+
         return $this;
     }
 
@@ -156,11 +168,13 @@ class Php
 
     /**
      * @param string $includePath
+     *
      * @return $this
      */
     public function setIncludePath(string $includePath): self
     {
         $this->includePath = $includePath;
+
         return $this;
     }
 
@@ -174,11 +188,13 @@ class Php
 
     /**
      * @param string $openBasedir
+     *
      * @return $this
      */
     public function setOpenBasedir(string $openBasedir): self
     {
         $this->openBasedir = $openBasedir;
+
         return $this;
     }
 
@@ -192,11 +208,13 @@ class Php
 
     /**
      * @param string $sapiName
+     *
      * @return $this
      */
     public function setSapiName(string $sapiName): self
     {
         $this->sapiName = $sapiName;
+
         return $this;
     }
 
@@ -210,11 +228,13 @@ class Php
 
     /**
      * @param Opcache $opcache
+     *
      * @return $this
      */
     public function setOpcache(Opcache $opcache): self
     {
         $this->opcache = $opcache;
+
         return $this;
     }
 
@@ -228,11 +248,13 @@ class Php
 
     /**
      * @param Apcu $apcu
+     *
      * @return $this
      */
     public function setApcu(Apcu $apcu): self
     {
         $this->apcu = $apcu;
+
         return $this;
     }
 
@@ -246,11 +268,13 @@ class Php
 
     /**
      * @param string[] $disabledFunctions
+     *
      * @return $this
      */
     public function setDisabledFunctions(array $disabledFunctions): self
     {
         $this->disabledFunctions = $disabledFunctions;
+
         return $this;
     }
 
@@ -264,11 +288,13 @@ class Php
 
     /**
      * @param string[] $disabledClasses
+     *
      * @return $this
      */
     public function setDisabledClasses(array $disabledClasses): self
     {
         $this->disabledClasses = $disabledClasses;
+
         return $this;
     }
 
@@ -282,11 +308,13 @@ class Php
 
     /**
      * @param float $realpathCacheSizeUsed
+     *
      * @return $this
      */
     public function setRealpathCacheSizeUsed(float $realpathCacheSizeUsed): self
     {
         $this->realpathCacheSizeUsed = $realpathCacheSizeUsed;
+
         return $this;
     }
 
@@ -300,11 +328,13 @@ class Php
 
     /**
      * @param float|null $realpathCacheSizeAllowed
+     *
      * @return $this
      */
     public function setRealpathCacheSizeAllowed(?float $realpathCacheSizeAllowed): self
     {
         $this->realpathCacheSizeAllowed = $realpathCacheSizeAllowed;
+
         return $this;
     }
 }

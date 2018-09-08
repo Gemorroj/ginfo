@@ -19,11 +19,13 @@ class Partition
 
     /**
      * @param float $size
+     *
      * @return $this
      */
     public function setSize(float $size): self
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -37,13 +39,13 @@ class Partition
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
-
-
 }

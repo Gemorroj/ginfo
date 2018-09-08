@@ -27,11 +27,13 @@ class Service
 
     /**
      * @param null|string $encryption
+     *
      * @return $this
      */
     public function setEncryption(?string $encryption): self
     {
         $this->encryption = $encryption;
+
         return $this;
     }
 
@@ -45,11 +47,13 @@ class Service
 
     /**
      * @param null|string $signing
+     *
      * @return $this
      */
     public function setSigning(?string $signing): self
     {
         $this->signing = $signing;
+
         return $this;
     }
 
@@ -63,11 +67,13 @@ class Service
 
     /**
      * @param string $service
+     *
      * @return $this
      */
     public function setService(string $service): self
     {
         $this->service = $service;
+
         return $this;
     }
 
@@ -81,11 +87,13 @@ class Service
 
     /**
      * @param int $pid
+     *
      * @return $this
      */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
+
         return $this;
     }
 
@@ -99,11 +107,13 @@ class Service
 
     /**
      * @param string $machine
+     *
      * @return $this
      */
     public function setMachine(string $machine): self
     {
         $this->machine = $machine;
+
         return $this;
     }
 
@@ -117,11 +127,13 @@ class Service
 
     /**
      * @param \DateTime $connectedAt
+     *
      * @return $this
      */
     public function setConnectedAt(\DateTime $connectedAt): self
     {
         $this->connectedAt = $connectedAt;
+
         return $this;
     }
 }

@@ -39,11 +39,13 @@ class Opcache
 
     /**
      * @param int|null $internedStringsUsedMemory
+     *
      * @return $this
      */
     public function setInternedStringsUsedMemory(?int $internedStringsUsedMemory): self
     {
         $this->internedStringsUsedMemory = $internedStringsUsedMemory;
+
         return $this;
     }
 
@@ -57,11 +59,13 @@ class Opcache
 
     /**
      * @param int|null $internedStringsFreeMemory
+     *
      * @return $this
      */
     public function setInternedStringsFreeMemory(?int $internedStringsFreeMemory): self
     {
         $this->internedStringsFreeMemory = $internedStringsFreeMemory;
+
         return $this;
     }
 
@@ -75,27 +79,29 @@ class Opcache
 
     /**
      * @param int|null $cachedInternedStrings
+     *
      * @return $this
      */
     public function setCachedInternedStrings(?int $cachedInternedStrings): self
     {
         $this->cachedInternedStrings = $cachedInternedStrings;
+
         return $this;
     }
 
     /**
      * @var int|null
-     * number of restarts because of out of memory
+     *               number of restarts because of out of memory
      */
     private $oomRestarts;
     /**
      * @var int|null
-     * number of restarts because of hash overflow
+     *               number of restarts because of hash overflow
      */
     private $hashRestarts;
     /**
      * @var int|null
-     * number of restarts scheduled by opcache_reset()
+     *               number of restarts scheduled by opcache_reset()
      */
     private $manualRestarts;
 
@@ -109,11 +115,13 @@ class Opcache
 
     /**
      * @param int|null $oomRestarts
+     *
      * @return $this
      */
     public function setOomRestarts(?int $oomRestarts): self
     {
         $this->oomRestarts = $oomRestarts;
+
         return $this;
     }
 
@@ -127,11 +135,13 @@ class Opcache
 
     /**
      * @param int|null $hashRestarts
+     *
      * @return $this
      */
     public function setHashRestarts(?int $hashRestarts): self
     {
         $this->hashRestarts = $hashRestarts;
+
         return $this;
     }
 
@@ -145,29 +155,33 @@ class Opcache
 
     /**
      * @param int|null $manualRestarts
+     *
      * @return $this
      */
     public function setManualRestarts(?int $manualRestarts): self
     {
         $this->manualRestarts = $manualRestarts;
+
         return $this;
     }
 
     /**
      * @return bool
      */
-    public function getEnabled(): bool
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
      * @param bool $enabled
+     *
      * @return $this
      */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -181,11 +195,13 @@ class Opcache
 
     /**
      * @param bool|null $configEnable
+     *
      * @return $this
      */
     public function setConfigEnable(?bool $configEnable): self
     {
         $this->configEnable = $configEnable;
+
         return $this;
     }
 
@@ -199,11 +215,13 @@ class Opcache
 
     /**
      * @param bool|null $configEnableCli
+     *
      * @return $this
      */
     public function setConfigEnableCli(?bool $configEnableCli): self
     {
         $this->configEnableCli = $configEnableCli;
+
         return $this;
     }
 
@@ -217,11 +235,13 @@ class Opcache
 
     /**
      * @param int|null $usedMemory
+     *
      * @return $this
      */
     public function setUsedMemory(?int $usedMemory): self
     {
         $this->usedMemory = $usedMemory;
+
         return $this;
     }
 
@@ -235,11 +255,13 @@ class Opcache
 
     /**
      * @param int|null $freeMemory
+     *
      * @return $this
      */
     public function setFreeMemory(?int $freeMemory): self
     {
         $this->freeMemory = $freeMemory;
+
         return $this;
     }
 
@@ -253,11 +275,13 @@ class Opcache
 
     /**
      * @param int|null $cachedScripts
+     *
      * @return $this
      */
     public function setCachedScripts(?int $cachedScripts): self
     {
         $this->cachedScripts = $cachedScripts;
+
         return $this;
     }
 
@@ -271,11 +295,13 @@ class Opcache
 
     /**
      * @param int|null $hits
+     *
      * @return $this
      */
     public function setHits(?int $hits): self
     {
         $this->hits = $hits;
+
         return $this;
     }
 
@@ -289,11 +315,13 @@ class Opcache
 
     /**
      * @param int|null $misses
+     *
      * @return $this
      */
     public function setMisses(?int $misses): self
     {
         $this->misses = $misses;
+
         return $this;
     }
 
@@ -307,11 +335,13 @@ class Opcache
 
     /**
      * @param string|null $version
+     *
      * @return $this
      */
     public function setVersion(?string $version): self
     {
         $this->version = $version;
+
         return $this;
     }
 }

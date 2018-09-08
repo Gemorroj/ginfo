@@ -6,24 +6,24 @@ use Ginfo\Parsers\Parser;
 
 class Hddtemp implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
-
 
     /**
-     * Connect to host/port and get info
+     * Connect to host/port and get info.
      *
      * @param string $host
-     * @param int $port
-     * @param int $timeout
+     * @param int    $port
+     * @param int    $timeout
+     *
      * @return null|string
      */
-    private function getData(string $host, int $port, int $timeout) : ?string
+    private function getData(string $host, int $port, int $timeout): ?string
     {
         $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$sock) {
@@ -40,12 +40,13 @@ class Hddtemp implements Parser
     }
 
     /**
-     * Parse and return info from daemon socket
+     * Parse and return info from daemon socket.
      *
      * @param string $data
+     *
      * @return array
      */
-    private function parseSockData(string $data) : array
+    private function parseSockData(string $data): array
     {
         // Kill surounding ||'s and split it by pipes
         $drives = \explode('||', \trim($data, '|'));
@@ -55,7 +56,7 @@ class Hddtemp implements Parser
             [$path, $name, $temp, $unit] = \explode('|', \trim($drive));
 
             // Ignore garbled output from SSDs that hddtemp cant parse
-            if (\mb_strpos($temp, 'UNK') !== false) {
+            if (false !== \mb_strpos($temp, 'UNK')) {
                 continue;
             }
 
@@ -77,11 +78,12 @@ class Hddtemp implements Parser
 
     /**
      * @param string $host
-     * @param int $port
-     * @param int $timeout
+     * @param int    $port
+     * @param int    $timeout
+     *
      * @return array|null
      */
-    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1) : ?array
+    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
     {
         $obj = new self();
         $data = $obj->getData($host, $port, $timeout);

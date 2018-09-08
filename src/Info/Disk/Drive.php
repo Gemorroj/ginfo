@@ -31,11 +31,13 @@ class Drive
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -49,11 +51,13 @@ class Drive
 
     /**
      * @param null|string $vendor
+     *
      * @return $this
      */
     public function setVendor(?string $vendor): self
     {
         $this->vendor = $vendor;
+
         return $this;
     }
 
@@ -67,11 +71,13 @@ class Drive
 
     /**
      * @param string $device
+     *
      * @return $this
      */
     public function setDevice(string $device): self
     {
         $this->device = $device;
+
         return $this;
     }
 
@@ -85,11 +91,13 @@ class Drive
 
     /**
      * @param float|null $reads
+     *
      * @return $this
      */
     public function setReads(?float $reads): self
     {
         $this->reads = $reads;
+
         return $this;
     }
 
@@ -103,11 +111,13 @@ class Drive
 
     /**
      * @param float|null $writes
+     *
      * @return $this
      */
     public function setWrites(?float $writes): self
     {
         $this->writes = $writes;
+
         return $this;
     }
 
@@ -121,11 +131,13 @@ class Drive
 
     /**
      * @param float $size
+     *
      * @return $this
      */
     public function setSize(float $size): self
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -139,13 +151,13 @@ class Drive
 
     /**
      * @param Partition[]|null $partitions
+     *
      * @return $this
      */
     public function setPartitions(?array $partitions): self
     {
         $this->partitions = $partitions;
+
         return $this;
     }
-
-
 }

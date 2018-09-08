@@ -33,11 +33,13 @@ class Mount
 
     /**
      * @param string $device
+     *
      * @return $this
      */
     public function setDevice(string $device): self
     {
         $this->device = $device;
+
         return $this;
     }
 
@@ -51,11 +53,13 @@ class Mount
 
     /**
      * @param string $mount
+     *
      * @return $this
      */
     public function setMount(string $mount): self
     {
         $this->mount = $mount;
+
         return $this;
     }
 
@@ -69,11 +73,13 @@ class Mount
 
     /**
      * @param string $type
+     *
      * @return $this
      */
     public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -87,11 +93,13 @@ class Mount
 
     /**
      * @param float|null $size
+     *
      * @return $this
      */
     public function setSize(?float $size): self
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -105,11 +113,13 @@ class Mount
 
     /**
      * @param float|null $used
+     *
      * @return $this
      */
     public function setUsed(?float $used): self
     {
         $this->used = $used;
+
         return $this;
     }
 
@@ -123,11 +133,13 @@ class Mount
 
     /**
      * @param float|null $free
+     *
      * @return $this
      */
     public function setFree(?float $free): self
     {
         $this->free = $free;
+
         return $this;
     }
 
@@ -141,11 +153,13 @@ class Mount
 
     /**
      * @param float|null $freePercent
+     *
      * @return $this
      */
     public function setFreePercent(?float $freePercent): self
     {
         $this->freePercent = $freePercent;
+
         return $this;
     }
 
@@ -159,11 +173,13 @@ class Mount
 
     /**
      * @param float|null $usedPercent
+     *
      * @return $this
      */
     public function setUsedPercent(?float $usedPercent): self
     {
         $this->usedPercent = $usedPercent;
+
         return $this;
     }
 
@@ -177,11 +193,13 @@ class Mount
 
     /**
      * @param string[] $options
+     *
      * @return $this
      */
     public function setOptions(array $options): self
     {
         $this->options = $options;
+
         return $this;
     }
 }

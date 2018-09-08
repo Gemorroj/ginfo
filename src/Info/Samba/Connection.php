@@ -31,11 +31,13 @@ class Connection
 
     /**
      * @param null|string $encryption
+     *
      * @return $this
      */
     public function setEncryption(?string $encryption): self
     {
         $this->encryption = $encryption;
+
         return $this;
     }
 
@@ -49,11 +51,13 @@ class Connection
 
     /**
      * @param null|string $signing
+     *
      * @return $this
      */
     public function setSigning(?string $signing): self
     {
         $this->signing = $signing;
+
         return $this;
     }
 
@@ -67,11 +71,13 @@ class Connection
 
     /**
      * @param int $pid
+     *
      * @return $this
      */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
+
         return $this;
     }
 
@@ -85,11 +91,13 @@ class Connection
 
     /**
      * @param string $user
+     *
      * @return $this
      */
     public function setUser(string $user): self
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -103,11 +111,13 @@ class Connection
 
     /**
      * @param string $group
+     *
      * @return $this
      */
     public function setGroup(string $group): self
     {
         $this->group = $group;
+
         return $this;
     }
 
@@ -121,11 +131,13 @@ class Connection
 
     /**
      * @param string $host
+     *
      * @return $this
      */
     public function setHost(string $host): self
     {
         $this->host = $host;
+
         return $this;
     }
 
@@ -139,11 +151,13 @@ class Connection
 
     /**
      * @param string $ip
+     *
      * @return $this
      */
     public function setIp(string $ip): self
     {
         $this->ip = $ip;
+
         return $this;
     }
 
@@ -157,11 +171,13 @@ class Connection
 
     /**
      * @param string $protocolVersion
+     *
      * @return $this
      */
     public function setProtocolVersion(string $protocolVersion): self
     {
         $this->protocolVersion = $protocolVersion;
+
         return $this;
     }
 }

@@ -25,11 +25,13 @@ class Service
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -43,11 +45,13 @@ class Service
 
     /**
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription(string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -61,11 +65,13 @@ class Service
 
     /**
      * @param bool $loaded
+     *
      * @return $this
      */
     public function setLoaded(bool $loaded): self
     {
         $this->loaded = $loaded;
+
         return $this;
     }
 
@@ -79,11 +85,13 @@ class Service
 
     /**
      * @param bool $started
+     *
      * @return $this
      */
     public function setStarted(bool $started): self
     {
         $this->started = $started;
+
         return $this;
     }
 
@@ -97,12 +105,13 @@ class Service
 
     /**
      * @param string $state
+     *
      * @return $this
      */
     public function setState(string $state): self
     {
         $this->state = $state;
+
         return $this;
     }
-
 }

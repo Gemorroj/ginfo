@@ -33,11 +33,13 @@ class File
 
     /**
      * @param int $pid
+     *
      * @return $this
      */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
+
         return $this;
     }
 
@@ -51,11 +53,13 @@ class File
 
     /**
      * @param string $user
+     *
      * @return $this
      */
     public function setUser(string $user): self
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -69,11 +73,13 @@ class File
 
     /**
      * @param string $denyMode
+     *
      * @return $this
      */
     public function setDenyMode(string $denyMode): self
     {
         $this->denyMode = $denyMode;
+
         return $this;
     }
 
@@ -87,11 +93,13 @@ class File
 
     /**
      * @param string $access
+     *
      * @return $this
      */
     public function setAccess(string $access): self
     {
         $this->access = $access;
+
         return $this;
     }
 
@@ -105,11 +113,13 @@ class File
 
     /**
      * @param string $rw
+     *
      * @return $this
      */
     public function setRw(string $rw): self
     {
         $this->rw = $rw;
+
         return $this;
     }
 
@@ -123,11 +133,13 @@ class File
 
     /**
      * @param string $oplock
+     *
      * @return $this
      */
     public function setOplock(string $oplock): self
     {
         $this->oplock = $oplock;
+
         return $this;
     }
 
@@ -141,11 +153,13 @@ class File
 
     /**
      * @param string $sharePath
+     *
      * @return $this
      */
     public function setSharePath(string $sharePath): self
     {
         $this->sharePath = $sharePath;
+
         return $this;
     }
 
@@ -159,11 +173,13 @@ class File
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -177,13 +193,13 @@ class File
 
     /**
      * @param \DateTime $time
+     *
      * @return $this
      */
     public function setTime(\DateTime $time): self
     {
         $this->time = $time;
+
         return $this;
     }
-
-
 }

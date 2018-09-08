@@ -33,11 +33,13 @@ class Apcu
 
     /**
      * @param string|null $version
+     *
      * @return $this
      */
     public function setVersion(?string $version): self
     {
         $this->version = $version;
+
         return $this;
     }
 
@@ -51,11 +53,13 @@ class Apcu
 
     /**
      * @param bool $enabled
+     *
      * @return $this
      */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -69,11 +73,13 @@ class Apcu
 
     /**
      * @param bool|null $configEnable
+     *
      * @return $this
      */
     public function setConfigEnable(?bool $configEnable): self
     {
         $this->configEnable = $configEnable;
+
         return $this;
     }
 
@@ -87,11 +93,13 @@ class Apcu
 
     /**
      * @param bool|null $configEnableCli
+     *
      * @return $this
      */
     public function setConfigEnableCli(?bool $configEnableCli): self
     {
         $this->configEnableCli = $configEnableCli;
+
         return $this;
     }
 
@@ -105,11 +113,13 @@ class Apcu
 
     /**
      * @param int|null $hits
+     *
      * @return $this
      */
     public function setHits(?int $hits): self
     {
         $this->hits = $hits;
+
         return $this;
     }
 
@@ -123,11 +133,13 @@ class Apcu
 
     /**
      * @param int|null $misses
+     *
      * @return $this
      */
     public function setMisses(?int $misses): self
     {
         $this->misses = $misses;
+
         return $this;
     }
 
@@ -141,11 +153,13 @@ class Apcu
 
     /**
      * @param int|null $usedMemory
+     *
      * @return $this
      */
     public function setUsedMemory(?int $usedMemory): self
     {
         $this->usedMemory = $usedMemory;
+
         return $this;
     }
 
@@ -159,11 +173,13 @@ class Apcu
 
     /**
      * @param int|null $freeMemory
+     *
      * @return $this
      */
     public function setFreeMemory(?int $freeMemory): self
     {
         $this->freeMemory = $freeMemory;
+
         return $this;
     }
 
@@ -177,11 +193,13 @@ class Apcu
 
     /**
      * @param int|null $cachedVariables
+     *
      * @return $this
      */
     public function setCachedVariables(?int $cachedVariables): self
     {
         $this->cachedVariables = $cachedVariables;
+
         return $this;
     }
 }

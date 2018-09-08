@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
  */
 class Ipmi implements Parser
 {
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $process = new Process('ipmitool sdr', null, ['LANG' => 'C']);
         $process->run();

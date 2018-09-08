@@ -6,22 +6,22 @@ use Ginfo\Common;
 
 class Mdadm implements Parser
 {
-    final private function __construct()
+    private function __construct()
     {
     }
 
-    final private function __clone()
+    private function __clone()
     {
     }
 
-    public static function work() : ?array
+    public static function work(): ?array
     {
         $mdadmContents = Common::getContents('/proc/mdstat');
         if (null === $mdadmContents) {
             return null;
         }
 
-        if (false === \preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string)$mdadmContents, $match, \PREG_SET_ORDER)) {
+        if (false === \preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadmContents, $match, \PREG_SET_ORDER)) {
             return null;
         }
 
@@ -29,7 +29,7 @@ class Mdadm implements Parser
         foreach ($match as $array) {
             $drives = [];
             foreach (\explode(' ', $array[4]) as $drive) {
-                if (\preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $matchDrive) === 1) {
+                if (1 === \preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $matchDrive)) {
                     // Determine a status other than normal, like if it failed or is a spare
                     if (\array_key_exists(2, $matchDrive)) {
                         switch ($matchDrive[2]) {
@@ -53,14 +53,14 @@ class Mdadm implements Parser
                     }
 
                     $drives[] = [
-                        'path' => '/dev/' . $matchDrive[1],
+                        'path' => '/dev/'.$matchDrive[1],
                         'state' => $driveState,
                     ];
                 }
             }
 
             $mdadmArrays[] = [
-                'device' => '/dev/' . $array[1],
+                'device' => '/dev/'.$array[1],
                 'status' => $array[2],
                 'level' => $array[3],
                 'drives' => $drives,
