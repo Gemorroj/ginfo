@@ -441,15 +441,15 @@ class Linux extends OS
             $tmp->setType($type);
             $tmp->setStatsReceived(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path . '/statistics/rx_bytes'))
-                    ->setErrors(Common::getContents($path . '/statistics/rx_errors'))
-                    ->setPackets(Common::getContents($path . '/statistics/rx_packets'))
+                    ->setBytes(Common::getContents($path . '/statistics/rx_bytes', 0))
+                    ->setErrors(Common::getContents($path . '/statistics/rx_errors', 0))
+                    ->setPackets(Common::getContents($path . '/statistics/rx_packets', 0))
             );
             $tmp->setStatsSent(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path . '/statistics/tx_bytes'))
-                    ->setErrors(Common::getContents($path . '/statistics/tx_errors'))
-                    ->setPackets(Common::getContents($path . '/statistics/tx_packets'))
+                    ->setBytes(Common::getContents($path . '/statistics/tx_bytes', 0))
+                    ->setErrors(Common::getContents($path . '/statistics/tx_errors', 0))
+                    ->setPackets(Common::getContents($path . '/statistics/tx_packets', 0))
             );
 
             $return[] = $tmp;
