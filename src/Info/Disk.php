@@ -8,27 +8,27 @@ use Ginfo\Info\Disk\Raid;
 
 class Disk
 {
-    /** @var Mount[] */
+    /** @var Mount[]|null */
     private $mounts;
-    /** @var Drive[] */
+    /** @var Drive[]|null */
     private $drives;
     /** @var Raid[]|null */
     private $raids;
 
     /**
-     * @return Mount[]
+     * @return Mount[]|null
      */
-    public function getMounts(): array
+    public function getMounts(): ?array
     {
         return $this->mounts;
     }
 
     /**
-     * @param Mount[] $mounts
+     * @param Mount[]|null $mounts
      *
      * @return $this
      */
-    public function setMounts(array $mounts): self
+    public function setMounts(?array $mounts): self
     {
         $this->mounts = $mounts;
 
@@ -36,19 +36,19 @@ class Disk
     }
 
     /**
-     * @return Drive[]
+     * @return Drive[]|null
      */
-    public function getDrives(): array
+    public function getDrives(): ?array
     {
         return $this->drives;
     }
 
     /**
-     * @param Drive[] $drives
+     * @param Drive[]|null $drives
      *
      * @return $this
      */
-    public function setDrives(array $drives): self
+    public function setDrives(?array $drives): self
     {
         $this->drives = $drives;
 
