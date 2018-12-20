@@ -40,9 +40,12 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testCpu()
     {
         $cpu = $this->info->getCpu();
-        $this->assertInstanceOf(Info\Cpu::class, $cpu);
-
-        \print_r($cpu);
+        if (null === $cpu) {
+            $this->markTestSkipped('Can\'t get cpu');
+        } else {
+            $this->assertInstanceOf(Info\Cpu::class, $cpu);
+            \print_r($cpu);
+        }
     }
 
     public function testMemory()
@@ -59,33 +62,45 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testProcesses()
     {
         $processes = $this->info->getProcesses();
-        $this->assertInternalType('array', $processes);
-
-        \print_r($processes);
+        if (null === $processes) {
+            $this->markTestSkipped('Can\'t get processes');
+        } else {
+            $this->assertInternalType('array', $processes);
+            \print_r($processes);
+        }
     }
 
     public function testNetwork()
     {
         $network = $this->info->getNetwork();
-        $this->assertInternalType('array', $network);
-
-        \print_r($network);
+        if (null === $network) {
+            $this->markTestSkipped('Can\'t get network');
+        } else {
+            $this->assertInternalType('array', $network);
+            \print_r($network);
+        }
     }
 
     public function testUsb()
     {
         $usb = $this->info->getUsb();
-        $this->assertInternalType('array', $usb);
-
-        \print_r($usb);
+        if (null === $usb) {
+            $this->markTestSkipped('Can\'t get usb');
+        } else {
+            $this->assertInternalType('array', $usb);
+            \print_r($usb);
+        }
     }
 
     public function testPci()
     {
         $pci = $this->info->getPci();
-        $this->assertInternalType('array', $pci);
-
-        \print_r($pci);
+        if (null === $pci) {
+            $this->markTestSkipped('Can\'t get pci');
+        } else {
+            $this->assertInternalType('array', $pci);
+            \print_r($pci);
+        }
     }
 
     public function testSoundCard()
@@ -206,16 +221,30 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
     public function testDisk()
     {
         $disk = $this->info->getDisk();
-        $this->assertInternalType('array', $disk->getDrives());
-        $this->assertInternalType('array', $disk->getMounts());
 
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($disk->getRaids()); //todo
-            //$this->markTestSkipped('Not implemented for windows');
+        $drivers = $disk->getDrives();
+        $mounts = $disk->getMounts();
+        $raids = $disk->getRaids();
+
+        if (null === $drivers) {
+            $this->markTestSkipped('Can\'t get drivers');
         } else {
-            $this->assertInternalType('array', $disk->getRaids());
+            $this->assertInternalType('array', $drivers);
+            \print_r($drivers);
         }
 
-        \print_r($disk);
+        if (null === $mounts) {
+            $this->markTestSkipped('Can\'t get mounts');
+        } else {
+            $this->assertInternalType('array', $mounts);
+            \print_r($mounts);
+        }
+
+        if (null === $raids) {
+            $this->markTestSkipped('Can\'t get raids');
+        } else {
+            $this->assertInternalType('array', $raids);
+            \print_r($raids);
+        }
     }
 }
