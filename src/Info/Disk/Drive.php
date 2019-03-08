@@ -42,7 +42,7 @@ class Drive
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getVendor(): ?string
     {
@@ -50,7 +50,7 @@ class Drive
     }
 
     /**
-     * @param null|string $vendor
+     * @param string|null $vendor
      *
      * @return $this
      */

@@ -22,7 +22,7 @@ class Connection
     private $signing;
 
     /**
-     * @return null|string after samba 4.4
+     * @return string|null after samba 4.4
      */
     public function getEncryption(): ?string
     {
@@ -30,7 +30,7 @@ class Connection
     }
 
     /**
-     * @param null|string $encryption
+     * @param string|null $encryption
      *
      * @return $this
      */
@@ -42,7 +42,7 @@ class Connection
     }
 
     /**
-     * @return null|string after samba 4.4
+     * @return string|null after samba 4.4
      */
     public function getSigning(): ?string
     {
@@ -50,7 +50,7 @@ class Connection
     }
 
     /**
-     * @param null|string $signing
+     * @param string|null $signing
      *
      * @return $this
      */

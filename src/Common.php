@@ -14,7 +14,7 @@ class Common
      *
      * @param string[] $paths
      *
-     * @return null|string
+     * @return string|null
      */
     public static function locateActualPath(array $paths): ?string
     {

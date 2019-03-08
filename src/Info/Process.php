@@ -46,7 +46,7 @@ class Process
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getCommandLine(): ?string
     {
@@ -54,7 +54,7 @@ class Process
     }
 
     /**
-     * @param null|string $commandLine
+     * @param string|null $commandLine
      *
      * @return $this
      */

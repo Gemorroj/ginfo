@@ -21,7 +21,7 @@ class Hddtemp implements Parser
      * @param int    $port
      * @param int    $timeout
      *
-     * @return null|string
+     * @return string|null
      */
     private function getData(string $host, int $port, int $timeout): ?string
     {

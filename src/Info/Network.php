@@ -100,7 +100,7 @@ class Network
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getType(): ?string
     {
@@ -108,7 +108,7 @@ class Network
     }
 
     /**
-     * @param null|string $type
+     * @param string|null $type
      *
      * @return $this
      */

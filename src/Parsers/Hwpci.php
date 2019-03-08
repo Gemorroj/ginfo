@@ -74,7 +74,7 @@ class Hwpci implements Parser
      */
     private function fetchPciNames(): void
     {
-        for ($v = false, $file = \fopen($this->file, 'rb'); false !== $file && $contents = \fgets($file);) {
+        for ($v = false, $file = \fopen($this->file, 'r'); false !== $file && $contents = \fgets($file);) {
             if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
             } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {
@@ -91,7 +91,7 @@ class Hwpci implements Parser
      */
     private function fetchUsbNames(): void
     {
-        for ($v = false, $file = \fopen($this->file, 'rb'); false !== $file && $contents = \fgets($file);) {
+        for ($v = false, $file = \fopen($this->file, 'r'); false !== $file && $contents = \fgets($file);) {
             if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
             } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {

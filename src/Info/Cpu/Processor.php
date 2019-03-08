@@ -78,7 +78,7 @@ class Processor
     /**
      * @see https://unix.stackexchange.com/questions/43539/what-do-the-flags-in-proc-cpuinfo-mean#answer-43540
      *
-     * @return null|string[]
+     * @return string[]|null
      */
     public function getFlags(): ?array
     {
@@ -86,7 +86,7 @@ class Processor
     }
 
     /**
-     * @param null|string[] $flags
+     * @param string[]|null $flags
      *
      * @return $this
      */

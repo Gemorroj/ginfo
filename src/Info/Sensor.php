@@ -14,7 +14,7 @@ class Sensor
     private $unit;
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getPath(): ?string
     {
@@ -22,7 +22,7 @@ class Sensor
     }
 
     /**
-     * @param null|string $path
+     * @param string|null $path
      *
      * @return $this
      */
@@ -76,7 +76,7 @@ class Sensor
     /**
      * C - celsius, F - Fahrenheit, V - Volt, W - Watt, RPM - revolution per minute, % - Percent.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getUnit(): ?string
     {
@@ -84,7 +84,7 @@ class Sensor
     }
 
     /**
-     * @param null|string $unit
+     * @param string|null $unit
      *
      * @return $this
      */

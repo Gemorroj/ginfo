@@ -30,7 +30,7 @@ class Drive
     }
 
     /**
-     * @return null|string
+     * @return string|null
      */
     public function getState(): ?string
     {
@@ -38,7 +38,7 @@ class Drive
     }
 
     /**
-     * @param null|string $state
+     * @param string|null $state
      *
      * @return $this
      */
