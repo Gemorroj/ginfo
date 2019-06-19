@@ -218,7 +218,7 @@ class Info
         $apcuCacheInfo = \function_exists('apcu_cache_info') ? @\apcu_cache_info(true) : null;
         $apcuSmaInfo = \function_exists('apcu_sma_info') ? @\apcu_sma_info(true) : null;
 
-        $fastcgiInfo = \function_exists('fpm_get_status') ? \fpm_get_status() : null;
+        $fpmInfo = \function_exists('fpm_get_status') ? \fpm_get_status() : null;
 
         $disabledFunctions = \ini_get('disable_functions');
         $disabledClasses = \ini_get('disable_classes');
@@ -267,24 +267,24 @@ class Info
                     ->setHits($apcuCacheInfo['num_hits'] ?? null)
                     ->setMisses($apcuCacheInfo['num_misses'] ?? null)
             )
-            ->setFastcgi(
-                (new Php\Fastcgi())
-                    ->setEnabled(!empty($fastcgiInfo))
-                    ->setAcceptedConnections($fastcgiInfo['accepted-conn'] ?? null)
-                    ->setActiveProcesses($fastcgiInfo['active-processes'] ?? null)
-                    ->setIdleProcesses($fastcgiInfo['idle-processes'] ?? null)
-                    ->setListenQueue($fastcgiInfo['listen-queue'] ?? null)
-                    ->setListenQueueLength($fastcgiInfo['listen-queue-len'] ?? null)
-                    ->setMaxActiveProcesses($fastcgiInfo['max-active-processes'] ?? null)
-                    ->setMaxChildrenReached($fastcgiInfo['max-children-reached'] ?? null)
-                    ->setMaxListenQueue($fastcgiInfo['max-listen-queue'] ?? null)
-                    ->setPool($fastcgiInfo['pool'] ?? null)
-                    ->setProcessManager($fastcgiInfo['process-manager'] ?? null)
-                    ->setSlowRequests($fastcgiInfo['slow-requests'] ?? null)
-                    ->setStartTime(isset($fastcgiInfo['start-time']) ? new \DateTime('@'.$fastcgiInfo['start-time']) : null)
-                    ->setTotalProcesses($fastcgiInfo['total-processes'] ?? null)
-                    ->setProcesses($fastcgiInfo['procs'] ? \array_map(static function (array $process): Php\FastcgiProcess {
-                        return (new Php\FastcgiProcess())
+            ->setFpm(
+                (new Php\Fpm())
+                    ->setEnabled(!empty($fpmInfo))
+                    ->setAcceptedConnections($fpmInfo['accepted-conn'] ?? null)
+                    ->setActiveProcesses($fpmInfo['active-processes'] ?? null)
+                    ->setIdleProcesses($fpmInfo['idle-processes'] ?? null)
+                    ->setListenQueue($fpmInfo['listen-queue'] ?? null)
+                    ->setListenQueueLength($fpmInfo['listen-queue-len'] ?? null)
+                    ->setMaxActiveProcesses($fpmInfo['max-active-processes'] ?? null)
+                    ->setMaxChildrenReached($fpmInfo['max-children-reached'] ?? null)
+                    ->setMaxListenQueue($fpmInfo['max-listen-queue'] ?? null)
+                    ->setPool($fpmInfo['pool'] ?? null)
+                    ->setProcessManager($fpmInfo['process-manager'] ?? null)
+                    ->setSlowRequests($fpmInfo['slow-requests'] ?? null)
+                    ->setStartTime(isset($fpmInfo['start-time']) ? new \DateTime('@'.$fpmInfo['start-time']) : null)
+                    ->setTotalProcesses($fpmInfo['total-processes'] ?? null)
+                    ->setProcesses($fpmInfo['procs'] ? \array_map(static function (array $process): Php\FpmProcess {
+                        return (new Php\FpmProcess())
                             ->setStartTime(new \DateTime('@'.$process['start-time']))
                             ->setLastRequestCpu($process['last-request-cpu'])
                             ->setLastRequestMemory($process['last-request-memory'])
@@ -299,7 +299,7 @@ class Info
                             ->setState($process['state'])
                             ->setUser($process['user'])
                             ;
-                    }, $fastcgiInfo['procs']) : null)
+                    }, $fpmInfo['procs']) : null)
             );
     }
 }

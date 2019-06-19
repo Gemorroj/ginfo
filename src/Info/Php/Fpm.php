@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class Fastcgi
+class Fpm
 {
     /** @var bool */
     private $enabled;
@@ -32,7 +32,7 @@ class Fastcgi
     private $maxChildrenReached;
     /** @var int|null */
     private $slowRequests;
-    /** @var FastcgiProcess[]|null */
+    /** @var FpmProcess[]|null */
     private $processes;
 
     /**
@@ -316,7 +316,7 @@ class Fastcgi
     }
 
     /**
-     * @return FastcgiProcess[]|null
+     * @return FpmProcess[]|null
      */
     public function getProcesses(): ?array
     {
@@ -324,7 +324,7 @@ class Fastcgi
     }
 
     /**
-     * @param FastcgiProcess[]|null $processes
+     * @param FpmProcess[]|null $processes
      *
      * @return $this
      */

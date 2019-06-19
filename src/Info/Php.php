@@ -3,7 +3,7 @@
 namespace Ginfo\Info;
 
 use Ginfo\Info\Php\Apcu;
-use Ginfo\Info\Php\Fastcgi;
+use Ginfo\Info\Php\Fpm;
 use Ginfo\Info\Php\Opcache;
 
 class Php
@@ -38,8 +38,8 @@ class Php
     private $zendThreadSafe;
     /** @var int */
     private $memoryLimit;
-    /** @var Fastcgi */
-    private $fastcgi;
+    /** @var Fpm */
+    private $fpm;
 
     /**
      * @return int
@@ -242,21 +242,21 @@ class Php
     }
 
     /**
-     * @return Fastcgi
+     * @return Fpm
      */
-    public function getFastcgi(): Fastcgi
+    public function getFpm(): Fpm
     {
-        return $this->fastcgi;
+        return $this->fpm;
     }
 
     /**
-     * @param Fastcgi $fastcgi
+     * @param Fpm $fpm
      *
      * @return $this
      */
-    public function setFastcgi(Fastcgi $fastcgi): self
+    public function setFpm(Fpm $fpm): self
     {
-        $this->fastcgi = $fastcgi;
+        $this->fpm = $fpm;
 
         return $this;
     }

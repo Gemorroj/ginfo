@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class FastcgiProcess
+class FpmProcess
 {
     /** @var int */
     private $pid;

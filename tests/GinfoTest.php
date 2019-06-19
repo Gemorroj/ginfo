@@ -25,7 +25,7 @@ class GinfoTest extends TestCase
 
         $this->assertIsBool($php->getApcu()->isEnabled());
         $this->assertIsBool($php->getOpcache()->isEnabled());
-        $this->assertIsBool($php->getFastcgi()->isEnabled());
+        $this->assertIsBool($php->getFpm()->isEnabled());
 
         \print_r($php);
     }
