@@ -172,7 +172,7 @@ class Linux extends OS
             $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
-            if (1 !== \preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+$/', Common::getContents(\dirname(\dirname($path)).'/stat'), $statMatches)) {
+            if (1 !== \preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)/', Common::getContents(\dirname($path, 2).'/stat'), $statMatches)) {
                 $reads = null;
                 $writes = null;
             } else {
@@ -180,12 +180,12 @@ class Linux extends OS
             }
 
             $drives[] = (new Drive())
-                ->setSize(Common::getContents(\dirname(\dirname($path)).'/size', 0) * 512)
+                ->setSize(Common::getContents(\dirname($path, 2).'/size', 0) * 512)
                 ->setDevice('/dev/'.$parts[3])
                 ->setPartitions((function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($parts[3]))
-                ->setName(Common::getContents($path).('0' === Common::getContents(\dirname(\dirname($path)).'/queue/rotational') ? ' (SSD)' : ''))
+                ->setName(Common::getContents($path).('0' === Common::getContents(\dirname($path, 2).'/queue/rotational') ? ' (SSD)' : ''))
                 ->setReads($reads)
                 ->setVendor(Common::getContents(\dirname($path).'/vendor'))
                 ->setWrites($writes);
