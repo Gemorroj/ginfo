@@ -25,8 +25,6 @@ class Fpm
     /** @var int|null */
     private $activeProcesses;
     /** @var int|null */
-    private $totalProcesses;
-    /** @var int|null */
     private $maxActiveProcesses;
     /** @var int|null */
     private $maxChildrenReached;
@@ -231,26 +229,6 @@ class Fpm
     public function setActiveProcesses(?int $activeProcesses): self
     {
         $this->activeProcesses = $activeProcesses;
-
-        return $this;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function getTotalProcesses(): ?int
-    {
-        return $this->totalProcesses;
-    }
-
-    /**
-     * @param int|null $totalProcesses
-     *
-     * @return $this
-     */
-    public function setTotalProcesses(?int $totalProcesses): self
-    {
-        $this->totalProcesses = $totalProcesses;
 
         return $this;
     }
