@@ -4,8 +4,9 @@ namespace Ginfo\Tests;
 
 use Ginfo\Ginfo;
 use Ginfo\Info;
+use PHPUnit\Framework\TestCase;
 
-class GinfoTest extends \PHPUnit\Framework\TestCase
+class GinfoTest extends TestCase
 {
     /** @var Info */
     private $info;
@@ -16,28 +17,29 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         $this->info = $ginfo->getInfo();
     }
 
-    public function testPhp()
+    public function testPhp(): void
     {
         $php = $this->info->getPhp();
 
         $this->assertSame('cli', $php->getSapiName());
 
-        $this->assertInternalType('bool', $php->getApcu()->isEnabled());
-        $this->assertInternalType('bool', $php->getOpcache()->isEnabled());
+        $this->assertIsBool($php->getApcu()->isEnabled());
+        $this->assertIsBool($php->getOpcache()->isEnabled());
+        $this->assertIsBool($php->getFastcgi()->isEnabled());
 
         \print_r($php);
     }
 
-    public function testGeneral()
+    public function testGeneral(): void
     {
         $general = $this->info->getGeneral();
 
-        $this->assertInternalType('string', $general->getOsName());
+        $this->assertIsString($general->getOsName());
 
         \print_r($general);
     }
 
-    public function testCpu()
+    public function testCpu(): void
     {
         $cpu = $this->info->getCpu();
         if (null === $cpu) {
@@ -48,7 +50,7 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testMemory()
+    public function testMemory(): void
     {
         $memory = $this->info->getMemory();
         if (null === $memory) {
@@ -59,73 +61,73 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testProcesses()
+    public function testProcesses(): void
     {
         $processes = $this->info->getProcesses();
         if (null === $processes) {
             $this->markTestSkipped('Can\'t get processes');
         } else {
-            $this->assertInternalType('array', $processes);
+            $this->assertIsArray($processes);
             \print_r($processes);
         }
     }
 
-    public function testNetwork()
+    public function testNetwork(): void
     {
         $network = $this->info->getNetwork();
         if (null === $network) {
             $this->markTestSkipped('Can\'t get network');
         } else {
-            $this->assertInternalType('array', $network);
+            $this->assertIsArray($network);
             \print_r($network);
         }
     }
 
-    public function testUsb()
+    public function testUsb(): void
     {
         $usb = $this->info->getUsb();
         if (null === $usb) {
             $this->markTestSkipped('Can\'t get usb');
         } else {
-            $this->assertInternalType('array', $usb);
+            $this->assertIsArray($usb);
             \print_r($usb);
         }
     }
 
-    public function testPci()
+    public function testPci(): void
     {
         $pci = $this->info->getPci();
         if (null === $pci) {
             $this->markTestSkipped('Can\'t get pci');
         } else {
-            $this->assertInternalType('array', $pci);
+            $this->assertIsArray($pci);
             \print_r($pci);
         }
     }
 
-    public function testSoundCard()
+    public function testSoundCard(): void
     {
         $soundCard = $this->info->getSoundCard();
         if (null === $soundCard) {
             $this->markTestSkipped('Can\'t get sound card');
         } else {
-            $this->assertInternalType('array', $soundCard);
+            $this->assertIsArray($soundCard);
             \print_r($soundCard);
         }
     }
 
-    public function testServices()
+    public function testServices(): void
     {
         $services = $this->info->getServices();
         if (null === $services) {
             $this->markTestSkipped('Can\'t get services (need systemd)');
         } else {
-            $this->assertInternalType('array', $services);
+            $this->assertIsArray($services);
             \print_r($services);
         }
     }
 
-    public function testSamba()
+    public function testSamba(): void
     {
         $samba = $this->info->getSamba();
         if (\DIRECTORY_SEPARATOR === '\\') {
@@ -141,7 +143,7 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testUps()
+    public function testUps(): void
     {
         $ups = $this->info->getUps();
         if (\DIRECTORY_SEPARATOR === '\\') {
@@ -157,7 +159,7 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testSelinux()
+    public function testSelinux(): void
     {
         $selinux = $this->info->getSelinux();
         if (\DIRECTORY_SEPARATOR === '\\') {
@@ -173,20 +175,20 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function testBattery()
+    public function testBattery(): void
     {
         $battery = $this->info->getBattery();
         if (\DIRECTORY_SEPARATOR === '\\') {
             $this->assertNull($battery); //todo
             $this->markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertInternalType('array', $battery);
+            $this->assertIsArray($battery);
         }
 
         \print_r($battery);
     }
 
-    public function testSensors()
+    public function testSensors(): void
     {
         $sensors = $this->info->getSensors();
         if (\DIRECTORY_SEPARATOR === '\\') {
@@ -196,13 +198,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             if (null === $sensors) {
                 $this->markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
             } else {
-                $this->assertInternalType('array', $sensors);
+                $this->assertIsArray($sensors);
                 \print_r($sensors);
             }
         }
     }
 
-    public function testPrinters()
+    public function testPrinters(): void
     {
         $printers = $this->info->getPrinters();
         if (\DIRECTORY_SEPARATOR === '\\') {
@@ -212,13 +214,13 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
             if (null === $printers) {
                 $this->markTestSkipped('Can\'t get printers (need lpstat)');
             } else {
-                $this->assertInternalType('array', $printers);
+                $this->assertIsArray($printers);
                 \print_r($printers);
             }
         }
     }
 
-    public function testDisk()
+    public function testDisk(): void
     {
         $disk = $this->info->getDisk();
 
@@ -229,21 +231,21 @@ class GinfoTest extends \PHPUnit\Framework\TestCase
         if (null === $drivers) {
             $this->markTestSkipped('Can\'t get drivers');
         } else {
-            $this->assertInternalType('array', $drivers);
+            $this->assertIsArray($drivers);
             \print_r($drivers);
         }
 
         if (null === $mounts) {
             $this->markTestSkipped('Can\'t get mounts');
         } else {
-            $this->assertInternalType('array', $mounts);
+            $this->assertIsArray($mounts);
             \print_r($mounts);
         }
 
         if (null === $raids) {
             $this->markTestSkipped('Can\'t get raids');
         } else {
-            $this->assertInternalType('array', $raids);
+            $this->assertIsArray($raids);
             \print_r($raids);
         }
     }

@@ -3,10 +3,11 @@
 namespace Ginfo\Tests\Parsers\Sensors;
 
 use Ginfo\Parsers\Sensors\Sensors;
+use PHPUnit\Framework\TestCase;
 
-class SensorsTest extends \PHPUnit\Framework\TestCase
+class SensorsTest extends TestCase
 {
-    public function sensorLineStrings()
+    public function sensorLineStrings(): array
     {
         return [
             ['acpitz-virtual-0', false],
@@ -20,7 +21,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function sensorStrings()
+    public function sensorStrings(): array
     {
         return [
             ['temp1: +60.0°C (crit = +90.0°C)', [
@@ -62,7 +63,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
      * @param string $data
      * @param bool   $expected
      */
-    public function testIsSensorLine(string $data, bool $expected)
+    public function testIsSensorLine(string $data, bool $expected): void
     {
         $method = new \ReflectionMethod(Sensors::class, 'isSensorLine');
         $method->setAccessible(true);
@@ -78,7 +79,7 @@ class SensorsTest extends \PHPUnit\Framework\TestCase
      * @param string $data
      * @param array  $expected
      */
-    public function testParseSensor(string $data, array $expected)
+    public function testParseSensor(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Sensors::class, 'parseSensor');
         $method->setAccessible(true);

@@ -3,10 +3,11 @@
 namespace Ginfo\Tests\Parsers;
 
 use Ginfo\Parsers\Smbstatus;
+use PHPUnit\Framework\TestCase;
 
-class SmbatatusTest extends \PHPUnit\Framework\TestCase
+class SmbatatusTest extends TestCase
 {
-    public function fileStrings()
+    public function fileStrings(): array
     {
         return [
             ['10196        1000       DENY_NONE  0x100081    RDONLY     NONE             /home/gemorroj/Общедоступные   .   Fri Mar 30 15:48:44 2018', [
@@ -23,7 +24,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function serviceStrings()
+    public function serviceStrings(): array
     {
         return [
             ['IPC$         10196   192.168.0.102  Fri Mar 30 15:48:34 2018', [
@@ -53,7 +54,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function connectionStrings()
+    public function connectionStrings(): array
     {
         return [
             ['30042   user          grp           client-name   (10.0.0.1)', [
@@ -105,7 +106,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
      * @param string $data
      * @param array  $expected
      */
-    public function testParseConnection(string $data, array $expected)
+    public function testParseConnection(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseConnection');
         $method->setAccessible(true);
@@ -121,7 +122,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
      * @param string $data
      * @param array  $expected
      */
-    public function testParseService(string $data, array $expected)
+    public function testParseService(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseService');
         $method->setAccessible(true);
@@ -137,7 +138,7 @@ class SmbatatusTest extends \PHPUnit\Framework\TestCase
      * @param string $data
      * @param array  $expected
      */
-    public function testParseFile(string $data, array $expected)
+    public function testParseFile(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseFile');
         $method->setAccessible(true);

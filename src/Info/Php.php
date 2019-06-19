@@ -3,6 +3,7 @@
 namespace Ginfo\Info;
 
 use Ginfo\Info\Php\Apcu;
+use Ginfo\Info\Php\Fastcgi;
 use Ginfo\Info\Php\Opcache;
 
 class Php
@@ -37,6 +38,8 @@ class Php
     private $zendThreadSafe;
     /** @var int */
     private $memoryLimit;
+    /** @var Fastcgi */
+    private $fastcgi;
 
     /**
      * @return int
@@ -234,6 +237,26 @@ class Php
     public function setOpcache(Opcache $opcache): self
     {
         $this->opcache = $opcache;
+
+        return $this;
+    }
+
+    /**
+     * @return Fastcgi
+     */
+    public function getFastcgi(): Fastcgi
+    {
+        return $this->fastcgi;
+    }
+
+    /**
+     * @param Fastcgi $fastcgi
+     *
+     * @return $this
+     */
+    public function setFastcgi(Fastcgi $fastcgi): self
+    {
+        $this->fastcgi = $fastcgi;
 
         return $this;
     }
