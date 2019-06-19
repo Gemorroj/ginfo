@@ -81,7 +81,7 @@ class Linux extends OS
             $cpuData[] = Common::parseKeyValueBlock($block);
         }
 
-        $cores = (function () use ($cpuData): int {
+        $cores = (static function () use ($cpuData): int {
             $out = [];
             foreach ($cpuData as $block) {
                 $out[$block['physical id']] = $block['cpu cores'];
@@ -92,7 +92,7 @@ class Linux extends OS
         $virtual = \count($cpuData);
 
         return (new Cpu())
-            ->setPhysical((function () use ($cpuData): int {
+            ->setPhysical((static function () use ($cpuData): int {
                 $out = [];
                 foreach ($cpuData as $block) {
                     if (isset($out[$block['physical id']])) {
@@ -107,7 +107,7 @@ class Linux extends OS
             ->setVirtual($virtual)
             ->setCores($cores)
             ->setHyperThreading($cores < $virtual)
-            ->setProcessors((function () use ($cpuData): array {
+            ->setProcessors((static function () use ($cpuData): array {
                 $out = [];
                 foreach ($cpuData as $block) {
                     // overwrite data for physical processors
@@ -182,7 +182,7 @@ class Linux extends OS
             $drives[] = (new Drive())
                 ->setSize(Common::getContents(\dirname($path, 2).'/size', 0) * 512)
                 ->setDevice('/dev/'.$parts[3])
-                ->setPartitions((function (string $namePartition) use ($partitions): ?array {
+                ->setPartitions((static function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($parts[3]))
                 ->setName(Common::getContents($path).('0' === Common::getContents(\dirname($path, 2).'/queue/rotational') ? ' (SSD)' : ''))
@@ -247,7 +247,7 @@ class Linux extends OS
                 ->setChart($raid['chart'])
                 ->setCount($raid['count'])
                 ->setDevice($raid['device'])
-                ->setDrives((function () use ($raid): array {
+                ->setDrives((static function () use ($raid): array {
                     $out = [];
                     foreach ($raid['drives'] as $drive) {
                         $out[] = (new Raid\Drive())
@@ -612,7 +612,7 @@ class Linux extends OS
             return 'Debian '.$debianVersion;
         }
 
-        return \php_uname('s');
+        return \PHP_OS;
     }
 
     public function getLoggedUsers(): ?array
@@ -752,7 +752,7 @@ class Linux extends OS
         }
 
         return (new Samba())
-            ->setConnections((function (array $connections) {
+            ->setConnections((static function (array $connections) {
                 $out = [];
                 foreach ($connections as $connection) {
                     $out[] = (new Samba\Connection())
@@ -768,7 +768,7 @@ class Linux extends OS
 
                 return $out;
             })($data['connections']))
-            ->setServices((function (array $services) {
+            ->setServices((static function (array $services) {
                 $out = [];
                 foreach ($services as $service) {
                     $out[] = (new Samba\Service())
@@ -782,7 +782,7 @@ class Linux extends OS
 
                 return $out;
             })($data['services']))
-            ->setFiles((function (array $files) {
+            ->setFiles((static function (array $files) {
                 $out = [];
                 foreach ($files as $file) {
                     $out[] = (new Samba\File())

@@ -81,7 +81,7 @@ class Windows extends OS
             return $info['Caption'];
         }
 
-        return \php_uname('s');
+        return \PHP_OS;
     }
 
     public function getKernel(): string
@@ -128,7 +128,7 @@ class Windows extends OS
                 ->setModel($cpu['Name'])
                 ->setSpeed($cpu['CurrentClockSpeed'])
                 ->setL2Cache($cpu['L2CacheSize'])
-                ->setArchitecture((function () use ($cpu): ?string {
+                ->setArchitecture((static function () use ($cpu): ?string {
                     switch ($cpu['Architecture']) {
                         case 0:
                             return 'x86';
@@ -179,7 +179,7 @@ class Windows extends OS
         }
 
         // custom windows date format ¯\_(ツ)_/¯
-        [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
+        [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, \PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
         $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
@@ -213,7 +213,7 @@ class Windows extends OS
             $drives[] = (new Drive())
                 ->setSize($driveInfo['Size'])
                 ->setDevice($driveInfo['DeviceID'])
-                ->setPartitions((function (string $namePartition) use ($partitions): ?array {
+                ->setPartitions((static function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($driveInfo['Index']))
                 ->setName($driveInfo['Caption'])
@@ -236,7 +236,7 @@ class Windows extends OS
         foreach ($info as $volume) {
             $volumes[] = (new Mount())
                 ->setSize($volume['Capacity'])
-                ->setDevice((function () use ($volume): string {
+                ->setDevice((static function () use ($volume): string {
                     $name = $volume['Label'];
                     switch ($volume['DriveType']) {
                         case 2:
@@ -261,7 +261,7 @@ class Windows extends OS
                 ->setType($volume['FileSystem'])
                 ->setFree($volume['FreeSpace'])
                 ->setMount($volume['Caption'])
-                ->setOptions((function () use ($volume): array {
+                ->setOptions((static function () use ($volume): array {
                     $options = [];
 
                     if ($volume['Automount']) {
@@ -302,7 +302,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (('PCI' !== $type) || (empty($pnpDev['Caption']) || '(' == \mb_substr($pnpDev['Manufacturer'], 0, 1))) {
+            if (('PCI' !== $type) || (empty($pnpDev['Caption']) || 0 === \mb_strpos($pnpDev['Manufacturer'], '('))) {
                 continue;
             }
 
@@ -324,7 +324,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (('USB' !== $type) || (empty($pnpDev['Caption']) || '(' == \mb_substr($pnpDev['Manufacturer'], 0, 1))) {
+            if (('USB' !== $type) || (empty($pnpDev['Caption']) || 0 === \mb_strpos($pnpDev['Manufacturer'], '('))) {
                 continue;
             }
 
@@ -355,7 +355,7 @@ class Windows extends OS
                 ->setName($net['Name'])
                 ->setSpeed($net['Speed'])
                 ->setType($net['AdapterType'])
-                ->setState((function () use ($net): ?string {
+                ->setState((static function () use ($net): ?string {
                     switch ($net['NetConnectionStatus']) {
                         case 0:
                             return 'down';
@@ -468,7 +468,7 @@ class Windows extends OS
                 ->setName($proc['Name'])
                 ->setCommandLine($proc['CommandLine'])
                 ->setThreads($proc['ThreadCount'])
-                ->setState((function () use ($proc): ?string {
+                ->setState((static function () use ($proc): ?string {
                     switch ($proc['ExecutionState']) {
                         case 1:
                             return 'other';
