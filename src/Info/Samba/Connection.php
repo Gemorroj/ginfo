@@ -30,8 +30,6 @@ class Connection
     }
 
     /**
-     * @param string|null $encryption
-     *
      * @return $this
      */
     public function setEncryption(?string $encryption): self
@@ -50,8 +48,6 @@ class Connection
     }
 
     /**
-     * @param string|null $signing
-     *
      * @return $this
      */
     public function setSigning(?string $signing): self
@@ -61,17 +57,12 @@ class Connection
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPid(): int
     {
         return $this->pid;
     }
 
     /**
-     * @param int $pid
-     *
      * @return $this
      */
     public function setPid(int $pid): self
@@ -81,17 +72,12 @@ class Connection
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getUser(): string
     {
         return $this->user;
     }
 
     /**
-     * @param string $user
-     *
      * @return $this
      */
     public function setUser(string $user): self
@@ -101,17 +87,12 @@ class Connection
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getGroup(): string
     {
         return $this->group;
     }
 
     /**
-     * @param string $group
-     *
      * @return $this
      */
     public function setGroup(string $group): self
@@ -121,17 +102,12 @@ class Connection
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string
     {
         return $this->host;
     }
 
     /**
-     * @param string $host
-     *
      * @return $this
      */
     public function setHost(string $host): self
@@ -141,17 +117,12 @@ class Connection
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIp(): string
     {
         return $this->ip;
     }
 
     /**
-     * @param string $ip
-     *
      * @return $this
      */
     public function setIp(string $ip): self
@@ -170,8 +141,6 @@ class Connection
     }
 
     /**
-     * @param string $protocolVersion
-     *
      * @return $this
      */
     public function setProtocolVersion(string $protocolVersion): self

@@ -13,8 +13,6 @@ class Common
      * none are found, it returns false.
      *
      * @param string[] $paths
-     *
-     * @return string|null
      */
     public static function locateActualPath(array $paths): ?string
     {
@@ -30,8 +28,7 @@ class Common
     /**
      * Get a file's contents, or default to second param.
      *
-     * @param string $file
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return string|mixed|null
      */
@@ -52,8 +49,7 @@ class Common
     /**
      * Like above, but in lines instead of a big string.
      *
-     * @param string $file
-     * @param mixed  $default
+     * @param mixed $default
      *
      * @return string[]|mixed|null
      */
@@ -69,11 +65,6 @@ class Common
     /**
      * Prevent silly conditionals like if (in_array() || in_array() || in_array())
      * Poor man's python's any() on a list comprehension kinda.
-     *
-     * @param array $needles
-     * @param array $haystack
-     *
-     * @return bool
      */
     public static function anyInArray(array $needles, array $haystack): bool
     {
@@ -81,9 +72,6 @@ class Common
     }
 
     /**
-     * @param string $block
-     * @param string $delimiter
-     *
      * @return string[]
      */
     public static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
@@ -101,9 +89,6 @@ class Common
 
     /**
      * @param Service[] $services
-     * @param string    $serviceName
-     *
-     * @return Service|null
      */
     public static function searchService(array $services, string $serviceName): ?Service
     {
@@ -118,11 +103,6 @@ class Common
         return $item;
     }
 
-    /**
-     * @param string $humanSize
-     *
-     * @return float|null
-     */
     public static function convertHumanSizeToBytes(string $humanSize): ?float
     {
         $lastLetter = \mb_substr($humanSize, -1);

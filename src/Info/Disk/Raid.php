@@ -21,17 +21,12 @@ class Raid
     /** @var string */
     private $chart;
 
-    /**
-     * @return string
-     */
     public function getDevice(): string
     {
         return $this->device;
     }
 
     /**
-     * @param string $device
-     *
      * @return $this
      */
     public function setDevice(string $device): self
@@ -41,17 +36,12 @@ class Raid
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
-     *
      * @return $this
      */
     public function setStatus(string $status): self
@@ -61,17 +51,12 @@ class Raid
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getLevel(): int
     {
         return $this->level;
     }
 
     /**
-     * @param int $level
-     *
      * @return $this
      */
     public function setLevel(int $level): self
@@ -101,17 +86,12 @@ class Raid
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getSize(): float
     {
         return $this->size;
     }
 
     /**
-     * @param float $size
-     *
      * @return $this
      */
     public function setSize(float $size): self
@@ -121,17 +101,12 @@ class Raid
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getCount(): int
     {
         return $this->count;
     }
 
     /**
-     * @param int $count
-     *
      * @return $this
      */
     public function setCount(int $count): self
@@ -141,17 +116,12 @@ class Raid
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getChart(): string
     {
         return $this->chart;
     }
 
     /**
-     * @param string $chart
-     *
      * @return $this
      */
     public function setChart(string $chart): self

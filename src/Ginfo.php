@@ -25,9 +25,6 @@ class Ginfo
         }
     }
 
-    /**
-     * @return Info
-     */
     public function getInfo(): Info
     {
         return new Info($this->os);

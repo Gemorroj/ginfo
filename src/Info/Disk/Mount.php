@@ -23,17 +23,12 @@ class Mount
     /** @var string[] */
     private $options;
 
-    /**
-     * @return string
-     */
     public function getDevice(): string
     {
         return $this->device;
     }
 
     /**
-     * @param string $device
-     *
      * @return $this
      */
     public function setDevice(string $device): self
@@ -43,17 +38,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getMount(): string
     {
         return $this->mount;
     }
 
     /**
-     * @param string $mount
-     *
      * @return $this
      */
     public function setMount(string $mount): self
@@ -63,17 +53,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
     /**
-     * @param string $type
-     *
      * @return $this
      */
     public function setType(string $type): self
@@ -83,17 +68,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getSize(): ?float
     {
         return $this->size;
     }
 
     /**
-     * @param float|null $size
-     *
      * @return $this
      */
     public function setSize(?float $size): self
@@ -103,17 +83,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getUsed(): ?float
     {
         return $this->used;
     }
 
     /**
-     * @param float|null $used
-     *
      * @return $this
      */
     public function setUsed(?float $used): self
@@ -123,17 +98,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getFree(): ?float
     {
         return $this->free;
     }
 
     /**
-     * @param float|null $free
-     *
      * @return $this
      */
     public function setFree(?float $free): self
@@ -143,17 +113,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getFreePercent(): ?float
     {
         return $this->freePercent;
     }
 
     /**
-     * @param float|null $freePercent
-     *
      * @return $this
      */
     public function setFreePercent(?float $freePercent): self
@@ -163,17 +128,12 @@ class Mount
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getUsedPercent(): ?float
     {
         return $this->usedPercent;
     }
 
     /**
-     * @param float|null $usedPercent
-     *
      * @return $this
      */
     public function setUsedPercent(?float $usedPercent): self

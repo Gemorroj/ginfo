@@ -13,17 +13,12 @@ class Sensor
     /** @var string|null */
     private $unit;
 
-    /**
-     * @return string|null
-     */
     public function getPath(): ?string
     {
         return $this->path;
     }
 
     /**
-     * @param string|null $path
-     *
      * @return $this
      */
     public function setPath(?string $path): self
@@ -33,17 +28,12 @@ class Sensor
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -53,17 +43,12 @@ class Sensor
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getValue(): float
     {
         return $this->value;
     }
 
     /**
-     * @param float $value
-     *
      * @return $this
      */
     public function setValue(float $value): self
@@ -75,8 +60,6 @@ class Sensor
 
     /**
      * C - celsius, F - Fahrenheit, V - Volt, W - Watt, RPM - revolution per minute, % - Percent.
-     *
-     * @return string|null
      */
     public function getUnit(): ?string
     {
@@ -84,8 +67,6 @@ class Sensor
     }
 
     /**
-     * @param string|null $unit
-     *
      * @return $this
      */
     public function setUnit(?string $unit): self

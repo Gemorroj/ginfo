@@ -24,17 +24,12 @@ class Memory
     /** @var float|null */
     private $swapFree;
 
-    /**
-     * @return float
-     */
     public function getTotal(): float
     {
         return $this->total;
     }
 
     /**
-     * @param float $total
-     *
      * @return $this
      */
     public function setTotal(float $total): self
@@ -44,17 +39,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getUsed(): float
     {
         return $this->used;
     }
 
     /**
-     * @param float $used
-     *
      * @return $this
      */
     public function setUsed(float $used): self
@@ -64,17 +54,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getFree(): float
     {
         return $this->free;
     }
 
     /**
-     * @param float $free
-     *
      * @return $this
      */
     public function setFree(float $free): self
@@ -84,17 +69,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getShared(): ?float
     {
         return $this->shared;
     }
 
     /**
-     * @param float|null $shared
-     *
      * @return $this
      */
     public function setShared(?float $shared): self
@@ -104,17 +84,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getBuffers(): ?float
     {
         return $this->buffers;
     }
 
     /**
-     * @param float|null $buffers
-     *
      * @return $this
      */
     public function setBuffers(?float $buffers): self
@@ -124,17 +99,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getCached(): ?float
     {
         return $this->cached;
     }
 
     /**
-     * @param float|null $cached
-     *
      * @return $this
      */
     public function setCached(?float $cached): self
@@ -144,17 +114,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getSwapTotal(): ?float
     {
         return $this->swapTotal;
     }
 
     /**
-     * @param float|null $swapTotal
-     *
      * @return $this
      */
     public function setSwapTotal(?float $swapTotal): self
@@ -164,17 +129,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getSwapUsed(): ?float
     {
         return $this->swapUsed;
     }
 
     /**
-     * @param float|null $swapUsed
-     *
      * @return $this
      */
     public function setSwapUsed(?float $swapUsed): self
@@ -184,17 +144,12 @@ class Memory
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getSwapFree(): ?float
     {
         return $this->swapFree;
     }
 
     /**
-     * @param float|null $swapFree
-     *
      * @return $this
      */
     public function setSwapFree(?float $swapFree): self

@@ -102,9 +102,6 @@ class SmbatatusTest extends TestCase
 
     /**
      * @dataProvider connectionStrings
-     *
-     * @param string $data
-     * @param array  $expected
      */
     public function testParseConnection(string $data, array $expected): void
     {
@@ -118,9 +115,6 @@ class SmbatatusTest extends TestCase
 
     /**
      * @dataProvider serviceStrings
-     *
-     * @param string $data
-     * @param array  $expected
      */
     public function testParseService(string $data, array $expected): void
     {
@@ -134,9 +128,6 @@ class SmbatatusTest extends TestCase
 
     /**
      * @dataProvider fileStrings
-     *
-     * @param string $data
-     * @param array  $expected
      */
     public function testParseFile(string $data, array $expected): void
     {

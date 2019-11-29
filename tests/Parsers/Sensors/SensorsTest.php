@@ -59,9 +59,6 @@ class SensorsTest extends TestCase
 
     /**
      * @dataProvider sensorLineStrings
-     *
-     * @param string $data
-     * @param bool   $expected
      */
     public function testIsSensorLine(string $data, bool $expected): void
     {
@@ -75,9 +72,6 @@ class SensorsTest extends TestCase
 
     /**
      * @dataProvider sensorStrings
-     *
-     * @param string $data
-     * @param array  $expected
      */
     public function testParseSensor(string $data, array $expected): void
     {

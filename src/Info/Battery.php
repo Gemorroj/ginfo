@@ -125,17 +125,12 @@ class Battery
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPercentage(): int
     {
         return $this->percentage;
     }
 
     /**
-     * @param int $percentage
-     *
      * @return $this
      */
     public function setPercentage(int $percentage): self
@@ -145,17 +140,12 @@ class Battery
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getVendor(): string
     {
         return $this->vendor;
     }
 
     /**
-     * @param string $vendor
-     *
      * @return $this
      */
     public function setVendor(string $vendor): self
@@ -165,17 +155,12 @@ class Battery
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getModel(): string
     {
         return $this->model;
     }
 
     /**
-     * @param string $model
-     *
      * @return $this
      */
     public function setModel(string $model): self
@@ -185,17 +170,12 @@ class Battery
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
-     *
      * @return $this
      */
     public function setStatus(string $status): self
@@ -205,17 +185,12 @@ class Battery
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getTechnology(): string
     {
         return $this->technology;
     }
 
     /**
-     * @param string $technology
-     *
      * @return $this
      */
     public function setTechnology(string $technology): self

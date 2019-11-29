@@ -33,17 +33,12 @@ class Fpm
     /** @var FpmProcess[]|null */
     private $processes;
 
-    /**
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
-     * @param bool $enabled
-     *
      * @return $this
      */
     public function setEnabled(bool $enabled): self
@@ -53,17 +48,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPool(): ?string
     {
         return $this->pool;
     }
 
     /**
-     * @param string|null $pool
-     *
      * @return $this
      */
     public function setPool(?string $pool): self
@@ -73,17 +63,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getProcessManager(): ?string
     {
         return $this->processManager;
     }
 
     /**
-     * @param string|null $processManager
-     *
      * @return $this
      */
     public function setProcessManager(?string $processManager): self
@@ -93,17 +78,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return \DateTime|null
-     */
     public function getStartTime(): ?\DateTime
     {
         return $this->startTime;
     }
 
     /**
-     * @param \DateTime|null $startTime
-     *
      * @return $this
      */
     public function setStartTime(?\DateTime $startTime): self
@@ -113,17 +93,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getAcceptedConnections(): ?int
     {
         return $this->acceptedConnections;
     }
 
     /**
-     * @param int|null $acceptedConnections
-     *
      * @return $this
      */
     public function setAcceptedConnections(?int $acceptedConnections): self
@@ -133,17 +108,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getListenQueue(): ?int
     {
         return $this->listenQueue;
     }
 
     /**
-     * @param int|null $listenQueue
-     *
      * @return $this
      */
     public function setListenQueue(?int $listenQueue): self
@@ -153,17 +123,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getMaxListenQueue(): ?int
     {
         return $this->maxListenQueue;
     }
 
     /**
-     * @param int|null $maxListenQueue
-     *
      * @return $this
      */
     public function setMaxListenQueue(?int $maxListenQueue): self
@@ -173,17 +138,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getListenQueueLength(): ?int
     {
         return $this->listenQueueLength;
     }
 
     /**
-     * @param int|null $listenQueueLength
-     *
      * @return $this
      */
     public function setListenQueueLength(?int $listenQueueLength): self
@@ -193,17 +153,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getIdleProcesses(): ?int
     {
         return $this->idleProcesses;
     }
 
     /**
-     * @param int|null $idleProcesses
-     *
      * @return $this
      */
     public function setIdleProcesses(?int $idleProcesses): self
@@ -213,17 +168,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getActiveProcesses(): ?int
     {
         return $this->activeProcesses;
     }
 
     /**
-     * @param int|null $activeProcesses
-     *
      * @return $this
      */
     public function setActiveProcesses(?int $activeProcesses): self
@@ -233,17 +183,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getMaxActiveProcesses(): ?int
     {
         return $this->maxActiveProcesses;
     }
 
     /**
-     * @param int|null $maxActiveProcesses
-     *
      * @return $this
      */
     public function setMaxActiveProcesses(?int $maxActiveProcesses): self
@@ -253,17 +198,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getMaxChildrenReached(): ?int
     {
         return $this->maxChildrenReached;
     }
 
     /**
-     * @param int|null $maxChildrenReached
-     *
      * @return $this
      */
     public function setMaxChildrenReached(?int $maxChildrenReached): self
@@ -273,17 +213,12 @@ class Fpm
         return $this;
     }
 
-    /**
-     * @return int|null
-     */
     public function getSlowRequests(): ?int
     {
         return $this->slowRequests;
     }
 
     /**
-     * @param int|null $slowRequests
-     *
      * @return $this
      */
     public function setSlowRequests(?int $slowRequests): self

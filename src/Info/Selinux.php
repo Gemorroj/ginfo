@@ -11,17 +11,12 @@ class Selinux
     /** @var string|null */
     private $policy;
 
-    /**
-     * @return bool
-     */
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
     /**
-     * @param bool $enabled
-     *
      * @return $this
      */
     public function setEnabled(bool $enabled): self

@@ -56,14 +56,8 @@ abstract class OS
      */
     abstract public function getUptime(): ?float;
 
-    /**
-     * @return string|null
-     */
     abstract public function getVirtualization(): ?string;
 
-    /**
-     * @return Cpu|null
-     */
     abstract public function getCpu(): ?Cpu;
 
     /**
@@ -71,9 +65,6 @@ abstract class OS
      */
     abstract public function getLoad(): ?array;
 
-    /**
-     * @return Memory|null
-     */
     abstract public function getMemory(): ?Memory;
 
     /**
@@ -88,8 +79,6 @@ abstract class OS
 
     /**
      * Get brand/name of motherboard/server.
-     *
-     * @return string|null
      */
     abstract public function getModel(): ?string;
 
@@ -143,9 +132,6 @@ abstract class OS
      */
     abstract public function getServices(): ?array;
 
-    /**
-     * @return Ups|null
-     */
     abstract public function getUps(): ?Ups;
 
     /**
@@ -153,13 +139,7 @@ abstract class OS
      */
     abstract public function getPrinters(): ?array;
 
-    /**
-     * @return Samba|null
-     */
     abstract public function getSamba(): ?Samba;
 
-    /**
-     * @return Selinux|null
-     */
     abstract public function getSelinux(): ?Selinux;
 }

@@ -41,17 +41,12 @@ class Php
     /** @var Fpm */
     private $fpm;
 
-    /**
-     * @return int
-     */
     public function getMemoryLimit(): int
     {
         return $this->memoryLimit;
     }
 
     /**
-     * @param int $memoryLimit
-     *
      * @return $this
      */
     public function setMemoryLimit(int $memoryLimit): self
@@ -61,17 +56,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isZendThreadSafe(): bool
     {
         return $this->zendThreadSafe;
     }
 
     /**
-     * @param bool $zendThreadSafe
-     *
      * @return $this
      */
     public function setZendThreadSafe(bool $zendThreadSafe): self
@@ -81,17 +71,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getVersion(): string
     {
         return $this->version;
     }
 
     /**
-     * @param string $version
-     *
      * @return $this
      */
     public function setVersion(string $version): self
@@ -141,17 +126,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIniFile(): string
     {
         return $this->iniFile;
     }
 
     /**
-     * @param string $iniFile
-     *
      * @return $this
      */
     public function setIniFile(string $iniFile): self
@@ -161,17 +141,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIncludePath(): string
     {
         return $this->includePath;
     }
 
     /**
-     * @param string $includePath
-     *
      * @return $this
      */
     public function setIncludePath(string $includePath): self
@@ -181,17 +156,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getOpenBasedir(): string
     {
         return $this->openBasedir;
     }
 
     /**
-     * @param string $openBasedir
-     *
      * @return $this
      */
     public function setOpenBasedir(string $openBasedir): self
@@ -201,17 +171,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSapiName(): string
     {
         return $this->sapiName;
     }
 
     /**
-     * @param string $sapiName
-     *
      * @return $this
      */
     public function setSapiName(string $sapiName): self
@@ -221,17 +186,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return Opcache
-     */
     public function getOpcache(): Opcache
     {
         return $this->opcache;
     }
 
     /**
-     * @param Opcache $opcache
-     *
      * @return $this
      */
     public function setOpcache(Opcache $opcache): self
@@ -241,17 +201,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return Fpm
-     */
     public function getFpm(): Fpm
     {
         return $this->fpm;
     }
 
     /**
-     * @param Fpm $fpm
-     *
      * @return $this
      */
     public function setFpm(Fpm $fpm): self
@@ -261,17 +216,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return Apcu
-     */
     public function getApcu(): Apcu
     {
         return $this->apcu;
     }
 
     /**
-     * @param Apcu $apcu
-     *
      * @return $this
      */
     public function setApcu(Apcu $apcu): self
@@ -321,17 +271,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getRealpathCacheSizeUsed(): float
     {
         return $this->realpathCacheSizeUsed;
     }
 
     /**
-     * @param float $realpathCacheSizeUsed
-     *
      * @return $this
      */
     public function setRealpathCacheSizeUsed(float $realpathCacheSizeUsed): self
@@ -341,17 +286,12 @@ class Php
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getRealpathCacheSizeAllowed(): ?float
     {
         return $this->realpathCacheSizeAllowed;
     }
 
     /**
-     * @param float|null $realpathCacheSizeAllowed
-     *
      * @return $this
      */
     public function setRealpathCacheSizeAllowed(?float $realpathCacheSizeAllowed): self

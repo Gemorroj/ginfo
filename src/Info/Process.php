@@ -25,17 +25,12 @@ class Process
     /** @var float|null */
     private $ioWrite;
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -45,17 +40,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCommandLine(): ?string
     {
         return $this->commandLine;
     }
 
     /**
-     * @param string|null $commandLine
-     *
      * @return $this
      */
     public function setCommandLine(?string $commandLine): self
@@ -65,17 +55,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getThreads(): int
     {
         return $this->threads;
     }
 
     /**
-     * @param int $threads
-     *
      * @return $this
      */
     public function setThreads(int $threads): self
@@ -85,17 +70,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getState(): ?string
     {
         return $this->state;
     }
 
     /**
-     * @param string|null $state
-     *
      * @return $this
      */
     public function setState(?string $state): self
@@ -105,17 +85,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getMemory(): ?float
     {
         return $this->memory;
     }
 
     /**
-     * @param float|null $memory
-     *
      * @return $this
      */
     public function setMemory(?float $memory): self
@@ -125,17 +100,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getPeakMemory(): ?float
     {
         return $this->peakMemory;
     }
 
     /**
-     * @param float|null $peakMemory
-     *
      * @return $this
      */
     public function setPeakMemory(?float $peakMemory): self
@@ -145,17 +115,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPid(): int
     {
         return $this->pid;
     }
 
     /**
-     * @param int $pid
-     *
      * @return $this
      */
     public function setPid(int $pid): self
@@ -165,17 +130,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getUser(): ?string
     {
         return $this->user;
     }
 
     /**
-     * @param string|null $user
-     *
      * @return $this
      */
     public function setUser(?string $user): self
@@ -185,17 +145,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getIoRead(): ?float
     {
         return $this->ioRead;
     }
 
     /**
-     * @param float|null $ioRead
-     *
      * @return $this
      */
     public function setIoRead(?float $ioRead): self
@@ -205,17 +160,12 @@ class Process
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getIoWrite(): ?float
     {
         return $this->ioWrite;
     }
 
     /**
-     * @param float|null $ioWrite
-     *
      * @return $this
      */
     public function setIoWrite(?float $ioWrite): self

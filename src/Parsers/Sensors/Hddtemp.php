@@ -16,12 +16,6 @@ class Hddtemp implements Parser
 
     /**
      * Connect to host/port and get info.
-     *
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
-     * @return string|null
      */
     private function getData(string $host, int $port, int $timeout): ?string
     {
@@ -41,10 +35,6 @@ class Hddtemp implements Parser
 
     /**
      * Parse and return info from daemon socket.
-     *
-     * @param string $data
-     *
-     * @return array
      */
     private function parseSockData(string $data): array
     {
@@ -76,13 +66,6 @@ class Hddtemp implements Parser
         return $return;
     }
 
-    /**
-     * @param string $host
-     * @param int    $port
-     * @param int    $timeout
-     *
-     * @return array|null
-     */
     public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
     {
         $obj = new self();

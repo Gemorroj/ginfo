@@ -25,17 +25,12 @@ class General
     /** @var float[]|null */
     private $load;
 
-    /**
-     * @return \DateTime
-     */
     public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
-     * @param \DateTime $date
-     *
      * @return $this
      */
     public function setDate(\DateTime $date): self
@@ -45,17 +40,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getOsName(): string
     {
         return $this->osName;
     }
 
     /**
-     * @param string $osName
-     *
      * @return $this
      */
     public function setOsName(string $osName): self
@@ -65,17 +55,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getKernel(): string
     {
         return $this->kernel;
     }
 
     /**
-     * @param string $kernel
-     *
      * @return $this
      */
     public function setKernel(string $kernel): self
@@ -85,17 +70,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getHostname(): string
     {
         return $this->hostName;
     }
 
     /**
-     * @param string $hostName
-     *
      * @return $this
      */
     public function setHostName(string $hostName): self
@@ -105,9 +85,6 @@ class General
         return $this;
     }
 
-    /**
-     * @return \DateInterval|null
-     */
     public function getUptime(): ?\DateInterval
     {
         return $this->uptime;
@@ -136,17 +113,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getArchitecture(): string
     {
         return $this->architecture;
     }
 
     /**
-     * @param string $architecture
-     *
      * @return $this
      */
     public function setArchitecture(string $architecture): self
@@ -156,17 +128,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getVirtualization(): ?string
     {
         return $this->virtualization;
     }
 
     /**
-     * @param string|null $virtualization
-     *
      * @return $this
      */
     public function setVirtualization(?string $virtualization): self
@@ -196,17 +163,12 @@ class General
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getModel(): ?string
     {
         return $this->model;
     }
 
     /**
-     * @param string|null $model
-     *
      * @return $this
      */
     public function setModel(?string $model): self

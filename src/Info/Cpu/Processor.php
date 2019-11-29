@@ -15,17 +15,12 @@ class Processor
     /** @var string */
     private $architecture;
 
-    /**
-     * @return string
-     */
     public function getModel(): string
     {
         return $this->model;
     }
 
     /**
-     * @param string $model
-     *
      * @return $this
      */
     public function setModel(string $model): self
@@ -35,17 +30,12 @@ class Processor
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getSpeed(): float
     {
         return $this->speed;
     }
 
     /**
-     * @param float $speed
-     *
      * @return $this
      */
     public function setSpeed(float $speed): self
@@ -55,17 +45,12 @@ class Processor
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getL2Cache(): int
     {
         return $this->l2Cache;
     }
 
     /**
-     * @param int $l2Cache
-     *
      * @return $this
      */
     public function setL2Cache(int $l2Cache): self

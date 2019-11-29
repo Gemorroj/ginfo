@@ -21,17 +21,12 @@ class Drive
     /** @var Partition[]|null */
     private $partitions;
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -41,17 +36,12 @@ class Drive
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getVendor(): ?string
     {
         return $this->vendor;
     }
 
     /**
-     * @param string|null $vendor
-     *
      * @return $this
      */
     public function setVendor(?string $vendor): self
@@ -61,17 +51,12 @@ class Drive
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDevice(): string
     {
         return $this->device;
     }
 
     /**
-     * @param string $device
-     *
      * @return $this
      */
     public function setDevice(string $device): self
@@ -81,17 +66,12 @@ class Drive
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getReads(): ?float
     {
         return $this->reads;
     }
 
     /**
-     * @param float|null $reads
-     *
      * @return $this
      */
     public function setReads(?float $reads): self
@@ -101,17 +81,12 @@ class Drive
         return $this;
     }
 
-    /**
-     * @return float|null
-     */
     public function getWrites(): ?float
     {
         return $this->writes;
     }
 
     /**
-     * @param float|null $writes
-     *
      * @return $this
      */
     public function setWrites(?float $writes): self
@@ -121,17 +96,12 @@ class Drive
         return $this;
     }
 
-    /**
-     * @return float
-     */
     public function getSize(): float
     {
         return $this->size;
     }
 
     /**
-     * @param float $size
-     *
      * @return $this
      */
     public function setSize(float $size): self

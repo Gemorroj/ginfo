@@ -23,17 +23,12 @@ class File
     /** @var \DateTime */
     private $time;
 
-    /**
-     * @return int
-     */
     public function getPid(): int
     {
         return $this->pid;
     }
 
     /**
-     * @param int $pid
-     *
      * @return $this
      */
     public function setPid(int $pid): self
@@ -43,17 +38,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getUser(): string
     {
         return $this->user;
     }
 
     /**
-     * @param string $user
-     *
      * @return $this
      */
     public function setUser(string $user): self
@@ -63,17 +53,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDenyMode(): string
     {
         return $this->denyMode;
     }
 
     /**
-     * @param string $denyMode
-     *
      * @return $this
      */
     public function setDenyMode(string $denyMode): self
@@ -83,17 +68,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getAccess(): string
     {
         return $this->access;
     }
 
     /**
-     * @param string $access
-     *
      * @return $this
      */
     public function setAccess(string $access): self
@@ -103,17 +83,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getRw(): string
     {
         return $this->rw;
     }
 
     /**
-     * @param string $rw
-     *
      * @return $this
      */
     public function setRw(string $rw): self
@@ -123,17 +98,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getOplock(): string
     {
         return $this->oplock;
     }
 
     /**
-     * @param string $oplock
-     *
      * @return $this
      */
     public function setOplock(string $oplock): self
@@ -143,17 +113,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSharePath(): string
     {
         return $this->sharePath;
     }
 
     /**
-     * @param string $sharePath
-     *
      * @return $this
      */
     public function setSharePath(string $sharePath): self
@@ -163,17 +128,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -183,17 +143,12 @@ class File
         return $this;
     }
 
-    /**
-     * @return \DateTime
-     */
     public function getTime(): \DateTime
     {
         return $this->time;
     }
 
     /**
-     * @param \DateTime $time
-     *
      * @return $this
      */
     public function setTime(\DateTime $time): self

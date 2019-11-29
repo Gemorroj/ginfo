@@ -38,8 +38,6 @@ class Cpu
     }
 
     /**
-     * @param Processor $processor
-     *
      * @return $this
      */
     public function addProcessor(Processor $processor): self
@@ -49,17 +47,12 @@ class Cpu
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getPhysical(): int
     {
         return $this->physical;
     }
 
     /**
-     * @param int $physical
-     *
      * @return $this
      */
     public function setPhysical(int $physical): self
@@ -69,17 +62,12 @@ class Cpu
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getCores(): int
     {
         return $this->cores;
     }
 
     /**
-     * @param int $cores
-     *
      * @return $this
      */
     public function setCores(int $cores): self
@@ -89,17 +77,12 @@ class Cpu
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getVirtual(): int
     {
         return $this->virtual;
     }
 
     /**
-     * @param int $virtual
-     *
      * @return $this
      */
     public function setVirtual(int $virtual): self
@@ -109,17 +92,12 @@ class Cpu
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isHyperThreading(): bool
     {
         return $this->hyperThreading;
     }
 
     /**
-     * @param bool $hyperThreading
-     *
      * @return $this
      */
     public function setHyperThreading(bool $hyperThreading): self

@@ -104,11 +104,7 @@ class Hwpci implements Parser
     }
 
     /**
-     * @param string $mode
-     *
      * @throws \InvalidArgumentException
-     *
-     * @return array|null
      */
     public static function work(string $mode = self::MODE_PCI): ?array
     {
@@ -154,8 +150,6 @@ class Hwpci implements Parser
 
     /**
      * Compile and return results.
-     *
-     * @return array
      */
     private function result(): array
     {

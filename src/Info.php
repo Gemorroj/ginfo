@@ -26,9 +26,6 @@ class Info
     /** @var OS */
     private $os;
 
-    /**
-     * @param OS $os
-     */
     public function __construct(OS $os)
     {
         $this->os = $os;
@@ -36,8 +33,6 @@ class Info
 
     /**
      * General info.
-     *
-     * @return General
      */
     public function getGeneral(): General
     {
@@ -56,8 +51,6 @@ class Info
 
     /**
      * CPU info.
-     *
-     * @return Cpu|null
      */
     public function getCpu(): ?Cpu
     {
@@ -66,8 +59,6 @@ class Info
 
     /**
      * Memory info.
-     *
-     * @return Memory|null
      */
     public function getMemory(): ?Memory
     {
@@ -126,8 +117,6 @@ class Info
 
     /**
      * Hard disk info.
-     *
-     * @return Disk
      */
     public function getDisk(): Disk
     {
@@ -169,8 +158,6 @@ class Info
 
     /**
      * UPS status.
-     *
-     * @return Ups|null
      */
     public function getUps(): ?Ups
     {
@@ -189,8 +176,6 @@ class Info
 
     /**
      * Samba status.
-     *
-     * @return Samba|null
      */
     public function getSamba(): ?Samba
     {
@@ -199,17 +184,12 @@ class Info
 
     /**
      * Selinux status.
-     *
-     * @return Selinux|null
      */
     public function getSelinux(): ?Selinux
     {
         return $this->os->getSelinux();
     }
 
-    /**
-     * @return Php
-     */
     public function getPhp(): Php
     {
         $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status(false) : null;

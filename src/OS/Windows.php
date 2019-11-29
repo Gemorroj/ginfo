@@ -46,11 +46,6 @@ class Windows extends OS
         }
     }
 
-    /**
-     * @param string $name
-     *
-     * @return array|null
-     */
     private function getInfo(string $name): ?array
     {
         if (isset($this->infoCache[$name])) {

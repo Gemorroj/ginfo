@@ -19,17 +19,12 @@ class Ups
     /** @var string */
     private $status;
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -39,17 +34,12 @@ class Ups
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getModel(): string
     {
         return $this->model;
     }
 
     /**
-     * @param string $model
-     *
      * @return $this
      */
     public function setModel(string $model): self
@@ -68,8 +58,6 @@ class Ups
     }
 
     /**
-     * @param float $batteryVolts
-     *
      * @return $this
      */
     public function setBatteryVolts(float $batteryVolts): self
@@ -88,8 +76,6 @@ class Ups
     }
 
     /**
-     * @param float $batteryCharge
-     *
      * @return $this
      */
     public function setBatteryCharge(float $batteryCharge): self
@@ -108,8 +94,6 @@ class Ups
     }
 
     /**
-     * @param int $timeLeft
-     *
      * @return $this
      */
     public function setTimeLeft(int $timeLeft): self
@@ -128,8 +112,6 @@ class Ups
     }
 
     /**
-     * @param float $currentLoad
-     *
      * @return $this
      */
     public function setCurrentLoad(float $currentLoad): self
@@ -139,17 +121,12 @@ class Ups
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatus(): string
     {
         return $this->status;
     }
 
     /**
-     * @param string $status
-     *
      * @return $this
      */
     public function setStatus(string $status): self

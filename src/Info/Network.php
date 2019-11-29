@@ -19,17 +19,12 @@ class Network
     /** @var Stats|null */
     private $statsSent;
 
-    /**
-     * @return Stats|null
-     */
     public function getStatsReceived(): ?Stats
     {
         return $this->statsReceived;
     }
 
     /**
-     * @param Stats|null $statsReceived
-     *
      * @return $this
      */
     public function setStatsReceived(?Stats $statsReceived): self
@@ -39,17 +34,12 @@ class Network
         return $this;
     }
 
-    /**
-     * @return Stats|null
-     */
     public function getStatsSent(): ?Stats
     {
         return $this->statsSent;
     }
 
     /**
-     * @param Stats|null $statsSent
-     *
      * @return $this
      */
     public function setStatsSent(?Stats $statsSent): self
@@ -59,17 +49,12 @@ class Network
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
     public function setName(string $name): self
@@ -99,17 +84,12 @@ class Network
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getType(): ?string
     {
         return $this->type;
     }
 
     /**
-     * @param string|null $type
-     *
      * @return $this
      */
     public function setType(?string $type): self
@@ -119,17 +99,12 @@ class Network
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getState(): ?string
     {
         return $this->state;
     }
 
     /**
-     * @param string|null $state
-     *
      * @return $this
      */
     public function setState(?string $state): self
