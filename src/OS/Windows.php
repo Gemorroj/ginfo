@@ -2,7 +2,6 @@
 
 namespace Ginfo\OS;
 
-use Ginfo\Exceptions\FatalException;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
 use Ginfo\Info\Disk\Mount;
@@ -24,25 +23,14 @@ use Symfony\Component\Process\Process as SymfonyProcess;
  */
 class Windows extends OS
 {
-    private $process;
     private $infoCache = [];
+    private $powershellDirectory;
 
-    /**
-     * Windows constructor.
-     *
-     * @throws FatalException
-     */
     public function __construct()
     {
-        try {
-            $powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
-            if (!\is_dir($powershellDirectory)) {
-                $powershellDirectory = null;
-            }
-
-            $this->process = new SymfonyProcess(null, $powershellDirectory);
-        } catch (\Exception $e) {
-            throw new FatalException($e->getMessage());
+        $this->powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
+        if (!\is_dir($this->powershellDirectory)) {
+            $this->powershellDirectory = null;
         }
     }
 
@@ -52,8 +40,8 @@ class Windows extends OS
             return $this->infoCache[$name];
         }
 
-        $process = $this->process->setCommandLine('chcp 65001 | powershell -file '.__DIR__.'/../../bin/windows/'.$name.'.ps1');
-        $process->run();
+        $process = SymfonyProcess::fromShellCommandline('chcp 65001 | powershell -file "!FILE!"', $this->powershellDirectory);
+        $process->run(null, ['FILE' => __DIR__.'/../../bin/windows/'.$name.'.ps1']);
 
         if (!$process->isSuccessful()) {
             return null;
