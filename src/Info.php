@@ -262,7 +262,7 @@ class Info
                     ->setProcessManager($fpmInfo['process-manager'] ?? null)
                     ->setSlowRequests($fpmInfo['slow-requests'] ?? null)
                     ->setStartTime(isset($fpmInfo['start-time']) ? new \DateTime('@'.$fpmInfo['start-time']) : null)
-                    ->setProcesses($fpmInfo['procs'] ? \array_map(static function (array $process): Php\FpmProcess {
+                    ->setProcesses(isset($fpmInfo['procs']) ? \array_map(static function (array $process): Php\FpmProcess {
                         return (new Php\FpmProcess())
                             ->setStartTime(new \DateTime('@'.$process['start-time']))
                             ->setLastRequestCpu($process['last-request-cpu'])
