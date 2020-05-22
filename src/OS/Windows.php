@@ -49,7 +49,7 @@ class Windows extends OS
 
         $this->infoCache[$name] = \json_decode($process->getOutput(), true);
 
-        return $this->infoCache[$name];
+        return (is_null($this->infoCache[$name]) || is_array($this->infoCache[$name])) ? $this->infoCache[$name] : [$this->infoCache[$name]];
     }
 
     public function getLoggedUsers(): ?array
@@ -167,7 +167,7 @@ class Windows extends OS
 
         $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
 
-        return \time() - $booted->getTimestamp();
+        return ($booted instanceof \DateTime) ? \time() - $booted->getTimestamp() : null;
     }
 
     public function getDrives(): ?array
@@ -241,7 +241,7 @@ class Windows extends OS
 
                     return $name;
                 })())
-                ->setType($volume['FileSystem'])
+                ->setType($volume['FileSystem'] . '')
                 ->setFree($volume['FreeSpace'])
                 ->setMount($volume['Caption'])
                 ->setOptions((static function () use ($volume): array {
