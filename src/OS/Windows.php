@@ -47,7 +47,8 @@ class Windows extends OS
             return null;
         }
 
-        $this->infoCache[$name] = \json_decode($process->getOutput(), true);
+        $result = \json_decode($process->getOutput(), true);
+        $this->infoCache[$name] = \is_scalar($result) ? [$result] : $result;
 
         return $this->infoCache[$name];
     }
@@ -384,11 +385,15 @@ class Windows extends OS
                     return null;
                 })());
 
-            $canonName = \preg_replace('/[^A-Za-z0-9- ]/', '_', $net['Name']);
+            $nameNormalizer = static function (string $name): string {
+                return \preg_replace('/[^A-Za-z0-9- ]/', '_', $name);
+            };
+
+            $canonName = $nameNormalizer($net['Name']);
             $isatapName = 'isatap.'.$net['GUID'];
 
             foreach ($perfRawData as $netSpeed) {
-                if ($netSpeed['Name'] === $canonName || $netSpeed['Name'] === $isatapName) {
+                if ($netSpeed['Name'] === $isatapName || $nameNormalizer($netSpeed['Name']) === $canonName) {
                     $tmp->setStatsReceived(
                         (new Network\Stats())
                             ->setBytes($netSpeed['BytesReceivedPersec'])
