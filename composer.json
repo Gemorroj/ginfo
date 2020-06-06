@@ -28,7 +28,7 @@
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "ext-json": "*",
-        "symfony/process": "^4.2|^5.0"
+        "symfony/process": "^4.4|^5.0"
 
     },
     "require-dev": {
