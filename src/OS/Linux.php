@@ -651,6 +651,10 @@ class Linux extends OS
             $modules[] = \basename($name);
         }
 
+        if (\in_array('vboxguest', $modules, true)) {
+            return 'VirtualBox';
+        }
+
         // VMware guest. Tested on debian under vmware fusion for mac...
         if (Common::anyInArray(['vmw_balloon', 'vmwgfx', 'vmw_vmci'], $modules)) {
             return 'VMWare';
@@ -658,10 +662,6 @@ class Linux extends OS
 
         if (Common::anyInArray(['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'], $modules) || \is_dir('/proc/xen')) {
             return 'Xen';
-        }
-
-        if (\in_array('vboxguest', $modules)) {
-            return 'VirtualBox';
         }
 
         // Hyper-V guest. Tested with Trusty under Client Hyper-V in Windows 10 Pro. Needs to be checked before KVM/QEMU!
