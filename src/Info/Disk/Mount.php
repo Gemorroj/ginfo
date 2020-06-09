@@ -8,7 +8,7 @@ class Mount
     private $device;
     /** @var string */
     private $mount;
-    /** @var string */
+    /** @var string|null */
     private $type;
     /** @var float|null */
     private $size;
@@ -53,7 +53,7 @@ class Mount
         return $this;
     }
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
@@ -61,7 +61,7 @@ class Mount
     /**
      * @return $this
      */
-    public function setType(string $type): self
+    public function setType(?string $type): self
     {
         $this->type = $type;
 
