@@ -8,7 +8,7 @@ class Processor
     private $model;
     /** @var float */
     private $speed;
-    /** @var int */
+    /** @var int|null */
     private $l2Cache;
     /** @var string[]|null */
     private $flags;
@@ -45,7 +45,7 @@ class Processor
         return $this;
     }
 
-    public function getL2Cache(): int
+    public function getL2Cache(): ?int
     {
         return $this->l2Cache;
     }
@@ -53,7 +53,7 @@ class Processor
     /**
      * @return $this
      */
-    public function setL2Cache(int $l2Cache): self
+    public function setL2Cache(?int $l2Cache): self
     {
         $this->l2Cache = $l2Cache;
 

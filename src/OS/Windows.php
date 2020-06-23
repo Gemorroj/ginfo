@@ -34,7 +34,7 @@ class Windows extends OS
         }
     }
 
-    private function getInfo(string $name): ?array
+    protected function getInfo(string $name): ?array
     {
         if (\array_key_exists($name, $this->infoCache)) {
             return $this->infoCache[$name];
