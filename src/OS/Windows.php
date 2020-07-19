@@ -166,7 +166,7 @@ class Windows extends OS
         [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, \PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
-        $booted = \DateTime::createFromFormat('YmdHis.u'.$operand.'O', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
+        $booted = \DateTime::createFromFormat('YmdHis.uO', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
 
         return \time() - $booted->getTimestamp();
     }
