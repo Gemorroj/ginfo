@@ -28,29 +28,28 @@ class Windows extends OS
 
     public function __construct()
     {
-        $this->powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
-        if (!\is_dir($this->powershellDirectory)) {
-            $this->powershellDirectory = null;
+        $powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
+        if (\is_dir($powershellDirectory)) {
+            $this->setPowershellDirectory($powershellDirectory);
         }
     }
 
     protected function getInfo(string $name): ?array
     {
-        if (\array_key_exists($name, $this->infoCache)) {
-            return $this->infoCache[$name];
+        if (!$this->hasInInfoCache($name)) {
+            $process = SymfonyProcess::fromShellCommandline('chcp 65001 | powershell -file "!FILE!"', $this->getPowershellDirectory());
+            $process->run(null, ['FILE' => __DIR__.'/../../bin/windows/'.$name.'.ps1']);
+
+            if (!$process->isSuccessful()) {
+                return null;
+            }
+
+            $result = \json_decode($process->getOutput(), true);
+
+            $this->addToInfoCache($name, \is_scalar($result) ? [$result] : $result);
         }
 
-        $process = SymfonyProcess::fromShellCommandline('chcp 65001 | powershell -file "!FILE!"', $this->powershellDirectory);
-        $process->run(null, ['FILE' => __DIR__.'/../../bin/windows/'.$name.'.ps1']);
-
-        if (!$process->isSuccessful()) {
-            return null;
-        }
-
-        $result = \json_decode($process->getOutput(), true);
-        $this->infoCache[$name] = \is_scalar($result) ? [$result] : $result;
-
-        return $this->infoCache[$name];
+        return $this->getFromInfoCache($name);
     }
 
     public function getLoggedUsers(): ?array
@@ -553,5 +552,50 @@ class Windows extends OS
     public function getSelinux(): ?Selinux
     {
         return null;
+    }
+
+    protected function setPowershellDirectory(?string $path): self
+    {
+        $this->powershellDirectory = $path;
+
+        return $this;
+    }
+
+    protected function getPowershellDirectory(): ?string
+    {
+        return $this->powershellDirectory;
+    }
+
+    protected function addToInfoCache(string $name, $value): self
+    {
+        $this->infoCache[$name] = $value;
+
+        return $this;
+    }
+
+    protected function hasInInfoCache(string $name): bool
+    {
+        return \array_key_exists($name, $this->infoCache);
+    }
+
+    protected function getFromInfoCache(string $name, $defaultValue = null)
+    {
+        return $this->hasInInfoCache($name) ? $this->infoCache[$name] : $defaultValue;
+    }
+
+    protected function removeFromInfoCache(string $name): self
+    {
+        if ($this->hasInInfoCache($name)) {
+            unset($this->infoCache[$name]);
+        }
+
+        return $this;
+    }
+
+    protected function cleanInfoCache(): self
+    {
+        $this->infoCache = [];
+
+        return $this;
     }
 }
