@@ -582,8 +582,8 @@ class Linux extends OS
     {
         $stringReleases = [
             '/etc/centos-release',
-            '/etc/redhat-release',
             '/etc/fedora-release',
+            '/etc/redhat-release',
             '/etc/system-release',
             '/etc/gentoo-release',
             '/etc/alpine-release',
