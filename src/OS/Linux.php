@@ -154,7 +154,7 @@ class Linux extends OS
             return null;
         }
 
-        if (\preg_match_all('/(\d+)\s+([a-z]{3})(\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
+        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
                 $partitions[$partition[2]][] = (new Drive\Partition())
                     ->setName($partition[2].$partition[3])
