@@ -17,7 +17,7 @@ class Ginfo
      */
     public function __construct()
     {
-        if ('\\' === \DIRECTORY_SEPARATOR) {
+        if ('Windows' === \PHP_OS_FAMILY) {
             $this->os = new Windows();
         } else {
             // bsd, linux, darwin, solaris

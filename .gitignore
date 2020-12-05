@@ -3,6 +3,9 @@
 composer.lock
 composer.phar
 phpstan.neon
-.php_cs.cache
-.php_cs
+
 phpunit.xml
+.phpunit.result.cache
+
+.php_cs
+.php_cs.cache

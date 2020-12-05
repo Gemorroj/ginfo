@@ -67,7 +67,7 @@ class SensorsTest extends TestCase
 
         $actual = $method->invoke(null, $data);
 
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
@@ -80,6 +80,6 @@ class SensorsTest extends TestCase
 
         $actual = $method->invoke(null, $data);
 
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 }

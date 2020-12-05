@@ -11,7 +11,7 @@ class GinfoTest extends TestCase
     /** @var Info */
     private $info;
 
-    public function setUp()
+    public function setUp(): void
     {
         $ginfo = new Ginfo();
         $this->info = $ginfo->getInfo();
@@ -21,11 +21,11 @@ class GinfoTest extends TestCase
     {
         $php = $this->info->getPhp();
 
-        $this->assertSame('cli', $php->getSapiName());
+        self::assertSame('cli', $php->getSapiName());
 
-        $this->assertIsBool($php->getApcu()->isEnabled());
-        $this->assertIsBool($php->getOpcache()->isEnabled());
-        $this->assertIsBool($php->getFpm()->isEnabled());
+        self::assertIsBool($php->getApcu()->isEnabled());
+        self::assertIsBool($php->getOpcache()->isEnabled());
+        self::assertIsBool($php->getFpm()->isEnabled());
 
         \print_r($php);
     }
@@ -34,7 +34,7 @@ class GinfoTest extends TestCase
     {
         $general = $this->info->getGeneral();
 
-        $this->assertIsString($general->getOsName());
+        self::assertIsString($general->getOsName());
 
         \print_r($general);
     }
@@ -43,9 +43,9 @@ class GinfoTest extends TestCase
     {
         $cpu = $this->info->getCpu();
         if (null === $cpu) {
-            $this->markTestSkipped('Can\'t get cpu');
+            self::markTestSkipped('Can\'t get cpu');
         } else {
-            $this->assertInstanceOf(Info\Cpu::class, $cpu);
+            self::assertInstanceOf(Info\Cpu::class, $cpu);
             \print_r($cpu);
         }
     }
@@ -54,9 +54,9 @@ class GinfoTest extends TestCase
     {
         $memory = $this->info->getMemory();
         if (null === $memory) {
-            $this->markTestSkipped('Can\'t get memory');
+            self::markTestSkipped('Can\'t get memory');
         } else {
-            $this->assertInstanceOf(Info\Memory::class, $memory);
+            self::assertInstanceOf(Info\Memory::class, $memory);
             \print_r($memory);
         }
     }
@@ -65,9 +65,9 @@ class GinfoTest extends TestCase
     {
         $processes = $this->info->getProcesses();
         if (null === $processes) {
-            $this->markTestSkipped('Can\'t get processes');
+            self::markTestSkipped('Can\'t get processes');
         } else {
-            $this->assertIsArray($processes);
+            self::assertIsArray($processes);
             \print_r($processes);
         }
     }
@@ -76,9 +76,9 @@ class GinfoTest extends TestCase
     {
         $network = $this->info->getNetwork();
         if (null === $network) {
-            $this->markTestSkipped('Can\'t get network');
+            self::markTestSkipped('Can\'t get network');
         } else {
-            $this->assertIsArray($network);
+            self::assertIsArray($network);
             \print_r($network);
         }
     }
@@ -87,9 +87,9 @@ class GinfoTest extends TestCase
     {
         $usb = $this->info->getUsb();
         if (null === $usb) {
-            $this->markTestSkipped('Can\'t get usb');
+            self::markTestSkipped('Can\'t get usb');
         } else {
-            $this->assertIsArray($usb);
+            self::assertIsArray($usb);
             \print_r($usb);
         }
     }
@@ -98,9 +98,9 @@ class GinfoTest extends TestCase
     {
         $pci = $this->info->getPci();
         if (null === $pci) {
-            $this->markTestSkipped('Can\'t get pci');
+            self::markTestSkipped('Can\'t get pci');
         } else {
-            $this->assertIsArray($pci);
+            self::assertIsArray($pci);
             \print_r($pci);
         }
     }
@@ -109,9 +109,9 @@ class GinfoTest extends TestCase
     {
         $soundCard = $this->info->getSoundCard();
         if (null === $soundCard) {
-            $this->markTestSkipped('Can\'t get sound card');
+            self::markTestSkipped('Can\'t get sound card');
         } else {
-            $this->assertIsArray($soundCard);
+            self::assertIsArray($soundCard);
             \print_r($soundCard);
         }
     }
@@ -120,9 +120,9 @@ class GinfoTest extends TestCase
     {
         $services = $this->info->getServices();
         if (null === $services) {
-            $this->markTestSkipped('Can\'t get services (need systemd)');
+            self::markTestSkipped('Can\'t get services (need systemd)');
         } else {
-            $this->assertIsArray($services);
+            self::assertIsArray($services);
             \print_r($services);
         }
     }
@@ -130,14 +130,14 @@ class GinfoTest extends TestCase
     public function testSamba(): void
     {
         $samba = $this->info->getSamba();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($samba);
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($samba);
+            self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $samba) {
-                $this->markTestSkipped('Can\'t get samba');
+                self::markTestSkipped('Can\'t get samba');
             } else {
-                $this->assertInstanceOf(Info\Samba::class, $samba);
+                self::assertInstanceOf(Info\Samba::class, $samba);
                 \print_r($samba);
             }
         }
@@ -146,14 +146,14 @@ class GinfoTest extends TestCase
     public function testUps(): void
     {
         $ups = $this->info->getUps();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($ups);
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($ups);
+            self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $ups) {
-                $this->markTestSkipped('Can\'t get ups (need apcaccess)');
+                self::markTestSkipped('Can\'t get ups (need apcaccess)');
             } else {
-                $this->assertInstanceOf(Info\Ups::class, $ups);
+                self::assertInstanceOf(Info\Ups::class, $ups);
                 \print_r($ups);
             }
         }
@@ -162,14 +162,14 @@ class GinfoTest extends TestCase
     public function testSelinux(): void
     {
         $selinux = $this->info->getSelinux();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($selinux);
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($selinux);
+            self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $selinux) {
-                $this->markTestSkipped('Can\'t get selinux (need sestatus)');
+                self::markTestSkipped('Can\'t get selinux (need sestatus)');
             } else {
-                $this->assertInstanceOf(Info\Selinux::class, $selinux);
+                self::assertInstanceOf(Info\Selinux::class, $selinux);
                 \print_r($selinux);
             }
         }
@@ -178,11 +178,11 @@ class GinfoTest extends TestCase
     public function testBattery(): void
     {
         $battery = $this->info->getBattery();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($battery); //todo
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($battery); //todo
+            self::markTestSkipped('Not implemented for windows');
         } else {
-            $this->assertIsArray($battery);
+            self::assertIsArray($battery);
         }
 
         \print_r($battery);
@@ -191,14 +191,14 @@ class GinfoTest extends TestCase
     public function testSensors(): void
     {
         $sensors = $this->info->getSensors();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($sensors); //todo
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($sensors); //todo
+            self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $sensors) {
-                $this->markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
+                self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
             } else {
-                $this->assertIsArray($sensors);
+                self::assertIsArray($sensors);
                 \print_r($sensors);
             }
         }
@@ -207,14 +207,14 @@ class GinfoTest extends TestCase
     public function testPrinters(): void
     {
         $printers = $this->info->getPrinters();
-        if (\DIRECTORY_SEPARATOR === '\\') {
-            $this->assertNull($printers); //todo
-            $this->markTestSkipped('Not implemented for windows');
+        if ('Windows' === \PHP_OS_FAMILY) {
+            self::assertNull($printers); //todo
+            self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $printers) {
-                $this->markTestSkipped('Can\'t get printers (need lpstat)');
+                self::markTestSkipped('Can\'t get printers (need lpstat)');
             } else {
-                $this->assertIsArray($printers);
+                self::assertIsArray($printers);
                 \print_r($printers);
             }
         }
@@ -229,23 +229,23 @@ class GinfoTest extends TestCase
         $raids = $disk->getRaids();
 
         if (null === $drivers) {
-            $this->markTestSkipped('Can\'t get drivers');
+            self::markTestSkipped('Can\'t get drivers');
         } else {
-            $this->assertIsArray($drivers);
+            self::assertIsArray($drivers);
             \print_r($drivers);
         }
 
         if (null === $mounts) {
-            $this->markTestSkipped('Can\'t get mounts');
+            self::markTestSkipped('Can\'t get mounts');
         } else {
-            $this->assertIsArray($mounts);
+            self::assertIsArray($mounts);
             \print_r($mounts);
         }
 
         if (null === $raids) {
-            $this->markTestSkipped('Can\'t get raids');
+            self::markTestSkipped('Can\'t get raids');
         } else {
-            $this->assertIsArray($raids);
+            self::assertIsArray($raids);
             \print_r($raids);
         }
     }
