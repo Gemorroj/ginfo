@@ -36,14 +36,23 @@ class Hwpci implements Parser
     private function fetchUsbIdsLinux(): void
     {
         foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
+            // Avoid the same device artificially appearing more than once
+            if (false !== \strpos($path, ':')) {
+                continue;
+            }
+
             // First try uevent
             if (\is_readable($path.'/uevent') &&
                 \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
-                $this->entries[\str_pad($match[1], 4, '0', \STR_PAD_LEFT)][\str_pad($match[2], 4, '0', \STR_PAD_LEFT)] = 1;
+                $vId = \str_pad($match[1], 4, '0', \STR_PAD_LEFT);
+                $dId = \str_pad($match[2], 4, '0', \STR_PAD_LEFT);
+                $this->entries[$vId][$dId] = 1;
             } // And next modalias
             elseif (\is_readable($path.'/modalias') &&
                 \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
-                $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
+                $vId = \mb_strtolower($match[1]);
+                $dId = \mb_strtolower($match[2]);
+                $this->entries[$vId][$dId] = 1;
             }
         }
     }
@@ -55,16 +64,20 @@ class Hwpci implements Parser
     {
         foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', '')) && $fDevice && $fVend) {
+            if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', ''))) {
                 [, $vId] = \explode('x', $fVend, 2);
                 [, $dId] = \explode('x', $fDevice, 2);
                 $this->entries[$vId][$dId] = 1;
             } // Try uevent nextly
             elseif (\is_readable($path.'/uevent') && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
-                $this->entries[$match[1]][$match[2]] = 1;
+                $vId = $match[1];
+                $dId = $match[2];
+                $this->entries[$vId][$dId] = 1;
             } // Now for modalias
-            elseif (\is_readable($path.'/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
-                $this->entries[\mb_strtolower($match[1])][\mb_strtolower($match[2])] = 1;
+            elseif (\is_readable($path.'/modalias') && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/i', Common::getContents($path.'/modalias'), $match)) {
+                $vId = \mb_strtolower($match[1]);
+                $dId = \mb_strtolower($match[2]);
+                $this->entries[$vId][$dId] = 1;
             }
         }
     }
@@ -78,8 +91,15 @@ class Hwpci implements Parser
             if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
             } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {
-                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
-                    $this->devices[$v[1]][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
+                if ($v) {
+                    $vId = \mb_strtolower($v[1]);
+                    $dId = \mb_strtolower($devMatch[1]);
+                    if (isset($this->entries[$vId][$dId])) {
+                        $this->devices[$vId][$dId] = [
+                            'vendor' => \rtrim($v[2]),
+                            'name' => \rtrim($devMatch[2]),
+                        ];
+                    }
                 }
             }
         }
@@ -95,8 +115,15 @@ class Hwpci implements Parser
             if (1 === \preg_match('/^(\S{4})\s+([^$]+)$/', $contents, $vendMatch)) {
                 $v = $vendMatch;
             } elseif (1 === \preg_match('/^\s+(\S{4})\s+([^$]+)$/', $contents, $devMatch)) {
-                if ($v && isset($this->entries[\mb_strtolower($v[1])][\mb_strtolower($devMatch[1])])) {
-                    $this->devices[\mb_strtolower($v[1])][$devMatch[1]] = ['vendor' => \rtrim($v[2]), 'name' => \rtrim($devMatch[2])];
+                if ($v) {
+                    $vId = \mb_strtolower($v[1]);
+                    $dId = \mb_strtolower($devMatch[1]);
+                    if (isset($this->entries[$vId][$dId])) {
+                        $this->devices[$vId][$dId] = [
+                            'vendor' => \rtrim($v[2]),
+                            'name' => \rtrim($devMatch[2]),
+                        ];
+                    }
                 }
             }
         }
