@@ -16,6 +16,11 @@ class Mdadm implements Parser
 
     public static function work(): ?array
     {
+        /*
+Personalities : [raid1]
+md0 : active raid1 sdb[0]
+      1046528 blocks super 1.2 [2/1] [U_]
+         */
         $mdadmContents = Common::getContents('/proc/mdstat');
         if (null === $mdadmContents) {
             return null;
@@ -65,7 +70,7 @@ class Mdadm implements Parser
                 'level' => $array[3],
                 'drives' => $drives,
                 'size' => $array[5] * 1024,
-                'count' => $array[6],
+                'count' => (int) $array[6],
                 'chart' => $array[7],
             ];
         }
