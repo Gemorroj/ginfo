@@ -17,7 +17,9 @@ class Raid
     /** @var float */
     private $size;
     /** @var int */
-    private $count;
+    private $countActive;
+    /** @var int */
+    private $countTotal;
     /** @var string */
     private $chart;
 
@@ -101,17 +103,32 @@ class Raid
         return $this;
     }
 
-    public function getCount(): int
+    public function getCountActive(): int
     {
-        return $this->count;
+        return $this->countActive;
     }
 
     /**
      * @return $this
      */
-    public function setCount(int $count): self
+    public function setCountActive(int $countActive): self
     {
-        $this->count = $count;
+        $this->countActive = $countActive;
+
+        return $this;
+    }
+
+    public function getCountTotal(): int
+    {
+        return $this->countTotal;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setCountTotal(int $countTotal): self
+    {
+        $this->countTotal = $countTotal;
 
         return $this;
     }

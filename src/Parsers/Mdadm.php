@@ -64,13 +64,18 @@ md0 : active raid1 sdb[0]
                 }
             }
 
+            [$countTotal, $countActive] = \explode('/', $array[6], 2);
+
             $mdadmArrays[] = [
                 'device' => '/dev/'.$array[1],
                 'status' => $array[2],
                 'level' => $array[3],
                 'drives' => $drives,
                 'size' => $array[5] * 1024,
-                'count' => (int) $array[6],
+                'count' => [
+                    'active' => $countActive,
+                    'total' => $countTotal,
+                ],
                 'chart' => $array[7],
             ];
         }

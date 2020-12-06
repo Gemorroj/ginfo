@@ -245,7 +245,8 @@ class Linux extends OS
             $out[] = (new Raid())
                 ->setStatus($raid['status'])
                 ->setChart($raid['chart'])
-                ->setCount($raid['count'])
+                ->setCountActive($raid['count']['active'])
+                ->setCountTotal($raid['count']['total'])
                 ->setDevice($raid['device'])
                 ->setDrives((static function () use ($raid): array {
                     $out = [];
