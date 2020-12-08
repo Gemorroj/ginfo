@@ -204,14 +204,14 @@ class Info
         $disabledClasses = \ini_get('disable_classes');
 
         return (new Php())
-            ->setVersion(\PHP_VERSION)
+            ->setVersion(PHP_VERSION)
             ->setExtensions(\get_loaded_extensions())
             ->setZendExtensions(\get_loaded_extensions(true))
             ->setIniFile(\php_ini_loaded_file())
             ->setMemoryLimit(Common::convertHumanSizeToBytes(\ini_get('memory_limit')))
             ->setIncludePath(\get_include_path())
             ->setOpenBasedir(\ini_get('open_basedir'))
-            ->setZendThreadSafe(\ZEND_THREAD_SAFE)
+            ->setZendThreadSafe(ZEND_THREAD_SAFE)
             ->setSapiName(\PHP_SAPI)
             ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
             ->setDisabledClasses($disabledClasses ? \explode(',', $disabledClasses) : [])

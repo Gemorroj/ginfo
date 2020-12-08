@@ -11,7 +11,7 @@ class GinfoTest extends TestCase
     /** @var Info */
     private $info;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $ginfo = new Ginfo();
         $this->info = $ginfo->getInfo();
@@ -130,7 +130,7 @@ class GinfoTest extends TestCase
     public function testSamba(): void
     {
         $samba = $this->info->getSamba();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($samba);
             self::markTestSkipped('Not implemented for windows');
         } else {
@@ -146,7 +146,7 @@ class GinfoTest extends TestCase
     public function testUps(): void
     {
         $ups = $this->info->getUps();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($ups);
             self::markTestSkipped('Not implemented for windows');
         } else {
@@ -162,7 +162,7 @@ class GinfoTest extends TestCase
     public function testSelinux(): void
     {
         $selinux = $this->info->getSelinux();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($selinux);
             self::markTestSkipped('Not implemented for windows');
         } else {
@@ -178,7 +178,7 @@ class GinfoTest extends TestCase
     public function testBattery(): void
     {
         $battery = $this->info->getBattery();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($battery); //todo
             self::markTestSkipped('Not implemented for windows');
         } else {
@@ -191,7 +191,7 @@ class GinfoTest extends TestCase
     public function testSensors(): void
     {
         $sensors = $this->info->getSensors();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($sensors); //todo
             self::markTestSkipped('Not implemented for windows');
         } else {
@@ -207,7 +207,7 @@ class GinfoTest extends TestCase
     public function testPrinters(): void
     {
         $printers = $this->info->getPrinters();
-        if ('Windows' === \PHP_OS_FAMILY) {
+        if ('Windows' === PHP_OS_FAMILY) {
             self::assertNull($printers); //todo
             self::markTestSkipped('Not implemented for windows');
         } else {

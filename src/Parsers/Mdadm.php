@@ -26,7 +26,7 @@ md0 : active raid1 sdb[0]
             return null;
         }
 
-        if (false === \preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadmContents, $match, \PREG_SET_ORDER)) {
+        if (false === \preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadmContents, $match, PREG_SET_ORDER)) {
             return null;
         }
 

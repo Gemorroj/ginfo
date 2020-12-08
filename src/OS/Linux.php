@@ -154,7 +154,7 @@ class Linux extends OS
             return null;
         }
 
-        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
+        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
                 $partitions[$partition[2]][] = (new Drive\Partition())
                     ->setName($partition[2].$partition[3])
@@ -162,7 +162,7 @@ class Linux extends OS
             }
         }
 
-        $paths = \glob('/sys/block/*/device/model', \GLOB_NOSORT);
+        $paths = \glob('/sys/block/*/device/model', GLOB_NOSORT);
         if (false === $paths) {
             return null;
         }
@@ -201,7 +201,7 @@ class Linux extends OS
             return null;
         }
 
-        if (false === \preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER)) {
+        if (false === \preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, PREG_SET_ORDER)) {
             return null;
         }
 
@@ -305,7 +305,7 @@ class Linux extends OS
         }
 
         // Laptop backlight percentage
-        foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE) as $bl) {
+        foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', GLOB_NOSORT | GLOB_BRACE) as $bl) {
             $max = Common::getContents($bl);
             $cur = Common::getContents(\dirname($bl).'/actual_brightness');
             if (null === $cur) {
@@ -376,7 +376,7 @@ class Linux extends OS
 
     public function getNetwork(): ?array
     {
-        $paths = \glob('/sys/class/net/*', \GLOB_NOSORT);
+        $paths = \glob('/sys/class/net/*', GLOB_NOSORT);
         if (false === $paths) {
             return null;
         }
@@ -456,7 +456,7 @@ class Linux extends OS
 
     public function getBattery(): ?array
     {
-        $paths = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
+        $paths = \glob('/sys/class/power_supply/BAT*', GLOB_NOSORT);
         if (false === $paths) {
             return null;
         }
@@ -508,7 +508,7 @@ class Linux extends OS
 
     public function getProcesses(): ?array
     {
-        $processes = \glob('/proc/*/status', \GLOB_NOSORT);
+        $processes = \glob('/proc/*/status', GLOB_NOSORT);
         if (null === $processes) {
             return null;
         }
@@ -613,7 +613,7 @@ class Linux extends OS
             return 'Debian '.$debianVersion;
         }
 
-        return \PHP_OS;
+        return PHP_OS;
     }
 
     public function getLoggedUsers(): ?array
@@ -641,7 +641,7 @@ class Linux extends OS
 
         // Try getting kernel modules
         $modules = [];
-        if (\preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
+        if (\preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $modules[] = $match[1];
             }

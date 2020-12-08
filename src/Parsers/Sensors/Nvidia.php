@@ -22,7 +22,7 @@ class Nvidia implements Parser
 
         $cardsList = $process->getOutput();
 
-        if (!\preg_match_all('/GPU (\d+): (.+) \(UUID:.+\)/', $cardsList, $matches, \PREG_SET_ORDER)) {
+        if (!\preg_match_all('/GPU (\d+): (.+) \(UUID:.+\)/', $cardsList, $matches, PREG_SET_ORDER)) {
             return null;
         }
 
