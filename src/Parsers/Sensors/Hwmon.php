@@ -17,7 +17,7 @@ class Hwmon implements Parser
 
     public static function work(): ?array
     {
-        $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', GLOB_NOSORT | GLOB_BRACE);
+        $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);
         if (false === $paths) {
             return null;
         }

@@ -16,11 +16,13 @@ return PhpCsFixer\Config::create()
         //'mb_str_functions' => true,
         'native_function_invocation' => true,
         'no_null_property_initialization' => true,
+        'native_constant_invocation' => true,
         'no_useless_else' => true,
         'no_useless_return' => true,
         'ordered_imports' => ['sortAlgorithm' => 'alpha'],
         'phpdoc_order' => true,
         //'strict_comparison' => true,
+        'combine_nested_dirname' => true,
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)

@@ -35,7 +35,7 @@ class Hwpci implements Parser
      */
     private function fetchUsbIdsLinux(): void
     {
-        foreach (\glob('/sys/bus/usb/devices/*', GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
             // Avoid the same device artificially appearing more than once
             if (false !== \strpos($path, ':')) {
                 continue;
@@ -44,8 +44,8 @@ class Hwpci implements Parser
             // First try uevent
             if (\is_readable($path.'/uevent') &&
                 \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
-                $vId = \str_pad($match[1], 4, '0', STR_PAD_LEFT);
-                $dId = \str_pad($match[2], 4, '0', STR_PAD_LEFT);
+                $vId = \str_pad($match[1], 4, '0', \STR_PAD_LEFT);
+                $dId = \str_pad($match[2], 4, '0', \STR_PAD_LEFT);
                 $this->entries[$vId][$dId] = 1;
             } // And next modalias
             elseif (\is_readable($path.'/modalias') &&
@@ -62,7 +62,7 @@ class Hwpci implements Parser
      */
     private function fetchPciIdsLinux(): void
     {
-        foreach (\glob('/sys/bus/pci/devices/*', GLOB_NOSORT) as $path) {
+        foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', ''))) {
                 [, $vId] = \explode('x', $fVend, 2);

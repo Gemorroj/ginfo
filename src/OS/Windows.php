@@ -64,7 +64,7 @@ class Windows extends OS
             return $info['Caption'];
         }
 
-        return PHP_OS;
+        return \PHP_OS;
     }
 
     public function getKernel(): string
@@ -162,7 +162,7 @@ class Windows extends OS
         }
 
         // custom windows date format ¯\_(ツ)_/¯
-        [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, PREG_SPLIT_DELIM_CAPTURE);
+        [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, \PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
         $booted = \DateTime::createFromFormat('YmdHis.uO', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));

@@ -17,7 +17,7 @@ class ThermalZone implements Parser
 
     public static function work(): ?array
     {
-        $paths = \glob('/sys/class/thermal/thermal_zone*', GLOB_NOSORT | GLOB_BRACE);
+        $paths = \glob('/sys/class/thermal/thermal_zone*', \GLOB_NOSORT | \GLOB_BRACE);
         if (false === $paths) {
             return null;
         }
