@@ -2,8 +2,7 @@
 
 [![License](https://poser.pugx.org/gemorroj/ginfo/license)](https://packagist.org/packages/gemorroj/ginfo)
 [![Latest Stable Version](https://poser.pugx.org/gemorroj/ginfo/v/stable)](https://packagist.org/packages/gemorroj/ginfo)
-[![Build Status Travis](https://secure.travis-ci.org/Gemorroj/ginfo.png?branch=master)](https://travis-ci.org/Gemorroj/ginfo)
-[![Build Status AppVeyor](https://ci.appveyor.com/api/projects/status/wl8tt98r9807a06i?svg=true)](https://ci.appveyor.com/project/Gemorroj/ginfo)
+[![Continuous Integration](https://github.com/Gemorroj/ginfo/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/Gemorroj/ginfo/actions?query=workflow%3A%22Continuous+Integration%22)
 
 
 ### Ginfo is a:
