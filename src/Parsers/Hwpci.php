@@ -11,8 +11,8 @@ use Ginfo\Common;
  */
 class Hwpci implements Parser
 {
-    const MODE_PCI = 'pci';
-    const MODE_USB = 'usb';
+    public const MODE_PCI = 'pci';
+    public const MODE_USB = 'usb';
 
     private $file;
     private $entries = [];
