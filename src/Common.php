@@ -56,7 +56,12 @@ class Common
     public static function getLines(string $file, $default = null)
     {
         if (\file_exists($file) && \is_readable($file)) {
-            return @\file($file, \FILE_SKIP_EMPTY_LINES);
+            $data = @\file($file, \FILE_SKIP_EMPTY_LINES);
+            if (false === $data) {
+                return $default;
+            }
+
+            return $data;
         }
 
         return $default;

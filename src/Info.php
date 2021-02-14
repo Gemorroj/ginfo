@@ -195,8 +195,8 @@ class Info
         $opcacheStatus = \function_exists('opcache_get_status') ? \opcache_get_status(false) : null;
         $opcacheConfiguration = \function_exists('opcache_get_configuration') ? \opcache_get_configuration() : null;
 
-        $apcuCacheInfo = \function_exists('apcu_cache_info') ? @\apcu_cache_info(true) : null;
-        $apcuSmaInfo = \function_exists('apcu_sma_info') ? @\apcu_sma_info(true) : null;
+        $apcuCacheInfo = \function_exists('apcu_cache_info') ? \apcu_cache_info(true) : null;
+        $apcuSmaInfo = \function_exists('apcu_sma_info') ? \apcu_sma_info(true) : null;
 
         $fpmInfo = \function_exists('fpm_get_status') ? \fpm_get_status() : null;
 
