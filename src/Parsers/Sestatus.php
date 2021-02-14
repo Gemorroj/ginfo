@@ -5,7 +5,7 @@ namespace Ginfo\Parsers;
 use Ginfo\Common;
 use Symfony\Component\Process\Process;
 
-class Sestatus implements Parser
+class Sestatus implements ParserInterface
 {
     private function __construct()
     {

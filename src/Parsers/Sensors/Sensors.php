@@ -2,10 +2,10 @@
 
 namespace Ginfo\Parsers\Sensors;
 
-use Ginfo\Parsers\Parser;
+use Ginfo\Parsers\ParserInterface;
 use Symfony\Component\Process\Process;
 
-class Sensors implements Parser
+class Sensors implements ParserInterface
 {
     private function __construct()
     {

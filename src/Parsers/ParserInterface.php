@@ -2,7 +2,7 @@
 
 namespace Ginfo\Parsers;
 
-interface Parser
+interface ParserInterface
 {
     public static function work(): ?array;
 }

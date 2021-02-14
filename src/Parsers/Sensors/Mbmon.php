@@ -2,9 +2,9 @@
 
 namespace Ginfo\Parsers\Sensors;
 
-use Ginfo\Parsers\Parser;
+use Ginfo\Parsers\ParserInterface;
 
-class Mbmon implements Parser
+class Mbmon implements ParserInterface
 {
     private function __construct()
     {

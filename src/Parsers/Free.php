@@ -4,7 +4,7 @@ namespace Ginfo\Parsers;
 
 use Symfony\Component\Process\Process;
 
-class Free implements Parser
+class Free implements ParserInterface
 {
     private function __construct()
     {

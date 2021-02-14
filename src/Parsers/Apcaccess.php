@@ -5,7 +5,7 @@ namespace Ginfo\Parsers;
 use Ginfo\Common;
 use Symfony\Component\Process\Process;
 
-class Apcaccess implements Parser
+class Apcaccess implements ParserInterface
 {
     public static function work(): ?array
     {

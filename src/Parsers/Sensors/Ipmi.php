@@ -2,7 +2,7 @@
 
 namespace Ginfo\Parsers\Sensors;
 
-use Ginfo\Parsers\Parser;
+use Ginfo\Parsers\ParserInterface;
 use Symfony\Component\Process\Process;
 
 /**
@@ -10,7 +10,7 @@ use Symfony\Component\Process\Process;
  *
  * @author Joseph Gillotti
  */
-class Ipmi implements Parser
+class Ipmi implements ParserInterface
 {
     public static function work(): ?array
     {

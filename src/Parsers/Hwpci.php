@@ -9,7 +9,7 @@ use Ginfo\Common;
  *
  * @author Joe Gillotti
  */
-class Hwpci implements Parser
+class Hwpci implements ParserInterface
 {
     public const MODE_PCI = 'pci';
     public const MODE_USB = 'usb';

@@ -4,7 +4,7 @@ namespace Ginfo\Parsers;
 
 use Symfony\Component\Process\Process;
 
-class Systemd implements Parser
+class Systemd implements ParserInterface
 {
     private function __construct()
     {
