@@ -428,6 +428,8 @@ class Linux extends OS
                     $type = 'Bridge';
                 } elseif (\is_dir($path.'/bonding')) {
                     $type = 'Bond';
+                } elseif (($ueventContents = @\parse_ini_file($path.'/uevent')) && isset($ueventContents['DEVTYPE'])) {
+                    $type = \ucfirst($ueventContents['DEVTYPE']);
                 } else {
                     $type = null;
                 }
