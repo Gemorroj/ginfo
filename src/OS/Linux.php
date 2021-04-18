@@ -154,7 +154,7 @@ class Linux extends OS
             return null;
         }
 
-        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
+        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+|[a-z]+\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
                 $partitions[$partition[2]][] = (new Drive\Partition())
                     ->setName($partition[2].$partition[3])
@@ -162,7 +162,7 @@ class Linux extends OS
             }
         }
 
-        $paths = \glob('/sys/block/*/device/model', \GLOB_NOSORT);
+        $paths = \glob('/sys/block/*/device/uevent', \GLOB_NOSORT);
         if (false === $paths) {
             return null;
         }
@@ -179,13 +179,22 @@ class Linux extends OS
                 [, $reads, $writes] = $statMatches;
             }
 
+            $type = '';
+            if ('0' === Common::getContents(\dirname($path, 2).'/queue/rotational')) {
+                if ('SD' === Common::getContents(\dirname($path).'/type')) {
+                    $type = ' (SD)';
+                } else {
+                    $type = ' (SSD)';
+                }
+            }
+
             $drives[] = (new Drive())
                 ->setSize(Common::getContents(\dirname($path, 2).'/size', 0) * 512)
                 ->setDevice('/dev/'.$parts[3])
                 ->setPartitions((static function (string $namePartition) use ($partitions): ?array {
                     return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
                 })($parts[3]))
-                ->setName(Common::getContents($path).('0' === Common::getContents(\dirname($path, 2).'/queue/rotational') ? ' (SSD)' : ''))
+                ->setName(Common::getContents(\dirname($path).'/model', 'Unknown').$type)
                 ->setReads($reads)
                 ->setVendor(Common::getContents(\dirname($path).'/vendor'))
                 ->setWrites($writes);
