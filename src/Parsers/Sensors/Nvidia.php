@@ -40,7 +40,7 @@ class Nvidia implements ParserInterface
             $cardStat = $process->getOutput();
 
             if (\preg_match('/(\d+)\s+(\d+)\s+(\d+)/', $cardStat, $match)) {
-                if ($match[1] != $id) {
+                if ($match[1] !== $id) {
                     continue;
                 }
 
