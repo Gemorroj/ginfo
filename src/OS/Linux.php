@@ -380,7 +380,8 @@ class Linux extends OS
 
     public function getLoad(): ?array
     {
-        return \sys_getloadavg();
+        $load = \sys_getloadavg();
+        return false === $load ? null : $load;
     }
 
     public function getNetwork(): ?array
