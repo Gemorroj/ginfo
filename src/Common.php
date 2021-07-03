@@ -110,13 +110,13 @@ class Common
 
     public static function convertHumanSizeToBytes(string $humanSize): ?float
     {
-        $lastLetter = \mb_substr($humanSize, -1);
+        $lastLetter = \substr($humanSize, -1);
         if (\is_numeric($lastLetter)) {
             return (float) $humanSize;
         }
 
-        $size = \mb_substr($humanSize, 0, -1);
-        switch (\mb_strtolower($lastLetter)) {
+        $size = \substr($humanSize, 0, -1);
+        switch (\strtolower($lastLetter)) {
             case 'b':
                 return (float) $size;
                 break;

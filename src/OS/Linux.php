@@ -120,7 +120,7 @@ class Linux extends OS
                     // todo: mips, arm
                     $out[$block['physical id']]->setArchitecture('x86'); // default x86
                     foreach ($out[$block['physical id']]->getFlags() as $flag) {
-                        if ('lm' === $flag || '_lm' === \mb_substr($flag, -3)) { // lm, lahf_lm
+                        if ('lm' === $flag || '_lm' === \substr($flag, -3)) { // lm, lahf_lm
                             $out[$block['physical id']]->setArchitecture('x64');
                             break;
                         }
@@ -381,6 +381,7 @@ class Linux extends OS
     public function getLoad(): ?array
     {
         $load = \sys_getloadavg();
+
         return false === $load ? null : $load;
     }
 
@@ -640,15 +641,19 @@ class Linux extends OS
             return 'OpenVZ';
         }
 
-        if ('Veertu' === Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor')) {
+        $biosVendor = Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor');
+        if ('Veertu' === $biosVendor) {
             return 'Veertu';
         }
+        if (0 === \strpos($biosVendor, 'Parallels')) {
+            return 'Parallels';
+        }
 
-        if (false !== \mb_strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
+        if (false !== \strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
             return 'LXC';
         }
 
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || false !== \mb_strpos(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || false !== \strpos(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
             return 'Docker';
         }
 
@@ -717,7 +722,7 @@ class Linux extends OS
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && false === \mb_strpos($name, $product) && false === \mb_strpos($product, 'Filled')) {
+        if ($product && false === \mb_strpos($name, $product) && false === \strpos($product, 'Filled')) {
             return $product.' ('.$infoStr.')';
         }
 

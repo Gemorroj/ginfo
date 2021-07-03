@@ -46,7 +46,7 @@ class Hddtemp implements ParserInterface
             [$path, $name, $temp, $unit] = \explode('|', \trim($drive));
 
             // Ignore garbled output from SSDs that hddtemp cant parse
-            if (false !== \mb_strpos($temp, 'UNK')) {
+            if (false !== \strpos($temp, 'UNK')) {
                 continue;
             }
 

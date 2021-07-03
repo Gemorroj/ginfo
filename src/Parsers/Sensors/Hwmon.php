@@ -31,7 +31,7 @@ class Hwmon implements ParserInterface
             $driverName = Common::getContents(\dirname($path).'/name');
 
             // Temperatures
-            if (0 === \mb_strpos($base, 'temp') && \is_file($labelPath)) {
+            if (0 === \strpos($base, 'temp') && \is_file($labelPath)) {
                 $label = Common::getContents($labelPath);
                 $value /= $value > 10000 ? 1000 : 1;
                 $unit = 'C'; // I don't think this is ever going to be in F

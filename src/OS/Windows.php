@@ -201,7 +201,7 @@ class Windows extends OS
                 })($driveInfo['Index']))
                 ->setName($driveInfo['Caption'])
                 ->setReads(null)
-                ->setVendor(false !== \mb_strpos($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
+                ->setVendor(false !== \strpos($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
                 ->setWrites(null);
         }
 
@@ -285,7 +285,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (('PCI' !== $type) || (empty($pnpDev['Caption']) || 0 === \mb_strpos($pnpDev['Manufacturer'], '('))) {
+            if (('PCI' !== $type) || (empty($pnpDev['Caption']) || 0 === \strpos($pnpDev['Manufacturer'], '('))) {
                 continue;
             }
 
@@ -307,7 +307,7 @@ class Windows extends OS
         $devs = [];
         foreach ($info as $pnpDev) {
             $type = \explode('\\', $pnpDev['DeviceID'], 2)[0];
-            if (('USB' !== $type) || (empty($pnpDev['Caption']) || 0 === \mb_strpos($pnpDev['Manufacturer'], '('))) {
+            if (('USB' !== $type) || (empty($pnpDev['Caption']) || 0 === \strpos($pnpDev['Manufacturer'], '('))) {
                 continue;
             }
 
