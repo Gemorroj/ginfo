@@ -48,7 +48,7 @@ class Sensors implements ParserInterface
             [$value, $afterValue] = \explode('°', $tmpStr, 2);
             $unit = $afterValue[0]; // C
         } else {
-            [$value, $unit, ] = \explode(' ', $tmpStr, 3); //V | RPM
+            [$value, $unit, ] = \explode(' ', $tmpStr, 3); // V | RPM
         }
 
         return [

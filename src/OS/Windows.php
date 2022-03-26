@@ -138,7 +138,7 @@ class Windows extends OS
 
                     return null;
                 })())
-                ->setFlags(null); //todo
+                ->setFlags(null); // todo
         }
 
         return (new Cpu())
@@ -151,7 +151,7 @@ class Windows extends OS
 
     public function getLoad(): ?array
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getUptime(): ?float
@@ -272,7 +272,7 @@ class Windows extends OS
 
     public function getRaids(): ?array
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getPci(): ?array
@@ -416,12 +416,12 @@ class Windows extends OS
 
     public function getBattery(): ?array
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getSensors(): ?array
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getSoundCards(): ?array
@@ -492,7 +492,7 @@ class Windows extends OS
                 ->setPeakMemory($proc['PeakVirtualSize'])
                 ->setPid($proc['ProcessId'])
                 ->setUser($proc['Owner'])
-                ->setIoRead(null) //todo
+                ->setIoRead(null) // todo
                 ->setIoWrite(null); // todo
         }
 
@@ -536,17 +536,17 @@ class Windows extends OS
 
     public function getUps(): ?Ups
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getPrinters(): ?array
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getSamba(): ?Samba
     {
-        return null; //todo
+        return null; // todo
     }
 
     public function getSelinux(): ?Selinux

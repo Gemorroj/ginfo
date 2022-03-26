@@ -17,7 +17,7 @@
 - drop php libvirt support
 - drop lxd support
 - no need `COM` extension on Windows, but need powershell
-- minimal windows 10 support
+- support Windows >= 10
 - adapt the code to modern standards
 - minimal php version 7.3
 - add selinux status info
@@ -82,7 +82,7 @@ $info = $ginfo->getInfo();
 
 
 ### System requirements:
-- PHP >= 7.1.3
+- PHP >= 7.3
 - pcre extension
 - proc_open
 

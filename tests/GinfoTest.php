@@ -179,7 +179,7 @@ class GinfoTest extends TestCase
     {
         $battery = $this->info->getBattery();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($battery); //todo
+            self::assertNull($battery); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
             self::assertIsArray($battery);
@@ -192,7 +192,7 @@ class GinfoTest extends TestCase
     {
         $sensors = $this->info->getSensors();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($sensors); //todo
+            self::assertNull($sensors); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $sensors) {
@@ -208,7 +208,7 @@ class GinfoTest extends TestCase
     {
         $printers = $this->info->getPrinters();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($printers); //todo
+            self::assertNull($printers); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
             if (null === $printers) {

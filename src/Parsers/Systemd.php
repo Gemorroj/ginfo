@@ -26,7 +26,7 @@ class Systemd implements ParserInterface
         $list = $process->getOutput();
 
         $lines = \explode("\n", \explode("\n\n", $list, 2)[0]);
-        \array_shift($lines); //remove header
+        \array_shift($lines); // remove header
 
         $out = [];
         foreach ($lines as $line) {

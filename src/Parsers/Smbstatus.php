@@ -102,7 +102,7 @@ class Smbstatus implements ParserInterface
 
             // tested date: Wed Dec  9 01:40:20 PM 2015 CET   or    Fri Mar 30 15:48:34 2018
             if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTime)) {
-                if ($connectedAtYear) { //perhaps timezone
+                if ($connectedAtYear) { // perhaps timezone
                     if (false === \strpos($token, '-')) { // yes, timezone
                         $out['connectedAt'] .= ' '.$token;
                         $out['connectedAt'] = new \DateTime($out['connectedAt']);
@@ -110,7 +110,7 @@ class Smbstatus implements ParserInterface
                     }
                     $out['connectedAt'] = new \DateTime($out['connectedAt']);
                 } else {
-                    if (\preg_match('/^[0-9]{4}$/', $token)) { //year
+                    if (\preg_match('/^[0-9]{4}$/', $token)) { // year
                         $connectedAtYear = true;
                     }
                     $out['connectedAt'] .= ' '.$token;
@@ -235,7 +235,7 @@ class Smbstatus implements ParserInterface
                 continue;
             }
             if (isset($out['time']) && !($out['time'] instanceof \DateTime)) {
-                $out['time'] .= ' '.$token; //add all strings to time
+                $out['time'] .= ' '.$token; // add all strings to time
                 continue;
             }
         }
