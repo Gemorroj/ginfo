@@ -31,7 +31,7 @@
         "symfony/process": "^4.4||^5.0||^6.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5",
+        "phpunit/phpunit": "^9.5.16",
         "phpstan/phpstan": "^1.0",
         "friendsofphp/php-cs-fixer": "^3.0"
     },
