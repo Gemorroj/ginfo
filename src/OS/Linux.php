@@ -219,13 +219,18 @@ class Linux extends OS
             // Spaces and other things in the mount path are escaped C style. Fix that.
             $mount[2] = \stripcslashes($mount[2]);
 
-            $size = @\disk_total_space($mount[2]);
-            $size = false === $size ? null : $size;
 
-            $free = @\disk_free_space($mount[2]);
-            $free = false === $free ? null : $free;
+            if (\is_readable($mount[2])) {
+                $size = \disk_total_space($mount[2]);
+                $size = false === $size ? null : $size;
 
-            $used = (null !== $size && null !== $free) ? $size - $free : null;
+                $free = \disk_free_space($mount[2]);
+                $free = false === $free ? null : $free;
+
+                $used = (null !== $size && null !== $free) ? $size - $free : null;
+            } else {
+                $size = $free = $used = null;
+            }
 
             $mounts[] = (new Mount())
                 ->setSize($size)
