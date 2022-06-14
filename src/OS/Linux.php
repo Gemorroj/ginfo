@@ -219,7 +219,6 @@ class Linux extends OS
             // Spaces and other things in the mount path are escaped C style. Fix that.
             $mount[2] = \stripcslashes($mount[2]);
 
-
             if (\is_readable($mount[2])) {
                 $size = \disk_total_space($mount[2]);
                 $size = false === $size ? null : $size;
@@ -425,14 +424,25 @@ class Linux extends OS
             } elseif ('776' === $typeCode) {
                 $type = 'IPv6 in IPv4';
             } else {
-                $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias'));
+                $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias', ''));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
-                if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
+                $ueventContents = @\parse_ini_file($path.'/uevent');
+                $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
+
+                if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
+                    $type = \ucfirst($ueventContents['DEVTYPE']);
+                    if (\in_array($typeMatch, ['PCI', 'USB'])) {
+                        $type .= ' ('.$typeMatch.')';
+                    }
+                    if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
+                        $type .= ' ('.$deviceUeventContents['DRIVER'].')';
+                    }
+                } elseif (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                     $type = 'Ethernet ('.$typeMatch.')';
 
-                    if (($ueventContents = \parse_ini_file($path.'/device/uevent')) && isset($ueventContents['DRIVER'])) {
-                        $type .= ' ('.$ueventContents['DRIVER'].')';
+                    if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
+                        $type .= ' ('.$deviceUeventContents['DRIVER'].')';
                     }
                 } elseif ('VIRTIO' === $typeMatch) {
                     $type = 'VirtIO';
@@ -444,8 +454,6 @@ class Linux extends OS
                     $type = 'Bridge';
                 } elseif (\is_dir($path.'/bonding')) {
                     $type = 'Bond';
-                } elseif (($ueventContents = @\parse_ini_file($path.'/uevent')) && isset($ueventContents['DEVTYPE'])) {
-                    $type = \ucfirst($ueventContents['DEVTYPE']);
                 } else {
                     $type = null;
                 }
