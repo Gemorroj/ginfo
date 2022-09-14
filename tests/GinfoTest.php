@@ -67,7 +67,7 @@ class GinfoTest extends TestCase
         if (null === $processes) {
             self::markTestSkipped('Can\'t get processes');
         } else {
-            self::assertIsArray($processes);
+            self::assertNotEmpty($processes);
             \print_r($processes);
         }
     }
@@ -78,7 +78,7 @@ class GinfoTest extends TestCase
         if (null === $network) {
             self::markTestSkipped('Can\'t get network');
         } else {
-            self::assertIsArray($network);
+            self::assertNotEmpty($network);
             \print_r($network);
         }
     }
@@ -89,7 +89,7 @@ class GinfoTest extends TestCase
         if (null === $usb) {
             self::markTestSkipped('Can\'t get usb');
         } else {
-            self::assertIsArray($usb);
+            self::assertNotEmpty($usb);
             \print_r($usb);
         }
     }
@@ -100,7 +100,7 @@ class GinfoTest extends TestCase
         if (null === $pci) {
             self::markTestSkipped('Can\'t get pci');
         } else {
-            self::assertIsArray($pci);
+            self::assertNotEmpty($pci);
             \print_r($pci);
         }
     }
@@ -111,7 +111,7 @@ class GinfoTest extends TestCase
         if (null === $soundCard) {
             self::markTestSkipped('Can\'t get sound card');
         } else {
-            self::assertIsArray($soundCard);
+            self::assertNotEmpty($soundCard);
             \print_r($soundCard);
         }
     }
@@ -122,7 +122,7 @@ class GinfoTest extends TestCase
         if (null === $services) {
             self::markTestSkipped('Can\'t get services (need systemd)');
         } else {
-            self::assertIsArray($services);
+            self::assertNotEmpty($services);
             \print_r($services);
         }
     }
@@ -182,10 +182,13 @@ class GinfoTest extends TestCase
             self::assertNull($battery); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
-            self::assertIsArray($battery);
+            if (null === $battery) {
+                self::markTestSkipped('Can\'t get battery info');
+            } else {
+                self::assertNotEmpty($battery);
+                \print_r($battery);
+            }
         }
-
-        \print_r($battery);
     }
 
     public function testSensors(): void
@@ -198,7 +201,7 @@ class GinfoTest extends TestCase
             if (null === $sensors) {
                 self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
             } else {
-                self::assertIsArray($sensors);
+                self::assertNotEmpty($sensors);
                 \print_r($sensors);
             }
         }
@@ -214,7 +217,7 @@ class GinfoTest extends TestCase
             if (null === $printers) {
                 self::markTestSkipped('Can\'t get printers (need lpstat)');
             } else {
-                self::assertIsArray($printers);
+                self::assertNotEmpty($printers);
                 \print_r($printers);
             }
         }
@@ -231,21 +234,21 @@ class GinfoTest extends TestCase
         if (null === $drivers) {
             self::markTestSkipped('Can\'t get drivers');
         } else {
-            self::assertIsArray($drivers);
+            self::assertNotEmpty($drivers);
             \print_r($drivers);
         }
 
         if (null === $mounts) {
             self::markTestSkipped('Can\'t get mounts');
         } else {
-            self::assertIsArray($mounts);
+            self::assertNotEmpty($mounts);
             \print_r($mounts);
         }
 
         if (null === $raids) {
             self::markTestSkipped('Can\'t get raids');
         } else {
-            self::assertIsArray($raids);
+            self::assertNotEmpty($raids);
             \print_r($raids);
         }
     }
