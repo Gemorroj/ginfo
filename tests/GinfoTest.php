@@ -89,7 +89,7 @@ class GinfoTest extends TestCase
         if (null === $usb) {
             self::markTestSkipped('Can\'t get usb');
         } else {
-            self::assertNotEmpty($usb);
+            self::assertIsArray($usb);
             \print_r($usb);
         }
     }
@@ -248,7 +248,7 @@ class GinfoTest extends TestCase
         if (null === $raids) {
             self::markTestSkipped('Can\'t get raids');
         } else {
-            self::assertNotEmpty($raids);
+            self::assertIsArray($raids);
             \print_r($raids);
         }
     }
