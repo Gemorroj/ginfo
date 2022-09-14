@@ -203,20 +203,23 @@ class Info
         $disabledFunctions = \ini_get('disable_functions');
         $disabledClasses = \ini_get('disable_classes');
 
+        $apcEnabled = \ini_get('apc.enabled');
+        $apcEnableCli = \ini_get('apc.enable_cli');
+
         return (new Php())
             ->setVersion(\PHP_VERSION)
             ->setExtensions(\get_loaded_extensions())
             ->setZendExtensions(\get_loaded_extensions(true))
-            ->setIniFile(\php_ini_loaded_file())
-            ->setMemoryLimit(Common::convertHumanSizeToBytes(\ini_get('memory_limit')))
-            ->setIncludePath(\get_include_path())
-            ->setOpenBasedir(\ini_get('open_basedir'))
+            ->setIniFile((string) \php_ini_loaded_file())
+            ->setMemoryLimit((int) Common::convertHumanSizeToBytes((string) \ini_get('memory_limit')))
+            ->setIncludePath((string) \get_include_path())
+            ->setOpenBasedir((string) \ini_get('open_basedir'))
             ->setZendThreadSafe(\ZEND_THREAD_SAFE)
             ->setSapiName(\PHP_SAPI)
             ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
             ->setDisabledClasses($disabledClasses ? \explode(',', $disabledClasses) : [])
             ->setRealpathCacheSizeUsed(\realpath_cache_size())
-            ->setRealpathCacheSizeAllowed(Common::convertHumanSizeToBytes(\ini_get('realpath_cache_size')))
+            ->setRealpathCacheSizeAllowed(Common::convertHumanSizeToBytes((string) \ini_get('realpath_cache_size')))
             ->setOpcache(
                 (new Php\Opcache())
                     ->setVersion(\phpversion('Zend Opcache') ?: null)
@@ -239,8 +242,8 @@ class Info
                 (new Php\Apcu())
                     ->setVersion(\phpversion('apcu') ?: null)
                     ->setCachedVariables($apcuCacheInfo['num_entries'] ?? null)
-                    ->setConfigEnable(false !== \ini_get('apc.enabled') ? \ini_get('apc.enabled') : null)
-                    ->setConfigEnableCli(false !== \ini_get('apc.enable_cli') ? \ini_get('apc.enable_cli') : null)
+                    ->setConfigEnable(false !== $apcEnabled ? (bool) $apcEnabled : null)
+                    ->setConfigEnableCli(false !== $apcEnableCli ? (bool) $apcEnableCli : null)
                     ->setEnabled($apcuCacheInfo && $apcuSmaInfo)
                     ->setFreeMemory($apcuSmaInfo['avail_mem'] ?? null)
                     ->setUsedMemory(isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? $apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem'] : null)
@@ -277,7 +280,7 @@ class Info
                             ->setScript($process['script'])
                             ->setState($process['state'])
                             ->setUser($process['user'])
-                            ;
+                        ;
                     }, $fpmInfo['procs']) : null)
             );
     }

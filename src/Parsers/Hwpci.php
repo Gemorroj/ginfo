@@ -35,7 +35,12 @@ class Hwpci implements ParserInterface
      */
     private function fetchUsbIdsLinux(): void
     {
-        foreach (\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
+        $paths = \glob('/sys/bus/usb/devices/*', \GLOB_NOSORT);
+        if (!$paths) {
+            return;
+        }
+
+        foreach ($paths as $path) {
             // Avoid the same device artificially appearing more than once
             if (false !== \strpos($path, ':')) {
                 continue;
@@ -62,7 +67,12 @@ class Hwpci implements ParserInterface
      */
     private function fetchPciIdsLinux(): void
     {
-        foreach (\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
+        $paths = \glob('/sys/bus/pci/devices/*', \GLOB_NOSORT);
+        if (!$paths) {
+            return;
+        }
+
+        foreach ($paths as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', ''))) {
                 [, $vId] = \explode('x', $fVend, 2);

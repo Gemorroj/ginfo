@@ -87,7 +87,7 @@ class Linux extends OS
                 $out[$block['physical id']] = $block['cpu cores'];
             }
 
-            return \array_sum($out);
+            return (int) \array_sum($out);
         })();
         $virtual = \count($cpuData);
 
@@ -163,7 +163,7 @@ class Linux extends OS
         }
 
         $paths = \glob('/sys/block/*/device/uevent', \GLOB_NOSORT);
-        if (false === $paths) {
+        if (!$paths) {
             return null;
         }
 
@@ -318,22 +318,25 @@ class Linux extends OS
         }
 
         // Laptop backlight percentage
-        foreach (\glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE) as $bl) {
-            $max = Common::getContents($bl);
-            $cur = Common::getContents(\dirname($bl).'/actual_brightness');
-            if (null === $cur) {
-                continue;
-            }
+        $paths = \glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE);
+        if ($paths) {
+            foreach ($paths as $bl) {
+                $max = Common::getContents($bl);
+                $cur = Common::getContents(\dirname($bl).'/actual_brightness');
+                if (null === $cur) {
+                    continue;
+                }
 
-            if ($max < 0 || $cur < 0) {
-                continue;
+                if ($max < 0 || $cur < 0) {
+                    continue;
+                }
+                $return[] = [
+                    'name' => 'Backlight brightness',
+                    'value' => \round($cur / $max, 2) * 100,
+                    'unit' => '%',
+                    'path' => null,
+                ];
             }
-            $return[] = [
-                'name' => 'Backlight brightness',
-                'value' => \round($cur / $max, 2) * 100,
-                'unit' => '%',
-                'path' => null,
-            ];
         }
 
         $out = [];
@@ -392,7 +395,7 @@ class Linux extends OS
     public function getNetwork(): ?array
     {
         $paths = \glob('/sys/class/net/*', \GLOB_NOSORT);
-        if (false === $paths) {
+        if (!$paths) {
             return null;
         }
 
@@ -483,7 +486,7 @@ class Linux extends OS
     public function getBattery(): ?array
     {
         $paths = \glob('/sys/class/power_supply/BAT*', \GLOB_NOSORT);
-        if (false === $paths) {
+        if (!$paths) {
             return null;
         }
 
@@ -535,7 +538,7 @@ class Linux extends OS
     public function getProcesses(): ?array
     {
         $processes = \glob('/proc/*/status', \GLOB_NOSORT);
-        if (null === $processes) {
+        if (!$processes) {
             return null;
         }
 
@@ -679,8 +682,11 @@ class Linux extends OS
         }
 
         // Sometimes /proc/modules is missing what is in this dir on VMs
-        foreach (\glob('/sys/bus/pci/drivers/*') as $name) {
-            $modules[] = \basename($name);
+        $paths = \glob('/sys/bus/pci/drivers/*');
+        if ($paths) {
+            foreach ($paths as $name) {
+                $modules[] = \basename($name);
+            }
         }
 
         if (\in_array('vboxguest', $modules, true)) {

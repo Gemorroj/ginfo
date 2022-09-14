@@ -18,7 +18,7 @@ class Hwmon implements ParserInterface
     public static function work(): ?array
     {
         $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);
-        if (false === $paths) {
+        if (!$paths) {
             return null;
         }
 

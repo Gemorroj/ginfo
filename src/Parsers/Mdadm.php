@@ -48,7 +48,7 @@ md0 : active raid1 sdb[0]
                                 $driveState = 'normal';
                                 break;
 
-                            // I'm not sure if there are status codes other than the above
+                                // I'm not sure if there are status codes other than the above
                             default:
                                 $driveState = null;
                                 break;
