@@ -8,47 +8,32 @@ use Ginfo\Info\Php\Opcache;
 
 class Php
 {
-    /** @var string */
-    private $version;
+    private string $version;
     /** @var string[] */
-    private $extensions;
+    private array $extensions;
     /** @var string[] */
-    private $zendExtensions;
-    /** @var string */
-    private $iniFile;
-    /** @var string */
-    private $includePath;
-    /** @var string */
-    private $openBasedir;
-    /** @var string */
-    private $sapiName;
-    /** @var Opcache */
-    private $opcache;
-    /** @var Apcu */
-    private $apcu;
+    private array $zendExtensions;
+    private string $iniFile;
+    private string $includePath;
+    private string $openBasedir;
+    private string $sapiName;
+    private Opcache $opcache;
+    private Apcu $apcu;
     /** @var string[] */
-    private $disabledFunctions;
+    private array $disabledFunctions;
     /** @var string[] */
-    private $disabledClasses;
-    /** @var float */
-    private $realpathCacheSizeUsed;
-    /** @var float|null */
-    private $realpathCacheSizeAllowed;
-    /** @var bool */
-    private $zendThreadSafe;
-    /** @var int */
-    private $memoryLimit;
-    /** @var Fpm */
-    private $fpm;
+    private array $disabledClasses;
+    private float $realpathCacheSizeUsed;
+    private ?float $realpathCacheSizeAllowed = null;
+    private bool $zendThreadSafe;
+    private int $memoryLimit;
+    private Fpm $fpm;
 
     public function getMemoryLimit(): int
     {
         return $this->memoryLimit;
     }
 
-    /**
-     * @return $this
-     */
     public function setMemoryLimit(int $memoryLimit): self
     {
         $this->memoryLimit = $memoryLimit;
@@ -61,9 +46,6 @@ class Php
         return $this->zendThreadSafe;
     }
 
-    /**
-     * @return $this
-     */
     public function setZendThreadSafe(bool $zendThreadSafe): self
     {
         $this->zendThreadSafe = $zendThreadSafe;
@@ -76,9 +58,6 @@ class Php
         return $this->version;
     }
 
-    /**
-     * @return $this
-     */
     public function setVersion(string $version): self
     {
         $this->version = $version;
@@ -96,8 +75,6 @@ class Php
 
     /**
      * @param string[] $extensions
-     *
-     * @return $this
      */
     public function setExtensions(array $extensions): self
     {
@@ -116,8 +93,6 @@ class Php
 
     /**
      * @param string[] $zendExtensions
-     *
-     * @return $this
      */
     public function setZendExtensions(array $zendExtensions): self
     {
@@ -131,9 +106,6 @@ class Php
         return $this->iniFile;
     }
 
-    /**
-     * @return $this
-     */
     public function setIniFile(string $iniFile): self
     {
         $this->iniFile = $iniFile;
@@ -146,9 +118,6 @@ class Php
         return $this->includePath;
     }
 
-    /**
-     * @return $this
-     */
     public function setIncludePath(string $includePath): self
     {
         $this->includePath = $includePath;
@@ -161,9 +130,6 @@ class Php
         return $this->openBasedir;
     }
 
-    /**
-     * @return $this
-     */
     public function setOpenBasedir(string $openBasedir): self
     {
         $this->openBasedir = $openBasedir;
@@ -176,9 +142,6 @@ class Php
         return $this->sapiName;
     }
 
-    /**
-     * @return $this
-     */
     public function setSapiName(string $sapiName): self
     {
         $this->sapiName = $sapiName;
@@ -191,9 +154,6 @@ class Php
         return $this->opcache;
     }
 
-    /**
-     * @return $this
-     */
     public function setOpcache(Opcache $opcache): self
     {
         $this->opcache = $opcache;
@@ -206,9 +166,6 @@ class Php
         return $this->fpm;
     }
 
-    /**
-     * @return $this
-     */
     public function setFpm(Fpm $fpm): self
     {
         $this->fpm = $fpm;
@@ -221,9 +178,6 @@ class Php
         return $this->apcu;
     }
 
-    /**
-     * @return $this
-     */
     public function setApcu(Apcu $apcu): self
     {
         $this->apcu = $apcu;
@@ -241,8 +195,6 @@ class Php
 
     /**
      * @param string[] $disabledFunctions
-     *
-     * @return $this
      */
     public function setDisabledFunctions(array $disabledFunctions): self
     {
@@ -261,8 +213,6 @@ class Php
 
     /**
      * @param string[] $disabledClasses
-     *
-     * @return $this
      */
     public function setDisabledClasses(array $disabledClasses): self
     {
@@ -276,9 +226,6 @@ class Php
         return $this->realpathCacheSizeUsed;
     }
 
-    /**
-     * @return $this
-     */
     public function setRealpathCacheSizeUsed(float $realpathCacheSizeUsed): self
     {
         $this->realpathCacheSizeUsed = $realpathCacheSizeUsed;
@@ -291,9 +238,6 @@ class Php
         return $this->realpathCacheSizeAllowed;
     }
 
-    /**
-     * @return $this
-     */
     public function setRealpathCacheSizeAllowed(?float $realpathCacheSizeAllowed): self
     {
         $this->realpathCacheSizeAllowed = $realpathCacheSizeAllowed;

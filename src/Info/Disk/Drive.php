@@ -6,29 +6,20 @@ use Ginfo\Info\Disk\Drive\Partition;
 
 class Drive
 {
-    /** @var string */
-    private $name;
-    /** @var string|null */
-    private $vendor;
-    /** @var string */
-    private $device;
-    /** @var float|null */
-    private $reads;
-    /** @var float|null */
-    private $writes;
-    /** @var float */
-    private $size;
+    private string $name;
+    private ?string $vendor = null;
+    private string $device;
+    private ?float $reads = null;
+    private ?float $writes = null;
+    private float $size;
     /** @var Partition[]|null */
-    private $partitions;
+    private ?array $partitions = null;
 
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -41,9 +32,6 @@ class Drive
         return $this->vendor;
     }
 
-    /**
-     * @return $this
-     */
     public function setVendor(?string $vendor): self
     {
         $this->vendor = $vendor;
@@ -56,9 +44,6 @@ class Drive
         return $this->device;
     }
 
-    /**
-     * @return $this
-     */
     public function setDevice(string $device): self
     {
         $this->device = $device;
@@ -71,9 +56,6 @@ class Drive
         return $this->reads;
     }
 
-    /**
-     * @return $this
-     */
     public function setReads(?float $reads): self
     {
         $this->reads = $reads;
@@ -86,9 +68,6 @@ class Drive
         return $this->writes;
     }
 
-    /**
-     * @return $this
-     */
     public function setWrites(?float $writes): self
     {
         $this->writes = $writes;
@@ -101,9 +80,6 @@ class Drive
         return $this->size;
     }
 
-    /**
-     * @return $this
-     */
     public function setSize(float $size): self
     {
         $this->size = $size;
@@ -121,8 +97,6 @@ class Drive
 
     /**
      * @param Partition[]|null $partitions
-     *
-     * @return $this
      */
     public function setPartitions(?array $partitions): self
     {

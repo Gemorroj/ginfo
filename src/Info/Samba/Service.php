@@ -4,18 +4,12 @@ namespace Ginfo\Info\Samba;
 
 class Service
 {
-    /** @var string */
-    private $service;
-    /** @var int */
-    private $pid;
-    /** @var string */
-    private $machine;
-    /** @var \DateTime */
-    private $connectedAt;
-    /** @var string|null */
-    private $encryption;
-    /** @var string|null */
-    private $signing;
+    private string $service;
+    private int $pid;
+    private string $machine;
+    private \DateTime $connectedAt;
+    private ?string $encryption = null;
+    private ?string $signing = null;
 
     /**
      * @return string|null after samba 4.4
@@ -25,9 +19,6 @@ class Service
         return $this->encryption;
     }
 
-    /**
-     * @return $this
-     */
     public function setEncryption(?string $encryption): self
     {
         $this->encryption = $encryption;
@@ -43,9 +34,6 @@ class Service
         return $this->signing;
     }
 
-    /**
-     * @return $this
-     */
     public function setSigning(?string $signing): self
     {
         $this->signing = $signing;
@@ -58,9 +46,6 @@ class Service
         return $this->service;
     }
 
-    /**
-     * @return $this
-     */
     public function setService(string $service): self
     {
         $this->service = $service;
@@ -73,9 +58,6 @@ class Service
         return $this->pid;
     }
 
-    /**
-     * @return $this
-     */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
@@ -88,9 +70,6 @@ class Service
         return $this->machine;
     }
 
-    /**
-     * @return $this
-     */
     public function setMachine(string $machine): self
     {
         $this->machine = $machine;
@@ -103,9 +82,6 @@ class Service
         return $this->connectedAt;
     }
 
-    /**
-     * @return $this
-     */
     public function setConnectedAt(\DateTime $connectedAt): self
     {
         $this->connectedAt = $connectedAt;

@@ -4,26 +4,16 @@ namespace Ginfo\Info;
 
 class Battery
 {
-    /** @var int|null */
-    private $chargeFull;
-    /** @var int|null */
-    private $chargeNow;
-    /** @var int|null */
-    private $energyFull;
-    /** @var int|null */
-    private $energyNow;
-    /** @var int */
-    private $voltageNow;
-    /** @var int */
-    private $percentage;
-    /** @var string */
-    private $vendor;
-    /** @var string */
-    private $model;
-    /** @var string */
-    private $status;
-    /** @var string */
-    private $technology;
+    private ?int $chargeFull = null;
+    private ?int $chargeNow = null;
+    private ?int $energyFull = null;
+    private ?int $energyNow = null;
+    private int $voltageNow;
+    private int $percentage;
+    private string $vendor;
+    private string $model;
+    private string $status;
+    private string $technology;
 
     /**
      * @return int|null uAh
@@ -35,8 +25,6 @@ class Battery
 
     /**
      * @param int|null $chargeFull uAh
-     *
-     * @return $this
      */
     public function setChargeFull(?int $chargeFull): self
     {
@@ -55,8 +43,6 @@ class Battery
 
     /**
      * @param int|null $chargeNow uAh
-     *
-     * @return $this
      */
     public function setChargeNow(?int $chargeNow): self
     {
@@ -75,8 +61,6 @@ class Battery
 
     /**
      * @param int|null $energyFull uWh
-     *
-     * @return $this
      */
     public function setEnergyFull(?int $energyFull): self
     {
@@ -95,8 +79,6 @@ class Battery
 
     /**
      * @param int|null $energyNow uWh
-     *
-     * @return $this
      */
     public function setEnergyNow(?int $energyNow): self
     {
@@ -115,8 +97,6 @@ class Battery
 
     /**
      * @param int $voltageNow uV
-     *
-     * @return $this
      */
     public function setVoltageNow(int $voltageNow): self
     {
@@ -130,9 +110,6 @@ class Battery
         return $this->percentage;
     }
 
-    /**
-     * @return $this
-     */
     public function setPercentage(int $percentage): self
     {
         $this->percentage = $percentage;
@@ -145,9 +122,6 @@ class Battery
         return $this->vendor;
     }
 
-    /**
-     * @return $this
-     */
     public function setVendor(string $vendor): self
     {
         $this->vendor = $vendor;
@@ -160,9 +134,6 @@ class Battery
         return $this->model;
     }
 
-    /**
-     * @return $this
-     */
     public function setModel(string $model): self
     {
         $this->model = $model;
@@ -175,9 +146,6 @@ class Battery
         return $this->status;
     }
 
-    /**
-     * @return $this
-     */
     public function setStatus(string $status): self
     {
         $this->status = $status;
@@ -190,9 +158,6 @@ class Battery
         return $this->technology;
     }
 
-    /**
-     * @return $this
-     */
     public function setTechnology(string $technology): self
     {
         $this->technology = $technology;

@@ -4,21 +4,15 @@ namespace Ginfo\Info;
 
 class Selinux
 {
-    /** @var bool */
-    private $enabled;
-    /** @var string|null */
-    private $mode;
-    /** @var string|null */
-    private $policy;
+    private bool $enabled;
+    private ?string $mode = null;
+    private ?string $policy = null;
 
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
@@ -33,7 +27,7 @@ class Selinux
      *
      * @return string (enforcing|permissive|disabled)
      */
-    public function getMode(): string
+    public function getMode(): ?string
     {
         return $this->mode;
     }
@@ -44,8 +38,6 @@ class Selinux
      * disabled – No SELinux policy is loaded.
      *
      * @param string $mode (enforcing|permissive|disabled)
-     *
-     * @return $this
      */
     public function setMode(string $mode): self
     {
@@ -61,7 +53,7 @@ class Selinux
      *
      * @return string (targeted|minimum|mls)
      */
-    public function getPolicy(): string
+    public function getPolicy(): ?string
     {
         return $this->policy;
     }
@@ -72,8 +64,6 @@ class Selinux
      * mls – This is for Multi Level Security protection. MLS is pretty complex and pretty much not used in most situations.
      *
      * @param string $policy (targeted|minimum|mls)
-     *
-     * @return $this
      */
     public function setPolicy(string $policy): self
     {

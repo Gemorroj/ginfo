@@ -4,29 +4,19 @@ namespace Ginfo\Info;
 
 class Ups
 {
-    /** @var string */
-    private $name;
-    /** @var string */
-    private $model;
-    /** @var float */
-    private $batteryVolts;
-    /** @var float */
-    private $batteryCharge;
-    /** @var int */
-    private $timeLeft;
-    /** @var float */
-    private $currentLoad;
-    /** @var string */
-    private $status;
+    private string $name;
+    private string $model;
+    private float $batteryVolts;
+    private float $batteryCharge;
+    private int $timeLeft;
+    private float $currentLoad;
+    private string $status;
 
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -39,9 +29,6 @@ class Ups
         return $this->model;
     }
 
-    /**
-     * @return $this
-     */
     public function setModel(string $model): self
     {
         $this->model = $model;
@@ -57,9 +44,6 @@ class Ups
         return $this->batteryVolts;
     }
 
-    /**
-     * @return $this
-     */
     public function setBatteryVolts(float $batteryVolts): self
     {
         $this->batteryVolts = $batteryVolts;
@@ -75,9 +59,6 @@ class Ups
         return $this->batteryCharge;
     }
 
-    /**
-     * @return $this
-     */
     public function setBatteryCharge(float $batteryCharge): self
     {
         $this->batteryCharge = $batteryCharge;
@@ -93,9 +74,6 @@ class Ups
         return $this->timeLeft;
     }
 
-    /**
-     * @return $this
-     */
     public function setTimeLeft(int $timeLeft): self
     {
         $this->timeLeft = $timeLeft;
@@ -111,9 +89,6 @@ class Ups
         return $this->currentLoad;
     }
 
-    /**
-     * @return $this
-     */
     public function setCurrentLoad(float $currentLoad): self
     {
         $this->currentLoad = $currentLoad;
@@ -126,9 +101,6 @@ class Ups
         return $this->status;
     }
 
-    /**
-     * @return $this
-     */
     public function setStatus(string $status): self
     {
         $this->status = $status;

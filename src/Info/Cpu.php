@@ -7,15 +7,11 @@ use Ginfo\Info\Cpu\Processor;
 class Cpu
 {
     /** @var Processor[] */
-    private $processors;
-    /** @var int */
-    private $physical;
-    /** @var int */
-    private $cores;
-    /** @var int */
-    private $virtual;
-    /** @var bool */
-    private $hyperThreading;
+    private array $processors = [];
+    private int $physical;
+    private int $cores;
+    private int $virtual;
+    private bool $hyperThreading;
 
     /**
      * @return Processor[]
@@ -27,8 +23,6 @@ class Cpu
 
     /**
      * @param Processor[] $processors
-     *
-     * @return $this
      */
     public function setProcessors(array $processors): self
     {
@@ -37,9 +31,6 @@ class Cpu
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function addProcessor(Processor $processor): self
     {
         $this->processors[] = $processor;
@@ -52,9 +43,6 @@ class Cpu
         return $this->physical;
     }
 
-    /**
-     * @return $this
-     */
     public function setPhysical(int $physical): self
     {
         $this->physical = $physical;
@@ -67,9 +55,6 @@ class Cpu
         return $this->cores;
     }
 
-    /**
-     * @return $this
-     */
     public function setCores(int $cores): self
     {
         $this->cores = $cores;
@@ -82,9 +67,6 @@ class Cpu
         return $this->virtual;
     }
 
-    /**
-     * @return $this
-     */
     public function setVirtual(int $virtual): self
     {
         $this->virtual = $virtual;
@@ -97,9 +79,6 @@ class Cpu
         return $this->hyperThreading;
     }
 
-    /**
-     * @return $this
-     */
     public function setHyperThreading(bool $hyperThreading): self
     {
         $this->hyperThreading = $hyperThreading;

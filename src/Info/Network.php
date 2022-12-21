@@ -6,27 +6,18 @@ use Ginfo\Info\Network\Stats;
 
 class Network
 {
-    /** @var string */
-    private $name;
-    /** @var float|null */
-    private $speed;
-    /** @var string|null */
-    private $type;
-    /** @var string|null */
-    private $state;
-    /** @var Stats|null */
-    private $statsReceived;
-    /** @var Stats|null */
-    private $statsSent;
+    private string $name;
+    private ?float $speed = null;
+    private ?string $type = null;
+    private ?string $state = null;
+    private ?Stats $statsReceived = null;
+    private ?Stats $statsSent = null;
 
     public function getStatsReceived(): ?Stats
     {
         return $this->statsReceived;
     }
 
-    /**
-     * @return $this
-     */
     public function setStatsReceived(?Stats $statsReceived): self
     {
         $this->statsReceived = $statsReceived;
@@ -39,9 +30,6 @@ class Network
         return $this->statsSent;
     }
 
-    /**
-     * @return $this
-     */
     public function setStatsSent(?Stats $statsSent): self
     {
         $this->statsSent = $statsSent;
@@ -54,9 +42,6 @@ class Network
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -74,8 +59,6 @@ class Network
 
     /**
      * @param float|null $speed bit/s
-     *
-     * @return $this
      */
     public function setSpeed(?float $speed): self
     {
@@ -89,9 +72,6 @@ class Network
         return $this->type;
     }
 
-    /**
-     * @return $this
-     */
     public function setType(?string $type): self
     {
         $this->type = $type;
@@ -104,9 +84,6 @@ class Network
         return $this->state;
     }
 
-    /**
-     * @return $this
-     */
     public function setState(?string $state): self
     {
         $this->state = $state;

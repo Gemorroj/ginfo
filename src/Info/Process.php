@@ -4,35 +4,22 @@ namespace Ginfo\Info;
 
 class Process
 {
-    /** @var string */
-    private $name;
-    /** @var string|null */
-    private $commandLine;
-    /** @var int */
-    private $threads;
-    /** @var string|null */
-    private $state;
-    /** @var float|null */
-    private $memory;
-    /** @var float|null */
-    private $peakMemory;
-    /** @var int */
-    private $pid;
-    /** @var string|null */
-    private $user;
-    /** @var float|null */
-    private $ioRead;
-    /** @var float|null */
-    private $ioWrite;
+    private string $name;
+    private ?string $commandLine = null;
+    private int $threads = 0;
+    private ?string $state = null;
+    private ?float $memory = null;
+    private ?float $peakMemory = null;
+    private int $pid;
+    private ?string $user = null;
+    private ?float $ioRead = null;
+    private ?float $ioWrite = null;
 
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -45,9 +32,6 @@ class Process
         return $this->commandLine;
     }
 
-    /**
-     * @return $this
-     */
     public function setCommandLine(?string $commandLine): self
     {
         $this->commandLine = $commandLine;
@@ -60,9 +44,6 @@ class Process
         return $this->threads;
     }
 
-    /**
-     * @return $this
-     */
     public function setThreads(int $threads): self
     {
         $this->threads = $threads;
@@ -75,9 +56,6 @@ class Process
         return $this->state;
     }
 
-    /**
-     * @return $this
-     */
     public function setState(?string $state): self
     {
         $this->state = $state;
@@ -90,9 +68,6 @@ class Process
         return $this->memory;
     }
 
-    /**
-     * @return $this
-     */
     public function setMemory(?float $memory): self
     {
         $this->memory = $memory;
@@ -105,9 +80,6 @@ class Process
         return $this->peakMemory;
     }
 
-    /**
-     * @return $this
-     */
     public function setPeakMemory(?float $peakMemory): self
     {
         $this->peakMemory = $peakMemory;
@@ -120,9 +92,6 @@ class Process
         return $this->pid;
     }
 
-    /**
-     * @return $this
-     */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
@@ -135,9 +104,6 @@ class Process
         return $this->user;
     }
 
-    /**
-     * @return $this
-     */
     public function setUser(?string $user): self
     {
         $this->user = $user;
@@ -150,9 +116,6 @@ class Process
         return $this->ioRead;
     }
 
-    /**
-     * @return $this
-     */
     public function setIoRead(?float $ioRead): self
     {
         $this->ioRead = $ioRead;
@@ -165,9 +128,6 @@ class Process
         return $this->ioWrite;
     }
 
-    /**
-     * @return $this
-     */
     public function setIoWrite(?float $ioWrite): self
     {
         $this->ioWrite = $ioWrite;

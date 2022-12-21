@@ -4,25 +4,18 @@ namespace Ginfo\Info\Cpu;
 
 class Processor
 {
-    /** @var string */
-    private $model;
-    /** @var float */
-    private $speed;
-    /** @var int|null */
-    private $l2Cache;
+    private string $model;
+    private float $speed;
+    private ?int $l2Cache = null;
     /** @var string[]|null */
-    private $flags;
-    /** @var string */
-    private $architecture;
+    private ?array $flags = null;
+    private ?string $architecture = null;
 
     public function getModel(): string
     {
         return $this->model;
     }
 
-    /**
-     * @return $this
-     */
     public function setModel(string $model): self
     {
         $this->model = $model;
@@ -35,9 +28,6 @@ class Processor
         return $this->speed;
     }
 
-    /**
-     * @return $this
-     */
     public function setSpeed(float $speed): self
     {
         $this->speed = $speed;
@@ -50,9 +40,6 @@ class Processor
         return $this->l2Cache;
     }
 
-    /**
-     * @return $this
-     */
     public function setL2Cache(?int $l2Cache): self
     {
         $this->l2Cache = $l2Cache;
@@ -72,8 +59,6 @@ class Processor
 
     /**
      * @param string[]|null $flags
-     *
-     * @return $this
      */
     public function setFlags(?array $flags): self
     {
@@ -83,11 +68,9 @@ class Processor
     }
 
     /**
-     * @param string $architecture (x86|x64|ia64) currently arm or mips not supported
-     *
-     * @return $this
+     * @param string|null $architecture (x86|x64|ia64) currently arm or mips not supported
      */
-    public function setArchitecture(string $architecture): self
+    public function setArchitecture(?string $architecture): self
     {
         $this->architecture = $architecture;
 
@@ -97,7 +80,7 @@ class Processor
     /**
      * @return string (x86|x64|ia64) currently arm or mips not supported
      */
-    public function getArchitecture()
+    public function getArchitecture(): ?string
     {
         return $this->architecture;
     }

@@ -9,11 +9,11 @@ use Ginfo\Info\Disk\Raid;
 class Disk
 {
     /** @var Mount[]|null */
-    private $mounts;
+    private ?array $mounts = null;
     /** @var Drive[]|null */
-    private $drives;
+    private ?array $drives = null;
     /** @var Raid[]|null */
-    private $raids;
+    private ?array $raids = null;
 
     /**
      * @return Mount[]|null
@@ -25,8 +25,6 @@ class Disk
 
     /**
      * @param Mount[]|null $mounts
-     *
-     * @return $this
      */
     public function setMounts(?array $mounts): self
     {
@@ -45,8 +43,6 @@ class Disk
 
     /**
      * @param Drive[]|null $drives
-     *
-     * @return $this
      */
     public function setDrives(?array $drives): self
     {
@@ -65,8 +61,6 @@ class Disk
 
     /**
      * @param Raid[]|null $raids
-     *
-     * @return $this
      */
     public function setRaids(?array $raids): self
     {

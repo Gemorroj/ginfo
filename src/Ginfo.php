@@ -2,19 +2,14 @@
 
 namespace Ginfo;
 
-use Ginfo\Exceptions\FatalException;
 use Ginfo\OS\Linux;
 use Ginfo\OS\OS;
 use Ginfo\OS\Windows;
 
 class Ginfo
 {
-    /** @var OS */
-    protected $os;
+    protected OS $os;
 
-    /**
-     * @throws FatalException
-     */
     public function __construct()
     {
         if ('Windows' === \PHP_OS_FAMILY) {

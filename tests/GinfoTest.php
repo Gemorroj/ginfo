@@ -8,8 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class GinfoTest extends TestCase
 {
-    /** @var Info */
-    private $info;
+    private Info $info;
 
     protected function setUp(): void
     {

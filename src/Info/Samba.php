@@ -8,11 +8,11 @@ use Ginfo\Info\Samba\File;
 class Samba
 {
     /** @var File[] */
-    private $files;
+    private array $files = [];
     /** @var \Ginfo\Info\Samba\Service[] */
-    private $services;
+    private array $services = [];
     /** @var Connection[] */
-    private $connections;
+    private array $connections = [];
 
     /**
      * @return File[]
@@ -24,8 +24,6 @@ class Samba
 
     /**
      * @param File[] $files
-     *
-     * @return $this
      */
     public function setFiles(array $files): self
     {
@@ -44,8 +42,6 @@ class Samba
 
     /**
      * @param Samba\Service[] $services
-     *
-     * @return $this
      */
     public function setServices(array $services): self
     {
@@ -64,8 +60,6 @@ class Samba
 
     /**
      * @param Connection[] $connections
-     *
-     * @return $this
      */
     public function setConnections(array $connections): self
     {

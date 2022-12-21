@@ -4,33 +4,21 @@ namespace Ginfo\Info\Php;
 
 class Apcu
 {
-    /** @var string|null */
-    private $version;
-    /** @var bool */
-    private $enabled;
-    /** @var bool|null */
-    private $configEnable;
-    /** @var bool|null */
-    private $configEnableCli;
-    /** @var int|null */
-    private $hits;
-    /** @var int|null */
-    private $misses;
-    /** @var int|null */
-    private $usedMemory;
-    /** @var int|null */
-    private $freeMemory;
-    /** @var int|null */
-    private $cachedVariables;
+    private ?string $version = null;
+    private bool $enabled;
+    private ?bool $configEnable = null;
+    private ?bool $configEnableCli = null;
+    private ?int $hits = null;
+    private ?int $misses = null;
+    private ?int $usedMemory = null;
+    private ?int $freeMemory = null;
+    private ?int $cachedVariables = null;
 
     public function getVersion(): ?string
     {
         return $this->version;
     }
 
-    /**
-     * @return $this
-     */
     public function setVersion(?string $version): self
     {
         $this->version = $version;
@@ -43,9 +31,6 @@ class Apcu
         return $this->enabled;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
@@ -58,9 +43,6 @@ class Apcu
         return $this->configEnable;
     }
 
-    /**
-     * @return $this
-     */
     public function setConfigEnable(?bool $configEnable): self
     {
         $this->configEnable = $configEnable;
@@ -73,9 +55,6 @@ class Apcu
         return $this->configEnableCli;
     }
 
-    /**
-     * @return $this
-     */
     public function setConfigEnableCli(?bool $configEnableCli): self
     {
         $this->configEnableCli = $configEnableCli;
@@ -88,9 +67,6 @@ class Apcu
         return $this->hits;
     }
 
-    /**
-     * @return $this
-     */
     public function setHits(?int $hits): self
     {
         $this->hits = $hits;
@@ -103,9 +79,6 @@ class Apcu
         return $this->misses;
     }
 
-    /**
-     * @return $this
-     */
     public function setMisses(?int $misses): self
     {
         $this->misses = $misses;
@@ -118,9 +91,6 @@ class Apcu
         return $this->usedMemory;
     }
 
-    /**
-     * @return $this
-     */
     public function setUsedMemory(?int $usedMemory): self
     {
         $this->usedMemory = $usedMemory;
@@ -133,9 +103,6 @@ class Apcu
         return $this->freeMemory;
     }
 
-    /**
-     * @return $this
-     */
     public function setFreeMemory(?int $freeMemory): self
     {
         $this->freeMemory = $freeMemory;
@@ -148,9 +115,6 @@ class Apcu
         return $this->cachedVariables;
     }
 
-    /**
-     * @return $this
-     */
     public function setCachedVariables(?int $cachedVariables): self
     {
         $this->cachedVariables = $cachedVariables;

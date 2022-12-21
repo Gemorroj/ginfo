@@ -14,14 +14,11 @@ class Hwpci implements ParserInterface
     public const MODE_PCI = 'pci';
     public const MODE_USB = 'usb';
 
-    private $file;
-    private $entries = [];
-    private $devices = [];
+    private string $file;
+    private array $entries = [];
+    private array $devices = [];
 
-    /**
-     * @param string $file
-     */
-    private function __construct($file)
+    private function __construct(string $file)
     {
         $this->file = $file;
     }

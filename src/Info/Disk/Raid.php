@@ -6,31 +6,21 @@ use Ginfo\Info\Disk\Raid\Drive;
 
 class Raid
 {
-    /** @var string */
-    private $device;
-    /** @var string */
-    private $status;
-    /** @var int */
-    private $level;
+    private string $device;
+    private string $status;
+    private int $level;
     /** @var Drive[] */
-    private $drives;
-    /** @var float */
-    private $size;
-    /** @var int */
-    private $countActive;
-    /** @var int */
-    private $countTotal;
-    /** @var string */
-    private $chart;
+    private array $drives = [];
+    private float $size;
+    private int $countActive;
+    private int $countTotal;
+    private string $chart;
 
     public function getDevice(): string
     {
         return $this->device;
     }
 
-    /**
-     * @return $this
-     */
     public function setDevice(string $device): self
     {
         $this->device = $device;
@@ -43,9 +33,6 @@ class Raid
         return $this->status;
     }
 
-    /**
-     * @return $this
-     */
     public function setStatus(string $status): self
     {
         $this->status = $status;
@@ -58,9 +45,6 @@ class Raid
         return $this->level;
     }
 
-    /**
-     * @return $this
-     */
     public function setLevel(int $level): self
     {
         $this->level = $level;
@@ -78,8 +62,6 @@ class Raid
 
     /**
      * @param Drive[] $drives
-     *
-     * @return $this
      */
     public function setDrives(array $drives): self
     {
@@ -93,9 +75,6 @@ class Raid
         return $this->size;
     }
 
-    /**
-     * @return $this
-     */
     public function setSize(float $size): self
     {
         $this->size = $size;
@@ -108,9 +87,6 @@ class Raid
         return $this->countActive;
     }
 
-    /**
-     * @return $this
-     */
     public function setCountActive(int $countActive): self
     {
         $this->countActive = $countActive;
@@ -123,9 +99,6 @@ class Raid
         return $this->countTotal;
     }
 
-    /**
-     * @return $this
-     */
     public function setCountTotal(int $countTotal): self
     {
         $this->countTotal = $countTotal;
@@ -138,9 +111,6 @@ class Raid
         return $this->chart;
     }
 
-    /**
-     * @return $this
-     */
     public function setChart(string $chart): self
     {
         $this->chart = $chart;

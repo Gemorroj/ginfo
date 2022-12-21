@@ -4,43 +4,26 @@ namespace Ginfo\Info\Php;
 
 class Fpm
 {
-    /** @var bool */
-    private $enabled;
-    /** @var string|null */
-    private $pool;
-    /** @var string|null */
-    private $processManager;
-    /** @var \DateTime|null */
-    private $startTime;
-    /** @var int|null */
-    private $acceptedConnections;
-    /** @var int|null */
-    private $listenQueue;
-    /** @var int|null */
-    private $maxListenQueue;
-    /** @var int|null */
-    private $listenQueueLength;
-    /** @var int|null */
-    private $idleProcesses;
-    /** @var int|null */
-    private $activeProcesses;
-    /** @var int|null */
-    private $maxActiveProcesses;
-    /** @var int|null */
-    private $maxChildrenReached;
-    /** @var int|null */
-    private $slowRequests;
-    /** @var FpmProcess[]|null */
-    private $processes;
+    private bool $enabled;
+    private ?string $pool = null;
+    private ?string $processManager = null;
+    private ?\DateTime $startTime = null;
+    private ?int $acceptedConnections = null;
+    private ?int $listenQueue = null;
+    private ?int $maxListenQueue = null;
+    private ?int $listenQueueLength = null;
+    private ?int $idleProcesses = null;
+    private ?int $activeProcesses = null;
+    private ?int $maxActiveProcesses = null;
+    private ?int $maxChildrenReached = null;
+    private ?int $slowRequests = null;
+    private ?array $processes = null;
 
     public function isEnabled(): bool
     {
         return $this->enabled;
     }
 
-    /**
-     * @return $this
-     */
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
@@ -53,9 +36,6 @@ class Fpm
         return $this->pool;
     }
 
-    /**
-     * @return $this
-     */
     public function setPool(?string $pool): self
     {
         $this->pool = $pool;
@@ -68,9 +48,6 @@ class Fpm
         return $this->processManager;
     }
 
-    /**
-     * @return $this
-     */
     public function setProcessManager(?string $processManager): self
     {
         $this->processManager = $processManager;
@@ -83,9 +60,6 @@ class Fpm
         return $this->startTime;
     }
 
-    /**
-     * @return $this
-     */
     public function setStartTime(?\DateTime $startTime): self
     {
         $this->startTime = $startTime;
@@ -98,9 +72,6 @@ class Fpm
         return $this->acceptedConnections;
     }
 
-    /**
-     * @return $this
-     */
     public function setAcceptedConnections(?int $acceptedConnections): self
     {
         $this->acceptedConnections = $acceptedConnections;
@@ -113,9 +84,6 @@ class Fpm
         return $this->listenQueue;
     }
 
-    /**
-     * @return $this
-     */
     public function setListenQueue(?int $listenQueue): self
     {
         $this->listenQueue = $listenQueue;
@@ -128,9 +96,6 @@ class Fpm
         return $this->maxListenQueue;
     }
 
-    /**
-     * @return $this
-     */
     public function setMaxListenQueue(?int $maxListenQueue): self
     {
         $this->maxListenQueue = $maxListenQueue;
@@ -143,9 +108,6 @@ class Fpm
         return $this->listenQueueLength;
     }
 
-    /**
-     * @return $this
-     */
     public function setListenQueueLength(?int $listenQueueLength): self
     {
         $this->listenQueueLength = $listenQueueLength;
@@ -158,9 +120,6 @@ class Fpm
         return $this->idleProcesses;
     }
 
-    /**
-     * @return $this
-     */
     public function setIdleProcesses(?int $idleProcesses): self
     {
         $this->idleProcesses = $idleProcesses;
@@ -173,9 +132,6 @@ class Fpm
         return $this->activeProcesses;
     }
 
-    /**
-     * @return $this
-     */
     public function setActiveProcesses(?int $activeProcesses): self
     {
         $this->activeProcesses = $activeProcesses;
@@ -188,9 +144,6 @@ class Fpm
         return $this->maxActiveProcesses;
     }
 
-    /**
-     * @return $this
-     */
     public function setMaxActiveProcesses(?int $maxActiveProcesses): self
     {
         $this->maxActiveProcesses = $maxActiveProcesses;
@@ -203,9 +156,6 @@ class Fpm
         return $this->maxChildrenReached;
     }
 
-    /**
-     * @return $this
-     */
     public function setMaxChildrenReached(?int $maxChildrenReached): self
     {
         $this->maxChildrenReached = $maxChildrenReached;
@@ -218,9 +168,6 @@ class Fpm
         return $this->slowRequests;
     }
 
-    /**
-     * @return $this
-     */
     public function setSlowRequests(?int $slowRequests): self
     {
         $this->slowRequests = $slowRequests;
@@ -238,8 +185,6 @@ class Fpm
 
     /**
      * @param FpmProcess[]|null $processes
-     *
-     * @return $this
      */
     public function setProcesses(?array $processes): self
     {

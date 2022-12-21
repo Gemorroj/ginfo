@@ -23,8 +23,7 @@ use Ginfo\OS\OS;
 
 class Info
 {
-    /** @var OS */
-    private $os;
+    private OS $os;
 
     public function __construct(OS $os)
     {

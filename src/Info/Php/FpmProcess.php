@@ -4,41 +4,25 @@ namespace Ginfo\Info\Php;
 
 class FpmProcess
 {
-    /** @var int */
-    private $pid;
-    /** @var string */
-    private $state;
-    /** @var \DateTime */
-    private $startTime;
-    /** @var int */
-    private $requests;
-    /** @var int */
-    private $requestDuration;
-    /** @var string */
-    private $requestMethod;
-    /** @var string */
-    private $requestUri;
-    /** @var string */
-    private $queryString;
-    /** @var float */
-    private $requestLength;
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $script;
-    /** @var float */
-    private $lastRequestCpu;
-    /** @var float */
-    private $lastRequestMemory;
+    private int $pid;
+    private string $state;
+    private \DateTime $startTime;
+    private int $requests;
+    private int $requestDuration;
+    private string $requestMethod;
+    private string $requestUri;
+    private string $queryString;
+    private float $requestLength;
+    private string $user;
+    private string $script;
+    private float $lastRequestCpu;
+    private float $lastRequestMemory;
 
     public function getPid(): int
     {
         return $this->pid;
     }
 
-    /**
-     * @return $this
-     */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
@@ -51,9 +35,6 @@ class FpmProcess
         return $this->state;
     }
 
-    /**
-     * @return $this
-     */
     public function setState(string $state): self
     {
         $this->state = $state;
@@ -66,9 +47,6 @@ class FpmProcess
         return $this->startTime;
     }
 
-    /**
-     * @return $this
-     */
     public function setStartTime(\DateTime $startTime): self
     {
         $this->startTime = $startTime;
@@ -81,9 +59,6 @@ class FpmProcess
         return $this->requests;
     }
 
-    /**
-     * @return $this
-     */
     public function setRequests(int $requests): self
     {
         $this->requests = $requests;
@@ -96,9 +71,6 @@ class FpmProcess
         return $this->requestDuration;
     }
 
-    /**
-     * @return $this
-     */
     public function setRequestDuration(int $requestDuration): self
     {
         $this->requestDuration = $requestDuration;
@@ -111,9 +83,6 @@ class FpmProcess
         return $this->requestMethod;
     }
 
-    /**
-     * @return $this
-     */
     public function setRequestMethod(string $requestMethod): self
     {
         $this->requestMethod = $requestMethod;
@@ -126,9 +95,6 @@ class FpmProcess
         return $this->requestUri;
     }
 
-    /**
-     * @return $this
-     */
     public function setRequestUri(string $requestUri): self
     {
         $this->requestUri = $requestUri;
@@ -141,9 +107,6 @@ class FpmProcess
         return $this->queryString;
     }
 
-    /**
-     * @return $this
-     */
     public function setQueryString(string $queryString): self
     {
         $this->queryString = $queryString;
@@ -156,9 +119,6 @@ class FpmProcess
         return $this->requestLength;
     }
 
-    /**
-     * @return $this
-     */
     public function setRequestLength(float $requestLength): self
     {
         $this->requestLength = $requestLength;
@@ -171,9 +131,6 @@ class FpmProcess
         return $this->user;
     }
 
-    /**
-     * @return $this
-     */
     public function setUser(string $user): self
     {
         $this->user = $user;
@@ -186,9 +143,6 @@ class FpmProcess
         return $this->script;
     }
 
-    /**
-     * @return $this
-     */
     public function setScript(string $script): self
     {
         $this->script = $script;
@@ -201,9 +155,6 @@ class FpmProcess
         return $this->lastRequestCpu;
     }
 
-    /**
-     * @return $this
-     */
     public function setLastRequestCpu(float $lastRequestCpu): self
     {
         $this->lastRequestCpu = $lastRequestCpu;
@@ -216,9 +167,6 @@ class FpmProcess
         return $this->lastRequestMemory;
     }
 
-    /**
-     * @return $this
-     */
     public function setLastRequestMemory(float $lastRequestMemory): self
     {
         $this->lastRequestMemory = $lastRequestMemory;

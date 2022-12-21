@@ -23,14 +23,14 @@ use Symfony\Component\Process\Process as SymfonyProcess;
  */
 class Windows extends OS
 {
-    private $infoCache = [];
-    private $powershellDirectory;
+    private array $infoCache = [];
+    private ?string $powershellDirectory = null;
 
     public function __construct()
     {
         $powershellDirectory = \getenv('SystemRoot').'\\System32\\WindowsPowerShell\\v1.0';
         if (\is_dir($powershellDirectory)) {
-            $this->setPowershellDirectory($powershellDirectory);
+            $this->powershellDirectory = $powershellDirectory;
         }
     }
 

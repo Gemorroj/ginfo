@@ -4,23 +4,16 @@ namespace Ginfo\Info;
 
 class Sensor
 {
-    /** @var string|null */
-    private $path;
-    /** @var string */
-    private $name;
-    /** @var float */
-    private $value;
-    /** @var string|null */
-    private $unit;
+    private ?string $path = null;
+    private string $name;
+    private float $value;
+    private ?string $unit = null;
 
     public function getPath(): ?string
     {
         return $this->path;
     }
 
-    /**
-     * @return $this
-     */
     public function setPath(?string $path): self
     {
         $this->path = $path;
@@ -33,9 +26,6 @@ class Sensor
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -48,9 +38,6 @@ class Sensor
         return $this->value;
     }
 
-    /**
-     * @return $this
-     */
     public function setValue(float $value): self
     {
         $this->value = $value;
@@ -66,9 +53,6 @@ class Sensor
         return $this->unit;
     }
 
-    /**
-     * @return $this
-     */
     public function setUnit(?string $unit): self
     {
         $this->unit = $unit;

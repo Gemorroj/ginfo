@@ -4,33 +4,21 @@ namespace Ginfo\Info\Samba;
 
 class File
 {
-    /** @var int */
-    private $pid;
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $denyMode;
-    /** @var string */
-    private $access;
-    /** @var string */
-    private $rw;
-    /** @var string */
-    private $oplock;
-    /** @var string */
-    private $sharePath;
-    /** @var string */
-    private $name;
-    /** @var \DateTime */
-    private $time;
+    private int $pid;
+    private string $user;
+    private string $denyMode;
+    private string $access;
+    private string $rw;
+    private string $oplock;
+    private string $sharePath;
+    private string $name;
+    private \DateTime $time;
 
     public function getPid(): int
     {
         return $this->pid;
     }
 
-    /**
-     * @return $this
-     */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
@@ -43,9 +31,6 @@ class File
         return $this->user;
     }
 
-    /**
-     * @return $this
-     */
     public function setUser(string $user): self
     {
         $this->user = $user;
@@ -58,9 +43,6 @@ class File
         return $this->denyMode;
     }
 
-    /**
-     * @return $this
-     */
     public function setDenyMode(string $denyMode): self
     {
         $this->denyMode = $denyMode;
@@ -73,9 +55,6 @@ class File
         return $this->access;
     }
 
-    /**
-     * @return $this
-     */
     public function setAccess(string $access): self
     {
         $this->access = $access;
@@ -88,9 +67,6 @@ class File
         return $this->rw;
     }
 
-    /**
-     * @return $this
-     */
     public function setRw(string $rw): self
     {
         $this->rw = $rw;
@@ -103,9 +79,6 @@ class File
         return $this->oplock;
     }
 
-    /**
-     * @return $this
-     */
     public function setOplock(string $oplock): self
     {
         $this->oplock = $oplock;
@@ -118,9 +91,6 @@ class File
         return $this->sharePath;
     }
 
-    /**
-     * @return $this
-     */
     public function setSharePath(string $sharePath): self
     {
         $this->sharePath = $sharePath;
@@ -133,9 +103,6 @@ class File
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -148,9 +115,6 @@ class File
         return $this->time;
     }
 
-    /**
-     * @return $this
-     */
     public function setTime(\DateTime $time): self
     {
         $this->time = $time;

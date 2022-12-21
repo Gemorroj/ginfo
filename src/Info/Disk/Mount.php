@@ -4,33 +4,22 @@ namespace Ginfo\Info\Disk;
 
 class Mount
 {
-    /** @var string */
-    private $device;
-    /** @var string */
-    private $mount;
-    /** @var string|null */
-    private $type;
-    /** @var float|null */
-    private $size;
-    /** @var float|null */
-    private $used;
-    /** @var float|null */
-    private $free;
-    /** @var float|null */
-    private $freePercent;
-    /** @var float|null */
-    private $usedPercent;
+    private string $device;
+    private string $mount;
+    private ?string $type = null;
+    private ?float $size = null;
+    private ?float $used = null;
+    private ?float $free = null;
+    private ?float $freePercent = null;
+    private ?float $usedPercent = null;
     /** @var string[] */
-    private $options;
+    private array $options = [];
 
     public function getDevice(): string
     {
         return $this->device;
     }
 
-    /**
-     * @return $this
-     */
     public function setDevice(string $device): self
     {
         $this->device = $device;
@@ -43,9 +32,6 @@ class Mount
         return $this->mount;
     }
 
-    /**
-     * @return $this
-     */
     public function setMount(string $mount): self
     {
         $this->mount = $mount;
@@ -58,9 +44,6 @@ class Mount
         return $this->type;
     }
 
-    /**
-     * @return $this
-     */
     public function setType(?string $type): self
     {
         $this->type = $type;
@@ -73,9 +56,6 @@ class Mount
         return $this->size;
     }
 
-    /**
-     * @return $this
-     */
     public function setSize(?float $size): self
     {
         $this->size = $size;
@@ -88,9 +68,6 @@ class Mount
         return $this->used;
     }
 
-    /**
-     * @return $this
-     */
     public function setUsed(?float $used): self
     {
         $this->used = $used;
@@ -103,9 +80,6 @@ class Mount
         return $this->free;
     }
 
-    /**
-     * @return $this
-     */
     public function setFree(?float $free): self
     {
         $this->free = $free;
@@ -118,9 +92,6 @@ class Mount
         return $this->freePercent;
     }
 
-    /**
-     * @return $this
-     */
     public function setFreePercent(?float $freePercent): self
     {
         $this->freePercent = $freePercent;
@@ -133,9 +104,6 @@ class Mount
         return $this->usedPercent;
     }
 
-    /**
-     * @return $this
-     */
     public function setUsedPercent(?float $usedPercent): self
     {
         $this->usedPercent = $usedPercent;
@@ -153,8 +121,6 @@ class Mount
 
     /**
      * @param string[] $options
-     *
-     * @return $this
      */
     public function setOptions(array $options): self
     {

@@ -4,35 +4,25 @@ namespace Ginfo\Info;
 
 class General
 {
-    /** @var \DateTime */
-    private $date;
-    /** @var string */
-    private $osName;
-    /** @var string */
-    private $kernel;
-    /** @var string */
-    private $hostName;
-    /** @var \DateInterval|null */
-    private $uptime;
-    /** @var string */
-    private $architecture;
-    /** @var string|null */
-    private $virtualization;
+    private \DateTime $date;
+    private string $osName;
+    private string $kernel;
+    private string $hostName;
+    private ?\DateInterval $uptime = null;
+    private string $architecture;
+    private ?string $virtualization = null;
     /** @var string[]|null */
-    private $loggedUsers;
-    /** @var string|null */
-    private $model;
+    private ?array $loggedUsers = null;
+
+    private ?string $model = null;
     /** @var float[]|null */
-    private $load;
+    private ?array $load = null;
 
     public function getDate(): \DateTime
     {
         return $this->date;
     }
 
-    /**
-     * @return $this
-     */
     public function setDate(\DateTime $date): self
     {
         $this->date = $date;
@@ -45,9 +35,6 @@ class General
         return $this->osName;
     }
 
-    /**
-     * @return $this
-     */
     public function setOsName(string $osName): self
     {
         $this->osName = $osName;
@@ -60,9 +47,6 @@ class General
         return $this->kernel;
     }
 
-    /**
-     * @return $this
-     */
     public function setKernel(string $kernel): self
     {
         $this->kernel = $kernel;
@@ -75,9 +59,6 @@ class General
         return $this->hostName;
     }
 
-    /**
-     * @return $this
-     */
     public function setHostName(string $hostName): self
     {
         $this->hostName = $hostName;
@@ -92,8 +73,6 @@ class General
 
     /**
      * @param \DateInterval|float|null $uptime
-     *
-     * @return $this
      */
     public function setUptime($uptime): self
     {
@@ -118,9 +97,6 @@ class General
         return $this->architecture;
     }
 
-    /**
-     * @return $this
-     */
     public function setArchitecture(string $architecture): self
     {
         $this->architecture = $architecture;
@@ -133,9 +109,6 @@ class General
         return $this->virtualization;
     }
 
-    /**
-     * @return $this
-     */
     public function setVirtualization(?string $virtualization): self
     {
         $this->virtualization = $virtualization;
@@ -153,8 +126,6 @@ class General
 
     /**
      * @param string[]|null $loggedUsers
-     *
-     * @return $this
      */
     public function setLoggedUsers(?array $loggedUsers): self
     {
@@ -168,9 +139,6 @@ class General
         return $this->model;
     }
 
-    /**
-     * @return $this
-     */
     public function setModel(?string $model): self
     {
         $this->model = $model;
@@ -188,8 +156,6 @@ class General
 
     /**
      * @param float[]|null $load
-     *
-     * @return $this
      */
     public function setLoad(?array $load): self
     {

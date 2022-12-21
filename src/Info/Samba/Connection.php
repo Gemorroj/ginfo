@@ -4,22 +4,14 @@ namespace Ginfo\Info\Samba;
 
 class Connection
 {
-    /** @var int */
-    private $pid;
-    /** @var string */
-    private $user;
-    /** @var string */
-    private $group;
-    /** @var string */
-    private $host;
-    /** @var string */
-    private $ip;
-    /** @var string */
-    private $protocolVersion;
-    /** @var string|null */
-    private $encryption;
-    /** @var string|null */
-    private $signing;
+    private int $pid;
+    private string $user;
+    private string $group;
+    private string $host;
+    private string $ip;
+    private string $protocolVersion;
+    private ?string $encryption = null;
+    private ?string $signing = null;
 
     /**
      * @return string|null after samba 4.4
@@ -29,9 +21,6 @@ class Connection
         return $this->encryption;
     }
 
-    /**
-     * @return $this
-     */
     public function setEncryption(?string $encryption): self
     {
         $this->encryption = $encryption;
@@ -47,9 +36,6 @@ class Connection
         return $this->signing;
     }
 
-    /**
-     * @return $this
-     */
     public function setSigning(?string $signing): self
     {
         $this->signing = $signing;
@@ -62,9 +48,6 @@ class Connection
         return $this->pid;
     }
 
-    /**
-     * @return $this
-     */
     public function setPid(int $pid): self
     {
         $this->pid = $pid;
@@ -77,9 +60,6 @@ class Connection
         return $this->user;
     }
 
-    /**
-     * @return $this
-     */
     public function setUser(string $user): self
     {
         $this->user = $user;
@@ -92,9 +72,6 @@ class Connection
         return $this->group;
     }
 
-    /**
-     * @return $this
-     */
     public function setGroup(string $group): self
     {
         $this->group = $group;
@@ -107,9 +84,6 @@ class Connection
         return $this->host;
     }
 
-    /**
-     * @return $this
-     */
     public function setHost(string $host): self
     {
         $this->host = $host;
@@ -122,9 +96,6 @@ class Connection
         return $this->ip;
     }
 
-    /**
-     * @return $this
-     */
     public function setIp(string $ip): self
     {
         $this->ip = $ip;
@@ -140,9 +111,6 @@ class Connection
         return $this->protocolVersion;
     }
 
-    /**
-     * @return $this
-     */
     public function setProtocolVersion(string $protocolVersion): self
     {
         $this->protocolVersion = $protocolVersion;

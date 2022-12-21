@@ -4,19 +4,14 @@ namespace Ginfo\Info;
 
 class Usb
 {
-    /** @var string */
-    private $vendor;
-    /** @var string */
-    private $name;
+    private string $vendor;
+    private string $name;
 
     public function getVendor(): string
     {
         return $this->vendor;
     }
 
-    /**
-     * @return $this
-     */
     public function setVendor(string $vendor): self
     {
         $this->vendor = $vendor;
@@ -29,9 +24,6 @@ class Usb
         return $this->name;
     }
 
-    /**
-     * @return $this
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
