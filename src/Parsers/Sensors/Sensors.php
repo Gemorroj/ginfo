@@ -36,7 +36,7 @@ class Sensors implements ParserInterface
 
     private static function isSensorLine(string $line): bool
     {
-        return false !== \strpos($line, ':') && 'Adapter:' !== \substr($line, 0, 8);
+        return \str_contains($line, ':') && 'Adapter:' !== \substr($line, 0, 8);
     }
 
     private static function parseSensor(string $sensor): array

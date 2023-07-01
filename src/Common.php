@@ -28,8 +28,6 @@ class Common
     /**
      * Get a file's contents, or default to second param.
      *
-     * @param mixed $default
-     *
      * @return string|mixed|null
      */
     public static function getContents(string $file, $default = null)
@@ -48,8 +46,6 @@ class Common
 
     /**
      * Like above, but in lines instead of a big string.
-     *
-     * @param mixed $default
      *
      * @return string[]|mixed|null
      */

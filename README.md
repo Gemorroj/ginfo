@@ -82,7 +82,7 @@ $info = $ginfo->getInfo();
 
 
 ### System requirements:
-- PHP >= 7.4
+- PHP >= 8.0
 - pcre extension
 - proc_open
 

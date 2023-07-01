@@ -430,8 +430,14 @@ class Linux extends OS
                 $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias', ''));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
-                $ueventContents = @\parse_ini_file($path.'/uevent');
-                $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
+                $ueventContents = Common::getContents($path.'/uevent');
+                if ($ueventContents) {
+                    $ueventContents = @\parse_ini_string($ueventContents);
+                }
+                $deviceUeventContents = Common::getContents($path.'/device/uevent');
+                if ($deviceUeventContents) {
+                    $deviceUeventContents = @\parse_ini_string($deviceUeventContents);
+                }
 
                 if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
                     $type = \ucfirst($ueventContents['DEVTYPE']);
@@ -661,15 +667,15 @@ class Linux extends OS
         if ('Veertu' === $biosVendor) {
             return 'Veertu';
         }
-        if (0 === \strpos($biosVendor, 'Parallels')) {
+        if (\str_starts_with($biosVendor, 'Parallels')) {
             return 'Parallels';
         }
 
-        if (false !== \strpos(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
+        if (\str_contains(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
             return 'LXC';
         }
 
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || false !== \strpos(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
             return 'Docker';
         }
 
@@ -741,7 +747,7 @@ class Linux extends OS
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && false === \mb_strpos($name, $product) && false === \strpos($product, 'Filled')) {
+        if ($product && false === \mb_strpos($name, $product) && !\str_contains($product, 'Filled')) {
             return $product.' ('.$infoStr.')';
         }
 

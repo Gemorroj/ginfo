@@ -103,7 +103,7 @@ class Smbstatus implements ParserInterface
             // tested date: Wed Dec  9 01:40:20 PM 2015 CET   or    Fri Mar 30 15:48:34 2018
             if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTime)) {
                 if ($connectedAtYear) { // perhaps timezone
-                    if (false === \strpos($token, '-')) { // yes, timezone
+                    if (!\str_contains($token, '-')) { // yes, timezone
                         $out['connectedAt'] .= ' '.$token;
                         $out['connectedAt'] = new \DateTime($out['connectedAt']);
                         continue;

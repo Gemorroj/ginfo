@@ -17,7 +17,7 @@ class Apcaccess implements ParserInterface
         }
 
         $result = \trim($process->getOutput());
-        if (0 === \strpos($result, 'Error')) {
+        if (\str_starts_with($result, 'Error')) {
             return null;
         }
 

@@ -26,7 +26,7 @@ class Free implements ParserInterface
         $free = $process->getOutput();
 
         $arr = \explode("\n", \trim($free));
-        $isWideOutput = false === \strpos($arr[0], 'buff/cache'); // alpine doesnt support wide output for example
+        $isWideOutput = !\str_contains($arr[0], 'buff/cache'); // alpine doesnt support wide output for example
         \array_shift($arr); // remove header
 
         $memStr = \trim(\explode(':', $arr[0], 2)[1]);

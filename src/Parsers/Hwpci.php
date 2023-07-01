@@ -39,19 +39,19 @@ class Hwpci implements ParserInterface
 
         foreach ($paths as $path) {
             // Avoid the same device artificially appearing more than once
-            if (false !== \strpos($path, ':')) {
+            if (\str_contains($path, ':')) {
                 continue;
             }
 
             // First try uevent
-            if (\is_readable($path.'/uevent') &&
-                \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
+            if (\is_readable($path.'/uevent')
+                && \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
                 $vId = \str_pad($match[1], 4, '0', \STR_PAD_LEFT);
                 $dId = \str_pad($match[2], 4, '0', \STR_PAD_LEFT);
                 $this->entries[$vId][$dId] = 1;
             } // And next modalias
-            elseif (\is_readable($path.'/modalias') &&
-                \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
+            elseif (\is_readable($path.'/modalias')
+                && \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
                 $vId = \mb_strtolower($match[1]);
                 $dId = \mb_strtolower($match[2]);
                 $this->entries[$vId][$dId] = 1;
