@@ -44,7 +44,11 @@ class Windows extends OS
                 return null;
             }
 
-            $result = \json_decode($process->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
+            try {
+                $result = \json_decode($process->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                $result = [];
+            }
 
             $this->addToInfoCache($name, \is_scalar($result) ? [$result] : $result);
         }
