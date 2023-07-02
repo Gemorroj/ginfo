@@ -31,17 +31,11 @@ class Ipmi implements ParserInterface
         foreach ($matches as $m) {
             $vParts = \explode(' ', \trim($m[2]));
 
-            switch ($vParts[1]) {
-                case 'Volts':
-                    $unit = 'V';
-                    break;
-                case 'degrees':
-                    $unit = $vParts[2];
-                    break;
-                default:
-                    $unit = null;
-                    break;
-            }
+            $unit = match ($vParts[1]) {
+                'Volts' => 'V',
+                'degrees' => $vParts[2],
+                default => null,
+            };
 
             $out[] = [
                 'path' => null,

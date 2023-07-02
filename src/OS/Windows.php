@@ -44,7 +44,7 @@ class Windows extends OS
                 return null;
             }
 
-            $result = \json_decode($process->getOutput(), true);
+            $result = \json_decode($process->getOutput(), true, 512, \JSON_THROW_ON_ERROR);
 
             $this->addToInfoCache($name, \is_scalar($result) ? [$result] : $result);
         }
@@ -112,31 +112,16 @@ class Windows extends OS
                 ->setSpeed($cpu['CurrentClockSpeed'])
                 ->setL2Cache($cpu['L2CacheSize'])
                 ->setArchitecture((static function () use ($cpu): ?string {
-                    switch ($cpu['Architecture']) {
-                        case 0:
-                            return 'x86';
-                            break;
-                        case 1:
-                            return 'MIPS';
-                            break;
-                        case 2:
-                            return 'Alpha';
-                            break;
-                        case 3:
-                            return 'PowerPC';
-                            break;
-                        case 5:
-                            return 'ARM';
-                            break;
-                        case 6:
-                            return 'ia64';
-                            break;
-                        case 9:
-                            return 'x64';
-                            break;
-                    }
-
-                    return null;
+                    return match ($cpu['Architecture']) {
+                        0 => 'x86',
+                        1 => 'MIPS',
+                        2 => 'Alpha',
+                        3 => 'PowerPC',
+                        5 => 'ARM',
+                        6 => 'ia64',
+                        9 => 'x64',
+                        default => null,
+                    };
                 })())
                 ->setFlags(null); // todo
         }
@@ -339,49 +324,22 @@ class Windows extends OS
                 ->setSpeed($net['Speed'])
                 ->setType($net['AdapterType'])
                 ->setState((static function () use ($net): ?string {
-                    switch ($net['NetConnectionStatus']) {
-                        case 0:
-                            return 'down';
-                            break;
-                        case 1:
-                            return 'connecting';
-                            break;
-                        case 2:
-                            return 'up';
-                            break;
-                        case 3:
-                            return 'disconnecting';
-                            break;
-                        case 4:
-                            return 'down'; // MSDN 'Hardware not present'
-                            break;
-                        case 5:
-                            return 'hardware disabled';
-                            break;
-                        case 6:
-                            return 'hardware malfunction';
-                            break;
-                        case 7:
-                            return 'media disconnected';
-                            break;
-                        case 8:
-                            return 'authenticating';
-                            break;
-                        case 9:
-                            return 'authentication succeeded';
-                            break;
-                        case 10:
-                            return 'authentication failed';
-                            break;
-                        case 11:
-                            return 'invalid address';
-                            break;
-                        case 12:
-                            return 'credentials required';
-                            break;
-                    }
-
-                    return null;
+                    return match ($net['NetConnectionStatus']) {
+                        0 => 'down',
+                        1 => 'connecting',
+                        2 => 'up',
+                        3 => 'disconnecting',
+                        4 => 'down', // MSDN 'Hardware not present'
+                        5 => 'hardware disabled',
+                        6 => 'hardware malfunction',
+                        7 => 'media disconnected',
+                        8 => 'authenticating',
+                        9 => 'authentication succeeded',
+                        10 => 'authentication failed',
+                        11 => 'invalid address',
+                        12 => 'credentials required',
+                        default => null,
+                    };
                 })());
 
             $nameNormalizer = static function (string $name): string {
@@ -456,37 +414,18 @@ class Windows extends OS
                 ->setCommandLine($proc['CommandLine'])
                 ->setThreads($proc['ThreadCount'])
                 ->setState((static function () use ($proc): ?string {
-                    switch ($proc['ExecutionState']) {
-                        case 1:
-                            return 'other';
-                            break;
-                        case 2:
-                            return 'ready';
-                            break;
-                        case 3:
-                            return 'running';
-                            break;
-                        case 4:
-                            return 'blocked';
-                            break;
-                        case 5:
-                            return 'suspended blocked';
-                            break;
-                        case 6:
-                            return 'suspended ready';
-                            break;
-                        case 7:
-                            return 'terminated';
-                            break;
-                        case 8:
-                            return 'stopped';
-                            break;
-                        case 9:
-                            return 'growing';
-                            break;
-                    }
-
-                    return null;
+                    return match ($proc['ExecutionState']) {
+                        1 => 'other',
+                        2 => 'ready',
+                        3 => 'running',
+                        4 => 'blocked',
+                        5 => 'suspended blocked',
+                        6 => 'suspended ready',
+                        7 => 'terminated',
+                        8 => 'stopped',
+                        9 => 'growing',
+                        default => null,
+                    };
                 })())
                 ->setMemory($proc['VirtualSize'])
                 ->setPeakMemory($proc['PeakVirtualSize'])

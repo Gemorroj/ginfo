@@ -36,7 +36,7 @@ class Sensors implements ParserInterface
 
     private static function isSensorLine(string $line): bool
     {
-        return \str_contains($line, ':') && 'Adapter:' !== \substr($line, 0, 8);
+        return \str_contains($line, ':') && !\str_starts_with($line, 'Adapter:');
     }
 
     private static function parseSensor(string $sensor): array
@@ -44,7 +44,7 @@ class Sensors implements ParserInterface
         [$name, $tmpStr] = \explode(':', $sensor, 2);
         $tmpStr = \ltrim($tmpStr);
 
-        if (false !== \mb_strpos($tmpStr, '°')) { // temperature
+        if (\str_contains($tmpStr, '°')) { // temperature
             [$value, $afterValue] = \explode('°', $tmpStr, 2);
             $unit = $afterValue[0]; // C
         } else {

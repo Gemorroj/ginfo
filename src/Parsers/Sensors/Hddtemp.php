@@ -38,7 +38,7 @@ class Hddtemp implements ParserInterface
      */
     private function parseSockData(string $data): array
     {
-        // Kill surounding ||'s and split it by pipes
+        // Kill surrounding ||'s and split it by pipes
         $drives = \explode('||', \trim($data, '|'));
 
         $return = [];

@@ -37,22 +37,11 @@ md0 : active raid1 sdb[0]
                 if (1 === \preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $matchDrive)) {
                     // Determine a status other than normal, like if it failed or is a spare
                     if (\array_key_exists(2, $matchDrive)) {
-                        switch ($matchDrive[2]) {
-                            case '(S)':
-                                $driveState = 'spare';
-                                break;
-                            case '(F)':
-                                $driveState = 'failed';
-                                break;
-                            case null:
-                                $driveState = 'normal';
-                                break;
-
-                                // I'm not sure if there are status codes other than the above
-                            default:
-                                $driveState = null;
-                                break;
-                        }
+                        $driveState = match ($matchDrive[2]) {
+                            '(S)' => 'spare',
+                            '(F)' => 'failed',
+                            default => 'normal',
+                        };
                     } else {
                         $driveState = 'normal';
                     }

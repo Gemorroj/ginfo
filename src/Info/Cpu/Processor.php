@@ -78,7 +78,7 @@ class Processor
     }
 
     /**
-     * @return string (x86|x64|ia64) currently arm or mips not supported
+     * @return string|null (x86|x64|ia64) currently arm or mips not supported
      */
     public function getArchitecture(): ?string
     {

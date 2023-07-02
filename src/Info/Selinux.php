@@ -25,7 +25,7 @@ class Selinux
      * permissive – This indicates that SELinux prints warnings instead of enforcing. This is helpful during debugging purpose when you want to know what would SELinux potentially block (without really blocking it) by looking at the SELinux logs.
      * disabled – No SELinux policy is loaded.
      *
-     * @return string (enforcing|permissive|disabled)
+     * @return string|null (enforcing|permissive|disabled)
      */
     public function getMode(): ?string
     {
@@ -51,7 +51,7 @@ class Selinux
      * minimum – This is a slight modification of targeted policy. Only few selected processes are protected in this case.
      * mls – This is for Multi Level Security protection. MLS is pretty complex and pretty much not used in most situations.
      *
-     * @return string (targeted|minimum|mls)
+     * @return string|null (targeted|minimum|mls)
      */
     public function getPolicy(): ?string
     {
