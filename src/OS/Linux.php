@@ -430,14 +430,8 @@ class Linux extends OS
                 $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias', ''));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
-                $ueventContents = Common::getContents($path.'/uevent');
-                if ($ueventContents) {
-                    $ueventContents = @\parse_ini_string($ueventContents);
-                }
-                $deviceUeventContents = Common::getContents($path.'/device/uevent');
-                if ($deviceUeventContents) {
-                    $deviceUeventContents = @\parse_ini_string($deviceUeventContents);
-                }
+                $ueventContents = Common::getIni($path.'/uevent');
+                $deviceUeventContents = Common::getIni($path.'/device/uevent');
 
                 if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
                     $type = \ucfirst($ueventContents['DEVTYPE']);
@@ -634,13 +628,13 @@ class Linux extends OS
             }
         }
 
-        $lsbRelease = Common::getContents('/etc/lsb-release');
-        if (null !== $lsbRelease) {
-            return \parse_ini_string($lsbRelease)['DISTRIB_DESCRIPTION'];
+        $lsbRelease = Common::getIni('/etc/lsb-release');
+        if ($lsbRelease) {
+            return $lsbRelease['DISTRIB_DESCRIPTION'];
         }
 
         $suseRelease = Common::getLines('/etc/SuSE-release');
-        if (null !== $suseRelease) {
+        if ($suseRelease) {
             return $suseRelease[0];
         }
 
@@ -737,7 +731,7 @@ class Linux extends OS
         }
 
         // Don't add vendor to the mix if the name starts with it
-        if ($vendor && 0 !== \mb_strpos($name, $vendor)) {
+        if ($vendor && !\str_starts_with($name, $vendor)) {
             $info[] = $vendor;
         }
 
@@ -747,7 +741,7 @@ class Linux extends OS
 
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
-        if ($product && false === \mb_strpos($name, $product) && !\str_contains($product, 'Filled')) {
+        if ($product && !\str_contains($name, $product) && !\str_contains($product, 'Filled')) {
             return $product.' ('.$infoStr.')';
         }
 
