@@ -19,7 +19,7 @@
 - no need `COM` extension on Windows, but need powershell
 - support Windows >= 10
 - adapt the code to modern standards
-- minimal php version 8.0
+- minimal php version 8.0.2
 - add selinux status info
 - add php info (basic, opcache, apcu)
 
@@ -82,7 +82,7 @@ $info = $ginfo->getInfo();
 
 
 ### System requirements:
-- PHP >= 8.0
+- PHP >= 8.0.2
 - pcre extension
 - proc_open
 

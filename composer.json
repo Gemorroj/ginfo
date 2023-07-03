@@ -24,7 +24,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.0.2",
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "ext-json": "*",
