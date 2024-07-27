@@ -3,6 +3,8 @@
 namespace Ginfo\Parsers\Sensors;
 
 use Ginfo\Parsers\ParserInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -15,8 +17,9 @@ class Nvidia implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['nvidia-smi', '-L'], null, ['LANG' => 'C']);
-        $process->run();
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 

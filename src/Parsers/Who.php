@@ -2,6 +2,8 @@
 
 namespace Ginfo\Parsers;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 class Who implements ParserInterface
@@ -17,9 +19,9 @@ class Who implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['who', '--count'], null, ['LANG' => 'C']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 

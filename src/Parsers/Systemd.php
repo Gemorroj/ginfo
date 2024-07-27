@@ -2,6 +2,8 @@
 
 namespace Ginfo\Parsers;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 class Systemd implements ParserInterface
@@ -17,9 +19,9 @@ class Systemd implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['systemctl', 'list-units', '--type', 'service', '--all'], null, ['LANG' => 'C']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 

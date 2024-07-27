@@ -3,6 +3,8 @@
 namespace Ginfo\Parsers;
 
 use Ginfo\Common;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 class Apcaccess implements ParserInterface
@@ -10,9 +12,9 @@ class Apcaccess implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['apcaccess', 'status'], null, ['LANG' => 'C']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 

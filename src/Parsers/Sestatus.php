@@ -3,6 +3,8 @@
 namespace Ginfo\Parsers;
 
 use Ginfo\Common;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 class Sestatus implements ParserInterface
@@ -18,9 +20,9 @@ class Sestatus implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['sestatus'], null, ['LANG' => 'C']);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 

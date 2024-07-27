@@ -2,6 +2,8 @@
 
 namespace Ginfo\Parsers;
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -12,8 +14,9 @@ class Lpstat implements ParserInterface
     public static function work(): ?array
     {
         $process = new Process(['lpstat', '-p'], null, ['LANG' => 'C']);
-        $process->run();
-        if (!$process->isSuccessful()) {
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 
