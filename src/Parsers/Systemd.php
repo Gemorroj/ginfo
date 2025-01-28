@@ -47,7 +47,6 @@ class Systemd implements ParserInterface
             [$unit, $load, $active, $sub, $description] = \preg_split('/\s+/', $line, 5);
 
             $out[] = [
-                'type' => 'target',
                 'name' => $unit,
                 'loaded' => 'loaded' === $load,
                 'started' => 'active' === $active,
@@ -80,7 +79,6 @@ class Systemd implements ParserInterface
             [$unit, $load, $active, $sub, $description] = \preg_split('/\s+/', $line, 5);
 
             $out[] = [
-                'type' => 'service',
                 'name' => $unit,
                 'loaded' => 'loaded' === $load,
                 'started' => 'active' === $active,
