@@ -110,17 +110,21 @@ class Common
     /**
      * @param Service[] $services
      */
-    public static function searchService(array $services, string $serviceName): ?Service
+    public static function searchService(array $services, string $serviceName, ?string $type = null): ?Service
     {
-        $item = null;
         foreach ($services as $service) {
             if ($service->getName() === $serviceName) {
-                $item = $service;
-                break;
+                if ($type) {
+                    if ($service->getType() === $type) {
+                        return $service;
+                    }
+                } else {
+                    return $service;
+                }
             }
         }
 
-        return $item;
+        return null;
     }
 
     public static function convertHumanSizeToBytes(string $humanSize): ?float

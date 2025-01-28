@@ -9,7 +9,7 @@ class Samba
 {
     /** @var File[] */
     private array $files = [];
-    /** @var \Ginfo\Info\Samba\Service[] */
+    /** @var Samba\Service[] */
     private array $services = [];
     /** @var Connection[] */
     private array $connections = [];

@@ -4,11 +4,27 @@ namespace Ginfo\Info;
 
 class Service
 {
+    public const TYPE_SERVICE = 'service';
+    public const TYPE_TARGET = 'target';
+
     private string $name;
     private string $description;
     private bool $loaded;
     private bool $started;
     private string $state;
+    private ?string $type = null;
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
 
     public function getName(): string
     {

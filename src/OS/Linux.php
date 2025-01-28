@@ -590,19 +590,34 @@ class Linux extends OS
 
     public function getServices(): ?array
     {
-        $services = Systemd::work();
-        if (null === $services) {
+        $services = Systemd::work(Service::TYPE_SERVICE);
+        $targets = Systemd::work(Service::TYPE_TARGET);
+        if (null === $services && null === $targets) {
             return null;
         }
 
         $out = [];
-        foreach ($services as $service) {
-            $out[] = (new Service())
-                ->setName($service['name'])
-                ->setDescription($service['description'])
-                ->setLoaded($service['loaded'])
-                ->setStarted($service['started'])
-                ->setState($service['state']);
+        if ($services) {
+            foreach ($services as $service) {
+                $out[] = (new Service())
+                    ->setType(Service::TYPE_SERVICE)
+                    ->setName($service['name'])
+                    ->setDescription($service['description'])
+                    ->setLoaded($service['loaded'])
+                    ->setStarted($service['started'])
+                    ->setState($service['state']);
+            }
+        }
+        if ($targets) {
+            foreach ($targets as $service) {
+                $out[] = (new Service())
+                    ->setType(Service::TYPE_TARGET)
+                    ->setName($service['name'])
+                    ->setDescription($service['description'])
+                    ->setLoaded($service['loaded'])
+                    ->setStarted($service['started'])
+                    ->setState($service['state']);
+            }
         }
 
         return $out;
