@@ -26,18 +26,18 @@ md0 : active raid1 sdb[0]
             return null;
         }
 
-        if (false === \preg_match_all('/(\S+)\s*:\s*(\w+)\s*raid(\d+)\s*([\w+\[\d+\] (\(\w\))?]+)\n\s+(\d+) blocks[^[]+\[(\d\/\d)\] \[([U\_]+)\]/mi', (string) $mdadmContents, $match, \PREG_SET_ORDER)) {
+        if (false === \preg_match_all('/(?P<device>\S+)\s*:\s*(?P<state>\w+)(?P<blurb>\s+\([^)]+\))?\s*raid(?P<level>\d+)\s*(?P<drives>[\w+\[\d+\] (\(\w\))?]+)\n\s+(?P<blocks>\d+) blocks[^[]+\[(?P<counts>\d\/\d)\] \[(?P<chart>[U\_]+)\]/mi', (string) $mdadmContents, $match, \PREG_SET_ORDER)) {
             return null;
         }
 
         $mdadmArrays = [];
         foreach ($match as $array) {
             $drives = [];
-            foreach (\explode(' ', $array[4]) as $drive) {
-                if (1 === \preg_match('/([\w\d]+)\[\d+\](\(\w\))?/', $drive, $matchDrive)) {
+            foreach (\explode(' ', $array['drives']) as $drive) {
+                if (1 === \preg_match('/(?P<device>[\w\d]+)\[\d+\](?P<state>\(\w\))?/', $drive, $matchDrive)) {
                     // Determine a status other than normal, like if it failed or is a spare
-                    if (\array_key_exists(2, $matchDrive)) {
-                        $driveState = match ($matchDrive[2]) {
+                    if (isset($matchDrive['state'])) {
+                        $driveState = match ($matchDrive['state']) {
                             '(S)' => 'spare',
                             '(F)' => 'failed',
                             default => 'normal',
@@ -47,25 +47,30 @@ md0 : active raid1 sdb[0]
                     }
 
                     $drives[] = [
-                        'path' => '/dev/'.$matchDrive[1],
+                        'path' => '/dev/'.$matchDrive['device'],
                         'state' => $driveState,
                     ];
                 }
             }
 
-            [$countTotal, $countActive] = \explode('/', $array[6], 2);
+            [$countTotal, $countActive] = \explode('/', $array['counts'], 2);
+
+            $state = $array['state'];
+            if (isset($array['blurb'])) {
+                $state .= $array['blurb'];
+            }
 
             $mdadmArrays[] = [
-                'device' => '/dev/'.$array[1],
-                'status' => $array[2],
-                'level' => $array[3],
+                'device' => '/dev/'.$array['device'],
+                'status' => $state,
+                'level' => $array['level'],
                 'drives' => $drives,
-                'size' => $array[5] * 1024,
+                'size' => $array['blocks'] * 1024,
                 'count' => [
                     'active' => $countActive,
                     'total' => $countTotal,
                 ],
-                'chart' => $array[7],
+                'chart' => $array['chart'],
             ];
         }
 
