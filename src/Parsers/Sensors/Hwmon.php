@@ -28,6 +28,7 @@ class Hwmon implements ParserInterface
             $value = Common::getContents($path);
             $base = \basename($path);
             $labelPath = $initPath.'label';
+            $modelPath = \dirname($path).'/device/model';
             $driverName = Common::getContents(\dirname($path).'/name');
 
             // Temperatures
@@ -35,7 +36,14 @@ class Hwmon implements ParserInterface
                 $label = Common::getContents($labelPath);
                 $value /= $value > 10000 ? 1000 : 1;
                 $unit = 'C'; // I don't think this is ever going to be in F
-            } // Fan RPMs
+            }
+            // Devices (such as hard drives)
+            elseif (\str_starts_with($base, 'temp') && \is_file($modelPath)) {
+                $label = Common::getContents($modelPath);
+                $value /= $value > 10000 ? 1000 : 1;
+                $unit = 'C'; // I don't think this is ever going to be in F
+            }
+            // Fan RPMs
             elseif (\preg_match('/^fan(\d+)_/', $base, $m)) {
                 $label = 'fan'.$m[1];
                 $unit = 'RPM';
