@@ -3,11 +3,12 @@
 namespace Ginfo\Tests\Parsers\Sensors;
 
 use Ginfo\Parsers\Sensors\Sensors;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SensorsTest extends TestCase
 {
-    public function sensorLineStrings(): array
+    public static function sensorLineStrings(): array
     {
         return [
             ['acpitz-virtual-0', false],
@@ -21,7 +22,7 @@ class SensorsTest extends TestCase
         ];
     }
 
-    public function sensorStrings(): array
+    public static function sensorStrings(): array
     {
         return [
             ['temp1: +60.0°C (crit = +90.0°C)', [
@@ -57,9 +58,7 @@ class SensorsTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider sensorLineStrings
-     */
+    #[DataProvider('sensorLineStrings')]
     public function testIsSensorLine(string $data, bool $expected): void
     {
         $method = new \ReflectionMethod(Sensors::class, 'isSensorLine');
@@ -70,9 +69,7 @@ class SensorsTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
-    /**
-     * @dataProvider sensorStrings
-     */
+    #[DataProvider('sensorStrings')]
     public function testParseSensor(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Sensors::class, 'parseSensor');

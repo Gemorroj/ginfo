@@ -3,11 +3,12 @@
 namespace Ginfo\Tests\Parsers;
 
 use Ginfo\Parsers\Smbstatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class SmbatatusTest extends TestCase
 {
-    public function fileStrings(): array
+    public static function fileStrings(): array
     {
         return [
             ['10196        1000       DENY_NONE  0x100081    RDONLY     NONE             /home/gemorroj/Общедоступные   .   Fri Mar 30 15:48:44 2018', [
@@ -24,7 +25,7 @@ class SmbatatusTest extends TestCase
         ];
     }
 
-    public function serviceStrings(): array
+    public static function serviceStrings(): array
     {
         return [
             ['IPC$         10196   192.168.0.102  Fri Mar 30 15:48:34 2018', [
@@ -54,7 +55,7 @@ class SmbatatusTest extends TestCase
         ];
     }
 
-    public function connectionStrings(): array
+    public static function connectionStrings(): array
     {
         return [
             ['30042   user          grp           client-name   (10.0.0.1)', [
@@ -100,9 +101,7 @@ class SmbatatusTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider connectionStrings
-     */
+    #[DataProvider('connectionStrings')]
     public function testParseConnection(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseConnection');
@@ -113,9 +112,7 @@ class SmbatatusTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
-    /**
-     * @dataProvider serviceStrings
-     */
+    #[DataProvider('serviceStrings')]
     public function testParseService(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseService');
@@ -126,9 +123,7 @@ class SmbatatusTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
-    /**
-     * @dataProvider fileStrings
-     */
+    #[DataProvider('fileStrings')]
     public function testParseFile(string $data, array $expected): void
     {
         $method = new \ReflectionMethod(Smbstatus::class, 'parseFile');
