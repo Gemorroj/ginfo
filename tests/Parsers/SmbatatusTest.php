@@ -6,7 +6,7 @@ use Ginfo\Parsers\Smbstatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class SmbatatusTest extends TestCase
+final class SmbatatusTest extends TestCase
 {
     public static function fileStrings(): array
     {

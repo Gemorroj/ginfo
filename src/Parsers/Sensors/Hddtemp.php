@@ -4,7 +4,7 @@ namespace Ginfo\Parsers\Sensors;
 
 use Ginfo\Parsers\ParserInterface;
 
-class Hddtemp implements ParserInterface
+final readonly class Hddtemp implements ParserInterface
 {
     private function __construct()
     {

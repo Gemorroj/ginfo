@@ -5,7 +5,7 @@ namespace Ginfo\Info;
 use Ginfo\Info\Samba\Connection;
 use Ginfo\Info\Samba\File;
 
-class Samba
+final class Samba
 {
     /** @var File[] */
     private array $files = [];

@@ -21,13 +21,10 @@ use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
 use Ginfo\OS\OS;
 
-class Info
+final readonly class Info
 {
-    private OS $os;
-
-    public function __construct(OS $os)
+    public function __construct(private OS $os)
     {
-        $this->os = $os;
     }
 
     /**

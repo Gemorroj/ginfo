@@ -6,7 +6,7 @@ use Ginfo\Info\Php\Apcu;
 use Ginfo\Info\Php\Fpm;
 use Ginfo\Info\Php\Opcache;
 
-class Php
+final class Php
 {
     private string $version;
     /** @var string[] */

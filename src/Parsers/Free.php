@@ -6,7 +6,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
-class Free implements ParserInterface
+final readonly class Free implements ParserInterface
 {
     private function __construct()
     {

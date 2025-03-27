@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Samba;
 
-class File
+final class File
 {
     private int $pid;
     private string $user;

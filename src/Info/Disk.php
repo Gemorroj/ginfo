@@ -6,7 +6,7 @@ use Ginfo\Info\Disk\Drive;
 use Ginfo\Info\Disk\Mount;
 use Ginfo\Info\Disk\Raid;
 
-class Disk
+final class Disk
 {
     /** @var Mount[]|null */
     private ?array $mounts = null;

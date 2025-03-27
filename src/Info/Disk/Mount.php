@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Disk;
 
-class Mount
+final class Mount
 {
     private string $device;
     private string $mount;

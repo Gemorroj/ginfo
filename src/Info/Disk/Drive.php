@@ -4,7 +4,7 @@ namespace Ginfo\Info\Disk;
 
 use Ginfo\Info\Disk\Drive\Partition;
 
-class Drive
+final class Drive
 {
     private string $name;
     private ?string $vendor = null;

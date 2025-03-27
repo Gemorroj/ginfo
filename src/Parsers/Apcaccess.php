@@ -7,7 +7,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
-class Apcaccess implements ParserInterface
+final readonly class Apcaccess implements ParserInterface
 {
     public static function work(): ?array
     {

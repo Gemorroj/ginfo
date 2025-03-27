@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 /**
  * Get info on a samba install by running smbstatus.
  */
-class Smbstatus implements ParserInterface
+final readonly class Smbstatus implements ParserInterface
 {
     public static function work(): ?array
     {

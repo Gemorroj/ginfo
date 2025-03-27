@@ -38,7 +38,7 @@ use Ginfo\Parsers\Smbstatus;
 use Ginfo\Parsers\Systemd;
 use Ginfo\Parsers\Who;
 
-class Linux extends OS
+final class Linux extends OS
 {
     /**
      * @throws FatalException
@@ -466,15 +466,15 @@ class Linux extends OS
             $tmp->setType($type);
             $tmp->setStatsReceived(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path.'/statistics/rx_bytes', 0))
-                    ->setErrors(Common::getContents($path.'/statistics/rx_errors', 0))
-                    ->setPackets(Common::getContents($path.'/statistics/rx_packets', 0))
+                    ->setBytes(Common::getContents($path.'/statistics/rx_bytes', '0'))
+                    ->setErrors(Common::getContents($path.'/statistics/rx_errors', '0'))
+                    ->setPackets(Common::getContents($path.'/statistics/rx_packets', '0'))
             );
             $tmp->setStatsSent(
                 (new Network\Stats())
-                    ->setBytes(Common::getContents($path.'/statistics/tx_bytes', 0))
-                    ->setErrors(Common::getContents($path.'/statistics/tx_errors', 0))
-                    ->setPackets(Common::getContents($path.'/statistics/tx_packets', 0))
+                    ->setBytes(Common::getContents($path.'/statistics/tx_bytes', '0'))
+                    ->setErrors(Common::getContents($path.'/statistics/tx_errors', '0'))
+                    ->setPackets(Common::getContents($path.'/statistics/tx_packets', '0'))
             );
 
             $return[] = $tmp;

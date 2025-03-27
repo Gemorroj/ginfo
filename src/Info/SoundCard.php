@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class SoundCard
+final class SoundCard
 {
     private string $vendor;
     private string $name;

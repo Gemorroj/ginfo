@@ -5,7 +5,7 @@ namespace Ginfo\Parsers\Sensors;
 use Ginfo\Common;
 use Ginfo\Parsers\ParserInterface;
 
-class Hwmon implements ParserInterface
+final readonly class Hwmon implements ParserInterface
 {
     private function __construct()
     {

@@ -6,9 +6,9 @@ use Ginfo\OS\Linux;
 use Ginfo\OS\OS;
 use Ginfo\OS\Windows;
 
-class Ginfo
+final readonly class Ginfo
 {
-    protected OS $os;
+    private OS $os;
 
     public function __construct()
     {

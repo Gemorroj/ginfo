@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class FpmProcess
+final class FpmProcess
 {
     private int $pid;
     private string $state;

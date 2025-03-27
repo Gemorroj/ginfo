@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Disk\Raid;
 
-class Drive
+final class Drive
 {
     private string $path;
     private ?string $state = null;

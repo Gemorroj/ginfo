@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Disk\Drive;
 
-class Partition
+final class Partition
 {
     private float $size;
     private string $name;

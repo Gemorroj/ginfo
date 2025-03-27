@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class Fpm
+final class Fpm
 {
     private bool $enabled;
     private ?string $pool = null;

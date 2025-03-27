@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Service
+final class Service
 {
     public const TYPE_SERVICE = 'service';
     public const TYPE_TARGET = 'target';

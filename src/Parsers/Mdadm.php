@@ -4,7 +4,7 @@ namespace Ginfo\Parsers;
 
 use Ginfo\Common;
 
-class Mdadm implements ParserInterface
+final readonly class Mdadm implements ParserInterface
 {
     private function __construct()
     {

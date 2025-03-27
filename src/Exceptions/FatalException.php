@@ -2,6 +2,6 @@
 
 namespace Ginfo\Exceptions;
 
-class FatalException extends \Exception
+final class FatalException extends \Exception
 {
 }

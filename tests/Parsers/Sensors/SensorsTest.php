@@ -6,7 +6,7 @@ use Ginfo\Parsers\Sensors\Sensors;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class SensorsTest extends TestCase
+final class SensorsTest extends TestCase
 {
     public static function sensorLineStrings(): array
     {

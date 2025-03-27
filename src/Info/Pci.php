@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Pci
+final class Pci
 {
     private string $vendor;
     private string $name;

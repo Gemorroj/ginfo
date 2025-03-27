@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class Opcache
+final class Opcache
 {
     private bool $enabled;
     private ?bool $configEnable = null;

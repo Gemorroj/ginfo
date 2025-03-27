@@ -6,7 +6,7 @@ use Ginfo\Ginfo;
 use Ginfo\Info;
 use PHPUnit\Framework\TestCase;
 
-class GinfoTest extends TestCase
+final class GinfoTest extends TestCase
 {
     private Info $info;
 

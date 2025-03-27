@@ -4,7 +4,7 @@ namespace Ginfo\Info\Disk;
 
 use Ginfo\Info\Disk\Raid\Drive;
 
-class Raid
+final class Raid
 {
     private string $device;
     private string $status;

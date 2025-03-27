@@ -7,7 +7,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
-class Sensors implements ParserInterface
+final readonly class Sensors implements ParserInterface
 {
     private function __construct()
     {

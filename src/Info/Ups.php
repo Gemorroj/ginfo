@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Ups
+final class Ups
 {
     private string $name;
     private string $model;

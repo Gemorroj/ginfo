@@ -4,7 +4,7 @@ namespace Ginfo\Info;
 
 use Ginfo\Info\Cpu\Processor;
 
-class Cpu
+final class Cpu
 {
     /** @var Processor[] */
     private array $processors = [];

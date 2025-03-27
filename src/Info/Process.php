@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Process
+final class Process
 {
     private string $name;
     private ?string $commandLine = null;

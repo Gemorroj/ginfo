@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Php;
 
-class Apcu
+final class Apcu
 {
     private ?string $version = null;
     private bool $enabled;

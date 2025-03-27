@@ -4,7 +4,7 @@ namespace Ginfo;
 
 use Ginfo\Info\Service;
 
-class Common
+final readonly class Common
 {
     /**
      * Certain files, specifically the pci/usb ids files, vary in location from
@@ -27,10 +27,8 @@ class Common
 
     /**
      * Get a file's contents, or default to second param.
-     *
-     * @return string|mixed|null
      */
-    public static function getContents(string $file, $default = null)
+    public static function getContents(string $file, ?string $default = null): ?string
     {
         if (\file_exists($file) && \is_readable($file)) {
             $data = @\file_get_contents($file);
@@ -47,39 +45,37 @@ class Common
     /**
      * Like above, but in lines instead of a big string.
      *
-     * @return string[]|mixed|null
+     * @return string[]|null
      */
-    public static function getLines(string $file, $default = null)
+    public static function getLines(string $file): ?array
     {
         if (\file_exists($file) && \is_readable($file)) {
             $data = @\file($file, \FILE_SKIP_EMPTY_LINES);
             if (false === $data) {
-                return $default;
+                return null;
             }
 
             return $data;
         }
 
-        return $default;
+        return null;
     }
 
     /**
      * Like above, but parse as ini.
-     *
-     * @return array|mixed|null
      */
-    public static function getIni(string $file, $default = null)
+    public static function getIni(string $file): ?array
     {
         if (\file_exists($file) && \is_readable($file)) {
             $data = @\parse_ini_file($file);
             if (false === $data) {
-                return $default;
+                return null;
             }
 
             return $data;
         }
 
-        return $default;
+        return null;
     }
 
     /**

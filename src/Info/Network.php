@@ -4,7 +4,7 @@ namespace Ginfo\Info;
 
 use Ginfo\Info\Network\Stats;
 
-class Network
+final class Network
 {
     private string $name;
     private ?float $speed = null;

@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
  *
  * @author Joseph Gillotti
  */
-class Ipmi implements ParserInterface
+final readonly class Ipmi implements ParserInterface
 {
     public static function work(): ?array
     {

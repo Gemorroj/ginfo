@@ -4,7 +4,7 @@ namespace Ginfo\Parsers\Sensors;
 
 use Ginfo\Parsers\ParserInterface;
 
-class Mbmon implements ParserInterface
+final readonly class Mbmon implements ParserInterface
 {
     private function __construct()
     {

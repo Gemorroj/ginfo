@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Sensor
+final class Sensor
 {
     private ?string $path = null;
     private string $name;

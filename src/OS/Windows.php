@@ -21,7 +21,7 @@ use Symfony\Component\Process\Process as SymfonyProcess;
  * Get info on Windows systems
  * Written and maintained by Oliver Kuckertz (mologie).
  */
-class Windows extends OS
+final class Windows extends OS
 {
     private array $infoCache = [];
     private ?string $powershellDirectory = null;

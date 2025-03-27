@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Network;
 
-class Stats
+final class Stats
 {
     private int $bytes;
     private int $errors;

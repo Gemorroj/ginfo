@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
  *
  * @author Joseph Gillotti
  */
-class Nvidia implements ParserInterface
+final readonly class Nvidia implements ParserInterface
 {
     public static function work(): ?array
     {

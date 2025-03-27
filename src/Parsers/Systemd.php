@@ -7,7 +7,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
-class Systemd implements ParserInterface
+final readonly class Systemd implements ParserInterface
 {
     private function __construct()
     {

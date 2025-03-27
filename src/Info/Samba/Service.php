@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Samba;
 
-class Service
+final class Service
 {
     private string $service;
     private int $pid;

@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 /**
  * Get info on a cups install by running lpstat.
  */
-class Lpstat implements ParserInterface
+final readonly class Lpstat implements ParserInterface
 {
     public static function work(): ?array
     {

@@ -5,7 +5,7 @@ namespace Ginfo\Parsers\Sensors;
 use Ginfo\Common;
 use Ginfo\Parsers\ParserInterface;
 
-class ThermalZone implements ParserInterface
+final readonly class ThermalZone implements ParserInterface
 {
     private function __construct()
     {

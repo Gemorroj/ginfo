@@ -9,18 +9,16 @@ use Ginfo\Common;
  *
  * @author Joe Gillotti
  */
-class Hwpci implements ParserInterface
+final class Hwpci implements ParserInterface
 {
     public const MODE_PCI = 'pci';
     public const MODE_USB = 'usb';
 
-    private string $file;
     private array $entries = [];
     private array $devices = [];
 
-    private function __construct(string $file)
+    private function __construct(private readonly string $file)
     {
-        $this->file = $file;
     }
 
     private function __clone()

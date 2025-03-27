@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info\Cpu;
 
-class Processor
+final class Processor
 {
     private string $model;
     private float $speed;

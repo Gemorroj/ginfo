@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Memory
+final class Memory
 {
     private float $total;
     private float $used;

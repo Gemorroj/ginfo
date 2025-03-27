@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Usb
+final class Usb
 {
     private string $vendor;
     private string $name;

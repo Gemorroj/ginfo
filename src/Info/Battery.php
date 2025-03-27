@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Battery
+final class Battery
 {
     private ?int $chargeFull = null;
     private ?int $chargeNow = null;

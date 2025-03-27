@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Printer
+final class Printer
 {
     private string $name;
     private bool $enabled;

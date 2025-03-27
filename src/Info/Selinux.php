@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class Selinux
+final class Selinux
 {
     private bool $enabled;
     private ?string $mode = null;

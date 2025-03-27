@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-class General
+final class General
 {
     private \DateTime $date;
     private string $osName;
