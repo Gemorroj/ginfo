@@ -5,7 +5,7 @@ namespace Ginfo\Info;
 final class Pci
 {
     private string $vendor;
-    private string $name;
+    private ?string $name;
 
     public function getVendor(): string
     {
@@ -19,12 +19,12 @@ final class Pci
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 

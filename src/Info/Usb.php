@@ -5,7 +5,7 @@ namespace Ginfo\Info;
 final class Usb
 {
     private string $vendor;
-    private string $name;
+    private ?string $name;
     private ?int $speed;
 
     public function getVendor(): string
@@ -20,12 +20,12 @@ final class Usb
         return $this;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 

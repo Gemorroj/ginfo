@@ -95,9 +95,9 @@ final class Hwpci implements ParserInterface
                 $deviceId = \substr($line, 1, 4);
                 $deviceName = \substr($line, 7);
                 if ($deviceId && $deviceName) {
-                    $device_key = $vendorId.'-'.$deviceId;
-                    if (isset($deviceKeys[$device_key])) {
-                        $result[$device_key] = [$vendorName, $deviceName];
+                    $deviceKey = $vendorId.'-'.$deviceId;
+                    if (isset($deviceKeys[$deviceKey])) {
+                        $result[$deviceKey] = [$vendorName, $deviceName];
                         --$remaining;
                     }
                 }
