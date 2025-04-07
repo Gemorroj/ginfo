@@ -362,7 +362,8 @@ final class Linux extends OS
         foreach ($data as $v) {
             $out[] = (new Usb())
                 ->setVendor($v['vendor'])
-                ->setName($v['name']);
+                ->setName($v['name'])
+                ->setSpeed($v['speed']);
         }
 
         return $out;
