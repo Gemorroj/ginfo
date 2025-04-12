@@ -89,11 +89,12 @@ final class Windows extends OS
         }
 
         // todo: more swap info
-        return (new Memory())
-            ->setSwapTotal($info['TotalSwapSpaceSize'] * 1000)
-            ->setTotal($info['TotalVisibleMemorySize'] * 1000)
-            ->setFree($info['FreePhysicalMemory'] * 1000)
-            ->setUsed(($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']) * 1000);
+        return new Memory(
+            $info['TotalVisibleMemorySize'] * 1000,
+            ($info['TotalVisibleMemorySize'] - $info['FreePhysicalMemory']) * 1000,
+            $info['FreePhysicalMemory'] * 1000,
+            swapTotal: $info['TotalSwapSpaceSize'] * 1000
+        );
     }
 
     public function getCpu(): ?Cpu
@@ -111,31 +112,33 @@ final class Windows extends OS
             $cores += $cpu['NumberOfCores'];
             $virtual += $cpu['NumberOfLogicalProcessors'];
 
-            $processors[] = (new Cpu\Processor())
-                ->setModel($cpu['Name'])
-                ->setSpeed($cpu['CurrentClockSpeed'])
-                ->setL2Cache($cpu['L2CacheSize'])
-                ->setArchitecture((static function () use ($cpu): ?string {
-                    return match ($cpu['Architecture']) {
-                        0 => 'x86',
-                        1 => 'MIPS',
-                        2 => 'Alpha',
-                        3 => 'PowerPC',
-                        5 => 'ARM',
-                        6 => 'ia64',
-                        9 => 'x64',
-                        default => null,
-                    };
-                })())
-                ->setFlags(null); // todo
+            $architecture = match ($cpu['Architecture']) {
+                0 => 'x86',
+                1 => 'MIPS',
+                2 => 'Alpha',
+                3 => 'PowerPC',
+                5 => 'ARM',
+                6 => 'ia64',
+                9 => 'x64',
+                default => null,
+            };
+
+            $processors[] = new Cpu\Processor(
+                $cpu['Name'],
+                $cpu['CurrentClockSpeed'],
+                $cpu['L2CacheSize'],
+                null, // todo
+                $architecture,
+            );
         }
 
-        return (new Cpu())
-            ->setPhysical(\count($cpuInfo))
-            ->setVirtual($virtual)
-            ->setCores($cores)
-            ->setHyperThreading($cores < $virtual)
-            ->setProcessors($processors);
+        return new Cpu(
+            \count($cpuInfo),
+            $cores,
+            $virtual,
+            $cores < $virtual,
+            $processors
+        );
     }
 
     public function getLoad(): ?array
@@ -176,22 +179,25 @@ final class Windows extends OS
         $partitions = [];
 
         foreach ($infoDiskPartition as $partitionInfo) {
-            $partitions[$partitionInfo['DiskIndex']][] = (new Drive\Partition())
-                ->setSize($partitionInfo['Size'])
-                ->setName($partitionInfo['DeviceID'].' ('.$partitionInfo['Type'].')');
+            $partitions[$partitionInfo['DiskIndex']][] = new Drive\Partition(
+                $partitionInfo['Size'],
+                $partitionInfo['DeviceID'].' ('.$partitionInfo['Type'].')'
+            );
         }
 
         foreach ($infoDiskDrive as $driveInfo) {
-            $drives[] = (new Drive())
-                ->setSize($driveInfo['Size'])
-                ->setDevice($driveInfo['DeviceID'])
-                ->setPartitions((static function (string $namePartition) use ($partitions): ?array {
-                    return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
-                })($driveInfo['Index']))
-                ->setName($driveInfo['Caption'])
-                ->setReads(null)
-                ->setVendor(\str_contains($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null)
-                ->setWrites(null);
+            $namePartition = $driveInfo['Index'];
+            $p = \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : [];
+
+            $drives[] = new Drive(
+                $driveInfo['Caption'],
+                $driveInfo['DeviceID'],
+                $driveInfo['Size'],
+                \str_contains($driveInfo['Caption'], ' ') ? \explode(' ', $driveInfo['Caption'], 2)[0] : null,
+                null,
+                null,
+                $p,
+            );
         }
 
         return $drives;
@@ -206,54 +212,50 @@ final class Windows extends OS
 
         $volumes = [];
         foreach ($info as $volume) {
-            $volumes[] = (new Mount())
-                ->setSize($volume['Capacity'])
-                ->setDevice((static function () use ($volume): string {
-                    $name = $volume['Label'];
-                    switch ($volume['DriveType']) {
-                        case 2:
-                            $name .= ' (Removable drive)';
-                            break;
-                        case 3:
-                            $name .= ' (Fixed drive)';
-                            break;
-                        case 4:
-                            $name .= ' (Remote drive)';
-                            break;
-                        case 5:
-                            $name .= ' (CD-ROM)';
-                            break;
-                        case 6:
-                            $name .= ' (RAM disk)';
-                            break;
-                    }
+            $device = $volume['Label'];
+            switch ($volume['DriveType']) {
+                case 2:
+                    $device .= ' (Removable drive)';
+                    break;
+                case 3:
+                    $device .= ' (Fixed drive)';
+                    break;
+                case 4:
+                    $device .= ' (Remote drive)';
+                    break;
+                case 5:
+                    $device .= ' (CD-ROM)';
+                    break;
+                case 6:
+                    $device .= ' (RAM disk)';
+                    break;
+            }
 
-                    return $name;
-                })())
-                ->setType($volume['FileSystem'])
-                ->setFree($volume['FreeSpace'])
-                ->setMount($volume['Caption'])
-                ->setOptions((static function () use ($volume): array {
-                    $options = [];
+            $options = [];
+            if ($volume['Automount']) {
+                $options[] = 'automount';
+            }
+            if ($volume['BootVolume']) {
+                $options[] = 'boot';
+            }
+            if ($volume['IndexingEnabled']) {
+                $options[] = 'indexed';
+            }
+            if ($volume['Compressed']) {
+                $options[] = 'compressed';
+            }
 
-                    if ($volume['Automount']) {
-                        $options[] = 'automount';
-                    }
-                    if ($volume['BootVolume']) {
-                        $options[] = 'boot';
-                    }
-                    if ($volume['IndexingEnabled']) {
-                        $options[] = 'indexed';
-                    }
-                    if ($volume['Compressed']) {
-                        $options[] = 'compressed';
-                    }
-
-                    return $options;
-                })())
-                ->setUsed($volume['Capacity'] - $volume['FreeSpace'])
-                ->setFreePercent($volume['Capacity'] > 0 ? \round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100 : null)
-                ->setUsedPercent($volume['Capacity'] > 0 ? \round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100 : null);
+            $volumes[] = new Mount(
+                $device,
+                $volume['Caption'],
+                $volume['FileSystem'],
+                $volume['Capacity'],
+                $volume['Capacity'] - $volume['FreeSpace'],
+                $volume['FreeSpace'],
+                $volume['Capacity'] > 0 ? \round($volume['FreeSpace'] / $volume['Capacity'], 2) * 100 : null,
+                $volume['Capacity'] > 0 ? \round(($volume['Capacity'] - $volume['FreeSpace']) / $volume['Capacity'], 2) * 100 : null,
+                $options
+            );
         }
 
         return $volumes;
@@ -278,9 +280,7 @@ final class Windows extends OS
                 continue;
             }
 
-            $devs[] = (new Pci())
-                ->setVendor($pnpDev['Manufacturer'])
-                ->setName($pnpDev['Caption']);
+            $devs[] = new Pci($pnpDev['Manufacturer'], $pnpDev['Caption']);
         }
 
         return $devs;
@@ -300,9 +300,7 @@ final class Windows extends OS
                 continue;
             }
 
-            $devs[] = (new Usb())
-                ->setVendor($pnpDev['Manufacturer'])
-                ->setName($pnpDev['Caption']);
+            $devs[] = new Usb($pnpDev['Manufacturer'], $pnpDev['Caption']);
         }
 
         return $devs;
@@ -323,29 +321,6 @@ final class Windows extends OS
 
         $return = [];
         foreach ($networkAdapters as $net) {
-            $tmp = (new Network())
-                ->setName($net['Name'])
-                ->setSpeed($net['Speed'])
-                ->setType($net['AdapterType'])
-                ->setState((static function () use ($net): ?string {
-                    return match ($net['NetConnectionStatus']) {
-                        0 => 'down',
-                        1 => 'connecting',
-                        2 => 'up',
-                        3 => 'disconnecting',
-                        4 => 'down', // MSDN 'Hardware not present'
-                        5 => 'hardware disabled',
-                        6 => 'hardware malfunction',
-                        7 => 'media disconnected',
-                        8 => 'authenticating',
-                        9 => 'authentication succeeded',
-                        10 => 'authentication failed',
-                        11 => 'invalid address',
-                        12 => 'credentials required',
-                        default => null,
-                    };
-                })());
-
             $nameNormalizer = static function (string $name): string {
                 return \preg_replace('/[^A-Za-z0-9- ]/', '_', $name);
             };
@@ -355,22 +330,37 @@ final class Windows extends OS
 
             foreach ($perfRawData as $netSpeed) {
                 if ($netSpeed['Name'] === $isatapName || $nameNormalizer($netSpeed['Name']) === $canonName) {
-                    $tmp->setStatsReceived(
-                        (new Network\Stats())
-                            ->setBytes($netSpeed['BytesReceivedPersec'])
-                            ->setErrors($netSpeed['PacketsReceivedErrors'])
-                            ->setPackets($netSpeed['PacketsReceivedPersec'])
-                    );
-                    $tmp->setStatsSent(
-                        (new Network\Stats())
-                            ->setBytes($netSpeed['BytesSentPersec'])
-                            ->setErrors($netSpeed['PacketsOutboundErrors'])
-                            ->setPackets($netSpeed['PacketsSentPersec'])
-                    );
+                    $statsReceived = new Network\Stats($netSpeed['BytesReceivedPersec'], $netSpeed['PacketsReceivedErrors'], $netSpeed['PacketsReceivedPersec']);
+                    $statsSent = new Network\Stats($netSpeed['BytesSentPersec'], $netSpeed['PacketsOutboundErrors'], $netSpeed['PacketsSentPersec']);
+                    // break;
                 }
             }
 
-            $return[] = $tmp;
+            $state = match ($net['NetConnectionStatus']) {
+                0 => 'down',
+                1 => 'connecting',
+                2 => 'up',
+                3 => 'disconnecting',
+                4 => 'down', // MSDN 'Hardware not present'
+                5 => 'hardware disabled',
+                6 => 'hardware malfunction',
+                7 => 'media disconnected',
+                8 => 'authenticating',
+                9 => 'authentication succeeded',
+                10 => 'authentication failed',
+                11 => 'invalid address',
+                12 => 'credentials required',
+                default => null,
+            };
+
+            $return[] = new Network(
+                $net['Name'],
+                $net['Speed'],
+                $net['AdapterType'],
+                $state,
+                $statsReceived,
+                $statsSent,
+            );
         }
 
         return $return;
@@ -396,9 +386,7 @@ final class Windows extends OS
 
         $cards = [];
         foreach ($info as $card) {
-            $cards[] = (new SoundCard())
-                ->setVendor($card['Manufacturer'])
-                ->setName($card['Caption']);
+            $cards[] = new SoundCard($card['Manufacturer'], $card['Caption']);
         }
 
         return $cards;
@@ -413,30 +401,31 @@ final class Windows extends OS
 
         $result = [];
         foreach ($info as $proc) {
-            $result[] = (new Process())
-                ->setName($proc['Name'])
-                ->setCommandLine($proc['CommandLine'])
-                ->setThreads($proc['ThreadCount'])
-                ->setState((static function () use ($proc): ?string {
-                    return match ($proc['ExecutionState']) {
-                        1 => 'other',
-                        2 => 'ready',
-                        3 => 'running',
-                        4 => 'blocked',
-                        5 => 'suspended blocked',
-                        6 => 'suspended ready',
-                        7 => 'terminated',
-                        8 => 'stopped',
-                        9 => 'growing',
-                        default => null,
-                    };
-                })())
-                ->setMemory($proc['VirtualSize'])
-                ->setPeakMemory($proc['PeakVirtualSize'])
-                ->setPid($proc['ProcessId'])
-                ->setUser($proc['Owner'])
-                ->setIoRead(null) // todo
-                ->setIoWrite(null); // todo
+            $state = match ($proc['ExecutionState']) {
+                1 => 'other',
+                2 => 'ready',
+                3 => 'running',
+                4 => 'blocked',
+                5 => 'suspended blocked',
+                6 => 'suspended ready',
+                7 => 'terminated',
+                8 => 'stopped',
+                9 => 'growing',
+                default => null,
+            };
+
+            $result[] = new Process(
+                $proc['Name'],
+                $proc['ProcessId'],
+                $proc['CommandLine'],
+                $proc['ThreadCount'],
+                $state,
+                $proc['VirtualSize'],
+                $proc['PeakVirtualSize'],
+                $proc['Owner'],
+                null, // todo
+                null, // todo
+            );
         }
 
         return $result;
@@ -451,12 +440,7 @@ final class Windows extends OS
 
         $return = [];
         foreach ($services as $service) {
-            $return[] = (new Service())
-                ->setName($service['Name'])
-                ->setDescription($service['DisplayName'])
-                ->setLoaded(true)
-                ->setStarted($service['Started'])
-                ->setState($service['State']);
+            $return[] = new Service($service['Name'], $service['DisplayName'], true, $service['Started'], $service['State']);
         }
 
         return $return;

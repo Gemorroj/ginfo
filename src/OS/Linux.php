@@ -57,16 +57,17 @@ final class Linux extends OS
             return null;
         }
 
-        return (new Memory())
-            ->setTotal($data['total'])
-            ->setFree($data['free'])
-            ->setUsed($data['used'])
-            ->setShared($data['shared'])
-            ->setBuffers($data['buffers'])
-            ->setCached($data['cached'])
-            ->setSwapTotal($data['swapTotal'])
-            ->setSwapUsed($data['swapUsed'])
-            ->setSwapFree($data['swapFree']);
+        return new Memory(
+            $data['total'],
+            $data['used'],
+            $data['free'],
+            $data['shared'],
+            $data['buffers'],
+            $data['cached'],
+            $data['swapTotal'],
+            $data['swapUsed'],
+            $data['swapFree']
+        );
     }
 
     public function getCpu(): ?Cpu
@@ -91,48 +92,51 @@ final class Linux extends OS
         })();
         $virtual = \count($cpuData);
 
-        return (new Cpu())
-            ->setPhysical((static function () use ($cpuData): int {
-                $out = [];
-                foreach ($cpuData as $block) {
-                    if (isset($out[$block['physical id']])) {
-                        ++$out[$block['physical id']];
-                    } else {
-                        $out[$block['physical id']] = 1;
-                    }
+        $physical = (static function () use ($cpuData): int {
+            $out = [];
+            foreach ($cpuData as $block) {
+                if (isset($out[$block['physical id']])) {
+                    ++$out[$block['physical id']];
+                } else {
+                    $out[$block['physical id']] = 1;
                 }
+            }
 
-                return \count($out);
-            })())
-            ->setVirtual($virtual)
-            ->setCores($cores)
-            ->setHyperThreading($cores < $virtual)
-            ->setProcessors((static function () use ($cpuData): array {
-                $out = [];
-                foreach ($cpuData as $block) {
-                    // overwrite data for physical processors
-                    $out[$block['physical id']] = (new Cpu\Processor())
-                        ->setModel($block['model name'])
-                        ->setSpeed($block['cpu MHz'])
-                        ->setL2Cache((float) $block['cache size'] * 1024) // L2 cache, drop KB
-                        ->setFlags(\explode(' ', $block['flags']));
+            return \count($out);
+        })();
 
-                    // todo: mips, arm
-                    $out[$block['physical id']]->setArchitecture('x86'); // default x86
-                    foreach ($out[$block['physical id']]->getFlags() as $flag) {
-                        if ('lm' === $flag || '_lm' === \substr($flag, -3)) { // lm, lahf_lm
-                            $out[$block['physical id']]->setArchitecture('x64');
-                            break;
-                        }
-                        if ('ia64' === $flag) {
-                            $out[$block['physical id']]->setArchitecture('ia64');
-                            break;
-                        }
-                    }
+        $processors = [];
+        foreach ($cpuData as $block) {
+            if (isset($processors[$block['physical id']])) {
+                continue;
+            }
+
+            $flags = \explode(' ', $block['flags']);
+
+            // todo: mips, risc, arm
+            $architecture = 'x86'; // default x86
+            foreach ($flags as $flag) {
+                if ('lm' === $flag || \str_ends_with($flag, '_lm')) { // lm, lahf_lm
+                    $architecture = 'x64';
+                    break;
                 }
+                if ('ia64' === $flag) {
+                    $architecture = 'ia64';
+                    break;
+                }
+            }
 
-                return $out;
-            })());
+            $processors[$block['physical id']] = new Cpu\Processor(
+                $block['model name'],
+                $block['cpu MHz'],
+                (float) $block['cache size'] * 1024, // L2 cache, drop KB
+                $flags,
+                $architecture
+            );
+        }
+        $processors = \array_values($processors);
+
+        return new Cpu($physical, $cores, $virtual, $cores < $virtual, $processors);
     }
 
     public function getUptime(): ?float
@@ -156,9 +160,10 @@ final class Linux extends OS
 
         if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+|[a-z]+\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
             foreach ($partitionsMatch as $partition) {
-                $partitions[$partition[2]][] = (new Drive\Partition())
-                    ->setName($partition[2].$partition[3])
-                    ->setSize($partition[1] * 1024);
+                $partitions[$partition[2]][] = new Drive\Partition(
+                    $partition[1] * 1024,
+                    $partition[2].$partition[3]
+                );
             }
         }
 
@@ -188,16 +193,18 @@ final class Linux extends OS
                 }
             }
 
-            $drives[] = (new Drive())
-                ->setSize(Common::getContents(\dirname($path, 2).'/size', 0) * 512)
-                ->setDevice('/dev/'.$parts[3])
-                ->setPartitions((static function (string $namePartition) use ($partitions): ?array {
-                    return \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : null;
-                })($parts[3]))
-                ->setName(Common::getContents(\dirname($path).'/model', 'Unknown').$type)
-                ->setReads($reads)
-                ->setVendor(Common::getContents(\dirname($path).'/vendor'))
-                ->setWrites($writes);
+            $namePartition = $parts[3];
+            $p = \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : [];
+
+            $drives[] = new Drive(
+                Common::getContents(\dirname($path).'/model', 'Unknown').$type,
+                '/dev/'.$namePartition,
+                Common::getContents(\dirname($path, 2).'/size', '0') * 512,
+                Common::getContents(\dirname($path).'/vendor'),
+                $reads,
+                $writes,
+                $p,
+            );
         }
 
         return $drives;
@@ -231,16 +238,17 @@ final class Linux extends OS
                 $size = $free = $used = null;
             }
 
-            $mounts[] = (new Mount())
-                ->setSize($size)
-                ->setDevice($mount[1])
-                ->setType($mount[3])
-                ->setFree($free)
-                ->setMount($mount[2])
-                ->setOptions(\explode(',', $mount[4]))
-                ->setUsed($used)
-                ->setFreePercent(null !== $size && null !== $free && $size > 0 ? \round($free / $size, 2) * 100 : null)
-                ->setUsedPercent(null !== $size && null !== $used && $size > 0 ? \round($used / $size, 2) * 100 : null);
+            $mounts[] = new Mount(
+                $mount[1],
+                $mount[2],
+                $mount[3],
+                $size,
+                $used,
+                $free,
+                null !== $size && null !== $free && $size > 0 ? \round($free / $size, 2) * 100 : null,
+                null !== $size && null !== $used && $size > 0 ? \round($used / $size, 2) * 100 : null,
+                \explode(',', $mount[4])
+            );
         }
 
         return $mounts;
@@ -255,24 +263,21 @@ final class Linux extends OS
 
         $out = [];
         foreach ($data as $raid) {
-            $out[] = (new Raid())
-                ->setStatus($raid['status'])
-                ->setChart($raid['chart'])
-                ->setCountActive($raid['count']['active'])
-                ->setCountTotal($raid['count']['total'])
-                ->setDevice($raid['device'])
-                ->setDrives((static function () use ($raid): array {
-                    $out = [];
-                    foreach ($raid['drives'] as $drive) {
-                        $out[] = (new Raid\Drive())
-                            ->setPath($drive['path'])
-                            ->setState($drive['state']);
-                    }
+            $drives = [];
+            foreach ($raid['drives'] as $drive) {
+                $drives[] = new Raid\Drive($drive['path'], $drive['state']);
+            }
 
-                    return $out;
-                })())
-                ->setLevel($raid['level'])
-                ->setSize($raid['size']);
+            $out[] = new Raid(
+                $raid['device'],
+                $raid['status'],
+                $raid['level'],
+                $raid['size'],
+                $raid['count']['active'],
+                $raid['count']['total'],
+                $raid['chart'],
+                $drives,
+            );
         }
 
         return $out;
@@ -341,11 +346,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($return as $v) {
-            $out[] = (new Sensor())
-                ->setName($v['name'])
-                ->setPath($v['path'])
-                ->setUnit($v['unit'])
-                ->setValue($v['value']);
+            $out[] = new Sensor($v['name'], $v['value'], $v['unit'], $v['path']);
         }
 
         return $out ?: null;
@@ -360,10 +361,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($data as $v) {
-            $out[] = (new Usb())
-                ->setVendor($v['vendor'])
-                ->setName($v['name'])
-                ->setSpeed($v['speed']);
+            $out[] = new Usb($v['vendor'], $v['name'], $v['speed']);
         }
 
         return $out;
@@ -378,9 +376,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($data as $v) {
-            $out[] = (new Pci())
-                ->setVendor($v['vendor'])
-                ->setName($v['name']);
+            $out[] = new Pci($v['vendor'], $v['name']);
         }
 
         return $out;
@@ -402,12 +398,9 @@ final class Linux extends OS
 
         $return = [];
         foreach ($paths as $path) {
-            $tmp = (new Network())
-                ->setName(\basename($path));
-
-            $speed = Common::getContents($path.'/speed'); // Mbits/sec
+            $speed = (int) Common::getContents($path.'/speed'); // Mbits/sec
             if ($speed) {
-                $tmp->setSpeed($speed * 1000000);
+                $speed *= 1000000;
             }
 
             $operstateContents = Common::getContents($path.'/operstate');
@@ -416,7 +409,6 @@ final class Linux extends OS
             if (null === $state && \file_exists($path.'/carrier')) {
                 $state = Common::getContents($path.'/carrier') ? 'up' : 'down';
             }
-            $tmp->setState($state);
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
             $typeCode = Common::getContents($path.'/type');
@@ -464,21 +456,26 @@ final class Linux extends OS
 
                 // TODO find some way of finding out what provides the virt-specific kvm vnet devices
             }
-            $tmp->setType($type);
-            $tmp->setStatsReceived(
-                (new Network\Stats())
-                    ->setBytes(Common::getContents($path.'/statistics/rx_bytes', '0'))
-                    ->setErrors(Common::getContents($path.'/statistics/rx_errors', '0'))
-                    ->setPackets(Common::getContents($path.'/statistics/rx_packets', '0'))
+
+            $statsReceived = new Network\Stats(
+                (int) Common::getContents($path.'/statistics/rx_bytes', '0'),
+                (int) Common::getContents($path.'/statistics/rx_errors', '0'),
+                (int) Common::getContents($path.'/statistics/rx_packets', '0')
             );
-            $tmp->setStatsSent(
-                (new Network\Stats())
-                    ->setBytes(Common::getContents($path.'/statistics/tx_bytes', '0'))
-                    ->setErrors(Common::getContents($path.'/statistics/tx_errors', '0'))
-                    ->setPackets(Common::getContents($path.'/statistics/tx_packets', '0'))
+            $statsSent = new Network\Stats(
+                (int) Common::getContents($path.'/statistics/tx_bytes', '0'),
+                (int) Common::getContents($path.'/statistics/tx_errors', '0'),
+                (int) Common::getContents($path.'/statistics/tx_packets', '0')
             );
 
-            $return[] = $tmp;
+            $return[] = new Network(
+                \basename($path),
+                $speed,
+                $type,
+                $state,
+                $statsReceived,
+                $statsSent,
+            );
         }
 
         return $return;
@@ -500,17 +497,18 @@ final class Linux extends OS
 
             $block = Common::parseKeyValueBlock($uevent, '=');
 
-            $return[] = (new Battery())
-                ->setVendor($block['POWER_SUPPLY_MANUFACTURER'])
-                ->setModel($block['POWER_SUPPLY_MODEL_NAME'])
-                ->setStatus($block['POWER_SUPPLY_STATUS'])
-                ->setTechnology($block['POWER_SUPPLY_TECHNOLOGY'] ?? null)
-                ->setChargeFull($block['POWER_SUPPLY_CHARGE_FULL'] ?? null)
-                ->setChargeNow($block['POWER_SUPPLY_CHARGE_NOW'] ?? null)
-                ->setEnergyFull($block['POWER_SUPPLY_ENERGY_FULL'] ?? null)
-                ->setEnergyNow($block['POWER_SUPPLY_ENERGY_NOW'] ?? null)
-                ->setVoltageNow($block['POWER_SUPPLY_VOLTAGE_NOW'])
-                ->setPercentage($block['POWER_SUPPLY_CAPACITY']);
+            $return[] = new Battery(
+                $block['POWER_SUPPLY_MODEL_NAME'],
+                $block['POWER_SUPPLY_MANUFACTURER'],
+                $block['POWER_SUPPLY_STATUS'],
+                $block['POWER_SUPPLY_CAPACITY'],
+                $block['POWER_SUPPLY_VOLTAGE_NOW'],
+                $block['POWER_SUPPLY_TECHNOLOGY'] ?? null,
+                $block['POWER_SUPPLY_ENERGY_NOW'] ?? null,
+                $block['POWER_SUPPLY_ENERGY_FULL'] ?? null,
+                $block['POWER_SUPPLY_CHARGE_NOW'] ?? null,
+                $block['POWER_SUPPLY_CHARGE_FULL'] ?? null
+            );
         }
 
         return $return;
@@ -528,9 +526,7 @@ final class Linux extends OS
             $name = \trim(\explode(']:', $lines[$i], 2)[1]);
             $vendor = \trim(\explode(' at ', $lines[$i + 1], 2)[0]);
 
-            $cards[] = (new SoundCard())
-                ->setVendor($vendor)
-                ->setName($name);
+            $cards[] = new SoundCard($vendor, $name);
         }
 
         return $cards;
@@ -573,17 +569,18 @@ final class Linux extends OS
                 $vmPeak = null;
             }
 
-            $result[] = (new Process())
-                ->setName($blockStatus['Name'])
-                ->setCommandLine(null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null)
-                ->setThreads($blockStatus['Threads'])
-                ->setState($blockStatus['State'])
-                ->setMemory($vmSize)
-                ->setPeakMemory($vmPeak)
-                ->setPid($blockStatus['Pid'])
-                ->setUser($user ? $user['name'] : $uid)
-                ->setIoRead($blockIo['read_bytes'] ?? null)
-                ->setIoWrite($blockIo['write_bytes'] ?? null);
+            $result[] = new Process(
+                $blockStatus['Name'],
+                $blockStatus['Pid'],
+                null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
+                $blockStatus['Threads'],
+                $blockStatus['State'],
+                $vmSize,
+                $vmPeak,
+                $user ? $user['name'] : $uid,
+                $blockIo['read_bytes'] ?? null,
+                $blockIo['write_bytes'] ?? null
+            );
         }
 
         return $result;
@@ -600,24 +597,12 @@ final class Linux extends OS
         $out = [];
         if ($services) {
             foreach ($services as $service) {
-                $out[] = (new Service())
-                    ->setType(Service::TYPE_SERVICE)
-                    ->setName($service['name'])
-                    ->setDescription($service['description'])
-                    ->setLoaded($service['loaded'])
-                    ->setStarted($service['started'])
-                    ->setState($service['state']);
+                $out[] = new Service($service['name'], $service['description'], $service['loaded'], $service['started'], $service['state'], Service::TYPE_SERVICE);
             }
         }
         if ($targets) {
             foreach ($targets as $service) {
-                $out[] = (new Service())
-                    ->setType(Service::TYPE_TARGET)
-                    ->setName($service['name'])
-                    ->setDescription($service['description'])
-                    ->setLoaded($service['loaded'])
-                    ->setStarted($service['started'])
-                    ->setState($service['state']);
+                $out[] = new Service($service['name'], $service['description'], $service['loaded'], $service['started'], $service['state'], Service::TYPE_TARGET);
             }
         }
 
@@ -771,14 +756,7 @@ final class Linux extends OS
             return null;
         }
 
-        return (new Ups())
-            ->setName($ups['name'])
-            ->setModel($ups['model'])
-            ->setBatteryCharge($ups['batteryCharge'])
-            ->setBatteryVolts($ups['batteryVolts'])
-            ->setCurrentLoad($ups['currentLoad'])
-            ->setTimeLeft($ups['timeLeft'])
-            ->setStatus($ups['status']);
+        return new Ups($ups['name'], $ups['model'], $ups['batteryVolts'], $ups['batteryCharge'], $ups['timeLeft'], $ups['currentLoad'], $ups['status']);
     }
 
     public function getPrinters(): ?array
@@ -790,9 +768,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($printers as $printer) {
-            $out[] = (new Printer())
-                ->setName($printer['name'])
-                ->setEnabled($printer['enabled']);
+            $out[] = new Printer($printer['name'], $printer['enabled']);
         }
 
         return $out;
@@ -805,54 +781,48 @@ final class Linux extends OS
             return null;
         }
 
-        return (new Samba())
-            ->setConnections((static function (array $connections) {
-                $out = [];
-                foreach ($connections as $connection) {
-                    $out[] = (new Samba\Connection())
-                        ->setPid($connection['pid'])
-                        ->setGroup($connection['group'])
-                        ->setHost($connection['host'])
-                        ->setIp($connection['ip'])
-                        ->setProtocolVersion($connection['protocolVersion'])
-                        ->setUser($connection['user'])
-                        ->setEncryption($connection['encryption'])
-                        ->setSigning($connection['signing']);
-                }
+        $files = [];
+        foreach ($data['files'] as $file) {
+            $files[] = new Samba\File(
+                $file['pid'],
+                \posix_getpwuid($file['uid'])['name'],
+                $file['denyMode'],
+                $file['access'],
+                $file['rw'],
+                $file['oplock'],
+                $file['sharePath'],
+                $file['name'],
+                $file['time'],
+            );
+        }
 
-                return $out;
-            })($data['connections']))
-            ->setServices((static function (array $services) {
-                $out = [];
-                foreach ($services as $service) {
-                    $out[] = (new Samba\Service())
-                        ->setPid($service['pid'])
-                        ->setMachine($service['machine'])
-                        ->setConnectedAt($service['connectedAt'])
-                        ->setService($service['service'])
-                        ->setEncryption($service['encryption'])
-                        ->setSigning($service['signing']);
-                }
+        $services = [];
+        foreach ($data['services'] as $service) {
+            $services[] = new Samba\Service(
+                $service['service'],
+                $service['pid'],
+                $service['machine'],
+                $service['connectedAt'],
+                $service['encryption'],
+                $service['signing'],
+            );
+        }
 
-                return $out;
-            })($data['services']))
-            ->setFiles((static function (array $files) {
-                $out = [];
-                foreach ($files as $file) {
-                    $out[] = (new Samba\File())
-                        ->setPid($file['pid'])
-                        ->setUser(\posix_getpwuid($file['uid'])['name'])
-                        ->setTime($file['time'])
-                        ->setName($file['name'])
-                        ->setAccess($file['access'])
-                        ->setDenyMode($file['denyMode'])
-                        ->setOplock($file['oplock'])
-                        ->setRw($file['rw'])
-                        ->setSharePath($file['sharePath']);
-                }
+        $connections = [];
+        foreach ($data['connections'] as $connection) {
+            $connections[] = new Samba\Connection(
+                $connection['pid'],
+                $connection['user'],
+                $connection['group'],
+                $connection['host'],
+                $connection['ip'],
+                $connection['protocolVersion'],
+                $connection['encryption'],
+                $connection['signing'],
+            );
+        }
 
-                return $out;
-            })($data['files']));
+        return new Samba($files, $services, $connections);
     }
 
     public function getSelinux(): ?Selinux
@@ -862,9 +832,6 @@ final class Linux extends OS
             return null;
         }
 
-        return (new Selinux())
-            ->setEnabled($data['enabled'])
-            ->setPolicy($data['policy'])
-            ->setMode($data['mode']);
+        return new Selinux($data['enabled'], $data['mode'], $data['policy']);
     }
 }

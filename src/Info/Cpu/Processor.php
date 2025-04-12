@@ -2,25 +2,21 @@
 
 namespace Ginfo\Info\Cpu;
 
-final class Processor
+final readonly class Processor
 {
-    private string $model;
-    private float $speed;
-    private ?int $l2Cache = null;
-    /** @var string[]|null */
-    private ?array $flags = null;
-    private ?string $architecture = null;
+    public function __construct(
+        private string $model,
+        private float $speed,
+        private ?int $l2Cache = null,
+        /** @var string[]|null */
+        private ?array $flags = null,
+        private ?string $architecture = null,
+    ) {
+    }
 
     public function getModel(): string
     {
         return $this->model;
-    }
-
-    public function setModel(string $model): self
-    {
-        $this->model = $model;
-
-        return $this;
     }
 
     public function getSpeed(): float
@@ -28,23 +24,9 @@ final class Processor
         return $this->speed;
     }
 
-    public function setSpeed(float $speed): self
-    {
-        $this->speed = $speed;
-
-        return $this;
-    }
-
     public function getL2Cache(): ?int
     {
         return $this->l2Cache;
-    }
-
-    public function setL2Cache(?int $l2Cache): self
-    {
-        $this->l2Cache = $l2Cache;
-
-        return $this;
     }
 
     /**
@@ -55,26 +37,6 @@ final class Processor
     public function getFlags(): ?array
     {
         return $this->flags;
-    }
-
-    /**
-     * @param string[]|null $flags
-     */
-    public function setFlags(?array $flags): self
-    {
-        $this->flags = $flags;
-
-        return $this;
-    }
-
-    /**
-     * @param string|null $architecture (x86|x64|ia64) currently arm or mips not supported
-     */
-    public function setArchitecture(?string $architecture): self
-    {
-        $this->architecture = $architecture;
-
-        return $this;
     }
 
     /**

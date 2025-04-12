@@ -32,17 +32,28 @@ final readonly class Info
      */
     public function getGeneral(): General
     {
-        return (new General())
-            ->setDate(new \DateTime())
-            ->setUptime($this->os->getUptime())
-            ->setOsName($this->os->getOsName())
-            ->setKernel($this->os->getKernel())
-            ->setHostname($this->os->getHostName())
-            ->setArchitecture($this->os->getArchitecture())
-            ->setVirtualization($this->os->getVirtualization())
-            ->setModel($this->os->getModel())
-            ->setLoggedUsers($this->os->getLoggedUsers())
-            ->setLoad($this->os->getLoad());
+        $uptimeTimestamp = $this->os->getUptime();
+        if ($uptimeTimestamp) {
+            $startDate = new \DateTime('now - '.$uptimeTimestamp.' seconds');
+            $endDate = new \DateTime('now');
+
+            $uptime = $startDate->diff($endDate);
+        } else {
+            $uptime = null;
+        }
+
+        return new General(
+            new \DateTime(),
+            $this->os->getOsName(),
+            $this->os->getKernel(),
+            $this->os->getHostName(),
+            $this->os->getArchitecture(),
+            $uptime,
+            $this->os->getVirtualization(),
+            $this->os->getLoggedUsers(),
+            $this->os->getModel(),
+            $this->os->getLoad(),
+        );
     }
 
     /**
@@ -64,51 +75,51 @@ final readonly class Info
     /**
      * USB devices.
      *
-     * @return Usb[]|null
+     * @return Usb[]
      */
-    public function getUsb(): ?array
+    public function getUsb(): array
     {
-        return $this->os->getUsb();
+        return $this->os->getUsb() ?? [];
     }
 
     /**
      * PCI devices.
      *
-     * @return Pci[]|null
+     * @return Pci[]
      */
-    public function getPci(): ?array
+    public function getPci(): array
     {
-        return $this->os->getPci();
+        return $this->os->getPci() ?? [];
     }
 
     /**
      * Sound cards.
      *
-     * @return SoundCard[]|null
+     * @return SoundCard[]
      */
-    public function getSoundCard(): ?array
+    public function getSoundCard(): array
     {
-        return $this->os->getSoundCards();
+        return $this->os->getSoundCards() ?? [];
     }
 
     /**
      * Network devices.
      *
-     * @return Network[]|null
+     * @return Network[]
      */
-    public function getNetwork(): ?array
+    public function getNetwork(): array
     {
-        return $this->os->getNetwork();
+        return $this->os->getNetwork() ?? [];
     }
 
     /**
      * Battery status.
      *
-     * @return Battery[]|null
+     * @return Battery[]
      */
-    public function getBattery(): ?array
+    public function getBattery(): array
     {
-        return $this->os->getBattery();
+        return $this->os->getBattery() ?? [];
     }
 
     /**
@@ -116,40 +127,41 @@ final readonly class Info
      */
     public function getDisk(): Disk
     {
-        return (new Disk())
-            ->setMounts($this->os->getMounts())
-            ->setDrives($this->os->getDrives())
-            ->setRaids($this->os->getRaids());
+        return new Disk(
+            $this->os->getMounts() ?? [],
+            $this->os->getDrives() ?? [],
+            $this->os->getRaids() ?? []
+        );
     }
 
     /**
      * Temperatures|Voltages.
      *
-     * @return Sensor[]|null
+     * @return Sensor[]
      */
-    public function getSensors(): ?array
+    public function getSensors(): array
     {
-        return $this->os->getSensors();
+        return $this->os->getSensors() ?? [];
     }
 
     /**
      * Processes.
      *
-     * @return Process[]|null
+     * @return Process[]
      */
-    public function getProcesses(): ?array
+    public function getProcesses(): array
     {
-        return $this->os->getProcesses();
+        return $this->os->getProcesses() ?? [];
     }
 
     /**
      * Services.
      *
-     * @return Service[]|null
+     * @return Service[]
      */
-    public function getServices(): ?array
+    public function getServices(): array
     {
-        return $this->os->getServices();
+        return $this->os->getServices() ?? [];
     }
 
     /**
@@ -163,11 +175,11 @@ final readonly class Info
     /**
      * Printers.
      *
-     * @return Printer[]|null
+     * @return Printer[]
      */
-    public function getPrinters(): ?array
+    public function getPrinters(): array
     {
-        return $this->os->getPrinters();
+        return $this->os->getPrinters() ?? [];
     }
 
     /**
@@ -202,82 +214,88 @@ final readonly class Info
         $apcEnabled = \ini_get('apc.enabled');
         $apcEnableCli = \ini_get('apc.enable_cli');
 
-        return (new Php())
-            ->setVersion(\PHP_VERSION)
-            ->setExtensions(\get_loaded_extensions())
-            ->setZendExtensions(\get_loaded_extensions(true))
-            ->setIniFile((string) \php_ini_loaded_file())
-            ->setMemoryLimit((int) Common::convertHumanSizeToBytes((string) \ini_get('memory_limit')))
-            ->setIncludePath((string) \get_include_path())
-            ->setOpenBasedir((string) \ini_get('open_basedir'))
-            ->setZendThreadSafe(\ZEND_THREAD_SAFE)
-            ->setSapiName(\PHP_SAPI)
-            ->setDisabledFunctions($disabledFunctions ? \explode(',', $disabledFunctions) : [])
-            ->setDisabledClasses($disabledClasses ? \explode(',', $disabledClasses) : [])
-            ->setRealpathCacheSizeUsed(\realpath_cache_size())
-            ->setRealpathCacheSizeAllowed(Common::convertHumanSizeToBytes((string) \ini_get('realpath_cache_size')))
-            ->setOpcache(
-                (new Php\Opcache())
-                    ->setVersion(\phpversion('Zend Opcache') ?: null)
-                    ->setCachedScripts($opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null)
-                    ->setConfigEnable($opcacheConfiguration['directives']['opcache.enable'] ?? false)
-                    ->setConfigEnableCli($opcacheConfiguration['directives']['opcache.enable_cli'] ?? null)
-                    ->setEnabled($opcacheStatus['opcache_enabled'] ?? false)
-                    ->setFreeMemory($opcacheStatus['memory_usage']['free_memory'] ?? null)
-                    ->setUsedMemory($opcacheStatus['memory_usage']['used_memory'] ?? null)
-                    ->setHits($opcacheStatus['opcache_statistics']['hits'] ?? null)
-                    ->setMisses($opcacheStatus['opcache_statistics']['misses'] ?? null)
-                    ->setOomRestarts($opcacheStatus['opcache_statistics']['oom_restarts'] ?? null)
-                    ->setHashRestarts($opcacheStatus['opcache_statistics']['hash_restarts'] ?? null)
-                    ->setHashRestarts($opcacheStatus['opcache_statistics']['manual_restarts'] ?? null)
-                    ->setCachedInternedStrings($opcacheStatus['interned_strings_usage']['number_of_strings'] ?? null)
-                    ->setInternedStringsFreeMemory($opcacheStatus['interned_strings_usage']['free_memory'] ?? null)
-                    ->setInternedStringsUsedMemory($opcacheStatus['interned_strings_usage']['used_memory'] ?? null)
-            )
-            ->setApcu(
-                (new Php\Apcu())
-                    ->setVersion(\phpversion('apcu') ?: null)
-                    ->setCachedVariables($apcuCacheInfo['num_entries'] ?? null)
-                    ->setConfigEnable(false !== $apcEnabled ? (bool) $apcEnabled : null)
-                    ->setConfigEnableCli(false !== $apcEnableCli ? (bool) $apcEnableCli : null)
-                    ->setEnabled($apcuCacheInfo && $apcuSmaInfo)
-                    ->setFreeMemory($apcuSmaInfo['avail_mem'] ?? null)
-                    ->setUsedMemory(isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? $apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem'] : null)
-                    ->setHits($apcuCacheInfo['num_hits'] ?? null)
-                    ->setMisses($apcuCacheInfo['num_misses'] ?? null)
-            )
-            ->setFpm(
-                (new Php\Fpm())
-                    ->setEnabled(!empty($fpmInfo))
-                    ->setAcceptedConnections($fpmInfo['accepted-conn'] ?? null)
-                    ->setActiveProcesses($fpmInfo['active-processes'] ?? null)
-                    ->setIdleProcesses($fpmInfo['idle-processes'] ?? null)
-                    ->setListenQueue($fpmInfo['listen-queue'] ?? null)
-                    ->setListenQueueLength($fpmInfo['listen-queue-len'] ?? null)
-                    ->setMaxActiveProcesses($fpmInfo['max-active-processes'] ?? null)
-                    ->setMaxChildrenReached($fpmInfo['max-children-reached'] ?? null)
-                    ->setMaxListenQueue($fpmInfo['max-listen-queue'] ?? null)
-                    ->setPool($fpmInfo['pool'] ?? null)
-                    ->setProcessManager($fpmInfo['process-manager'] ?? null)
-                    ->setSlowRequests($fpmInfo['slow-requests'] ?? null)
-                    ->setStartTime(isset($fpmInfo['start-time']) ? new \DateTime('@'.$fpmInfo['start-time']) : null)
-                    ->setProcesses(isset($fpmInfo['procs']) ? \array_map(static function (array $process): Php\FpmProcess {
-                        return (new Php\FpmProcess())
-                            ->setStartTime(new \DateTime('@'.$process['start-time']))
-                            ->setLastRequestCpu($process['last-request-cpu'])
-                            ->setLastRequestMemory($process['last-request-memory'])
-                            ->setPid($process['pid'])
-                            ->setQueryString($process['query-string'])
-                            ->setRequestDuration($process['request-duration'])
-                            ->setRequestLength($process['request-length'])
-                            ->setRequestMethod($process['request-method'])
-                            ->setRequests($process['requests'])
-                            ->setRequestUri($process['request-uri'])
-                            ->setScript($process['script'])
-                            ->setState($process['state'])
-                            ->setUser($process['user'])
-                        ;
-                    }, $fpmInfo['procs']) : null)
+        $opcache = new Php\Opcache(
+            $opcacheStatus['opcache_enabled'] ?? false,
+            \phpversion('Zend Opcache') ?: null,
+            $opcacheConfiguration['directives']['opcache.enable'] ?? false,
+            $opcacheConfiguration['directives']['opcache.enable_cli'] ?? null,
+            $opcacheStatus['memory_usage']['used_memory'] ?? null,
+            $opcacheStatus['memory_usage']['free_memory'] ?? null,
+            $opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null,
+            $opcacheStatus['opcache_statistics']['hits'] ?? null,
+            $opcacheStatus['opcache_statistics']['misses'] ?? null,
+            $opcacheStatus['interned_strings_usage']['used_memory'] ?? null,
+            $opcacheStatus['interned_strings_usage']['free_memory'] ?? null,
+            $opcacheStatus['interned_strings_usage']['number_of_strings'] ?? null,
+            $opcacheStatus['opcache_statistics']['oom_restarts'] ?? null,
+            $opcacheStatus['opcache_statistics']['hash_restarts'] ?? null,
+            $opcacheStatus['opcache_statistics']['manual_restarts'] ?? null
+        );
+
+        $apcu = new Php\Apcu(
+            $apcuCacheInfo && $apcuSmaInfo,
+            \phpversion('apcu') ?: null,
+            false !== $apcEnabled ? (bool) $apcEnabled : null,
+            false !== $apcEnableCli ? (bool) $apcEnableCli : null,
+            $apcuCacheInfo['num_hits'] ?? null,
+            $apcuCacheInfo['num_misses'] ?? null,
+            isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? $apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem'] : null,
+            $apcuSmaInfo['avail_mem'] ?? null,
+            $apcuCacheInfo['num_entries'] ?? null
+        );
+
+        $processes = isset($fpmInfo['procs']) ? \array_map(static function (array $process): Php\FpmProcess {
+            return new Php\FpmProcess(
+                $process['pid'],
+                $process['state'],
+                new \DateTime('@'.$process['start-time']),
+                $process['requests'],
+                $process['request-duration'],
+                $process['request-method'],
+                $process['request-uri'],
+                $process['query-string'],
+                $process['request-length'],
+                $process['user'],
+                $process['script'],
+                $process['last-request-cpu'],
+                $process['last-request-memory'],
             );
+        }, $fpmInfo['procs']) : [];
+
+        $fpm = new Php\Fpm(
+            !empty($fpmInfo),
+            $fpmInfo['pool'] ?? null,
+            $fpmInfo['process-manager'] ?? null,
+            isset($fpmInfo['start-time']) ? new \DateTime('@'.$fpmInfo['start-time']) : null,
+            $fpmInfo['accepted-conn'] ?? null,
+            $fpmInfo['listen-queue'] ?? null,
+            $fpmInfo['max-listen-queue'] ?? null,
+            $fpmInfo['listen-queue-len'] ?? null,
+            $fpmInfo['idle-processes'] ?? null,
+            $fpmInfo['active-processes'] ?? null,
+            $fpmInfo['max-active-processes'] ?? null,
+            $fpmInfo['max-children-reached'] ?? null,
+            $fpmInfo['slow-requests'] ?? null,
+            $processes
+        );
+
+        return new Php(
+            \PHP_VERSION,
+            \PHP_SAPI,
+            \ZEND_THREAD_SAFE,
+            (int) Common::convertHumanSizeToBytes((string) \ini_get('memory_limit')),
+            \get_loaded_extensions(),
+            \get_loaded_extensions(true),
+            (string) \php_ini_loaded_file(),
+            (string) \get_include_path(),
+            (string) \ini_get('open_basedir'),
+            $disabledFunctions ? \explode(',', $disabledFunctions) : [],
+            $disabledClasses ? \explode(',', $disabledClasses) : [],
+            $opcache,
+            $apcu,
+            $fpm,
+            \realpath_cache_size(),
+            Common::convertHumanSizeToBytes((string) \ini_get('realpath_cache_size')),
+        );
     }
 }

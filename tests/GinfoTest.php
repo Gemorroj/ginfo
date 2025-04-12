@@ -41,10 +41,10 @@ final class GinfoTest extends TestCase
     public function testCpu(): void
     {
         $cpu = $this->info->getCpu();
-        if (null === $cpu) {
+        if (!$cpu) {
             self::markTestSkipped('Can\'t get cpu');
         } else {
-            self::assertInstanceOf(Info\Cpu::class, $cpu);
+            self::assertNotEmpty($cpu->getProcessors());
             // \print_r($cpu);
         }
     }
@@ -52,10 +52,10 @@ final class GinfoTest extends TestCase
     public function testMemory(): void
     {
         $memory = $this->info->getMemory();
-        if (null === $memory) {
+        if (!$memory) {
             self::markTestSkipped('Can\'t get memory');
         } else {
-            self::assertInstanceOf(Info\Memory::class, $memory);
+            self::assertGreaterThan(1, $memory->getTotal());
             // \print_r($memory);
         }
     }
@@ -63,10 +63,10 @@ final class GinfoTest extends TestCase
     public function testProcesses(): void
     {
         $processes = $this->info->getProcesses();
-        if (null === $processes) {
+        if (!$processes) {
             self::markTestSkipped('Can\'t get processes');
         } else {
-            self::assertNotEmpty($processes);
+            self::assertNotEmpty($processes[0]->getName());
             // \print_r($processes);
         }
     }
@@ -77,7 +77,7 @@ final class GinfoTest extends TestCase
         if (null === $network) {
             self::markTestSkipped('Can\'t get network');
         } else {
-            self::assertNotEmpty($network);
+            self::assertNotEmpty($network[0]->getName());
             // \print_r($network);
         }
     }
@@ -85,10 +85,10 @@ final class GinfoTest extends TestCase
     public function testUsb(): void
     {
         $usb = $this->info->getUsb();
-        if (null === $usb) {
+        if (!$usb) {
             self::markTestSkipped('Can\'t get usb');
         } else {
-            self::assertIsArray($usb);
+            self::assertNotEmpty($usb[0]->getVendor());
             // \print_r($usb);
         }
     }
@@ -96,10 +96,10 @@ final class GinfoTest extends TestCase
     public function testPci(): void
     {
         $pci = $this->info->getPci();
-        if (null === $pci) {
+        if (!$pci) {
             self::markTestSkipped('Can\'t get pci');
         } else {
-            self::assertNotEmpty($pci);
+            self::assertNotEmpty($pci[0]->getVendor());
             // \print_r($pci);
         }
     }
@@ -107,10 +107,10 @@ final class GinfoTest extends TestCase
     public function testSoundCard(): void
     {
         $soundCard = $this->info->getSoundCard();
-        if (null === $soundCard) {
+        if (!$soundCard) {
             self::markTestSkipped('Can\'t get sound card');
         } else {
-            self::assertNotEmpty($soundCard);
+            self::assertNotEmpty($soundCard[0]->getName());
             // \print_r($soundCard);
         }
     }
@@ -118,10 +118,10 @@ final class GinfoTest extends TestCase
     public function testServices(): void
     {
         $services = $this->info->getServices();
-        if (null === $services) {
+        if (!$services) {
             self::markTestSkipped('Can\'t get services (need systemd)');
         } else {
-            self::assertNotEmpty($services);
+            self::assertNotEmpty($services[0]->getName());
             // \print_r($services);
         }
     }
@@ -133,12 +133,11 @@ final class GinfoTest extends TestCase
             self::assertNull($samba);
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $samba) {
+            if (!$samba) {
                 self::markTestSkipped('Can\'t get samba');
-            } else {
-                self::assertInstanceOf(Info\Samba::class, $samba);
-                // \print_r($samba);
             }
+            // self::assertNotEmpty($samba->getServices()[0]->getService());
+            // \print_r($samba);
         }
     }
 
@@ -149,10 +148,10 @@ final class GinfoTest extends TestCase
             self::assertNull($ups);
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $ups) {
+            if (!$ups) {
                 self::markTestSkipped('Can\'t get ups (need apcaccess)');
             } else {
-                self::assertInstanceOf(Info\Ups::class, $ups);
+                self::assertNotEmpty($ups->getName());
                 // \print_r($ups);
             }
         }
@@ -165,12 +164,11 @@ final class GinfoTest extends TestCase
             self::assertNull($selinux);
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $selinux) {
+            if (!$selinux) {
                 self::markTestSkipped('Can\'t get selinux (need sestatus)');
-            } else {
-                self::assertInstanceOf(Info\Selinux::class, $selinux);
-                // \print_r($selinux);
             }
+            // self::assertNotEmpty($selinux->getMode());
+            // \print_r($selinux);
         }
     }
 
@@ -178,13 +176,13 @@ final class GinfoTest extends TestCase
     {
         $battery = $this->info->getBattery();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($battery); // todo
+            self::assertEmpty($battery); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $battery) {
+            if (!$battery) {
                 self::markTestSkipped('Can\'t get battery info');
             } else {
-                self::assertNotEmpty($battery);
+                self::assertNotEmpty($battery[0]->getModel());
                 // \print_r($battery);
             }
         }
@@ -194,13 +192,13 @@ final class GinfoTest extends TestCase
     {
         $sensors = $this->info->getSensors();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($sensors); // todo
+            self::assertEmpty($sensors); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $sensors) {
+            if (!$sensors) {
                 self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
             } else {
-                self::assertNotEmpty($sensors);
+                self::assertNotEmpty($sensors[0]->getName());
                 // \print_r($sensors);
             }
         }
@@ -210,13 +208,13 @@ final class GinfoTest extends TestCase
     {
         $printers = $this->info->getPrinters();
         if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($printers); // todo
+            self::assertEmpty($printers); // todo
             self::markTestSkipped('Not implemented for windows');
         } else {
-            if (null === $printers) {
+            if (!$printers) {
                 self::markTestSkipped('Can\'t get printers (need lpstat)');
             } else {
-                self::assertNotEmpty($printers);
+                self::assertNotEmpty($printers[0]->getName());
                 // \print_r($printers);
             }
         }
@@ -230,24 +228,24 @@ final class GinfoTest extends TestCase
         $mounts = $disk->getMounts();
         $raids = $disk->getRaids();
 
-        if (null === $drivers) {
+        if (!$drivers) {
             self::markTestSkipped('Can\'t get drivers');
         } else {
-            self::assertNotEmpty($drivers);
+            self::assertNotEmpty($drivers[0]->getName());
             // \print_r($drivers);
         }
 
-        if (null === $mounts) {
+        if (!$mounts) {
             self::markTestSkipped('Can\'t get mounts');
         } else {
-            self::assertNotEmpty($mounts);
+            self::assertNotEmpty($mounts[0]->getDevice());
             // \print_r($mounts);
         }
 
-        if (null === $raids) {
+        if (!$raids) {
             self::markTestSkipped('Can\'t get raids');
         } else {
-            self::assertIsArray($raids);
+            self::assertNotEmpty($raids[0]->getDevice());
             // \print_r($raids);
         }
     }

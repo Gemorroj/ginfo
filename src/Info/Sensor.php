@@ -2,23 +2,19 @@
 
 namespace Ginfo\Info;
 
-final class Sensor
+final readonly class Sensor
 {
-    private ?string $path = null;
-    private string $name;
-    private float $value;
-    private ?string $unit = null;
+    public function __construct(
+        private string $name,
+        private float $value,
+        private ?string $unit = null,
+        private ?string $path = null,
+    ) {
+    }
 
     public function getPath(): ?string
     {
         return $this->path;
-    }
-
-    public function setPath(?string $path): self
-    {
-        $this->path = $path;
-
-        return $this;
     }
 
     public function getName(): string
@@ -26,23 +22,9 @@ final class Sensor
         return $this->name;
     }
 
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
     public function getValue(): float
     {
         return $this->value;
-    }
-
-    public function setValue(float $value): self
-    {
-        $this->value = $value;
-
-        return $this;
     }
 
     /**
@@ -51,12 +33,5 @@ final class Sensor
     public function getUnit(): ?string
     {
         return $this->unit;
-    }
-
-    public function setUnit(?string $unit): self
-    {
-        $this->unit = $unit;
-
-        return $this;
     }
 }
