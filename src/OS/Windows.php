@@ -120,6 +120,7 @@ final class Windows extends OS
                 5 => 'ARM',
                 6 => 'ia64',
                 9 => 'x64',
+                12 => 'ARM64',
                 default => null,
             };
 

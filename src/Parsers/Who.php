@@ -16,6 +16,9 @@ final readonly class Who implements ParserInterface
     {
     }
 
+    /**
+     * @return string[]|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['who', '--count'], null, ['LANG' => 'C']);

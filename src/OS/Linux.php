@@ -26,6 +26,7 @@ use Ginfo\Parsers\Free;
 use Ginfo\Parsers\Hwpci;
 use Ginfo\Parsers\Lpstat;
 use Ginfo\Parsers\Mdadm;
+use Ginfo\Parsers\ProcCpuinfo;
 use Ginfo\Parsers\Sensors\Hddtemp;
 use Ginfo\Parsers\Sensors\Hwmon;
 use Ginfo\Parsers\Sensors\Ipmi;
@@ -72,71 +73,23 @@ final class Linux extends OS
 
     public function getCpu(): ?Cpu
     {
-        $cpuInfo = Common::getContents('/proc/cpuinfo');
-        if (null === $cpuInfo) {
+        $cpuInfo = ProcCpuinfo::work();
+        if (!$cpuInfo) {
             return null;
         }
 
-        $cpuData = [];
-        foreach (\explode("\n\n", $cpuInfo) as $block) {
-            $cpuData[] = Common::parseKeyValueBlock($block);
-        }
-
-        $cores = (static function () use ($cpuData): int {
-            $out = [];
-            foreach ($cpuData as $block) {
-                $out[$block['physical id']] = $block['cpu cores'];
-            }
-
-            return (int) \array_sum($out);
-        })();
-        $virtual = \count($cpuData);
-
-        $physical = (static function () use ($cpuData): int {
-            $out = [];
-            foreach ($cpuData as $block) {
-                if (isset($out[$block['physical id']])) {
-                    ++$out[$block['physical id']];
-                } else {
-                    $out[$block['physical id']] = 1;
-                }
-            }
-
-            return \count($out);
-        })();
-
         $processors = [];
-        foreach ($cpuData as $block) {
-            if (isset($processors[$block['physical id']])) {
-                continue;
-            }
-
-            $flags = \explode(' ', $block['flags']);
-
-            // todo: mips, risc, arm
-            $architecture = 'x86'; // default x86
-            foreach ($flags as $flag) {
-                if ('lm' === $flag || \str_ends_with($flag, '_lm')) { // lm, lahf_lm
-                    $architecture = 'x64';
-                    break;
-                }
-                if ('ia64' === $flag) {
-                    $architecture = 'ia64';
-                    break;
-                }
-            }
-
-            $processors[$block['physical id']] = new Cpu\Processor(
-                $block['model name'],
-                $block['cpu MHz'],
-                (float) $block['cache size'] * 1024, // L2 cache, drop KB
-                $flags,
-                $architecture
+        foreach ($cpuInfo['processors'] as $processor) {
+            $processors[] = new Cpu\Processor(
+                $processor['model'],
+                $processor['speed'],
+                $processor['l2Cache'],
+                $processor['flags'],
+                $processor['architecture'],
             );
         }
-        $processors = \array_values($processors);
 
-        return new Cpu($physical, $cores, $virtual, $cores < $virtual, $processors);
+        return new Cpu($cpuInfo['physical'], $cpuInfo['cores'], $cpuInfo['virtual'], $cpuInfo['hyperThreading'], $processors);
     }
 
     public function getUptime(): ?float
@@ -424,19 +377,20 @@ final class Linux extends OS
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
                 $ueventContents = Common::getIni($path.'/uevent');
-                $deviceUeventContents = Common::getIni($path.'/device/uevent');
 
                 if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
                     $type = \ucfirst($ueventContents['DEVTYPE']);
-                    if (\in_array($typeMatch, ['PCI', 'USB'])) {
+                    if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                         $type .= ' ('.$typeMatch.')';
                     }
+                    $deviceUeventContents = Common::getIni($path.'/device/uevent');
                     if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
                         $type .= ' ('.$deviceUeventContents['DRIVER'].')';
                     }
                 } elseif (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                     $type = 'Ethernet ('.$typeMatch.')';
 
+                    $deviceUeventContents = Common::getIni($path.'/device/uevent');
                     if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
                         $type .= ' ('.$deviceUeventContents['DRIVER'].')';
                     }
@@ -668,6 +622,9 @@ final class Linux extends OS
 
         if (\str_contains(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
             return 'LXC';
+        }
+        if (\is_file('/mnt/wsl/resolv.conf')) {
+            return 'WSL';
         }
 
         if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
