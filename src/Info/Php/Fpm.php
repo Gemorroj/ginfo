@@ -4,6 +4,9 @@ namespace Ginfo\Info\Php;
 
 final readonly class Fpm
 {
+    /**
+     * @param FpmProcess[] $processes
+     */
     public function __construct(
         private bool $enabled,
         private ?string $pool = null,
@@ -18,6 +21,7 @@ final readonly class Fpm
         private ?int $maxActiveProcesses = null,
         private ?int $maxChildrenReached = null,
         private ?int $slowRequests = null,
+        private ?int $memoryPeak = null,
         private array $processes = []
     ) {
     }
@@ -85,6 +89,11 @@ final readonly class Fpm
     public function getSlowRequests(): ?int
     {
         return $this->slowRequests;
+    }
+
+    public function getMemoryPeak(): ?int
+    {
+        return $this->memoryPeak;
     }
 
     /**

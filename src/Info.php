@@ -276,6 +276,7 @@ final readonly class Info
             $fpmInfo['max-active-processes'] ?? null,
             $fpmInfo['max-children-reached'] ?? null,
             $fpmInfo['slow-requests'] ?? null,
+            $fpmInfo['memory-peak'] ?? null,
             $processes
         );
 

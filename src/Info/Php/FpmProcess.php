@@ -9,13 +9,13 @@ final readonly class FpmProcess
         private string $state,
         private \DateTime $startTime,
         private int $requests,
-        private int $requestDuration,
-        private string $requestMethod,
-        private string $requestUri,
-        private string $queryString,
-        private float $requestLength,
-        private string $user,
-        private string $script,
+        private int $lastRequestDuration,
+        private string $lastRequestMethod,
+        private string $lastRequestUri,
+        private string $lastRequestQueryString,
+        private float $lastRequestLength,
+        private string $lastRequestUser,
+        private string $lastRequestScript,
         private float $lastRequestCpu,
         private float $lastRequestMemory,
     ) {
@@ -41,39 +41,39 @@ final readonly class FpmProcess
         return $this->requests;
     }
 
-    public function getRequestDuration(): int
+    public function getLastRequestDuration(): int
     {
-        return $this->requestDuration;
+        return $this->lastRequestDuration;
     }
 
-    public function getRequestMethod(): string
+    public function getLastRequestMethod(): string
     {
-        return $this->requestMethod;
+        return $this->lastRequestMethod;
     }
 
-    public function getRequestUri(): string
+    public function getLastRequestUri(): string
     {
-        return $this->requestUri;
+        return $this->lastRequestUri;
     }
 
-    public function getQueryString(): string
+    public function getLastRequestQueryString(): string
     {
-        return $this->queryString;
+        return $this->lastRequestQueryString;
     }
 
-    public function getRequestLength(): float
+    public function getLastRequestLength(): float
     {
-        return $this->requestLength;
+        return $this->lastRequestLength;
     }
 
-    public function getUser(): string
+    public function getLastRequestUser(): string
     {
-        return $this->user;
+        return $this->lastRequestUser;
     }
 
-    public function getScript(): string
+    public function getLastRequestScript(): string
     {
-        return $this->script;
+        return $this->lastRequestScript;
     }
 
     public function getLastRequestCpu(): float
