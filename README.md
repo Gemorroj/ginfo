@@ -6,7 +6,7 @@
 
 
 ### Ginfo is a:
- - Extensible, easy (composer) to use PHP Library to get extensive system stats programmatically from your PHP app
+ - Extensible PHP library to get extensive system stats programmatically from your PHP app
 
 ### Fork changes:
 - drop ui
@@ -55,10 +55,6 @@ $info = $ginfo->getInfo();
 ```
 
 
-### Runs on
-- Linux
-- Windows >= 10
-
 ### Information reported
 - CPU type/speed; Architecture
 - Mount point usage
@@ -85,8 +81,10 @@ $info = $ginfo->getInfo();
 - PHP >= 8.2
 - pcre extension
 - proc_open
+- Linux/Windows
 
 #### Windows
+- Windows >= 10
 - You need to have `powershell`
 - Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
 
