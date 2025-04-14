@@ -9,11 +9,20 @@ use Symfony\Component\Process\Process;
 
 /**
  * Get nvidia card temps from nvidia-smmi.
- *
- * @author Joseph Gillotti
  */
 final readonly class Nvidia implements ParserInterface
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['nvidia-smi', '-L'], null, ['LANG' => 'C']);
@@ -50,13 +59,13 @@ final readonly class Nvidia implements ParserInterface
                 $result[] = [
                     'path' => null,
                     'name' => $name.' Power',
-                    'value' => $match[2],
+                    'value' => (float) $match[2],
                     'unit' => 'W',
                 ];
                 $result[] = [
                     'path' => null,
                     'name' => $name.' Temperature',
-                    'value' => $match[3],
+                    'value' => (float) $match[3],
                     'unit' => 'C',
                 ];
             }

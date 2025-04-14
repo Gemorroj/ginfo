@@ -9,11 +9,20 @@ use Symfony\Component\Process\Process;
 
 /**
  * IPMI extension for temps/voltages.
- *
- * @author Joseph Gillotti
  */
 final readonly class Ipmi implements ParserInterface
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return array{path: string|null, name:  string, value: float, unit: string}|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['ipmitool', 'sdr'], null, ['LANG' => 'C']);
@@ -36,13 +45,13 @@ final readonly class Ipmi implements ParserInterface
             $unit = match ($vParts[1]) {
                 'Volts' => 'V',
                 'degrees' => $vParts[2],
-                default => null,
+                default => '',
             };
 
             $out[] = [
                 'path' => null,
                 'name' => \trim($m[1]),
-                'value' => $vParts[0],
+                'value' => (float) $vParts[0],
                 'unit' => $unit,
             ];
         }

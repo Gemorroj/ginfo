@@ -17,6 +17,9 @@ final readonly class Systemd implements ParserInterface
     {
     }
 
+    /**
+     * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
+     */
     public static function work(string $type = Service::TYPE_SERVICE): ?array
     {
         return match ($type) {

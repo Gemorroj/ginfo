@@ -11,7 +11,7 @@ final readonly class Fpm
         private bool $enabled,
         private ?string $pool = null,
         private ?string $processManager = null,
-        private ?\DateTime $startTime = null,
+        private ?\DateTimeImmutable $startTime = null,
         private ?int $acceptedConnections = null,
         private ?int $listenQueue = null,
         private ?int $maxListenQueue = null,
@@ -41,7 +41,7 @@ final readonly class Fpm
         return $this->processManager;
     }
 
-    public function getStartTime(): ?\DateTime
+    public function getStartTime(): ?\DateTimeImmutable
     {
         return $this->startTime;
     }

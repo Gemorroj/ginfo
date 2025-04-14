@@ -19,11 +19,11 @@ use Ginfo\Info\Service;
 use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
-use Ginfo\OS\OS;
+use Ginfo\Os\OsInterface;
 
 final readonly class Info
 {
-    public function __construct(private OS $os)
+    public function __construct(private OsInterface $os)
     {
     }
 
@@ -34,8 +34,8 @@ final readonly class Info
     {
         $uptimeTimestamp = $this->os->getUptime();
         if ($uptimeTimestamp) {
-            $startDate = new \DateTime('now - '.$uptimeTimestamp.' seconds');
-            $endDate = new \DateTime('now');
+            $startDate = new \DateTimeImmutable('now - '.$uptimeTimestamp.' seconds');
+            $endDate = new \DateTimeImmutable('now');
 
             $uptime = $startDate->diff($endDate);
         } else {
@@ -43,7 +43,7 @@ final readonly class Info
         }
 
         return new General(
-            new \DateTime(),
+            new \DateTimeImmutable(),
             $this->os->getOsName(),
             $this->os->getKernel(),
             $this->os->getHostName(),
@@ -248,7 +248,7 @@ final readonly class Info
             return new Php\FpmProcess(
                 $process['pid'],
                 $process['state'],
-                new \DateTime('@'.$process['start-time']),
+                new \DateTimeImmutable('@'.$process['start-time']),
                 $process['requests'],
                 $process['request-duration'],
                 $process['request-method'],
@@ -266,7 +266,7 @@ final readonly class Info
             !empty($fpmInfo),
             $fpmInfo['pool'] ?? null,
             $fpmInfo['process-manager'] ?? null,
-            isset($fpmInfo['start-time']) ? new \DateTime('@'.$fpmInfo['start-time']) : null,
+            isset($fpmInfo['start-time']) ? new \DateTimeImmutable('@'.$fpmInfo['start-time']) : null,
             $fpmInfo['accepted-conn'] ?? null,
             $fpmInfo['listen-queue'] ?? null,
             $fpmInfo['max-listen-queue'] ?? null,

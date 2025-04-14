@@ -9,6 +9,17 @@ use Symfony\Component\Process\Process;
 
 final readonly class Apcaccess implements ParserInterface
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return array{name: string, model: string, batteryVolts: float, batteryCharge: float, timeLeft: int, currentLoad: float, status: string}|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['apcaccess', 'status'], null, ['LANG' => 'C']);
@@ -28,10 +39,10 @@ final readonly class Apcaccess implements ParserInterface
         return [
             'name' => $block['UPSNAME'],
             'model' => $block['MODEL'],
-            'batteryVolts' => \rtrim($block['BATTV'], ' Volts'),
-            'batteryCharge' => \rtrim($block['BCHARGE'], ' Percent'),
-            'timeLeft' => \rtrim($block['Minutes'], ' Minutes') * 60,
-            'currentLoad' => \rtrim($block['LOADPCT'], ' Percent'),
+            'batteryVolts' => (float) \rtrim($block['BATTV'], ' Volts'),
+            'batteryCharge' => (float) \rtrim($block['BCHARGE'], ' Percent'),
+            'timeLeft' => (int) \rtrim($block['Minutes'], ' Minutes') * 60,
+            'currentLoad' => (float) \rtrim($block['LOADPCT'], ' Percent'),
             'status' => $block['STATUS'],
         ];
     }

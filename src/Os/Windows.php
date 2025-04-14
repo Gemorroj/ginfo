@@ -1,6 +1,6 @@
 <?php
 
-namespace Ginfo\OS;
+namespace Ginfo\Os;
 
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -18,11 +18,13 @@ use Ginfo\Info\Usb;
 use Symfony\Component\Process\Process as SymfonyProcess;
 
 /**
- * Get info on Windows systems
- * Written and maintained by Oliver Kuckertz (mologie).
+ * Get info on Windows systems.
  */
-final class Windows extends OS
+class Windows implements OsInterface
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $infoCache = [];
     private ?string $powershellDirectory = null;
 
@@ -32,6 +34,22 @@ final class Windows extends OS
         if (\is_dir($powershellDirectory)) {
             $this->powershellDirectory = $powershellDirectory;
         }
+    }
+
+    /**
+     * @return string the arch OS
+     */
+    public function getArchitecture(): string
+    {
+        return \php_uname('m');
+    }
+
+    /**
+     * @return string the OS' hostname A few OS classes override this
+     */
+    public function getHostName(): string
+    {
+        return \php_uname('n');
     }
 
     protected function getInfo(string $name): ?array
@@ -78,7 +96,7 @@ final class Windows extends OS
             return $info['Version'].' Build '.$info['BuildNumber'];
         }
 
-        return parent::getKernel();
+        return \php_uname('r');
     }
 
     public function getMemory(): ?Memory
@@ -158,7 +176,7 @@ final class Windows extends OS
         [$dateTime, $operand, $modifyMinutes] = \preg_split('/([\+\-])+/', $info['LastBootUpTime'], -1, \PREG_SPLIT_DELIM_CAPTURE);
         $modifyHours = ($modifyMinutes / 60 * 100);
 
-        $booted = \DateTime::createFromFormat('YmdHis.uO', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
+        $booted = \DateTimeImmutable::createFromFormat('YmdHis.uO', $dateTime.$operand.$modifyHours, new \DateTimeZone('GMT'));
 
         return \time() - $booted->getTimestamp();
     }
@@ -494,7 +512,7 @@ final class Windows extends OS
         return $this->powershellDirectory;
     }
 
-    protected function addToInfoCache(string $name, $value): self
+    protected function addToInfoCache(string $name, mixed $value): self
     {
         $this->infoCache[$name] = $value;
 
@@ -506,7 +524,7 @@ final class Windows extends OS
         return \array_key_exists($name, $this->infoCache);
     }
 
-    protected function getFromInfoCache(string $name, $defaultValue = null)
+    protected function getFromInfoCache(string $name, mixed $defaultValue = null): mixed
     {
         return $this->hasInInfoCache($name) ? $this->infoCache[$name] : $defaultValue;
     }

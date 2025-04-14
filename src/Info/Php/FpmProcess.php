@@ -7,7 +7,7 @@ final readonly class FpmProcess
     public function __construct(
         private int $pid,
         private string $state,
-        private \DateTime $startTime,
+        private \DateTimeImmutable $startTime,
         private int $requests,
         private int $lastRequestDuration,
         private string $lastRequestMethod,
@@ -31,7 +31,7 @@ final readonly class FpmProcess
         return $this->state;
     }
 
-    public function getStartTime(): \DateTime
+    public function getStartTime(): \DateTimeImmutable
     {
         return $this->startTime;
     }

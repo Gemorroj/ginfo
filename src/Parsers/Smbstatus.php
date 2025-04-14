@@ -11,6 +11,21 @@ use Symfony\Component\Process\Process;
  */
 final readonly class Smbstatus implements ParserInterface
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return array{
+     *     connections: array{pid: int|null, user: string|null, group: string|null, host: string|null, ip: string|null, protocolVersion: string|null, encryption: string|null, signing: string|null}[],
+     *     services: array{pid: int|null, service: string|null, machine: string|null, connectedAt: \DateTimeImmutable|null, encryption: string|null, signing: string|null}[],
+     *     files: array{pid: int|null, uid: int|null, denyMode: string|null, access: string|null, rw: string|null, oplock: string|null, sharePath: string|null, name: string|null, time: \DateTimeImmutable|null}[]
+     * }|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['smbstatus'], null, ['LANG' => 'C']);
@@ -74,8 +89,8 @@ final readonly class Smbstatus implements ParserInterface
     private static function parseService(string $service): array
     {
         $out = [
-            'service' => null,
             'pid' => null,
+            'service' => null,
             'machine' => null,
             'connectedAt' => null,
             'encryption' => null, // samba 4.4
@@ -90,7 +105,7 @@ final readonly class Smbstatus implements ParserInterface
                 continue;
             }
             if (!isset($out['pid'])) {
-                $out['pid'] = $token;
+                $out['pid'] = (int) $token;
                 continue;
             }
             if (!isset($out['machine'])) {
@@ -103,14 +118,14 @@ final readonly class Smbstatus implements ParserInterface
             }
 
             // tested date: Wed Dec  9 01:40:20 PM 2015 CET   or    Fri Mar 30 15:48:34 2018
-            if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTime)) {
+            if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTimeImmutable)) {
                 if ($connectedAtYear) { // perhaps timezone
                     if (!\str_contains($token, '-')) { // yes, timezone
                         $out['connectedAt'] .= ' '.$token;
-                        $out['connectedAt'] = new \DateTime($out['connectedAt']);
+                        $out['connectedAt'] = new \DateTimeImmutable($out['connectedAt']);
                         continue;
                     }
-                    $out['connectedAt'] = new \DateTime($out['connectedAt']);
+                    $out['connectedAt'] = new \DateTimeImmutable($out['connectedAt']);
                 } else {
                     if (\preg_match('/^[0-9]{4}$/', $token)) { // year
                         $connectedAtYear = true;
@@ -146,7 +161,7 @@ final readonly class Smbstatus implements ParserInterface
         ];
         foreach (\preg_split('/\s+/', $connection) as $token) {
             if (!isset($out['pid'])) {
-                $out['pid'] = $token;
+                $out['pid'] = (int) $token;
                 continue;
             }
             if (!isset($out['user'])) {
@@ -201,11 +216,11 @@ final readonly class Smbstatus implements ParserInterface
         ];
         foreach (\preg_split('/\s+/', $file) as $token) {
             if (!isset($out['pid'])) {
-                $out['pid'] = $token;
+                $out['pid'] = (int) $token;
                 continue;
             }
             if (!isset($out['uid'])) {
-                $out['uid'] = $token;
+                $out['uid'] = (int) $token;
                 continue;
             }
             if (!isset($out['denyMode'])) {
@@ -236,12 +251,12 @@ final readonly class Smbstatus implements ParserInterface
                 $out['time'] = $token;
                 continue;
             }
-            if (isset($out['time']) && !($out['time'] instanceof \DateTime)) {
+            if (isset($out['time'])) {
                 $out['time'] .= ' '.$token; // add all strings to time
                 continue;
             }
         }
-        $out['time'] = new \DateTime($out['time']);
+        $out['time'] = $out['time'] ? new \DateTimeImmutable($out['time']) : null;
 
         return $out;
     }

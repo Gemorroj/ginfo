@@ -11,6 +11,17 @@ use Symfony\Component\Process\Process;
  */
 final readonly class Lpstat implements ParserInterface
 {
+    private function __construct()
+    {
+    }
+
+    private function __clone()
+    {
+    }
+
+    /**
+     * @return array{name: string, enabled: bool}[]|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['lpstat', '-p'], null, ['LANG' => 'C']);

@@ -8,7 +8,7 @@ final readonly class Service
         private string $service,
         private int $pid,
         private string $machine,
-        private \DateTime $connectedAt,
+        private \DateTimeImmutable $connectedAt,
         private ?string $encryption = null,
         private ?string $signing = null
     ) {
@@ -45,7 +45,7 @@ final readonly class Service
         return $this->machine;
     }
 
-    public function getConnectedAt(): \DateTime
+    public function getConnectedAt(): \DateTimeImmutable
     {
         return $this->connectedAt;
     }

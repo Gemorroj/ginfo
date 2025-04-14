@@ -15,9 +15,22 @@ final readonly class Hddtemp implements ParserInterface
     }
 
     /**
+     * @return array{path: string|null, name:  string, value: float, unit: string}|null
+     */
+    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
+    {
+        $data = self::getData($host, $port, $timeout);
+        if (null === $data) {
+            return null;
+        }
+
+        return self::parseSockData($data);
+    }
+
+    /**
      * Connect to host/port and get info.
      */
-    private function getData(string $host, int $port, int $timeout): ?string
+    private static function getData(string $host, int $port, int $timeout): ?string
     {
         $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$sock) {
@@ -36,7 +49,7 @@ final readonly class Hddtemp implements ParserInterface
     /**
      * Parse and return info from daemon socket.
      */
-    private function parseSockData(string $data): array
+    private static function parseSockData(string $data): array
     {
         // Kill surrounding ||'s and split it by pipes
         $drives = \explode('||', \trim($data, '|'));
@@ -58,22 +71,11 @@ final readonly class Hddtemp implements ParserInterface
             $return[] = [
                 'path' => $path,
                 'name' => $name,
-                'value' => $temp,
+                'value' => (float) $temp,
                 'unit' => \mb_strtoupper($unit),
             ];
         }
 
         return $return;
-    }
-
-    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
-    {
-        $obj = new self();
-        $data = $obj->getData($host, $port, $timeout);
-        if (null === $data) {
-            return null;
-        }
-
-        return $obj->parseSockData($data);
     }
 }

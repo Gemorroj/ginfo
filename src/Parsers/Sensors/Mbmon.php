@@ -15,9 +15,22 @@ final readonly class Mbmon implements ParserInterface
     }
 
     /**
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
+     */
+    public static function work(string $host = 'localhost', int $port = 411, int $timeout = 1): ?array
+    {
+        $data = self::getData($host, $port, $timeout);
+        if (null === $data) {
+            return null;
+        }
+
+        return self::parseSockData($data);
+    }
+
+    /**
      * Connect to host/port and get info.
      */
-    private function getData(string $host, int $port, int $timeout): ?string
+    private static function getData(string $host, int $port, int $timeout): ?string
     {
         $sock = @\fsockopen($host, $port, $errno, $errstr, $timeout);
         if (!$sock) {
@@ -36,7 +49,7 @@ final readonly class Mbmon implements ParserInterface
     /**
      * Parse and return info from daemon socket.
      */
-    private function parseSockData(string $data): array
+    private static function parseSockData(string $data): array
     {
         $return = [];
 
@@ -46,23 +59,12 @@ final readonly class Mbmon implements ParserInterface
                 $return[] = [
                     'path' => null,
                     'name' => $match[1],
-                    'value' => $match[2],
-                    'unit' => null, // todo
+                    'value' => (float) $match[2],
+                    'unit' => 'C', // todo
                 ];
             }
         }
 
         return $return;
-    }
-
-    public static function work(string $host = 'localhost', int $port = 411, int $timeout = 1): ?array
-    {
-        $obj = new self();
-        $data = $obj->getData($host, $port, $timeout);
-        if (null === $data) {
-            return null;
-        }
-
-        return $obj->parseSockData($data);
     }
 }

@@ -5,7 +5,7 @@ namespace Ginfo\Info;
 final readonly class General
 {
     public function __construct(
-        private \DateTime $date,
+        private \DateTimeImmutable $date,
         private string $osName,
         private string $kernel,
         private string $hostName,
@@ -20,7 +20,7 @@ final readonly class General
     ) {
     }
 
-    public function getDate(): \DateTime
+    public function getDate(): \DateTimeImmutable
     {
         return $this->date;
     }

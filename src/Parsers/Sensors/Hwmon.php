@@ -15,6 +15,9 @@ final readonly class Hwmon implements ParserInterface
     {
     }
 
+    /**
+     * @return array{path: string|null, name:  string, value: float, unit: string}|null
+     */
     public static function work(): ?array
     {
         $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);

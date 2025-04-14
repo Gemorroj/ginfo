@@ -13,7 +13,7 @@ final readonly class File
         private string $oplock,
         private string $sharePath,
         private string $name,
-        private \DateTime $time
+        private \DateTimeImmutable $time
     ) {
     }
 
@@ -57,7 +57,7 @@ final readonly class File
         return $this->name;
     }
 
-    public function getTime(): \DateTime
+    public function getTime(): \DateTimeImmutable
     {
         return $this->time;
     }

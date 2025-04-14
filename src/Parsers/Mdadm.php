@@ -14,6 +14,9 @@ final readonly class Mdadm implements ParserInterface
     {
     }
 
+    /**
+     * @return array{device: string, status: string, level: string, drives: array{path: string, state: string}[], size: float, count: array{active: int, total: int}, chart: string}[]|null
+     */
     public static function work(): ?array
     {
         /*
@@ -67,8 +70,8 @@ md0 : active raid1 sdb[0]
                 'drives' => $drives,
                 'size' => $array['blocks'] * 1024,
                 'count' => [
-                    'active' => $countActive,
-                    'total' => $countTotal,
+                    'active' => (int) $countActive,
+                    'total' => (int) $countTotal,
                 ],
                 'chart' => $array['chart'],
             ];

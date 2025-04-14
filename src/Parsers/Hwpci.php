@@ -6,8 +6,6 @@ use Ginfo\Common;
 
 /**
  * Deal with pci.ids and usb.ids workings.
- *
- * @author Joe Gillotti
  */
 final class Hwpci implements ParserInterface
 {
@@ -23,40 +21,42 @@ final class Hwpci implements ParserInterface
     }
 
     /**
-     * @throws \InvalidArgumentException
+     * @return array{vendor: string, device: string|null, speed: int|null}[]|null
      */
     public static function work(string $mode = self::MODE_PCI): ?array
     {
         if (self::MODE_PCI === $mode) {
-            $pciIds = Common::locateActualPath([
+            $pciIdsFile = Common::locateActualPath([
                 '/usr/share/misc/pci.ids',   // debian/ubuntu
                 '/usr/share/pci.ids',        // opensuse
                 '/usr/share/hwdata/pci.ids', // centos. maybe also redhat/fedora
             ]);
 
-            if (!$pciIds) {
+            if (!$pciIdsFile) {
                 return null;
             }
 
-            $obj = new self();
+            $deviceIds = self::fetchPciIdsLinux();
+            $allDevices = self::extractDevs($deviceIds, $pciIdsFile);
 
-            return $obj->result($mode, $pciIds);
+            return self::makeResult($allDevices);
         }
 
         if (self::MODE_USB === $mode) {
-            $usbIds = Common::locateActualPath([
+            $usbIdsFile = Common::locateActualPath([
                 '/usr/share/misc/usb.ids',   // debian/ubuntu
                 '/usr/share/usb.ids',        // opensuse
                 '/usr/share/hwdata/usb.ids', // centos. maybe also redhat/fedora
             ]);
 
-            if (!$usbIds) {
+            if (!$usbIdsFile) {
                 return null;
             }
 
-            $obj = new self();
+            $deviceIds = self::fetchUsbIdsLinux();
+            $allDevices = self::extractDevs($deviceIds, $usbIdsFile);
 
-            return $obj->result($mode, $usbIds);
+            return self::makeResult($allDevices);
         }
 
         throw new \InvalidArgumentException('Unknown mode "'.$mode.'"');
@@ -65,7 +65,7 @@ final class Hwpci implements ParserInterface
     /**
      * Parse vendor and device names out of hardware ID files. Works for USB and PCI.
      */
-    private function resolveIds(string $file, array $vendors, array $deviceKeys): array
+    private static function resolveIds(string $file, array $vendors, array $deviceKeys): array
     {
         $file = @\fopen($file, 'r');
         if (!$file) {
@@ -111,7 +111,7 @@ final class Hwpci implements ParserInterface
     /**
      * Get device and vendor IDs for USB devices on Linux.
      */
-    private function fetchUsbIdsLinux(): array
+    private static function fetchUsbIdsLinux(): array
     {
         $devices = [];
         $vendors = [];
@@ -145,9 +145,7 @@ final class Hwpci implements ParserInterface
 
             // Also get speed
             $speed = (int) Common::getContents($path.'/speed', '0');
-            if ($speed) {
-                $speeds[$deviceKey] = $speed * 1000 * 1000;
-            }
+            $speeds[$deviceKey] = $speed ? ($speed * 1000 * 1000) : null;
         }
 
         return [
@@ -160,10 +158,11 @@ final class Hwpci implements ParserInterface
     /**
      * Get device and vendor IDs for PCI devices on Linux.
      */
-    private function fetchPciIdsLinux(): array
+    private static function fetchPciIdsLinux(): array
     {
         $vendors = [];
         $devices = [];
+        $speeds = [];
         foreach ((array) @\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
             if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', ''))
@@ -187,28 +186,30 @@ final class Hwpci implements ParserInterface
                 $deviceKey = $vendorId.'-'.$deviceId;
                 $vendors[$vendorId] = true;
                 $devices[$deviceKey] = isset($devices[$deviceKey]) ? $devices[$deviceKey] + 1 : 1;
+            } else {
+                // Forget it
+                continue;
             }
+
+            $speeds[$deviceKey] = null;
         }
 
         return [
             'vendors' => $vendors,
             'devices' => $devices,
-            'speeds' => [],
+            'speeds' => $speeds,
         ];
     }
 
     /**
      * Get any USB or PCI devices present on the host system.
      */
-    private function extractDevs(array $deviceIds, string $file): array
+    private static function extractDevs(array $deviceIds, string $file): array
     {
-        if (!\count($deviceIds)) {
-            return [];
-        }
         $vendors = $deviceIds['vendors'];
         $deviceKeys = $deviceIds['devices'];
         $speeds = $deviceIds['speeds'];
-        $resolvedNames = $this->resolveIds($file, $vendors, $deviceKeys);
+        $resolvedNames = self::resolveIds($file, $vendors, $deviceKeys);
 
         $result = [];
         foreach ($deviceKeys as $key => $count) {
@@ -218,7 +219,8 @@ final class Hwpci implements ParserInterface
                     'vendor' => $vendor,
                     'device' => $device,
                     'count' => $count,
-                    'speed' => $speeds[$key] ?? null];
+                    'speed' => $speeds[$key] ?? null,
+                ];
             }
         }
 
@@ -228,18 +230,8 @@ final class Hwpci implements ParserInterface
     /**
      * Compile and return USB and PCI devices in a sorted list.
      */
-    private function result(string $mode, string $file): array
+    private static function makeResult(array $allDevices): array
     {
-        if (self::MODE_PCI === $mode) {
-            $deviceIds = $this->fetchPciIdsLinux();
-        } elseif (self::MODE_USB === $mode) {
-            $deviceIds = $this->fetchUsbIdsLinux();
-        } else {
-            return [];
-        }
-
-        $allDevices = $this->extractDevs($deviceIds, $file);
-
         $sortType = [];
         $sortVendor = [];
         $sortDevice = [];

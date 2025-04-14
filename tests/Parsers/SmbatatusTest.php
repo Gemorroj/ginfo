@@ -19,7 +19,7 @@ final class SmbatatusTest extends TestCase
             'oplock' => 'NONE',
             'sharePath' => '/home/gemorroj/Общедоступные',
             'name' => '.',
-            'time' => new \DateTime('Fri Mar 30 15:48:44 2018'),
+            'time' => new \DateTimeImmutable('Fri Mar 30 15:48:44 2018'),
         ]];
     }
 
@@ -29,7 +29,7 @@ final class SmbatatusTest extends TestCase
             'service' => 'IPC$',
             'pid' => 10196,
             'machine' => '192.168.0.102',
-            'connectedAt' => new \DateTime('Fri Mar 30 15:48:34 2018'),
+            'connectedAt' => new \DateTimeImmutable('Fri Mar 30 15:48:34 2018'),
             'encryption' => null,
             'signing' => null,
         ]];
@@ -37,7 +37,7 @@ final class SmbatatusTest extends TestCase
             'service' => 'encrypted',
             'pid' => 25597,
             'machine' => '10.10.11.1',
-            'connectedAt' => new \DateTime('Wed Dec  9 01:40:20 PM 2015 CET'),
+            'connectedAt' => new \DateTimeImmutable('Wed Dec  9 01:40:20 PM 2015 CET'),
             'encryption' => 'AES-128-CCM',
             'signing' => 'AES-128-CMAC',
         ]]; // samba 4.4
@@ -45,7 +45,7 @@ final class SmbatatusTest extends TestCase
             'service' => 'clear',
             'pid' => 25597,
             'machine' => '10.10.11.1',
-            'connectedAt' => new \DateTime('Wed Dec  9 01:40:17 PM 2015 CET'),
+            'connectedAt' => new \DateTimeImmutable('Wed Dec  9 01:40:17 PM 2015 CET'),
             'encryption' => null,
             'signing' => null,
         ]]; // samba 4.4

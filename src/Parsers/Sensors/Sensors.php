@@ -17,6 +17,9 @@ final readonly class Sensors implements ParserInterface
     {
     }
 
+    /**
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['sensors'], null, ['LANG=C']);
@@ -57,7 +60,7 @@ final readonly class Sensors implements ParserInterface
         return [
             'path' => null,
             'name' => $name,
-            'value' => $value,
+            'value' => (float) $value,
             'unit' => $unit,
         ];
     }

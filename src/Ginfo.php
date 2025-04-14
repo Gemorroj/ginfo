@@ -2,20 +2,19 @@
 
 namespace Ginfo;
 
-use Ginfo\OS\Linux;
-use Ginfo\OS\OS;
-use Ginfo\OS\Windows;
+use Ginfo\Os\Linux;
+use Ginfo\Os\OsInterface;
+use Ginfo\Os\Windows;
 
 final readonly class Ginfo
 {
-    private OS $os;
+    private OsInterface $os;
 
     public function __construct()
     {
         if ('Windows' === \PHP_OS_FAMILY) {
             $this->os = new Windows();
         } else {
-            // bsd, linux, darwin, solaris
             $this->os = new Linux();
         }
     }
@@ -25,10 +24,7 @@ final readonly class Ginfo
         return new Info($this->os);
     }
 
-    /**
-     * @return Linux|Windows
-     */
-    public function getOs(): OS
+    public function getOs(): OsInterface
     {
         return $this->os;
     }

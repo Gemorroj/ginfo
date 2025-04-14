@@ -15,6 +15,9 @@ final readonly class ThermalZone implements ParserInterface
     {
     }
 
+    /**
+     * @return array{path: string, name: string, value: float, unit: string}[]|null
+     */
     public static function work(): ?array
     {
         $paths = \glob('/sys/class/thermal/thermal_zone*', \GLOB_NOSORT | \GLOB_BRACE);

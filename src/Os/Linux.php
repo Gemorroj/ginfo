@@ -1,6 +1,6 @@
 <?php
 
-namespace Ginfo\OS;
+namespace Ginfo\Os;
 
 use Ginfo\Common;
 use Ginfo\Exceptions\FatalException;
@@ -39,7 +39,7 @@ use Ginfo\Parsers\Smbstatus;
 use Ginfo\Parsers\Systemd;
 use Ginfo\Parsers\Who;
 
-final class Linux extends OS
+class Linux implements OsInterface
 {
     /**
      * @throws FatalException
@@ -49,6 +49,30 @@ final class Linux extends OS
         if (!\is_dir('/sys') || !\is_dir('/proc')) {
             throw new FatalException('This needs access to /proc and /sys to work.');
         }
+    }
+
+    /**
+     * @return string the arch OS
+     */
+    public function getArchitecture(): string
+    {
+        return \php_uname('m');
+    }
+
+    /**
+     * @return string the OS kernel. A few OS classes override this.
+     */
+    public function getKernel(): string
+    {
+        return \php_uname('r');
+    }
+
+    /**
+     * @return string the OS' hostname A few OS classes override this
+     */
+    public function getHostName(): string
+    {
+        return \php_uname('n');
     }
 
     public function getMemory(): ?Memory
@@ -314,7 +338,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($data as $v) {
-            $out[] = new Usb($v['vendor'], $v['name'], $v['speed']);
+            $out[] = new Usb($v['vendor'], $v['device'], $v['speed']);
         }
 
         return $out;
@@ -329,7 +353,7 @@ final class Linux extends OS
 
         $out = [];
         foreach ($data as $v) {
-            $out[] = new Pci($v['vendor'], $v['name']);
+            $out[] = new Pci($v['vendor'], $v['device']);
         }
 
         return $out;

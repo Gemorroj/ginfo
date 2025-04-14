@@ -17,6 +17,9 @@ final readonly class Sestatus implements ParserInterface
     {
     }
 
+    /**
+     * @return array{enabled: bool, mode: string|null, policy: string|null}|null
+     */
     public static function work(): ?array
     {
         $process = new Process(['sestatus'], null, ['LANG' => 'C']);
