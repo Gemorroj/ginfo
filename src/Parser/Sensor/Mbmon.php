@@ -1,8 +1,8 @@
 <?php
 
-namespace Ginfo\Parsers\Sensors;
+namespace Ginfo\Parser\Sensor;
 
-use Ginfo\Parsers\ParserInterface;
+use Ginfo\Parser\ParserInterface;
 
 final readonly class Mbmon implements ParserInterface
 {

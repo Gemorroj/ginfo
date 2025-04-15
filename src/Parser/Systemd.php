@@ -1,6 +1,6 @@
 <?php
 
-namespace Ginfo\Parsers;
+namespace Ginfo\Parser;
 
 use Ginfo\Info\Service;
 use Symfony\Component\Process\Exception\ProcessFailedException;

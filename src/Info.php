@@ -19,6 +19,10 @@ use Ginfo\Info\Service;
 use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
+use Ginfo\Info\WebServer\Angie;
+use Ginfo\Info\WebServer\Httpd;
+use Ginfo\Info\WebServer\HttpdStatus;
+use Ginfo\Info\WebServer\Nginx;
 use Ginfo\Os\OsInterface;
 
 final readonly class Info
@@ -196,6 +200,79 @@ final readonly class Info
     public function getSelinux(): ?Selinux
     {
         return $this->os->getSelinux();
+    }
+
+    /**
+     * Nginx status.
+     */
+    public function getNginx(?string $statusPage = null): ?Nginx
+    {
+        $data = Parser\WebServer\Nginx::work($statusPage);
+
+        return new Nginx(
+            $data['nginx_version'],
+            $data['crypto'],
+            $data['tls_sni'],
+            $data['args'],
+            $data['status'],
+        );
+    }
+
+    /**
+     * Angie status.
+     */
+    public function getAngie(?string $statusPage = null): ?Angie
+    {
+        $data = Parser\WebServer\Angie::work($statusPage);
+
+        return new Angie(
+            $data['angie_version'],
+            $data['nginx_version'],
+            $data['build_date'],
+            $data['crypto'],
+            $data['tls_sni'],
+            $data['args'],
+            $data['status'],
+        );
+    }
+
+    /**
+     * Apache httpd status.
+     */
+    public function getHttpd(?string $statusPage = null): ?Httpd
+    {
+        $data = Parser\WebServer\Httpd::work($statusPage);
+
+        if ($data['status']) {
+            $status = new HttpdStatus(
+                $data['status']['uptime'],
+                $data['status']['load'],
+                $data['status']['total_accesses'],
+                $data['status']['total_traffic'],
+                $data['status']['total_duration'],
+                $data['status']['requests_sec'],
+                $data['status']['b_second'],
+                $data['status']['b_request'],
+                $data['status']['ms_request'],
+                $data['status']['requests_currently_processed'],
+                $data['status']['workers_gracefully_restarting'],
+                $data['status']['idle_workers'],
+                $data['status']['ssl_cache_type'],
+                $data['status']['ssl_shared_memory'],
+            );
+        } else {
+            $status = null;
+        }
+
+        return new Httpd(
+            $data['version'],
+            $data['loaded'],
+            $data['mpm'],
+            $data['threaded'],
+            $data['forked'],
+            $data['args'],
+            $status
+        );
     }
 
     public function getPhp(): Php

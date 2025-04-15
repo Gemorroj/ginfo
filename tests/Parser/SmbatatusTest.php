@@ -1,8 +1,8 @@
 <?php
 
-namespace Ginfo\Tests\Parsers;
+namespace Ginfo\Tests\Parser;
 
-use Ginfo\Parsers\Smbstatus;
+use Ginfo\Parser\Smbstatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

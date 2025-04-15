@@ -1,8 +1,8 @@
 <?php
 
-namespace Ginfo\Parsers\Sensors;
+namespace Ginfo\Parser\Sensor;
 
-use Ginfo\Parsers\ParserInterface;
+use Ginfo\Parser\ParserInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;

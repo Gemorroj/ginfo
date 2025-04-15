@@ -1,6 +1,6 @@
 <?php
 
-namespace Ginfo\Exceptions;
+namespace Ginfo\Exception;
 
 final class FatalException extends \Exception
 {

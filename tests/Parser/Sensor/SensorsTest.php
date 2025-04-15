@@ -1,8 +1,8 @@
 <?php
 
-namespace Ginfo\Tests\Parsers\Sensors;
+namespace Ginfo\Tests\Parser\Sensor;
 
-use Ginfo\Parsers\Sensors\Sensors;
+use Ginfo\Parser\Sensor\Sensors;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

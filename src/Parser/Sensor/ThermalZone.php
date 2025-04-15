@@ -1,9 +1,9 @@
 <?php
 
-namespace Ginfo\Parsers\Sensors;
+namespace Ginfo\Parser\Sensor;
 
 use Ginfo\Common;
-use Ginfo\Parsers\ParserInterface;
+use Ginfo\Parser\ParserInterface;
 
 final readonly class ThermalZone implements ParserInterface
 {

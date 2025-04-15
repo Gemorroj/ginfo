@@ -3,7 +3,7 @@
 namespace Ginfo\Os;
 
 use Ginfo\Common;
-use Ginfo\Exceptions\FatalException;
+use Ginfo\Exception\FatalException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -21,23 +21,23 @@ use Ginfo\Info\Service;
 use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
-use Ginfo\Parsers\Apcaccess;
-use Ginfo\Parsers\Free;
-use Ginfo\Parsers\Hwpci;
-use Ginfo\Parsers\Lpstat;
-use Ginfo\Parsers\Mdadm;
-use Ginfo\Parsers\ProcCpuinfo;
-use Ginfo\Parsers\Sensors\Hddtemp;
-use Ginfo\Parsers\Sensors\Hwmon;
-use Ginfo\Parsers\Sensors\Ipmi;
-use Ginfo\Parsers\Sensors\Mbmon;
-use Ginfo\Parsers\Sensors\Nvidia;
-use Ginfo\Parsers\Sensors\Sensors;
-use Ginfo\Parsers\Sensors\ThermalZone;
-use Ginfo\Parsers\Sestatus;
-use Ginfo\Parsers\Smbstatus;
-use Ginfo\Parsers\Systemd;
-use Ginfo\Parsers\Who;
+use Ginfo\Parser\Apcaccess;
+use Ginfo\Parser\Free;
+use Ginfo\Parser\Hwpci;
+use Ginfo\Parser\Lpstat;
+use Ginfo\Parser\Mdadm;
+use Ginfo\Parser\ProcCpuinfo;
+use Ginfo\Parser\Sensor\Hddtemp;
+use Ginfo\Parser\Sensor\Hwmon;
+use Ginfo\Parser\Sensor\Ipmi;
+use Ginfo\Parser\Sensor\Mbmon;
+use Ginfo\Parser\Sensor\Nvidia;
+use Ginfo\Parser\Sensor\Sensors;
+use Ginfo\Parser\Sensor\ThermalZone;
+use Ginfo\Parser\Sestatus;
+use Ginfo\Parser\Smbstatus;
+use Ginfo\Parser\Systemd;
+use Ginfo\Parser\Who;
 
 class Linux implements OsInterface
 {
