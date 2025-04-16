@@ -38,7 +38,7 @@ final readonly class Nginx implements ParserInterface
             'args' => '',
             'status' => null,
         ];
-        $lines = \explode("\n", \trim($process->getOutput()));
+        $lines = \explode("\n", \trim($process->getErrorOutput())); // exactly use STDERR. see https://trac.nginx.org/nginx/ticket/592
         foreach ($lines as $line) {
             $line = \trim($line);
 
