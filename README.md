@@ -79,6 +79,7 @@ $info = $ginfo->getInfo();
 - Samba status (linux: need `smbstatus`)
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
+- Web-Servers (`angie`, `nginx`, `httpd`)
 
 
 ### System requirements:
