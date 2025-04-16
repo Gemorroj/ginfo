@@ -20,6 +20,8 @@ use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
 use Ginfo\Info\WebServer\Angie;
+use Ginfo\Info\WebServer\Caddy;
+use Ginfo\Info\WebServer\CaddyBuildInfo;
 use Ginfo\Info\WebServer\Httpd;
 use Ginfo\Info\WebServer\HttpdStatus;
 use Ginfo\Info\WebServer\Nginx;
@@ -208,6 +210,9 @@ final readonly class Info
     public function getNginx(?string $statusPage = null): ?Nginx
     {
         $data = Parser\WebServer\Nginx::work($statusPage);
+        if (!$data) {
+            return null;
+        }
 
         return new Nginx(
             $data['nginx_version'],
@@ -224,6 +229,9 @@ final readonly class Info
     public function getAngie(?string $statusPage = null): ?Angie
     {
         $data = Parser\WebServer\Angie::work($statusPage);
+        if (!$data) {
+            return null;
+        }
 
         return new Angie(
             $data['angie_version'],
@@ -242,6 +250,9 @@ final readonly class Info
     public function getHttpd(?string $statusPage = null): ?Httpd
     {
         $data = Parser\WebServer\Httpd::work($statusPage);
+        if (!$data) {
+            return null;
+        }
 
         if ($data['status']) {
             $status = new HttpdStatus(
@@ -272,6 +283,32 @@ final readonly class Info
             $data['forked'],
             $data['args'],
             $status
+        );
+    }
+
+    /**
+     * Caddy status.
+     */
+    public function getCaddy(?string $configPage = null): ?Caddy
+    {
+        $data = Parser\WebServer\Caddy::work($configPage);
+        if (!$data) {
+            return null;
+        }
+
+        $buildInfo = new CaddyBuildInfo(
+            $data['build_info']['go'],
+            $data['build_info']['path'],
+            $data['build_info']['mod'],
+            $data['build_info']['dep'],
+            $data['build_info']['build'],
+        );
+
+        return new Caddy(
+            $data['version'],
+            $buildInfo,
+            $data['list_modules'],
+            $data['config'],
         );
     }
 

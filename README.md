@@ -22,7 +22,7 @@
 - minimal php version 8.2
 - add selinux status info
 - add php info (basic, opcache, apcu)
-- add web-servers info (nginx, angie, httpd)
+- add web-servers info (nginx, angie, httpd, caddy)
 
 
 ### Installation:
@@ -56,6 +56,7 @@ $info = $ginfo->getInfo();
 \print_r($info->getNginx());
 \print_r($info->getAngie('http://localhost/status/'));
 \print_r($info->getHttpd());
+\print_r($info->getCaddy());
 ```
 
 
@@ -79,7 +80,7 @@ $info = $ginfo->getInfo();
 - Samba status (linux: need `smbstatus`)
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
-- Web-Servers (`angie`, `nginx`, `httpd`)
+- Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
 
 
 ### System requirements:
