@@ -5,31 +5,27 @@
 [![Continuous Integration](https://github.com/Gemorroj/ginfo/workflows/Continuous%20Integration/badge.svg)](https://github.com/Gemorroj/ginfo/actions?query=workflow%3A%22Continuous+Integration%22)
 
 
-### Ginfo is a:
- - Extensible PHP library to get extensive system stats programmatically from your PHP app
+### Requirements:
+- PHP >= 8.2
+- pcre extension
+- proc_open
+- Linux/Windows
 
-### Fork changes:
-- drop ui
-- drop internationalization
-- drop bsd* support (sorry, I will not be able to support)
-- drop dhcp3 support
-- drop dnsmasq support
-- drop php libvirt support
-- drop lxd support
-- no need `COM` extension on Windows, but need powershell
-- support Windows >= 10
-- adapt the code to modern standards
-- minimal php version 8.2
-- add selinux status info
-- add php info (basic, opcache, apcu)
-- add web-servers info (nginx, angie, httpd, caddy)
-- allow add custom parsers
+#### Windows
+- Windows >= 10
+- You need to have `powershell`
+- Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
+
+#### Linux
+- `/proc` and `/sys` mounted and readable by PHP
+- Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
 
 
 ### Installation:
 ```bash
 composer require gemorroj/ginfo
 ```
+
 
 ### Example:
 ```php
@@ -39,27 +35,27 @@ use Ginfo\Ginfo;
 $ginfo = new Ginfo();
 $info = $ginfo->getInfo();
 
-print_r($info->getGeneral());
-print_r($info->getPhp());
-print_r($info->getCpu());
-print_r($info->getMemory());
-print_r($info->getSoundCard());
-print_r($info->getUsb());
-print_r($info->getUps());
-print_r($info->getPci());
-print_r($info->getNetwork());
-print_r($info->getDisk());
-print_r($info->getBattery());
-print_r($info->getSensors());
-print_r($info->getProcesses());
-print_r($info->getServices());
-print_r($info->getPrinters());
-print_r($info->getSamba());
-print_r($info->getSelinux());
-print_r($info->getNginx());
-print_r($info->getAngie('http://localhost/status/'));
-print_r($info->getHttpd());
-print_r($info->getCaddy());
+print_r($info->getGeneral()); // kernel, uptime, virtualization, load, etc...
+print_r($info->getPhp()); // version, extensions, Opcache, FPM, APCU, etc...
+print_r($info->getCpu()); // cores, speed, cache, etc...
+print_r($info->getMemory()); // total memory, used, free, cached, swap, etc...
+print_r($info->getSoundCard()); // vendor, name
+print_r($info->getUsb()); // vendor, name, speed
+print_r($info->getUps()); // vendor, time, status, charge, etc...
+print_r($info->getPci()); // vendor, name
+print_r($info->getNetwork()); // name, speed, state, stats, etc...
+print_r($info->getDisk()); // mounts, drives, raids, size, type, stats, etc...
+print_r($info->getBattery()); // model, status, voltage, charge, etc...
+print_r($info->getSensors()); // name, value, unit, path
+print_r($info->getProcesses()); // name, pid, commandLine, memory, state, stats, etc...
+print_r($info->getServices()); // name, state, type, etc...
+print_r($info->getPrinters()); // name, enabled
+print_r($info->getSamba()); // files, services, connections, etc...
+print_r($info->getSelinux()); // enabled, mode, policy
+print_r($info->getNginx()); // version, status, etc...
+print_r($info->getAngie('http://localhost/status/')); // version, status, etc...
+print_r($info->getHttpd()); // version, status, etc...
+print_r($info->getCaddy()); // version, status, etc...
 ```
 
 ### Custom parser example:
@@ -126,17 +122,19 @@ print_r($data->getSomeData());
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
 
 
-### System requirements:
-- PHP >= 8.2
-- pcre extension
-- proc_open
-- Linux/Windows
-
-#### Windows
-- Windows >= 10
-- You need to have `powershell`
-- Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
-
-#### Linux
-- `/proc` and `/sys` mounted and readable by PHP
-- Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
+### Fork changes:
+- drop ui
+- drop internationalization
+- drop bsd* support (sorry, I will not be able to support)
+- drop dhcp3 support
+- drop dnsmasq support
+- drop php libvirt support
+- drop lxd support
+- no need `COM` extension on Windows, but need powershell
+- support Windows >= 10
+- adapt the code to modern standards
+- minimal php version 8.2
+- add selinux status info
+- add php info (basic, opcache, apcu)
+- add web-servers info (nginx, angie, httpd, caddy)
+- allow add custom parsers
