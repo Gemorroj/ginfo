@@ -5,6 +5,9 @@ namespace Ginfo;
 use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
+use Ginfo\Info\Database\Mysql;
+use Ginfo\Info\Database\MysqlPerformance;
+use Ginfo\Info\Database\MysqlSummary;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
@@ -333,6 +336,50 @@ final readonly class Info
             $buildInfo,
             $data['list_modules'],
             $data['config'],
+        );
+    }
+
+    /**
+     * Mysql status.
+     */
+    public function getMysql(\PDO $connection, bool $summary = true): ?Mysql
+    {
+        $data = (new Parser\Database\Mysql())->run($connection, $summary);
+        if (!$data) {
+            return null;
+        }
+
+        $performanceData = [];
+        foreach ($data['performance'] as $v) {
+            $performanceData[] = new MysqlPerformance(
+                $v['schema_name'],
+                $v['count'],
+                $v['avg_microsec'],
+            );
+        }
+
+        $summaryData = [];
+        foreach ($data['summary'] as $v) {
+            $summaryData[] = new MysqlSummary(
+                $v['host'],
+                $v['statement'],
+                $v['total'],
+                $v['total_latency'],
+                $v['max_latency'],
+                $v['lock_latency'],
+                $v['cpu_latency'],
+                $v['rows_sent'],
+                $v['rows_examined'],
+                $v['rows_affected'],
+                $v['full_scans'],
+            );
+        }
+
+        return new Mysql(
+            $data['global_status'],
+            $data['variables'],
+            $performanceData,
+            $summaryData,
         );
     }
 

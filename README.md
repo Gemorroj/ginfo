@@ -57,6 +57,7 @@ print_r($info->getNginx()); // version, status, etc...
 print_r($info->getAngie('http://localhost/status/')); // version, status, etc...
 print_r($info->getHttpd()); // version, status, etc...
 print_r($info->getCaddy()); // version, status, etc...
+print_r($info->getMysql(new \PDO('mysql:host=127.0.0.1', 'root', ''))); // variables, performance, status, etc...
 ```
 
 ### Custom parser example:
@@ -120,6 +121,7 @@ print_r($data->getSomeData());
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
+- Databases (`mysql`)
 
 
 ### Fork changes:
@@ -137,4 +139,5 @@ print_r($data->getSomeData());
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
+- add databases info (mysql)
 - allow add custom parsers

@@ -32,6 +32,7 @@
         "symfony/process": "^6.4||^7.0"
     },
     "require-dev": {
+        "ext-pdo": "*",
         "phpunit/phpunit": "^11.5.17",
         "phpstan/phpstan": "^2.1.11",
         "friendsofphp/php-cs-fixer": "^3.75.0"
