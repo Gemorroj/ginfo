@@ -9,18 +9,10 @@ use Symfony\Component\Process\Process;
 
 final readonly class Apcaccess implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{name: string, model: string, batteryVolts: float, batteryCharge: float, timeLeft: int, currentLoad: float, status: string}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['apcaccess', 'status'], null, ['LANG' => 'C']);
         try {

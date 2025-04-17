@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Printer
+final readonly class Printer implements InfoInterface
 {
     public function __construct(private string $name, private bool $enabled)
     {

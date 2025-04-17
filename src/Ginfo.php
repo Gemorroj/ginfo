@@ -19,9 +19,9 @@ final readonly class Ginfo
         }
     }
 
-    public function getInfo(): Info
+    public function getInfo(InfoParserInterface ...$customParser): Info
     {
-        return new Info($this->os);
+        return new Info($this->os, ...$customParser);
     }
 
     public function getOs(): OsInterface

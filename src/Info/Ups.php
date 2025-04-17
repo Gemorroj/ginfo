@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Ups
+final readonly class Ups implements InfoInterface
 {
     public function __construct(
         private string $name,

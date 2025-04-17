@@ -10,7 +10,7 @@ final class HttpdTest extends TestCase
     public function testHttpd(): void
     {
         // my local config
-        $data = Httpd::work('http://localhost/openserver/server-status');
+        $data = (new Httpd())->run('http://localhost/openserver/server-status');
         if (!$data) {
             self::markTestSkipped('Httpd is not found');
         }

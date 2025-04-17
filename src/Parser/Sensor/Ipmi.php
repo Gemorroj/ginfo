@@ -12,18 +12,10 @@ use Symfony\Component\Process\Process;
  */
 final readonly class Ipmi implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['ipmitool', 'sdr'], null, ['LANG' => 'C']);
         try {

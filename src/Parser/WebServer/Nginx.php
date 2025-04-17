@@ -9,20 +9,12 @@ use Symfony\Component\Process\Process;
 
 final readonly class Nginx implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://nginx.org/en/docs/http/ngx_http_api_module.html
      *
      * @return array{nginx_version: string, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public static function work(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null): ?array
     {
         $process = new Process(['nginx', '-V'], null, ['LANG' => 'C']);
         try {

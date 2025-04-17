@@ -2,7 +2,9 @@
 
 namespace Ginfo\Info\WebServer;
 
-final readonly class Httpd
+use Ginfo\Info\InfoInterface;
+
+final readonly class Httpd implements InfoInterface
 {
     /**
      * @param string[] $loaded

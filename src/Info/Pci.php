@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Pci
+final readonly class Pci implements InfoInterface
 {
     public function __construct(private string $vendor, private ?string $name = null)
     {

@@ -2,7 +2,9 @@
 
 namespace Ginfo\Info\WebServer;
 
-final readonly class Angie
+use Ginfo\Info\InfoInterface;
+
+final readonly class Angie implements InfoInterface
 {
     public function __construct(
         private string $angieVersion,

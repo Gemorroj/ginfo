@@ -5,7 +5,7 @@ namespace Ginfo\Info;
 use Ginfo\Info\Samba\Connection;
 use Ginfo\Info\Samba\File;
 
-final readonly class Samba
+final readonly class Samba implements InfoInterface
 {
     public function __construct(
         /** @var File[] */

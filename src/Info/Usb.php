@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Usb
+final readonly class Usb implements InfoInterface
 {
     public function __construct(private string $vendor, private ?string $name = null, private ?int $speed = null)
     {

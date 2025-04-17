@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Memory
+final readonly class Memory implements InfoInterface
 {
     public function __construct(
         private float $total,

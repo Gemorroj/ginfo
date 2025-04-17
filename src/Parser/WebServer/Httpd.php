@@ -9,14 +9,6 @@ use Symfony\Component\Process\Process;
 
 final readonly class Httpd implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
      *
@@ -45,7 +37,7 @@ final readonly class Httpd implements ParserInterface
      *     }|null
      * }|null
      */
-    public static function work(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null): ?array
     {
         $process = new Process(['httpd', '-V'], null, ['LANG' => 'C']);
         try {

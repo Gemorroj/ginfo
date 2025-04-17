@@ -4,7 +4,7 @@ namespace Ginfo\Info;
 
 use Ginfo\Info\Network\Stats;
 
-final readonly class Network
+final readonly class Network implements InfoInterface
 {
     public function __construct(
         private string $name,

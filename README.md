@@ -23,6 +23,7 @@
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
+- allow add custom parsers
 
 
 ### Installation:
@@ -33,30 +34,71 @@ composer require gemorroj/ginfo
 ### Example:
 ```php
 <?php
-$ginfo = new \Ginfo\Ginfo();
+use Ginfo\Ginfo;
+
+$ginfo = new Ginfo();
 $info = $ginfo->getInfo();
 
-\print_r($info->getGeneral());
-\print_r($info->getPhp());
-\print_r($info->getCpu());
-\print_r($info->getMemory());
-\print_r($info->getSoundCard());
-\print_r($info->getUsb());
-\print_r($info->getUps());
-\print_r($info->getPci());
-\print_r($info->getNetwork());
-\print_r($info->getDisk());
-\print_r($info->getBattery());
-\print_r($info->getSensors());
-\print_r($info->getProcesses());
-\print_r($info->getServices());
-\print_r($info->getPrinters());
-\print_r($info->getSamba());
-\print_r($info->getSelinux());
-\print_r($info->getNginx());
-\print_r($info->getAngie('http://localhost/status/'));
-\print_r($info->getHttpd());
-\print_r($info->getCaddy());
+print_r($info->getGeneral());
+print_r($info->getPhp());
+print_r($info->getCpu());
+print_r($info->getMemory());
+print_r($info->getSoundCard());
+print_r($info->getUsb());
+print_r($info->getUps());
+print_r($info->getPci());
+print_r($info->getNetwork());
+print_r($info->getDisk());
+print_r($info->getBattery());
+print_r($info->getSensors());
+print_r($info->getProcesses());
+print_r($info->getServices());
+print_r($info->getPrinters());
+print_r($info->getSamba());
+print_r($info->getSelinux());
+print_r($info->getNginx());
+print_r($info->getAngie('http://localhost/status/'));
+print_r($info->getHttpd());
+print_r($info->getCaddy());
+```
+
+### Custom parser example:
+```php
+<?php
+use Ginfo\Ginfo;
+use Ginfo\Info\InfoInterface;
+use Ginfo\InfoParserInterface;
+
+// class for parsed data
+final readonly class SwooleInfo implements InfoInterface
+{
+    public function __construct(private array $domeData)
+    {
+    }
+    
+    public function getSomeData(): array
+    {
+        return $this->someData;
+    }
+}
+
+// parser
+final readonly class SwooleParser implements InfoParserInterface
+{
+    public function run(): ?InfoInterface
+    {
+        // ... some job
+        $someData = ['some', 'data'];
+        return new SwooleInfo($someData);
+    }
+}
+
+$swooleParser = new SwooleParser();
+
+$ginfo = new Ginfo();
+$info = $ginfo->getInfo($swooleParser);
+$data = $info->getCustomParser(SwooleParser::class);
+print_r($data);
 ```
 
 

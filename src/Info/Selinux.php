@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Selinux
+final readonly class Selinux implements InfoInterface
 {
     public function __construct(
         private bool $enabled,

@@ -7,18 +7,10 @@ use Ginfo\Parser\ParserInterface;
 
 final readonly class Hwmon implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $paths = \glob('/sys/class/hwmon/hwmon*/{,device/}*_input', \GLOB_NOSORT | \GLOB_BRACE);
         if (!$paths) {

@@ -11,14 +11,6 @@ use Symfony\Component\Process\Process;
  */
 final readonly class Smbstatus implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{
      *     connections: array{pid: int|null, user: string|null, group: string|null, host: string|null, ip: string|null, protocolVersion: string|null, encryption: string|null, signing: string|null}[],
@@ -26,7 +18,7 @@ final readonly class Smbstatus implements ParserInterface
      *     files: array{pid: int|null, uid: int|null, denyMode: string|null, access: string|null, rw: string|null, oplock: string|null, sharePath: string|null, name: string|null, time: \DateTimeImmutable|null}[]
      * }|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['smbstatus'], null, ['LANG' => 'C']);
         try {

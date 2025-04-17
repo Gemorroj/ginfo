@@ -8,18 +8,10 @@ use Symfony\Component\Process\Process;
 
 final readonly class Who implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return string[]|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['who', '--count'], null, ['LANG' => 'C']);
         try {

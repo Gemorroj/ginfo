@@ -12,18 +12,10 @@ final class Hwpci implements ParserInterface
     public const MODE_PCI = 'pci';
     public const MODE_USB = 'usb';
 
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{vendor: string, device: string|null, speed: int|null}[]|null
      */
-    public static function work(string $mode = self::MODE_PCI): ?array
+    public function run(string $mode = self::MODE_PCI): ?array
     {
         if (self::MODE_PCI === $mode) {
             $pciIdsFile = Common::locateActualPath([

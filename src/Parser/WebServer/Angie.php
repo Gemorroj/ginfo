@@ -9,20 +9,12 @@ use Symfony\Component\Process\Process;
 
 final readonly class Angie implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://angie.software/angie/docs/configuration/modules/http/http_stub_status/
      *
      * @return array{angie_version: string, nginx_version: string, build_date: \DateTimeImmutable|null, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public static function work(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null): ?array
     {
         $process = new Process(['angie', '-V'], null, ['LANG' => 'C']);
         try {

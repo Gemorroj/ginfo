@@ -9,18 +9,10 @@ use Symfony\Component\Process\Process;
 
 final readonly class Systemd implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
      */
-    public static function work(string $type = Service::TYPE_SERVICE): ?array
+    public function run(string $type = Service::TYPE_SERVICE): ?array
     {
         return match ($type) {
             Service::TYPE_SERVICE => self::services(),

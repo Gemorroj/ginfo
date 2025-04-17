@@ -8,18 +8,10 @@ use Symfony\Component\Process\Process;
 
 final readonly class Free implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{total: float, used: float, free: float, shared: float|null, buffers: float|null, cached: float|null, available: float|null, swapTotal: float|null, swapUsed: float|null, swapFree: float|null}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['free', '-bw'], null, ['LANG' => 'C']);
         try {

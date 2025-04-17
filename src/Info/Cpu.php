@@ -4,7 +4,7 @@ namespace Ginfo\Info;
 
 use Ginfo\Info\Cpu\Processor;
 
-final readonly class Cpu
+final readonly class Cpu implements InfoInterface
 {
     public function __construct(
         private int $physical,

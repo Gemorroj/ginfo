@@ -2,7 +2,9 @@
 
 namespace Ginfo\Info\WebServer;
 
-final readonly class Caddy
+use Ginfo\Info\InfoInterface;
+
+final readonly class Caddy implements InfoInterface
 {
     /**
      * @param string[] $listModules

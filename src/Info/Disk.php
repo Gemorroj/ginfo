@@ -6,7 +6,7 @@ use Ginfo\Info\Disk\Drive;
 use Ginfo\Info\Disk\Mount;
 use Ginfo\Info\Disk\Raid;
 
-final readonly class Disk
+final readonly class Disk implements InfoInterface
 {
     public function __construct(
         /** @var Mount[] */

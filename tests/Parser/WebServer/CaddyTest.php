@@ -10,7 +10,7 @@ final class CaddyTest extends TestCase
     public function testCaddy(): void
     {
         // my local config
-        $data = Caddy::work('http://localhost:2019/config/');
+        $data = (new Caddy())->run('http://localhost:2019/config/');
         if (!$data) {
             self::markTestSkipped('Caddy is not found');
         }

@@ -9,18 +9,10 @@ use Symfony\Component\Process\Process;
 
 final readonly class Sestatus implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{enabled: bool, mode: string|null, policy: string|null}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $process = new Process(['sestatus'], null, ['LANG' => 'C']);
         try {

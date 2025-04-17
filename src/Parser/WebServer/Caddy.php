@@ -9,14 +9,6 @@ use Symfony\Component\Process\Process;
 
 final readonly class Caddy implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @param string|null $configPage uri for config page http://localhost:2019/config/ for example. see https://caddyserver.com/docs/api#get-configpath
      *
@@ -27,7 +19,7 @@ final readonly class Caddy implements ParserInterface
      *     config: array|null
      * }|null
      */
-    public static function work(?string $configPage = null): ?array
+    public function run(?string $configPage = null): ?array
     {
         $res = [
             'version' => '',

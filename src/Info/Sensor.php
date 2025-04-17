@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Sensor
+final readonly class Sensor implements InfoInterface
 {
     public function __construct(
         private string $name,

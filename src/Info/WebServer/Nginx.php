@@ -2,7 +2,9 @@
 
 namespace Ginfo\Info\WebServer;
 
-final readonly class Nginx
+use Ginfo\Info\InfoInterface;
+
+final readonly class Nginx implements InfoInterface
 {
     public function __construct(
         private string $nginxVersion,

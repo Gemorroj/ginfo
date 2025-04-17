@@ -6,18 +6,10 @@ use Ginfo\Common;
 
 final readonly class Mdadm implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{device: string, status: string, level: string, drives: array{path: string, state: string}[], size: float, count: array{active: int, total: int}, chart: string}[]|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         /*
 Personalities : [raid1]

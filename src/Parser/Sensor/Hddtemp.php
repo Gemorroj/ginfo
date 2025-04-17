@@ -6,18 +6,10 @@ use Ginfo\Parser\ParserInterface;
 
 final readonly class Hddtemp implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
-    public static function work(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
+    public function run(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
     {
         $data = self::getData($host, $port, $timeout);
         if (null === $data) {

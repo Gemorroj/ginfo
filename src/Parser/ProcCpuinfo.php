@@ -6,18 +6,10 @@ use Ginfo\Common;
 
 final readonly class ProcCpuinfo implements ParserInterface
 {
-    private function __construct()
-    {
-    }
-
-    private function __clone()
-    {
-    }
-
     /**
      * @return array{physical: int, cores: int, virtual: int, hyperThreading: bool, processors: array{model: string, speed: int, l2Cache: int|null, flags: string[]|null, architecture: string|null}[]}|null
      */
-    public static function work(): ?array
+    public function run(): ?array
     {
         $cpuInfo = Common::getContents('/proc/cpuinfo');
         if (null === $cpuInfo) {

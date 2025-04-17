@@ -2,10 +2,12 @@
 
 namespace Ginfo;
 
+use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
+use Ginfo\Info\InfoInterface;
 use Ginfo\Info\Memory;
 use Ginfo\Info\Network;
 use Ginfo\Info\Pci;
@@ -29,8 +31,30 @@ use Ginfo\Os\OsInterface;
 
 final readonly class Info
 {
-    public function __construct(private OsInterface $os)
+    /**
+     * @var InfoParserInterface[]
+     */
+    private array $customParsers;
+
+    public function __construct(private OsInterface $os, InfoParserInterface ...$customParser)
     {
+        $this->customParsers = $customParser;
+    }
+
+    /**
+     * @param class-string<InfoParserInterface> $parserName
+     *
+     * @throws UnknownParserException
+     */
+    public function getCustomParser(string $parserName): ?InfoInterface
+    {
+        foreach ($this->customParsers as $customParser) {
+            if ($customParser::class === $parserName) {
+                return $customParser->run();
+            }
+        }
+
+        throw new UnknownParserException('Unknown parser: '.$parserName);
     }
 
     /**
@@ -209,7 +233,7 @@ final readonly class Info
      */
     public function getNginx(?string $statusPage = null): ?Nginx
     {
-        $data = Parser\WebServer\Nginx::work($statusPage);
+        $data = (new Parser\WebServer\Nginx())->run($statusPage);
         if (!$data) {
             return null;
         }
@@ -228,7 +252,7 @@ final readonly class Info
      */
     public function getAngie(?string $statusPage = null): ?Angie
     {
-        $data = Parser\WebServer\Angie::work($statusPage);
+        $data = (new Parser\WebServer\Angie())->run($statusPage);
         if (!$data) {
             return null;
         }
@@ -249,7 +273,7 @@ final readonly class Info
      */
     public function getHttpd(?string $statusPage = null): ?Httpd
     {
-        $data = Parser\WebServer\Httpd::work($statusPage);
+        $data = (new Parser\WebServer\Httpd())->run($statusPage);
         if (!$data) {
             return null;
         }
@@ -291,7 +315,7 @@ final readonly class Info
      */
     public function getCaddy(?string $configPage = null): ?Caddy
     {
-        $data = Parser\WebServer\Caddy::work($configPage);
+        $data = (new Parser\WebServer\Caddy())->run($configPage);
         if (!$data) {
             return null;
         }

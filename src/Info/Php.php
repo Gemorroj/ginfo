@@ -6,7 +6,7 @@ use Ginfo\Info\Php\Apcu;
 use Ginfo\Info\Php\Fpm;
 use Ginfo\Info\Php\Opcache;
 
-final readonly class Php
+final readonly class Php implements InfoInterface
 {
     public function __construct(
         private string $version,

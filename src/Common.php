@@ -4,6 +4,9 @@ namespace Ginfo;
 
 use Ginfo\Info\Service;
 
+/**
+ * @internal
+ */
 final readonly class Common
 {
     /**

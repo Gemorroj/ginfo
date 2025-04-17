@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Battery
+final readonly class Battery implements InfoInterface
 {
     public function __construct(
         private string $model,

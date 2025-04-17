@@ -77,7 +77,7 @@ class Linux implements OsInterface
 
     public function getMemory(): ?Memory
     {
-        $data = Free::work();
+        $data = (new Free())->run();
         if (null === $data) {
             return null;
         }
@@ -97,7 +97,7 @@ class Linux implements OsInterface
 
     public function getCpu(): ?Cpu
     {
-        $cpuInfo = ProcCpuinfo::work();
+        $cpuInfo = (new ProcCpuinfo())->run();
         if (!$cpuInfo) {
             return null;
         }
@@ -233,7 +233,7 @@ class Linux implements OsInterface
 
     public function getRaids(): ?array
     {
-        $data = Mdadm::work();
+        $data = (new Mdadm())->run();
         if (null === $data) {
             return null;
         }
@@ -264,37 +264,37 @@ class Linux implements OsInterface
     {
         $return = [];
 
-        $hddtempRes = Hddtemp::work();
+        $hddtempRes = (new Hddtemp())->run();
         if ($hddtempRes) {
             $return = \array_merge($return, $hddtempRes);
         }
 
-        $mbmonRes = Mbmon::work();
+        $mbmonRes = (new Mbmon())->run();
         if ($mbmonRes) {
             $return = \array_merge($return, $mbmonRes);
         }
 
-        $sensorsRes = Sensors::work();
+        $sensorsRes = (new Sensors())->run();
         if ($sensorsRes) {
             $return = \array_merge($return, $sensorsRes);
         }
 
-        $hwmonRes = Hwmon::work();
+        $hwmonRes = (new Hwmon())->run();
         if ($hwmonRes) {
             $return = \array_merge($return, $hwmonRes);
         }
 
-        $thermalZoneRes = ThermalZone::work();
+        $thermalZoneRes = (new ThermalZone())->run();
         if ($thermalZoneRes) {
             $return = \array_merge($return, $thermalZoneRes);
         }
 
-        $ipmi = Ipmi::work();
+        $ipmi = (new Ipmi())->run();
         if ($ipmi) {
             $return = \array_merge($return, $ipmi);
         }
 
-        $nvidia = Nvidia::work();
+        $nvidia = (new Nvidia())->run();
         if ($nvidia) {
             $return = \array_merge($return, $nvidia);
         }
@@ -331,7 +331,7 @@ class Linux implements OsInterface
 
     public function getUsb(): ?array
     {
-        $data = Hwpci::work(Hwpci::MODE_USB);
+        $data = (new Hwpci())->run(Hwpci::MODE_USB);
         if (null === $data) {
             return null;
         }
@@ -346,7 +346,7 @@ class Linux implements OsInterface
 
     public function getPci(): ?array
     {
-        $data = Hwpci::work(Hwpci::MODE_PCI);
+        $data = (new Hwpci())->run(Hwpci::MODE_PCI);
         if (null === $data) {
             return null;
         }
@@ -566,8 +566,9 @@ class Linux implements OsInterface
 
     public function getServices(): ?array
     {
-        $services = Systemd::work(Service::TYPE_SERVICE);
-        $targets = Systemd::work(Service::TYPE_TARGET);
+        $systemd = new Systemd();
+        $services = $systemd->run(Service::TYPE_SERVICE);
+        $targets = $systemd->run(Service::TYPE_TARGET);
         if (null === $services && null === $targets) {
             return null;
         }
@@ -627,7 +628,7 @@ class Linux implements OsInterface
 
     public function getLoggedUsers(): ?array
     {
-        return Who::work();
+        return (new Who())->run();
     }
 
     public function getVirtualization(): ?string
@@ -732,7 +733,7 @@ class Linux implements OsInterface
 
     public function getUps(): ?Ups
     {
-        $ups = Apcaccess::work();
+        $ups = (new Apcaccess())->run();
         if (null === $ups) {
             return null;
         }
@@ -742,7 +743,7 @@ class Linux implements OsInterface
 
     public function getPrinters(): ?array
     {
-        $printers = Lpstat::work();
+        $printers = (new Lpstat())->run();
         if (null === $printers) {
             return null;
         }
@@ -757,7 +758,7 @@ class Linux implements OsInterface
 
     public function getSamba(): ?Samba
     {
-        $data = Smbstatus::work();
+        $data = (new Smbstatus())->run();
         if (null === $data) {
             return null;
         }
@@ -808,7 +809,7 @@ class Linux implements OsInterface
 
     public function getSelinux(): ?Selinux
     {
-        $data = Sestatus::work();
+        $data = (new Sestatus())->run();
         if (null === $data) {
             return null;
         }

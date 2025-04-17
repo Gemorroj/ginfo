@@ -4,5 +4,5 @@ namespace Ginfo\Parser;
 
 interface ParserInterface
 {
-    public static function work(): ?array;
+    public function run(): ?array;
 }

@@ -10,7 +10,7 @@ final class AngieTest extends TestCase
     public function testAngie(): void
     {
         // my local config
-        $data = Angie::work('http://localhost/status/');
+        $data = (new Angie())->run('http://localhost/status/');
         if (!$data) {
             self::markTestSkipped('Angie is not found');
         }

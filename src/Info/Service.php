@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Service
+final readonly class Service implements InfoInterface
 {
     public const TYPE_SERVICE = 'service';
     public const TYPE_TARGET = 'target';

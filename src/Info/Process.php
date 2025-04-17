@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class Process
+final readonly class Process implements InfoInterface
 {
     public function __construct(
         private string $name,

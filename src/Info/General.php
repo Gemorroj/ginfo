@@ -2,7 +2,7 @@
 
 namespace Ginfo\Info;
 
-final readonly class General
+final readonly class General implements InfoInterface
 {
     public function __construct(
         private \DateTimeImmutable $date,
