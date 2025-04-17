@@ -15,9 +15,9 @@ final readonly class Ipmi implements ParserInterface
     /**
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['ipmitool', 'sdr'], null, ['LANG' => 'C']);
+        $process = new Process(['ipmitool', 'sdr'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

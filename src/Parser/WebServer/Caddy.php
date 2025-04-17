@@ -19,7 +19,7 @@ final readonly class Caddy implements ParserInterface
      *     config: array|null
      * }|null
      */
-    public function run(?string $configPage = null): ?array
+    public function run(?string $configPage = null, ?string $cwd = null): ?array
     {
         $res = [
             'version' => '',
@@ -29,7 +29,7 @@ final readonly class Caddy implements ParserInterface
         ];
 
         // version
-        $process = new Process(['caddy', 'version'], null, ['LANG' => 'C']);
+        $process = new Process(['caddy', 'version'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -38,7 +38,7 @@ final readonly class Caddy implements ParserInterface
         $res['version'] = \trim($process->getOutput());
 
         // build-info
-        $process = new Process(['caddy', 'build-info'], null, ['LANG' => 'C']);
+        $process = new Process(['caddy', 'build-info'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -58,7 +58,7 @@ final readonly class Caddy implements ParserInterface
         }
 
         // list-modules
-        $process = new Process(['caddy', 'list-modules'], null, ['LANG' => 'C']);
+        $process = new Process(['caddy', 'list-modules'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

@@ -14,9 +14,9 @@ final readonly class Lpstat implements ParserInterface
     /**
      * @return array{name: string, enabled: bool}[]|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['lpstat', '-p'], null, ['LANG' => 'C']);
+        $process = new Process(['lpstat', '-p'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

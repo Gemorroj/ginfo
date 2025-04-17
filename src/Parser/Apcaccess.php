@@ -12,9 +12,9 @@ final readonly class Apcaccess implements ParserInterface
     /**
      * @return array{name: string, model: string, batteryVolts: float, batteryCharge: float, timeLeft: int, currentLoad: float, status: string}|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['apcaccess', 'status'], null, ['LANG' => 'C']);
+        $process = new Process(['apcaccess', 'status'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

@@ -15,9 +15,9 @@ final readonly class Nvidia implements ParserInterface
     /**
      * @return array{path: string|null, name: string, value: float, unit: string}[]|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['nvidia-smi', '-L'], null, ['LANG' => 'C']);
+        $process = new Process(['nvidia-smi', '-L'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -35,7 +35,7 @@ final readonly class Nvidia implements ParserInterface
             $id = $card[1];
             $name = \trim($card[2]);
 
-            $processCard = new Process(['nvidia-smi', 'dmon', '-s', 'p', '-c', '1', '-i', $id], null, ['LANG' => 'C']);
+            $processCard = new Process(['nvidia-smi', 'dmon', '-s', 'p', '-c', '1', '-i', $id], $cwd, ['LANG' => 'C']);
             $processCard->run();
             if (!$processCard->isSuccessful()) {
                 continue;

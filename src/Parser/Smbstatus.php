@@ -18,9 +18,9 @@ final readonly class Smbstatus implements ParserInterface
      *     files: array{pid: int|null, uid: int|null, denyMode: string|null, access: string|null, rw: string|null, oplock: string|null, sharePath: string|null, name: string|null, time: \DateTimeImmutable|null}[]
      * }|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['smbstatus'], null, ['LANG' => 'C']);
+        $process = new Process(['smbstatus'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

@@ -11,9 +11,9 @@ final readonly class Who implements ParserInterface
     /**
      * @return string[]|null
      */
-    public function run(): ?array
+    public function run(?string $cwd = null): ?array
     {
-        $process = new Process(['who', '--count'], null, ['LANG' => 'C']);
+        $process = new Process(['who', '--count'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

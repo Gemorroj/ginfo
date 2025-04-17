@@ -14,9 +14,9 @@ final readonly class Angie implements ParserInterface
      *
      * @return array{angie_version: string, nginx_version: string, build_date: \DateTimeImmutable|null, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public function run(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null): ?array
     {
-        $process = new Process(['angie', '-V'], null, ['LANG' => 'C']);
+        $process = new Process(['angie', '-V'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

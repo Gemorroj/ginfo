@@ -37,9 +37,9 @@ final readonly class Httpd implements ParserInterface
      *     }|null
      * }|null
      */
-    public function run(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null): ?array
     {
-        $process = new Process(['httpd', '-V'], null, ['LANG' => 'C']);
+        $process = new Process(['httpd', '-V'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

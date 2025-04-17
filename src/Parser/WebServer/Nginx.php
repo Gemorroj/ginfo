@@ -14,9 +14,9 @@ final readonly class Nginx implements ParserInterface
      *
      * @return array{nginx_version: string, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public function run(?string $statusPage = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null): ?array
     {
-        $process = new Process(['nginx', '-V'], null, ['LANG' => 'C']);
+        $process = new Process(['nginx', '-V'], $cwd, ['LANG' => 'C']);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
