@@ -97,8 +97,9 @@ $swooleParser = new SwooleParser();
 
 $ginfo = new Ginfo();
 $info = $ginfo->getInfo($swooleParser);
+/** @var SwooleInfo $data */
 $data = $info->getCustomParser(SwooleParser::class);
-print_r($data);
+print_r($data->getSomeData());
 ```
 
 
