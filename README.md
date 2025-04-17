@@ -69,13 +69,13 @@ use Ginfo\InfoParserInterface;
 // class for parsed data
 final readonly class SwooleInfo implements InfoInterface
 {
-    public function __construct(private array $domeData)
+    public function __construct(private array $stats)
     {
     }
     
-    public function getSomeData(): array
+    public function getStats(): array
     {
-        return $this->someData;
+        return $this->stats;
     }
 }
 
@@ -84,9 +84,8 @@ final readonly class SwooleParser implements InfoParserInterface
 {
     public function run(): ?InfoInterface
     {
-        // ... some job
-        $someData = ['some', 'data'];
-        return new SwooleInfo($someData);
+        $stats = \app('Swoole\Http\Server')->stats(); // laravel
+        return new SwooleInfo($stats);
     }
 }
 
