@@ -11,14 +11,15 @@
 - proc_open
 - Linux/Windows
 
+#### Linux
+- `/proc` and `/sys` mounted and readable by PHP
+- Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
+
 #### Windows
 - Windows >= 10
 - You need to have `powershell`
 - Allow execute ps1 scripts `Set-ExecutionPolicy RemoteSigned –Force`
-
-#### Linux
-- `/proc` and `/sys` mounted and readable by PHP
-- Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
+- Some functions are not implemented
 
 
 ### Installation:
