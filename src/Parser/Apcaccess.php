@@ -27,14 +27,22 @@ final readonly class Apcaccess implements ParserInterface
         }
 
         $block = Common::parseKeyValueBlock($result);
+        if (!isset($block['UPSNAME'])) {
+            return null;
+        }
+
+        $batteryVolts = \trim(\str_ends_with($block['BATTV'], 'Volts') ? \substr($block['BATTV'], 0, \strlen('Volts')) : $block['BATTV']);
+        $batteryCharge = \trim(\str_ends_with($block['BCHARGE'], 'Percent') ? \substr($block['BCHARGE'], 0, \strlen('Percent')) : $block['BCHARGE']);
+        $timeLeft = \trim(\str_ends_with($block['Minutes'], 'Minutes') ? \substr($block['Minutes'], 0, \strlen('Minutes')) : $block['Minutes']);
+        $currentLoad = \trim(\str_ends_with($block['LOADPCT'], 'Percent') ? \substr($block['LOADPCT'], 0, \strlen('Percent')) : $block['LOADPCT']);
 
         return [
             'name' => $block['UPSNAME'],
             'model' => $block['MODEL'],
-            'batteryVolts' => (float) \rtrim($block['BATTV'], ' Volts'),
-            'batteryCharge' => (float) \rtrim($block['BCHARGE'], ' Percent'),
-            'timeLeft' => (int) \rtrim($block['Minutes'], ' Minutes') * 60,
-            'currentLoad' => (float) \rtrim($block['LOADPCT'], ' Percent'),
+            'batteryVolts' => (float) $batteryVolts,
+            'batteryCharge' => (float) $batteryCharge,
+            'timeLeft' => (int) $timeLeft * 60,
+            'currentLoad' => (float) $currentLoad,
             'status' => $block['STATUS'],
         ];
     }

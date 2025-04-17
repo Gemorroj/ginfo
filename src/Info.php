@@ -231,9 +231,9 @@ final readonly class Info
     /**
      * Nginx status.
      */
-    public function getNginx(?string $statusPage = null): ?Nginx
+    public function getNginx(?string $statusPage = null, ?string $cwd = null): ?Nginx
     {
-        $data = (new Parser\WebServer\Nginx())->run($statusPage);
+        $data = (new Parser\WebServer\Nginx())->run($statusPage, $cwd);
         if (!$data) {
             return null;
         }
@@ -250,9 +250,9 @@ final readonly class Info
     /**
      * Angie status.
      */
-    public function getAngie(?string $statusPage = null): ?Angie
+    public function getAngie(?string $statusPage = null, ?string $cwd = null): ?Angie
     {
-        $data = (new Parser\WebServer\Angie())->run($statusPage);
+        $data = (new Parser\WebServer\Angie())->run($statusPage, $cwd);
         if (!$data) {
             return null;
         }
@@ -271,9 +271,9 @@ final readonly class Info
     /**
      * Apache httpd status.
      */
-    public function getHttpd(?string $statusPage = null): ?Httpd
+    public function getHttpd(?string $statusPage = null, ?string $cwd = null): ?Httpd
     {
-        $data = (new Parser\WebServer\Httpd())->run($statusPage);
+        $data = (new Parser\WebServer\Httpd())->run($statusPage, $cwd);
         if (!$data) {
             return null;
         }
@@ -313,9 +313,9 @@ final readonly class Info
     /**
      * Caddy status.
      */
-    public function getCaddy(?string $configPage = null): ?Caddy
+    public function getCaddy(?string $configPage = null, ?string $cwd = null): ?Caddy
     {
-        $data = (new Parser\WebServer\Caddy())->run($configPage);
+        $data = (new Parser\WebServer\Caddy())->run($configPage, $cwd);
         if (!$data) {
             return null;
         }

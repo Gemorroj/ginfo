@@ -91,7 +91,7 @@ final readonly class Common
     }
 
     /**
-     * @return string[]
+     * @return array<string, string>
      */
     public static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
     {

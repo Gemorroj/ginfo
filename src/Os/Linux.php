@@ -75,9 +75,9 @@ class Linux implements OsInterface
         return \php_uname('n');
     }
 
-    public function getMemory(): ?Memory
+    public function getMemory(?string $cwd = null): ?Memory
     {
-        $data = (new Free())->run();
+        $data = (new Free())->run($cwd);
         if (null === $data) {
             return null;
         }
@@ -260,7 +260,7 @@ class Linux implements OsInterface
         return $out;
     }
 
-    public function getSensors(): ?array
+    public function getSensors(?string $cwd = null): ?array
     {
         $return = [];
 
@@ -274,7 +274,7 @@ class Linux implements OsInterface
             $return = \array_merge($return, $mbmonRes);
         }
 
-        $sensorsRes = (new Sensors())->run();
+        $sensorsRes = (new Sensors())->run($cwd);
         if ($sensorsRes) {
             $return = \array_merge($return, $sensorsRes);
         }
@@ -289,12 +289,12 @@ class Linux implements OsInterface
             $return = \array_merge($return, $thermalZoneRes);
         }
 
-        $ipmi = (new Ipmi())->run();
+        $ipmi = (new Ipmi())->run($cwd);
         if ($ipmi) {
             $return = \array_merge($return, $ipmi);
         }
 
-        $nvidia = (new Nvidia())->run();
+        $nvidia = (new Nvidia())->run($cwd);
         if ($nvidia) {
             $return = \array_merge($return, $nvidia);
         }
@@ -564,11 +564,11 @@ class Linux implements OsInterface
         return $result;
     }
 
-    public function getServices(): ?array
+    public function getServices(?string $cwd = null): ?array
     {
         $systemd = new Systemd();
-        $services = $systemd->run(Service::TYPE_SERVICE);
-        $targets = $systemd->run(Service::TYPE_TARGET);
+        $services = $systemd->run(Service::TYPE_SERVICE, $cwd);
+        $targets = $systemd->run(Service::TYPE_TARGET, $cwd);
         if (null === $services && null === $targets) {
             return null;
         }
@@ -626,9 +626,9 @@ class Linux implements OsInterface
         return \PHP_OS;
     }
 
-    public function getLoggedUsers(): ?array
+    public function getLoggedUsers(?string $cwd = null): ?array
     {
-        return (new Who())->run();
+        return (new Who())->run($cwd);
     }
 
     public function getVirtualization(): ?string
@@ -731,9 +731,9 @@ class Linux implements OsInterface
         return $infoStr;
     }
 
-    public function getUps(): ?Ups
+    public function getUps(?string $cwd = null): ?Ups
     {
-        $ups = (new Apcaccess())->run();
+        $ups = (new Apcaccess())->run($cwd);
         if (null === $ups) {
             return null;
         }
@@ -741,9 +741,9 @@ class Linux implements OsInterface
         return new Ups($ups['name'], $ups['model'], $ups['batteryVolts'], $ups['batteryCharge'], $ups['timeLeft'], $ups['currentLoad'], $ups['status']);
     }
 
-    public function getPrinters(): ?array
+    public function getPrinters(?string $cwd = null): ?array
     {
-        $printers = (new Lpstat())->run();
+        $printers = (new Lpstat())->run($cwd);
         if (null === $printers) {
             return null;
         }
@@ -756,9 +756,9 @@ class Linux implements OsInterface
         return $out;
     }
 
-    public function getSamba(): ?Samba
+    public function getSamba(?string $cwd = null): ?Samba
     {
-        $data = (new Smbstatus())->run();
+        $data = (new Smbstatus())->run($cwd);
         if (null === $data) {
             return null;
         }
@@ -807,9 +807,9 @@ class Linux implements OsInterface
         return new Samba($files, $services, $connections);
     }
 
-    public function getSelinux(): ?Selinux
+    public function getSelinux(?string $cwd = null): ?Selinux
     {
-        $data = (new Sestatus())->run();
+        $data = (new Sestatus())->run($cwd);
         if (null === $data) {
             return null;
         }
