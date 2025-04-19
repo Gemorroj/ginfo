@@ -6,8 +6,9 @@ use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Database\Mysql;
-use Ginfo\Info\Database\MysqlPerformance;
-use Ginfo\Info\Database\MysqlSummary;
+use Ginfo\Info\Database\MysqlCountQueries;
+use Ginfo\Info\Database\MysqlDataLength;
+use Ginfo\Info\Database\MysqlPerformance95thPercentile;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
@@ -342,44 +343,66 @@ final readonly class Info
     /**
      * Mysql status.
      */
-    public function getMysql(\PDO $connection, bool $summary = true): ?Mysql
+    public function getMysql(\PDO $connection): ?Mysql
     {
-        $data = (new Parser\Database\Mysql())->run($connection, $summary);
+        $data = (new Parser\Database\Mysql())->run($connection);
         if (!$data) {
             return null;
         }
 
-        $performanceData = [];
-        foreach ($data['performance'] as $v) {
-            $performanceData[] = new MysqlPerformance(
-                $v['schema_name'],
-                $v['count'],
-                $v['avg_microsec'],
+        $performance95thPercentile = [];
+        foreach ($data['performance_95th_percentile'] as $v) {
+            $performance95thPercentile[] = new MysqlPerformance95thPercentile(
+                $v['query'],
+                $v['db'],
+                $v['full_scan'],
+                $v['exec_count'],
+                $v['err_count'],
+                $v['warn_count'],
+                $v['total_latency'],
+                $v['max_latency'],
+                $v['avg_latency'],
+                $v['rows_sent'],
+                $v['rows_sent_avg'],
+                $v['rows_examined'],
+                $v['rows_examined_avg'],
+                $v['first_seen'],
+                $v['last_seen'],
+                $v['digest'],
             );
         }
 
-        $summaryData = [];
-        foreach ($data['summary'] as $v) {
-            $summaryData[] = new MysqlSummary(
-                $v['host'],
-                $v['statement'],
-                $v['total'],
-                $v['total_latency'],
-                $v['max_latency'],
-                $v['lock_latency'],
-                $v['cpu_latency'],
-                $v['rows_sent'],
-                $v['rows_examined'],
-                $v['rows_affected'],
-                $v['full_scans'],
+        $countQueries = [];
+        foreach ($data['count_queries'] as $v) {
+            $countQueries[] = new MysqlCountQueries(
+                $v['object_type'],
+                $v['object_schema'],
+                $v['object_name'],
+                $v['count_read'],
+                $v['count_write'],
+                $v['count_fetch'],
+                $v['count_insert'],
+                $v['count_update'],
+                $v['count_delete'],
+            );
+        }
+
+        $dataLength = [];
+        foreach ($data['data_length'] as $v) {
+            $dataLength[] = new MysqlDataLength(
+                $v['table_schema'],
+                $v['table_name'],
+                $v['data_length'],
+                $v['index_length'],
             );
         }
 
         return new Mysql(
             $data['global_status'],
             $data['variables'],
-            $performanceData,
-            $summaryData,
+            $performance95thPercentile,
+            $countQueries,
+            $dataLength,
         );
     }
 
