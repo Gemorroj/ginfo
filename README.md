@@ -121,7 +121,7 @@ print_r($data->getSomeData());
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
-- Databases (`mysql`)
+- Databases (`mysql/mariadb`)
 
 
 ### Fork changes:
@@ -139,5 +139,5 @@ print_r($data->getSomeData());
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
-- add databases info (mysql)
+- add databases info (mysql/mariadb)
 - allow add custom parsers
