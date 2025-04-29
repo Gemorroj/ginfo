@@ -22,11 +22,17 @@ final readonly class Mysql implements InfoInterface
     ) {
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getGlobalStatus(): array
     {
         return $this->globalStatus;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getVariables(): array
     {
         return $this->variables;

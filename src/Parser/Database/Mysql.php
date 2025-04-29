@@ -56,93 +56,114 @@ final readonly class Mysql implements ParserInterface
             'count_queries' => [],
             'data_length' => [],
         ];
-        $query = $connection->query('SHOW GLOBAL STATUS');
-        if ($query) {
-            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $result['global_status'][$row['Variable_name']] = $row['Value'];
-            }
-        }
-        $query = $connection->query('SHOW VARIABLES');
-        if ($query) {
-            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $result['variables'][$row['Variable_name']] = $row['Value'];
-            }
-        }
 
-        $query = $connection->query('SELECT * FROM sys.statements_with_runtimes_in_95th_percentile');
-        if ($query) {
-            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $totalLatency = \explode(' ', $row['total_latency']);
-                $maxLatency = \explode(' ', $row['max_latency']);
-                $avgLatency = \explode(' ', $row['avg_latency']);
-
-                $result['performance_95th_percentile'][] = [
-                    'query' => $row['query'],
-                    'db' => $row['db'],
-                    'full_scan' => (bool) $row['full_scan'],
-                    'exec_count' => self::convertToNumber($row['exec_count']),
-                    'err_count' => self::convertToNumber($row['err_count']),
-                    'warn_count' => self::convertToNumber($row['warn_count']),
-                    'total_latency' => [
-                        'value' => (float) $totalLatency[0],
-                        'unit' => \trim($totalLatency[1]),
-                    ],
-                    'max_latency' => [
-                        'value' => (float) $maxLatency[0],
-                        'unit' => \trim($maxLatency[1]),
-                    ],
-                    'avg_latency' => [
-                        'value' => (float) $avgLatency[0],
-                        'unit' => \trim($avgLatency[1]),
-                    ],
-                    'rows_sent' => self::convertToNumber($row['rows_sent']),
-                    'rows_sent_avg' => self::convertToNumber($row['rows_sent_avg']),
-                    'rows_examined' => self::convertToNumber($row['rows_examined']),
-                    'rows_examined_avg' => self::convertToNumber($row['rows_examined_avg']),
-                    'first_seen' => new \DateTimeImmutable($row['first_seen']),
-                    'last_seen' => new \DateTimeImmutable($row['last_seen']),
-                    'digest' => $row['digest'],
-                ];
+        try {
+            $query = $connection->query('SHOW GLOBAL STATUS');
+            if ($query) {
+                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $result['global_status'][$row['Variable_name']] = $row['Value'];
+                }
             }
+        } catch (\Exception) {
+            // ignore
+        }
+        try {
+            $query = $connection->query('SHOW VARIABLES');
+            if ($query) {
+                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $result['variables'][$row['Variable_name']] = $row['Value'];
+                }
+            }
+        } catch (\Exception) {
+            // ignore
         }
 
-        $query = $connection->query('
-            SELECT object_type, object_schema, object_name, count_read, count_write, count_fetch, count_insert, count_update, count_delete
-            FROM performance_schema.table_io_waits_summary_by_table
-            WHERE count_star > 0
-            ORDER BY count_star DESC
-        ');
-        if ($query) {
-            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $result['count_queries'][] = [
-                    'object_type' => $row['object_type'],
-                    'object_schema' => $row['object_schema'],
-                    'object_name' => $row['object_name'],
-                    'count_read' => self::convertToNumber($row['count_read']),
-                    'count_write' => self::convertToNumber($row['count_write']),
-                    'count_fetch' => self::convertToNumber($row['count_fetch']),
-                    'count_insert' => self::convertToNumber($row['count_insert']),
-                    'count_update' => self::convertToNumber($row['count_update']),
-                    'count_delete' => self::convertToNumber($row['count_delete']),
-                ];
+        try {
+            $query = $connection->query('SELECT * FROM sys.statements_with_runtimes_in_95th_percentile');
+            if ($query) {
+                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $totalLatency = \explode(' ', $row['total_latency']);
+                    $maxLatency = \explode(' ', $row['max_latency']);
+                    $avgLatency = \explode(' ', $row['avg_latency']);
+
+                    $result['performance_95th_percentile'][] = [
+                        'query' => $row['query'],
+                        'db' => $row['db'],
+                        'full_scan' => (bool) $row['full_scan'],
+                        'exec_count' => self::convertToNumber($row['exec_count']),
+                        'err_count' => self::convertToNumber($row['err_count']),
+                        'warn_count' => self::convertToNumber($row['warn_count']),
+                        'total_latency' => [
+                            'value' => (float) $totalLatency[0],
+                            'unit' => \trim($totalLatency[1]),
+                        ],
+                        'max_latency' => [
+                            'value' => (float) $maxLatency[0],
+                            'unit' => \trim($maxLatency[1]),
+                        ],
+                        'avg_latency' => [
+                            'value' => (float) $avgLatency[0],
+                            'unit' => \trim($avgLatency[1]),
+                        ],
+                        'rows_sent' => self::convertToNumber($row['rows_sent']),
+                        'rows_sent_avg' => self::convertToNumber($row['rows_sent_avg']),
+                        'rows_examined' => self::convertToNumber($row['rows_examined']),
+                        'rows_examined_avg' => self::convertToNumber($row['rows_examined_avg']),
+                        'first_seen' => new \DateTimeImmutable($row['first_seen']),
+                        'last_seen' => new \DateTimeImmutable($row['last_seen']),
+                        'digest' => $row['digest'],
+                    ];
+                }
             }
+        } catch (\Exception) {
+            // ignore
         }
 
-        $query = $connection->query('
-            SELECT table_schema AS `table_schema`, table_name AS `table_name`, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
-            FROM information_schema.tables
-            GROUP BY table_schema, table_name
-            ORDER BY `data_length` DESC
-        ');
-        if ($query) {
-            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $result['data_length'][] = [
-                    'table_schema' => $row['table_schema'],
-                    'table_name' => $row['table_name'],
-                    'data_length' => self::convertToNumber($row['data_length']),
-                    'index_length' => self::convertToNumber($row['index_length']),
-                ];
+        try {
+            $query = $connection->query('
+                SELECT object_type, object_schema, object_name, count_read, count_write, count_fetch, count_insert, count_update, count_delete
+                FROM performance_schema.table_io_waits_summary_by_table
+                WHERE count_star > 0
+                ORDER BY count_star DESC
+            ');
+            if ($query) {
+                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $result['count_queries'][] = [
+                        'object_type' => $row['object_type'],
+                        'object_schema' => $row['object_schema'],
+                        'object_name' => $row['object_name'],
+                        'count_read' => self::convertToNumber($row['count_read']),
+                        'count_write' => self::convertToNumber($row['count_write']),
+                        'count_fetch' => self::convertToNumber($row['count_fetch']),
+                        'count_insert' => self::convertToNumber($row['count_insert']),
+                        'count_update' => self::convertToNumber($row['count_update']),
+                        'count_delete' => self::convertToNumber($row['count_delete']),
+                    ];
+                }
             }
+        } catch (\Exception) {
+            // ignore
+        }
+
+        try {
+            $query = $connection->query('
+                SELECT table_schema AS `table_schema`, table_name AS `table_name`, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
+                FROM information_schema.tables
+                GROUP BY table_schema, table_name
+                ORDER BY `data_length` DESC
+            ');
+            if ($query) {
+                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                    $result['data_length'][] = [
+                        'table_schema' => $row['table_schema'],
+                        'table_name' => $row['table_name'],
+                        'data_length' => self::convertToNumber($row['data_length']),
+                        'index_length' => self::convertToNumber($row['index_length']),
+                    ];
+                }
+            }
+        } catch (\Exception) {
+            // ignore
         }
 
         return $result;
@@ -154,6 +175,9 @@ final readonly class Mysql implements ParserInterface
             return null;
         }
         if ($number > \PHP_INT_MAX) {
+            return (float) $number;
+        }
+        if ((string) (int) $number !== $number) {
             return (float) $number;
         }
 

@@ -9,6 +9,12 @@ use Ginfo\Info\Database\Mysql;
 use Ginfo\Info\Database\MysqlCountQueries;
 use Ginfo\Info\Database\MysqlDataLength;
 use Ginfo\Info\Database\MysqlPerformance95thPercentile;
+use Ginfo\Info\Database\Postgres;
+use Ginfo\Info\Database\PostgresPgStatActivity;
+use Ginfo\Info\Database\PostgresPgStatAllIndexes;
+use Ginfo\Info\Database\PostgresPgStatAllTables;
+use Ginfo\Info\Database\PostgresPgStatDatabase;
+use Ginfo\Info\Database\PostgresPgStatStatements;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
@@ -403,6 +409,190 @@ final readonly class Info
             $performance95thPercentile,
             $countQueries,
             $dataLength,
+        );
+    }
+
+    /**
+     * Postgres status.
+     */
+    public function getPostgres(\PDO $connection): ?Postgres
+    {
+        $data = (new Parser\Database\Postgres())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        $pgStatActivity = [];
+        foreach ($data['pg_stat_activity'] as $v) {
+            $pgStatActivity[] = new PostgresPgStatActivity(
+                $v['datid'],
+                $v['datname'],
+                $v['pid'],
+                $v['leader_pid'],
+                $v['usesysid'],
+                $v['usename'],
+                $v['application_name'],
+                $v['client_addr'],
+                $v['client_hostname'],
+                $v['client_port'],
+                $v['backend_start'],
+                $v['xact_start'],
+                $v['query_start'],
+                $v['state_change'],
+                $v['wait_event_type'],
+                $v['wait_event'],
+                $v['state'],
+                $v['backend_xid'],
+                $v['backend_xmin'],
+                $v['query_id'],
+                $v['query'],
+                $v['backend_type'],
+            );
+        }
+
+        $pgStatDatabase = [];
+        foreach ($data['pg_stat_database'] as $v) {
+            $pgStatDatabase[] = new PostgresPgStatDatabase(
+                $v['datid'],
+                $v['datname'],
+                $v['numbackends'],
+                $v['xact_commit'],
+                $v['xact_rollback'],
+                $v['blks_read'],
+                $v['blks_hit'],
+                $v['tup_returned'],
+                $v['tup_fetched'],
+                $v['tup_inserted'],
+                $v['tup_updated'],
+                $v['tup_deleted'],
+                $v['conflicts'],
+                $v['temp_files'],
+                $v['temp_bytes'],
+                $v['deadlocks'],
+                $v['checksum_failures'],
+                $v['checksum_last_failure'],
+                $v['blk_read_time'],
+                $v['blk_write_time'],
+                $v['session_time'],
+                $v['active_time'],
+                $v['idle_in_transaction_time'],
+                $v['sessions'],
+                $v['sessions_abandoned'],
+                $v['sessions_fatal'],
+                $v['sessions_killed'],
+                $v['stats_reset'],
+            );
+        }
+
+        $pgStatAllTables = [];
+        foreach ($data['pg_stat_all_tables'] as $v) {
+            $pgStatAllTables[] = new PostgresPgStatAllTables(
+                $v['relid'],
+                $v['schemaname'],
+                $v['relname'],
+                $v['seq_scan'],
+                $v['last_seq_scan'],
+                $v['seq_tup_read'],
+                $v['idx_scan'],
+                $v['last_idx_scan'],
+                $v['idx_tup_fetch'],
+                $v['n_tup_ins'],
+                $v['n_tup_upd'],
+                $v['n_tup_del'],
+                $v['n_tup_hot_upd'],
+                $v['n_tup_newpage_upd'],
+                $v['n_live_tup'],
+                $v['n_dead_tup'],
+                $v['n_mod_since_analyze'],
+                $v['n_ins_since_vacuum'],
+                $v['last_vacuum'],
+                $v['last_autovacuum'],
+                $v['last_analyze'],
+                $v['last_autoanalyze'],
+                $v['vacuum_count'],
+                $v['autovacuum_count'],
+                $v['analyze_count'],
+                $v['autoanalyze_count'],
+            );
+        }
+
+        $pgStatAllIndexes = [];
+        foreach ($data['pg_stat_all_indexes'] as $v) {
+            $pgStatAllIndexes[] = new PostgresPgStatAllIndexes(
+                $v['relid'],
+                $v['indexrelid'],
+                $v['schemaname'],
+                $v['relname'],
+                $v['indexrelname'],
+                $v['idx_scan'],
+                $v['last_idx_scan'],
+                $v['idx_tup_read'],
+                $v['idx_tup_fetch'],
+            );
+        }
+
+        $pgStatStatements = [];
+        foreach ($data['pg_stat_statements'] as $v) {
+            $pgStatStatements[] = new PostgresPgStatStatements(
+                $v['userid'],
+                $v['dbid'],
+                $v['toplevel'],
+                $v['queryid'],
+                $v['query'],
+                $v['plans'],
+                $v['total_plan_time'],
+                $v['min_plan_time'],
+                $v['max_plan_time'],
+                $v['mean_plan_time'],
+                $v['stddev_plan_time'],
+                $v['calls'],
+                $v['total_exec_time'],
+                $v['min_exec_time'],
+                $v['max_exec_time'],
+                $v['mean_exec_time'],
+                $v['stddev_exec_time'],
+                $v['rows'],
+                $v['shared_blks_hit'],
+                $v['shared_blks_read'],
+                $v['shared_blks_dirtied'],
+                $v['shared_blks_written'],
+                $v['local_blks_hit'],
+                $v['local_blks_read'],
+                $v['local_blks_dirtied'],
+                $v['local_blks_written'],
+                $v['temp_blks_read'],
+                $v['temp_blks_written'],
+                $v['shared_blk_read_time'],
+                $v['shared_blk_write_time'],
+                $v['local_blk_read_time'],
+                $v['local_blk_write_time'],
+                $v['temp_blk_read_time'],
+                $v['temp_blk_write_time'],
+                $v['wal_records'],
+                $v['wal_fpi'],
+                $v['wal_bytes'],
+                $v['jit_functions'],
+                $v['jit_generation_time'],
+                $v['jit_inlining_count'],
+                $v['jit_inlining_time'],
+                $v['jit_optimization_count'],
+                $v['jit_optimization_time'],
+                $v['jit_emission_count'],
+                $v['jit_emission_time'],
+                $v['jit_deform_count'],
+                $v['jit_deform_time'],
+                $v['stats_since'],
+                $v['minmax_stats_since'],
+            );
+        }
+
+        return new Postgres(
+            $data['version'],
+            $pgStatActivity,
+            $pgStatDatabase,
+            $pgStatAllTables,
+            $pgStatAllIndexes,
+            $pgStatStatements,
         );
     }
 
