@@ -19,7 +19,7 @@ final class MysqlTest extends TestCase
         $data = (new Mysql())->run($connection);
 
         self::assertNotEmpty($data['global_status']);
-        self::assertNotEmpty($data['variables']);
+        self::assertNotEmpty($data['global_variables']);
         self::assertNotEmpty($data['performance_95th_percentile']);
         self::assertNotEmpty($data['count_queries']);
         self::assertNotEmpty($data['data_length']);

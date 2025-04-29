@@ -8,14 +8,14 @@ final readonly class Mysql implements InfoInterface
 {
     /**
      * @param array<string, string>            $globalStatus
-     * @param array<string, string>            $variables
+     * @param array<string, string>            $globalVariables
      * @param MysqlPerformance95thPercentile[] $performance95thPercentile
      * @param MysqlCountQueries[]              $countQueries
      * @param MysqlDataLength[]                $dataLength
      */
     public function __construct(
         private array $globalStatus,
-        private array $variables,
+        private array $globalVariables,
         private array $performance95thPercentile,
         private array $countQueries,
         private array $dataLength,
@@ -33,9 +33,9 @@ final readonly class Mysql implements InfoInterface
     /**
      * @return array<string, string>
      */
-    public function getVariables(): array
+    public function getGlobalVariables(): array
     {
-        return $this->variables;
+        return $this->globalVariables;
     }
 
     /**

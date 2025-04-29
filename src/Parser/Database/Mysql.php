@@ -9,7 +9,7 @@ final readonly class Mysql implements ParserInterface
     /**
      * @return array{
      *     global_status: array<string, string>,
-     *     variables: array<string, string>,
+     *     global_variables: array<string, string>,
      *     performance_95th_percentile: array{
      *         query: string,
      *         db: string,
@@ -51,7 +51,7 @@ final readonly class Mysql implements ParserInterface
     {
         $result = [
             'global_status' => [],
-            'variables' => [],
+            'global_variables' => [],
             'performance_95th_percentile' => [],
             'count_queries' => [],
             'data_length' => [],
@@ -68,10 +68,10 @@ final readonly class Mysql implements ParserInterface
             // ignore
         }
         try {
-            $query = $connection->query('SHOW VARIABLES');
+            $query = $connection->query('SHOW GLOBAL VARIABLES');
             if ($query) {
                 foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['variables'][$row['Variable_name']] = $row['Value'];
+                    $result['global_variables'][$row['Variable_name']] = $row['Value'];
                 }
             }
         } catch (\Exception) {

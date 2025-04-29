@@ -5,6 +5,7 @@ namespace Ginfo;
 use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
+use Ginfo\Info\Database\Manticore;
 use Ginfo\Info\Database\Mysql;
 use Ginfo\Info\Database\MysqlCountQueries;
 use Ginfo\Info\Database\MysqlDataLength;
@@ -405,10 +406,28 @@ final readonly class Info
 
         return new Mysql(
             $data['global_status'],
-            $data['variables'],
+            $data['global_variables'],
             $performance95thPercentile,
             $countQueries,
             $dataLength,
+        );
+    }
+
+    /**
+     * Manticore status.
+     */
+    public function getManticore(\PDO $connection): ?Manticore
+    {
+        $data = (new Parser\Database\Manticore())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        return new Manticore(
+            $data['global_variables'],
+            $data['status'],
+            $data['settings'],
+            $data['agent_status'],
         );
     }
 
