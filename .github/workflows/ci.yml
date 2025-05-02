@@ -67,7 +67,7 @@ jobs:
         ports:
           - 5432:5432
       valkey:
-        image: valkey
+        image: valkey/valkey
         ports:
           - 6379:6379
       angie:
