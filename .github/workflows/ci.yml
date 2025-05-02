@@ -70,12 +70,6 @@ jobs:
         image: valkey/valkey
         ports:
           - 6379:6379
-      angie:
-        image: docker.angie.software/angie:templated
-        env:
-          ANGIE_LOAD_MODULES: http_stub_status_module
-        ports:
-          - 80:80
 
     steps:
       - name: Set git to use LF
@@ -85,6 +79,11 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+        run: |
+          sudo curl -o /etc/apt/trusted.gpg.d/angie-signing.gpg https://angie.software/keys/angie-signing.gpg
+          echo "deb https://download.angie.software/angie/$(. /etc/os-release && echo "$ID/$VERSION_ID $VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/angie.list > /dev/null
+          sudo apt update
+          sudo apt install -y angie
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
