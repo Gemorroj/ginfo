@@ -12,7 +12,21 @@
         "cpu",
         "memory",
         "disk",
-        "monitoring"
+        "monitoring",
+        "redis",
+        "valkey",
+        "mysql",
+        "mariadb",
+        "postgres",
+        "manticore",
+        "nginx",
+        "angie",
+        "caddy",
+        "apache",
+        "httpd",
+        "opcache",
+        "apcu",
+        "fpm"
     ],
     "license": "MIT",
     "authors": [
