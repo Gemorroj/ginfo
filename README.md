@@ -10,10 +10,8 @@
 - pcre extension
 - proc_open
 - Linux
-
-#### Linux
-- `/proc`, `/sys` and `/etc` mounted and readable by PHP
-- Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
+  - `/proc`, `/sys` and `/etc` mounted and readable by PHP
+  - Tested with the 2.6.x/3.x/4.x/5.x/6.x kernels
 
 
 ### Installation:
