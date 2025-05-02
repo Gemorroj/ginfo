@@ -71,8 +71,9 @@ jobs:
         ports:
           - 6379:6379
       angie:
-        image: docker.angie.software/angie:latest
-        run: cat /etc/angie/angie.conf
+        image: docker.angie.software/angie:templated
+        env:
+          ANGIE_LOAD_MODULES: http_stub_status_module
         ports:
           - 80:80
 
