@@ -9,7 +9,6 @@ final class PostgresTest extends TestCase
 {
     public function testPostgres(): void
     {
-        // my local config
         // try {
         $connection = new \PDO('pgsql:host=127.0.0.1', 'postgres', 'postgres');
         // } catch (\PDOException $e) {

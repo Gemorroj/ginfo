@@ -9,7 +9,6 @@ final class RedisTest extends TestCase
 {
     public function testRedis(): void
     {
-        // my local config
         // try {
         $data = (new Redis())->run(new \Redis(['host' => '127.0.0.1', 'port' => 6379]));
         // } catch (\RedisException $e) {
