@@ -10,11 +10,11 @@ final class RedisTest extends TestCase
     public function testRedis(): void
     {
         // my local config
-        try {
+        //try {
             $data = (new Redis())->run(new \Redis(['host' => '127.0.0.1', 'port' => 6379]));
-        } catch (\RedisException $e) {
+        //} catch (\RedisException $e) {
             //self::markTestSkipped('Redis/Valkey is not found');
-        }
+        //}
 
         self::assertNotEmpty($data['server']);
         self::assertNotEmpty($data['clients']);
