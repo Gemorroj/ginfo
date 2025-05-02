@@ -1,1 +1,0 @@
-return (Get-CimInstance Win32_LoggedOnUser).antecedent.name | Select-Object -Unique | ConvertTo-Json -Compress

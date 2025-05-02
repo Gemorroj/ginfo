@@ -23,17 +23,15 @@ final class GinfoTest extends TestCase
             }
         };
 
-        $ginfo = new Ginfo();
-        $info = $ginfo->getInfo($customParser);
-        $data = $info->getCustomParser($customParser::class);
+        $ginfo = new Ginfo(customParsers: [$customParser]);
+        $data = $ginfo->getCustomParser($customParser::class);
         self::assertSame('OK', $data->getOk());
     }
 
     public function testPhp(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $php = $info->getPhp();
+        $php = $ginfo->getPhp();
 
         self::assertSame('cli', $php->getSapiName());
 
@@ -47,8 +45,7 @@ final class GinfoTest extends TestCase
     public function testGeneral(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $general = $info->getGeneral();
+        $general = $ginfo->getGeneral();
 
         self::assertIsString($general->getOsName());
 
@@ -58,8 +55,7 @@ final class GinfoTest extends TestCase
     public function testCpu(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $cpu = $info->getCpu();
+        $cpu = $ginfo->getCpu();
         if (!$cpu) {
             self::markTestSkipped('Can\'t get cpu');
         } else {
@@ -71,8 +67,7 @@ final class GinfoTest extends TestCase
     public function testMemory(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $memory = $info->getMemory();
+        $memory = $ginfo->getMemory();
         if (!$memory) {
             self::markTestSkipped('Can\'t get memory');
         } else {
@@ -84,8 +79,7 @@ final class GinfoTest extends TestCase
     public function testProcesses(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $processes = $info->getProcesses();
+        $processes = $ginfo->getProcesses();
         if (!$processes) {
             self::markTestSkipped('Can\'t get processes');
         } else {
@@ -97,9 +91,8 @@ final class GinfoTest extends TestCase
     public function testNetwork(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $network = $info->getNetwork();
-        if (null === $network) {
+        $network = $ginfo->getNetwork();
+        if (!$network) {
             self::markTestSkipped('Can\'t get network');
         } else {
             self::assertNotEmpty($network[0]->getName());
@@ -110,8 +103,7 @@ final class GinfoTest extends TestCase
     public function testUsb(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $usb = $info->getUsb();
+        $usb = $ginfo->getUsb();
         if (!$usb) {
             self::markTestSkipped('Can\'t get usb');
         } else {
@@ -123,8 +115,7 @@ final class GinfoTest extends TestCase
     public function testPci(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $pci = $info->getPci();
+        $pci = $ginfo->getPci();
         if (!$pci) {
             self::markTestSkipped('Can\'t get pci');
         } else {
@@ -136,8 +127,7 @@ final class GinfoTest extends TestCase
     public function testSoundCard(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $soundCard = $info->getSoundCard();
+        $soundCard = $ginfo->getSoundCard();
         if (!$soundCard) {
             self::markTestSkipped('Can\'t get sound card');
         } else {
@@ -149,8 +139,7 @@ final class GinfoTest extends TestCase
     public function testServices(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $services = $info->getServices();
+        $services = $ginfo->getServices();
         if (!$services) {
             self::markTestSkipped('Can\'t get services (need systemd)');
         } else {
@@ -162,114 +151,77 @@ final class GinfoTest extends TestCase
     public function testSamba(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $samba = $info->getSamba();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($samba);
-            self::markTestSkipped('Not implemented for windows');
-        } else {
-            if (!$samba) {
-                self::markTestSkipped('Can\'t get samba');
-            }
-            // self::assertNotEmpty($samba->getServices()[0]->getService());
-            // \print_r($samba);
+        $samba = $ginfo->getSamba();
+        if (!$samba) {
+            self::markTestSkipped('Can\'t get samba');
         }
+        // self::assertNotEmpty($samba->getServices()[0]->getService());
+        // \print_r($samba);
     }
 
     public function testUps(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $ups = $info->getUps();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($ups);
-            self::markTestSkipped('Not implemented for windows');
+        $ups = $ginfo->getUps();
+        if (!$ups) {
+            self::markTestSkipped('Can\'t get ups (need apcaccess)');
         } else {
-            if (!$ups) {
-                self::markTestSkipped('Can\'t get ups (need apcaccess)');
-            } else {
-                self::assertNotEmpty($ups->getName());
-                // \print_r($ups);
-            }
+            self::assertNotEmpty($ups->getName());
+            // \print_r($ups);
         }
     }
 
     public function testSelinux(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $selinux = $info->getSelinux();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertNull($selinux);
-            self::markTestSkipped('Not implemented for windows');
-        } else {
-            if (!$selinux) {
-                self::markTestSkipped('Can\'t get selinux (need sestatus)');
-            }
-            // self::assertNotEmpty($selinux->getMode());
-            // \print_r($selinux);
+        $selinux = $ginfo->getSelinux();
+        if (!$selinux) {
+            self::markTestSkipped('Can\'t get selinux (need sestatus)');
         }
+        // self::assertNotEmpty($selinux->getMode());
+        // \print_r($selinux);
     }
 
     public function testBattery(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $battery = $info->getBattery();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertEmpty($battery); // todo
-            self::markTestSkipped('Not implemented for windows');
+        $battery = $ginfo->getBattery();
+        if (!$battery) {
+            self::markTestSkipped('Can\'t get battery info');
         } else {
-            if (!$battery) {
-                self::markTestSkipped('Can\'t get battery info');
-            } else {
-                self::assertNotEmpty($battery[0]->getModel());
-                // \print_r($battery);
-            }
+            self::assertNotEmpty($battery[0]->getModel());
+            // \print_r($battery);
         }
     }
 
     public function testSensors(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $sensors = $info->getSensors();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertEmpty($sensors); // todo
-            self::markTestSkipped('Not implemented for windows');
+        $sensors = $ginfo->getSensors();
+        if (!$sensors) {
+            self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
         } else {
-            if (!$sensors) {
-                self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
-            } else {
-                self::assertNotEmpty($sensors[0]->getName());
-                // \print_r($sensors);
-            }
+            self::assertNotEmpty($sensors[0]->getName());
+            // \print_r($sensors);
         }
     }
 
     public function testPrinters(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $printers = $info->getPrinters();
-        if ('Windows' === \PHP_OS_FAMILY) {
-            self::assertEmpty($printers); // todo
-            self::markTestSkipped('Not implemented for windows');
+        $printers = $ginfo->getPrinters();
+        if (!$printers) {
+            self::markTestSkipped('Can\'t get printers (need lpstat)');
         } else {
-            if (!$printers) {
-                self::markTestSkipped('Can\'t get printers (need lpstat)');
-            } else {
-                self::assertNotEmpty($printers[0]->getName());
-                // \print_r($printers);
-            }
+            self::assertNotEmpty($printers[0]->getName());
+            // \print_r($printers);
         }
     }
 
     public function testDisk(): void
     {
         $ginfo = new Ginfo();
-        $info = $ginfo->getInfo();
-        $disk = $info->getDisk();
+        $disk = $ginfo->getDisk();
 
         $drivers = $disk->getDrives();
         $mounts = $disk->getMounts();

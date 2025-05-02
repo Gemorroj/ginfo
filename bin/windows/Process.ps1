@@ -1,1 +1,0 @@
-return Get-WmiObject -Class Win32_Process | Select ThreadCount, CommandLine, ExecutionState, Name, VirtualSize, PeakVirtualSize, ProcessId, @{n="Owner"; e={$_.GetOwner().User}} | ConvertTo-Json -Compress

@@ -42,16 +42,6 @@ use Ginfo\Parser\Who;
 class Linux implements OsInterface
 {
     /**
-     * @throws FatalException
-     */
-    public function __construct()
-    {
-        if (!\is_dir('/sys') || !\is_dir('/proc')) {
-            throw new FatalException('This needs access to /proc and /sys to work.');
-        }
-    }
-
-    /**
      * @return string the arch OS
      */
     public function getArchitecture(): string
