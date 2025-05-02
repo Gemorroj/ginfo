@@ -72,6 +72,7 @@ jobs:
           - 6379:6379
       angie:
         image: docker.angie.software/angie:latest
+        run: cat /etc/angie/angie.conf
         ports:
           - 80:80
 
