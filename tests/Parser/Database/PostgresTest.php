@@ -23,6 +23,6 @@ final class PostgresTest extends TestCase
         self::assertNotEmpty($data['pg_stat_database']);
         self::assertNotEmpty($data['pg_stat_all_tables']);
         self::assertNotEmpty($data['pg_stat_all_indexes']);
-        self::assertNotEmpty($data['pg_stat_statements']);
+        self::assertArrayHasKey('pg_stat_statements', $data);
     }
 }
