@@ -43,9 +43,9 @@ interface OsInterface
     public function getOsName(): string;
 
     /**
-     * @return float|null seconds
+     * @return int|null seconds
      */
-    public function getUptime(): ?float;
+    public function getUptime(): ?int;
 
     public function getVirtualization(): ?string;
 

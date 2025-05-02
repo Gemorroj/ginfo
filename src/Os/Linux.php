@@ -105,14 +105,14 @@ class Linux implements OsInterface
         return new Cpu($cpuInfo['physical'], $cpuInfo['cores'], $cpuInfo['virtual'], $cpuInfo['hyperThreading'], $processors);
     }
 
-    public function getUptime(): ?float
+    public function getUptime(): ?int
     {
         $uptime = Common::getContents('/proc/uptime');
         if (null === $uptime) {
             return null;
         }
 
-        return (float) (\explode(' ', $uptime, 2)[0]);
+        return (int) (\explode(' ', $uptime, 2)[0]);
     }
 
     public function getDrives(): ?array
