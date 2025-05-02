@@ -58,6 +58,8 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
+      - if: matrix.operating-system == 'ubuntu-latest'
+        run: sudo apt install -y valkey mariadb-server postgresql-common
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
