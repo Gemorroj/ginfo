@@ -33,6 +33,7 @@
     },
     "require-dev": {
         "ext-pdo": "*",
+        "ext-redis": "*",
         "phpunit/phpunit": "^11.5.17",
         "phpstan/phpstan": "^2.1.11",
         "friendsofphp/php-cs-fixer": "^3.75.0"

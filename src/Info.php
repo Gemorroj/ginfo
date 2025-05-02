@@ -16,6 +16,7 @@ use Ginfo\Info\Database\PostgresPgStatAllIndexes;
 use Ginfo\Info\Database\PostgresPgStatAllTables;
 use Ginfo\Info\Database\PostgresPgStatDatabase;
 use Ginfo\Info\Database\PostgresPgStatStatements;
+use Ginfo\Info\Database\Redis;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
@@ -348,7 +349,7 @@ final readonly class Info
     }
 
     /**
-     * Mysql status.
+     * Mysql/MariaDB status.
      */
     public function getMysql(\PDO $connection): ?Mysql
     {
@@ -410,6 +411,32 @@ final readonly class Info
             $performance95thPercentile,
             $countQueries,
             $dataLength,
+        );
+    }
+
+    /**
+     * Redis/Valkey status.
+     */
+    public function getRedis(\Redis $connection): ?Redis
+    {
+        $data = (new Parser\Database\Redis())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        return new Redis(
+            $data['server'],
+            $data['clients'],
+            $data['memory'],
+            $data['persistence'],
+            $data['stats'],
+            $data['replication'],
+            $data['cpu'],
+            $data['modules'],
+            $data['errorstats'],
+            $data['cluster'],
+            $data['keyspace'],
+            $data['keysizes'],
         );
     }
 
