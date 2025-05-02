@@ -112,7 +112,7 @@ class Linux implements OsInterface
             return null;
         }
 
-        return (int) (\explode(' ', $uptime, 2)[0]);
+        return (int) \explode(' ', $uptime, 2)[0];
     }
 
     public function getDrives(): ?array
