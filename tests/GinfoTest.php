@@ -48,6 +48,7 @@ final class GinfoTest extends TestCase
         $general = $ginfo->getGeneral();
 
         self::assertIsString($general->getOsName());
+        self::assertCount(3, $general->getLoad());
 
         // \print_r($general);
     }

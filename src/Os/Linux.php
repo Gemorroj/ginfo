@@ -3,7 +3,6 @@
 namespace Ginfo\Os;
 
 use Ginfo\Common;
-use Ginfo\Exception\FatalException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -109,12 +108,11 @@ class Linux implements OsInterface
     public function getUptime(): ?float
     {
         $uptime = Common::getContents('/proc/uptime');
-
         if (null === $uptime) {
             return null;
         }
 
-        return \round(\explode(' ', $uptime, 2)[0]);
+        return (float) \explode(' ', $uptime, 2)[0];
     }
 
     public function getDrives(): ?array
@@ -351,9 +349,18 @@ class Linux implements OsInterface
 
     public function getLoad(): ?array
     {
-        $load = \sys_getloadavg();
+        $load = Common::getContents('/proc/loadavg');
+        if (!$load) {
+            return null;
+        }
 
-        return false === $load ? null : $load;
+        $loadArr = \explode(' ', $load);
+
+        return [
+            (float) $loadArr[0],
+            (float) $loadArr[1],
+            (float) $loadArr[2],
+        ];
     }
 
     public function getNetwork(): ?array
