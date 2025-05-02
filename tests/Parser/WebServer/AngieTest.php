@@ -12,7 +12,7 @@ final class AngieTest extends TestCase
         // my local config
         $data = (new Angie())->run('http://localhost/status/');
         if (!$data) {
-            self::markTestSkipped('Angie is not found');
+            //self::markTestSkipped('Angie is not found');
         }
 
         self::assertInstanceOf(\DateTimeImmutable::class, $data['build_date']);

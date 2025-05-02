@@ -13,7 +13,7 @@ final class PostgresTest extends TestCase
         try {
             $connection = new \PDO('pgsql:host=127.0.0.1', 'postgres', 'postgres');
         } catch (\PDOException $e) {
-            self::markTestSkipped('Postgres is not found');
+            //self::markTestSkipped('Postgres is not found');
         }
 
         $data = (new Postgres())->run($connection);

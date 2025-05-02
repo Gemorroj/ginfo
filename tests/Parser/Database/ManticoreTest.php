@@ -13,7 +13,7 @@ final class ManticoreTest extends TestCase
         try {
             $connection = new \PDO('mysql:host=127.0.0.1;port=9306', 'root', '');
         } catch (\PDOException $e) {
-            self::markTestSkipped('Manticore is not found');
+            //self::markTestSkipped('Manticore is not found');
         }
 
         $data = (new Manticore())->run($connection);
