@@ -10,11 +10,11 @@ final class MysqlTest extends TestCase
     public function testMysql(): void
     {
         // my local config
-        //try {
-            $connection = new \PDO('mysql:host=127.0.0.1', 'root', '');
-        //} catch (\PDOException $e) {
-            //self::markTestSkipped('Mysql/MariaDB is not found');
-        //}
+        // try {
+        $connection = new \PDO('mysql:host=127.0.0.1', 'root', '');
+        // } catch (\PDOException $e) {
+        // self::markTestSkipped('Mysql/MariaDB is not found');
+        // }
 
         $data = (new Mysql())->run($connection);
 

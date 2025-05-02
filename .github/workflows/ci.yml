@@ -47,8 +47,33 @@ jobs:
 
 
     name: ${{ matrix.job-description }}
-
     runs-on: ${{ matrix.operating-system }}
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        ports:
+          - 3306:3306
+      manticore:
+        image: manticoresearch/manticore
+        ports:
+          - 9306:9306
+      pgsql:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+      valkey:
+        image: valkey
+        ports:
+          - 6379:6379
+      angie:
+        image: docker.angie.software/angie:latest
+        ports:
+          - 80:80
 
     steps:
       - name: Set git to use LF
@@ -58,14 +83,6 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-      - if: matrix.operating-system == 'ubuntu-latest'
-        run: |
-          wget https://repo.manticoresearch.com/manticore-repo.noarch.deb
-          sudo dpkg -i manticore-repo.noarch.deb
-          sudo curl -o /etc/apt/trusted.gpg.d/angie-signing.gpg https://angie.software/keys/angie-signing.gpg
-          echo "deb https://download.angie.software/angie/$(. /etc/os-release && echo "$ID/$VERSION_ID $VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/angie.list > /dev/null
-          sudo apt update
-          sudo apt install -y angie valkey mariadb-server postgresql-common manticore manticore-extra
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
