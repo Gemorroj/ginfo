@@ -64,6 +64,7 @@ jobs:
           sudo dpkg -i manticore-repo.noarch.deb
           sudo curl -o /etc/apt/trusted.gpg.d/angie-signing.gpg https://angie.software/keys/angie-signing.gpg
           echo "deb https://download.angie.software/angie/$(. /etc/os-release && echo "$ID/$VERSION_ID $VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/angie.list > /dev/null
+          sudo apt update
           sudo apt install -y angie valkey mariadb-server postgresql-common manticore manticore-extra
 
       - name: Setup PHP
