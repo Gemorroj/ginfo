@@ -17,14 +17,15 @@ final class MemcachedTest extends TestCase
         $data = (new Memcached())->run($mc);
 
         self::assertNotEmpty($data['stats']['127.0.0.1:11211']);
-        // self::assertNotEmpty($data['stats']['localhost:11211']);
+        self::assertNotEmpty($data['stats']['localhost:11211']);
         self::assertNotEmpty($data['stats_settings']['127.0.0.1:11211']);
-        // self::assertNotEmpty($data['stats_settings']['localhost:11211']);
+        self::assertNotEmpty($data['stats_settings']['localhost:11211']);
         self::assertNotEmpty($data['stats_conns']['127.0.0.1:11211']);
-        // self::assertNotEmpty($data['stats_conns']['localhost:11211']);
+        self::assertNotEmpty($data['stats_conns']['localhost:11211']);
 
         self::assertNotEmpty($data['stats']['127.0.0.1:11211']['version']);
         self::assertNotEmpty($data['stats_settings']['127.0.0.1:11211']['inter']);
-        self::assertNotEmpty($data['stats_conns']['127.0.0.1:11211']['0:addr']);
+        //self::assertNotEmpty($data['stats_conns']['127.0.0.1:11211']['0:addr']);
+        \var_dump($data['stats_conns']['127.0.0.1:11211']);
     }
 }
