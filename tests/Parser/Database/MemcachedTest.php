@@ -11,7 +11,7 @@ final class MemcachedTest extends TestCase
     {
         $mc = new \Memcached();
         $mc->addServer('127.0.0.1', 11211);
-        // $mc->addServer('localhost', 11211);
+        $mc->addServer('localhost', 11211);
         $mc->add('key1', 'val1', 60);
 
         $data = (new Memcached())->run($mc);
