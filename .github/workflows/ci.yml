@@ -91,7 +91,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: pcre, mbstring, json, pdo_mysql pdo_pgsql
+          extensions: apcu, pcre, mbstring, json, pdo_mysql pdo_pgsql
           coverage: none
           tools: composer:v2
 

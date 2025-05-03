@@ -35,9 +35,10 @@ final class GinfoTest extends TestCase
 
         self::assertSame('cli', $php->getSapiName());
 
-        self::assertIsBool($php->getApcu()->isEnabled());
-        self::assertIsBool($php->getOpcache()->isEnabled());
-        self::assertIsBool($php->getFpm()->isEnabled());
+        self::assertSame('cli', $php->getSapiName());
+        self::assertIsString($php->getApcu()->getVersion());
+        self::assertIsString($php->getOpcache()->getVersion());
+        // self::assertInstanceOf(\DateTimeImmutable::class, $php->getFpm()->getStartTime());
 
         // \print_r($php);
     }
@@ -48,6 +49,7 @@ final class GinfoTest extends TestCase
         $general = $ginfo->getGeneral();
 
         self::assertIsString($general->getOsName());
+        self::assertInstanceOf(\DateInterval::class, $general->getUptime());
         self::assertCount(3, $general->getLoad());
 
         // \print_r($general);
@@ -59,10 +61,11 @@ final class GinfoTest extends TestCase
         $cpu = $ginfo->getCpu();
         if (!$cpu) {
             self::markTestSkipped('Can\'t get cpu');
-        } else {
-            self::assertNotEmpty($cpu->getProcessors());
-            // \print_r($cpu);
         }
+
+        self::assertGreaterThan(0, $cpu->getCores());
+        self::assertNotEmpty($cpu->getProcessors());
+        // \print_r($cpu);
     }
 
     public function testMemory(): void
@@ -71,10 +74,11 @@ final class GinfoTest extends TestCase
         $memory = $ginfo->getMemory();
         if (!$memory) {
             self::markTestSkipped('Can\'t get memory');
-        } else {
-            self::assertGreaterThan(1, $memory->getTotal());
-            // \print_r($memory);
         }
+
+        self::assertGreaterThan(1, $memory->getTotal());
+        self::assertGreaterThan(1, $memory->getFree());
+        // \print_r($memory);
     }
 
     public function testProcesses(): void
@@ -83,10 +87,11 @@ final class GinfoTest extends TestCase
         $processes = $ginfo->getProcesses();
         if (!$processes) {
             self::markTestSkipped('Can\'t get processes');
-        } else {
-            self::assertNotEmpty($processes[0]->getName());
-            // \print_r($processes);
         }
+
+        self::assertNotEmpty($processes);
+        self::assertNotEmpty($processes[0]->getName());
+        // \print_r($processes);
     }
 
     public function testNetwork(): void
@@ -95,10 +100,11 @@ final class GinfoTest extends TestCase
         $network = $ginfo->getNetwork();
         if (!$network) {
             self::markTestSkipped('Can\'t get network');
-        } else {
-            self::assertNotEmpty($network[0]->getName());
-            // \print_r($network);
         }
+
+        self::assertNotEmpty($network);
+        self::assertNotEmpty($network[0]->getName());
+        // \print_r($network);
     }
 
     public function testUsb(): void
@@ -107,10 +113,11 @@ final class GinfoTest extends TestCase
         $usb = $ginfo->getUsb();
         if (!$usb) {
             self::markTestSkipped('Can\'t get usb');
-        } else {
-            self::assertNotEmpty($usb[0]->getVendor());
-            // \print_r($usb);
         }
+
+        self::assertNotEmpty($usb);
+        self::assertNotEmpty($usb[0]->getVendor());
+        // \print_r($usb);
     }
 
     public function testPci(): void
@@ -119,10 +126,11 @@ final class GinfoTest extends TestCase
         $pci = $ginfo->getPci();
         if (!$pci) {
             self::markTestSkipped('Can\'t get pci');
-        } else {
-            self::assertNotEmpty($pci[0]->getVendor());
-            // \print_r($pci);
         }
+
+        self::assertNotEmpty($pci);
+        self::assertNotEmpty($pci[0]->getVendor());
+        // \print_r($pci);
     }
 
     public function testSoundCard(): void
@@ -131,10 +139,11 @@ final class GinfoTest extends TestCase
         $soundCard = $ginfo->getSoundCard();
         if (!$soundCard) {
             self::markTestSkipped('Can\'t get sound card');
-        } else {
-            self::assertNotEmpty($soundCard[0]->getName());
-            // \print_r($soundCard);
         }
+
+        self::assertNotEmpty($soundCard);
+        self::assertNotEmpty($soundCard[0]->getName());
+        // \print_r($soundCard);
     }
 
     public function testServices(): void
@@ -143,10 +152,11 @@ final class GinfoTest extends TestCase
         $services = $ginfo->getServices();
         if (!$services) {
             self::markTestSkipped('Can\'t get services (need systemd)');
-        } else {
-            self::assertNotEmpty($services[0]->getName());
-            // \print_r($services);
         }
+
+        self::assertNotEmpty($services);
+        self::assertNotEmpty($services[0]->getName());
+        // \print_r($services);
     }
 
     public function testSamba(): void
@@ -156,7 +166,9 @@ final class GinfoTest extends TestCase
         if (!$samba) {
             self::markTestSkipped('Can\'t get samba');
         }
-        // self::assertNotEmpty($samba->getServices()[0]->getService());
+
+        self::assertNotEmpty($samba->getServices());
+        self::assertNotEmpty($samba->getServices()[0]->getService());
         // \print_r($samba);
     }
 
@@ -166,10 +178,10 @@ final class GinfoTest extends TestCase
         $ups = $ginfo->getUps();
         if (!$ups) {
             self::markTestSkipped('Can\'t get ups (need apcaccess)');
-        } else {
-            self::assertNotEmpty($ups->getName());
-            // \print_r($ups);
         }
+
+        self::assertNotEmpty($ups->getName());
+        // \print_r($ups);
     }
 
     public function testSelinux(): void
@@ -179,7 +191,9 @@ final class GinfoTest extends TestCase
         if (!$selinux) {
             self::markTestSkipped('Can\'t get selinux (need sestatus)');
         }
-        // self::assertNotEmpty($selinux->getMode());
+
+        self::assertNotEmpty($selinux->getMode());
+        self::assertNotEmpty($selinux->getPolicy());
         // \print_r($selinux);
     }
 
@@ -189,10 +203,11 @@ final class GinfoTest extends TestCase
         $battery = $ginfo->getBattery();
         if (!$battery) {
             self::markTestSkipped('Can\'t get battery info');
-        } else {
-            self::assertNotEmpty($battery[0]->getModel());
-            // \print_r($battery);
         }
+
+        self::assertNotEmpty($battery);
+        self::assertNotEmpty($battery[0]->getModel());
+        // \print_r($battery);
     }
 
     public function testSensors(): void
@@ -201,10 +216,11 @@ final class GinfoTest extends TestCase
         $sensors = $ginfo->getSensors();
         if (!$sensors) {
             self::markTestSkipped('Can\'t get sensors (need hddtemp or mbmon or sensors or hwmon or thermal_zone or ipmitool or nvidia-smi or max_brightness)');
-        } else {
-            self::assertNotEmpty($sensors[0]->getName());
-            // \print_r($sensors);
         }
+
+        self::assertNotEmpty($sensors);
+        self::assertNotEmpty($sensors[0]->getName());
+        // \print_r($sensors);
     }
 
     public function testPrinters(): void
@@ -213,10 +229,11 @@ final class GinfoTest extends TestCase
         $printers = $ginfo->getPrinters();
         if (!$printers) {
             self::markTestSkipped('Can\'t get printers (need lpstat)');
-        } else {
-            self::assertNotEmpty($printers[0]->getName());
-            // \print_r($printers);
         }
+
+        self::assertNotEmpty($printers);
+        self::assertNotEmpty($printers[0]->getName());
+        // \print_r($printers);
     }
 
     public function testDisk(): void
@@ -230,23 +247,21 @@ final class GinfoTest extends TestCase
 
         if (!$drivers) {
             self::markTestSkipped('Can\'t get drivers');
-        } else {
-            self::assertNotEmpty($drivers[0]->getName());
-            // \print_r($drivers);
         }
-
         if (!$mounts) {
             self::markTestSkipped('Can\'t get mounts');
-        } else {
-            self::assertNotEmpty($mounts[0]->getDevice());
-            // \print_r($mounts);
         }
-
-        if (!$raids) {
+        /*if (!$raids) {
             self::markTestSkipped('Can\'t get raids');
-        } else {
+        }*/
+
+        self::assertNotEmpty($drivers[0]->getName());
+        self::assertNotEmpty($mounts[0]->getDevice());
+        if ($raids) {
             self::assertNotEmpty($raids[0]->getDevice());
-            // \print_r($raids);
         }
+        // \print_r($drivers);
+        // \print_r($mounts);
+        // \print_r($raids);
     }
 }
