@@ -25,7 +25,6 @@ final class MemcachedTest extends TestCase
 
         self::assertNotEmpty($data['stats']['127.0.0.1:11211']['version']);
         self::assertNotEmpty($data['stats_settings']['127.0.0.1:11211']['inter']);
-        //self::assertNotEmpty($data['stats_conns']['127.0.0.1:11211']['0:addr']);
-        \var_dump($data['stats_conns']['127.0.0.1:11211']);
+        // self::assertNotEmpty($data['stats_conns']['127.0.0.1:11211']['0:addr']);
     }
 }
