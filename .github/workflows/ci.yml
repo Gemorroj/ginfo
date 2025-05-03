@@ -74,6 +74,10 @@ jobs:
         image: memcached
         ports:
           - 11211:11211
+      mongo:
+        image: mongo
+        ports:
+          - 27017:27017
 
     steps:
       - name: Set git to use LF
@@ -95,7 +99,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          extensions: apcu, pcre, mbstring, json, pdo_mysql, pdo_pgsql, pdo_sqlite, memcached
+          extensions: apcu, pcre, mbstring, json, pdo_mysql, pdo_pgsql, pdo_sqlite, memcached, mongodb
           coverage: none
           tools: composer:v2
 

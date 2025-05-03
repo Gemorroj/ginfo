@@ -16,6 +16,8 @@
         "redis",
         "memcache",
         "memcached",
+        "mongo",
+        "mongodb",
         "valkey",
         "mysql",
         "mariadb",
@@ -58,6 +60,7 @@
         "ext-redis": "*",
         "ext-apcu": "*",
         "ext-memcached": "*",
+        "ext-mongodb": "*",
         "phpunit/phpunit": "^11.5.19",
         "phpstan/phpstan": "^2.1.14",
         "friendsofphp/php-cs-fixer": "^3.75.0"
@@ -68,7 +71,8 @@
         "ext-pdo_sqlite": "For Sqlite",
         "ext-redis": "For Redis/Valkey",
         "ext-memcached": "For Memcached",
-        "ext-apcu": "For APCU"
+        "ext-apcu": "For APCU",
+        "ext-mongodb": "For MongoDB"
     },
     "autoload": {
         "psr-4": {

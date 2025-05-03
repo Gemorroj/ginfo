@@ -56,6 +56,7 @@ print_r($ginfo->getSqlite(new \PDO('sqlite:/var/www/mydb.sqlite'))); // version,
 $memcached = new \Memcached();
 $memcached->addServer('127.0.0.1', 11211);
 print_r($ginfo->getMemcached($memcached)); // version, stats, etc...
+print_r($ginfo->getMongo(new \MongoDB\Driver\Manager('mongodb://127.0.0.1:27017'))); // version, stats, etc...
 ```
 
 ### Custom parser example:
@@ -118,7 +119,7 @@ print_r($data->getStats());
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
-- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`)
+- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`)
 
 
 ### Fork changes:
@@ -135,5 +136,5 @@ print_r($data->getStats());
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
-- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached)
+- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb)
 - allow add custom parsers

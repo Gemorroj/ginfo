@@ -7,6 +7,14 @@ use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Database\Manticore;
 use Ginfo\Info\Database\Memcached;
+use Ginfo\Info\Database\Mongo;
+use Ginfo\Info\Database\MongoDatabase;
+use Ginfo\Info\Database\MongoDatabaseStats;
+use Ginfo\Info\Database\MongoDatabaseTop;
+use Ginfo\Info\Database\MongoServerStatus;
+use Ginfo\Info\Database\MongoServerStatusConnections;
+use Ginfo\Info\Database\MongoServerStatusCounters;
+use Ginfo\Info\Database\MongoServerStatusNetwork;
 use Ginfo\Info\Database\Mysql;
 use Ginfo\Info\Database\MysqlCountQueries;
 use Ginfo\Info\Database\MysqlDataLength;
@@ -642,6 +650,108 @@ final readonly class Ginfo
             $pgStatAllIndexes,
             $pgStatStatements,
         );
+    }
+
+    /**
+     * Mongo status.
+     */
+    public function getMongo(\MongoDB\Driver\Manager $connection): ?Mongo
+    {
+        $data = (new Parser\Database\Mongo())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        $serverStatus = new MongoServerStatus(
+            $data['serverStatus']['host'],
+            $data['serverStatus']['version'],
+            $data['serverStatus']['process'],
+            $data['serverStatus']['pid'],
+            $data['serverStatus']['uptime'],
+            $data['serverStatus']['localTime'],
+            $data['serverStatus']['page_faults'],
+            $data['serverStatus']['usagePageFileMB'],
+            $data['serverStatus']['totalPageFileMB'],
+            $data['serverStatus']['availPageFileMB'],
+            $data['serverStatus']['ramMB'],
+            new MongoServerStatusNetwork(
+                $data['serverStatus']['network']['bytesIn'],
+                $data['serverStatus']['network']['bytesOut'],
+                $data['serverStatus']['network']['numRequests'],
+            ),
+            new MongoServerStatusCounters(
+                $data['serverStatus']['counters']['insert'],
+                $data['serverStatus']['counters']['query'],
+                $data['serverStatus']['counters']['update'],
+                $data['serverStatus']['counters']['delete'],
+                $data['serverStatus']['counters']['getmore'],
+                $data['serverStatus']['counters']['command'],
+            ),
+            new MongoServerStatusConnections(
+                $data['serverStatus']['connections']['current'],
+                $data['serverStatus']['connections']['available'],
+                $data['serverStatus']['connections']['totalCreated'],
+                $data['serverStatus']['connections']['rejected'],
+                $data['serverStatus']['connections']['active'],
+                $data['serverStatus']['connections']['threaded'],
+                $data['serverStatus']['connections']['exhaustIsMaster'],
+                $data['serverStatus']['connections']['exhaustHello'],
+                $data['serverStatus']['connections']['awaitingTopologyChanges'],
+                $data['serverStatus']['connections']['loadBalanced'],
+            ),
+        );
+
+        $databases = [];
+        foreach ($data['databases'] as $dbName => $v) {
+            $stats = new MongoDatabaseStats(
+                $v['stats']['db'],
+                $v['stats']['collections'],
+                $v['stats']['views'],
+                $v['stats']['objects'],
+                $v['stats']['avgObjSize'],
+                $v['stats']['dataSize'],
+                $v['stats']['storageSize'],
+                $v['stats']['indexes'],
+                $v['stats']['indexSize'],
+                $v['stats']['totalSize'],
+                $v['stats']['scaleFactor'],
+                $v['stats']['fsUsedSize'],
+                $v['stats']['fsTotalSize'],
+                $v['stats']['ok'],
+            );
+            $top = [];
+            foreach ($v['top'] as $key => $topV) {
+                $top[$key] = new MongoDatabaseTop(
+                    $topV['total']['time'],
+                    $topV['total']['count'],
+                    $topV['readLock']['time'],
+                    $topV['readLock']['count'],
+                    $topV['writeLock']['time'],
+                    $topV['writeLock']['count'],
+                    $topV['queries']['time'],
+                    $topV['queries']['count'],
+                    $topV['getmore']['time'],
+                    $topV['getmore']['count'],
+                    $topV['insert']['time'],
+                    $topV['insert']['count'],
+                    $topV['update']['time'],
+                    $topV['update']['count'],
+                    $topV['remove']['time'],
+                    $topV['remove']['count'],
+                    $topV['commands']['time'],
+                    $topV['commands']['count'],
+                );
+            }
+
+            $databases[$dbName] = new MongoDatabase(
+                $v['sizeOnDisk'],
+                $v['empty'],
+                $stats,
+                $top,
+            );
+        }
+
+        return new Mongo($serverStatus, $databases);
     }
 
     /**
