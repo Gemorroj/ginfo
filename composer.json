@@ -14,11 +14,14 @@
         "disk",
         "monitoring",
         "redis",
+        "memcache",
+        "memcached",
         "valkey",
         "mysql",
         "mariadb",
         "postgres",
         "manticore",
+        "sqlite",
         "nginx",
         "angie",
         "caddy",
@@ -54,6 +57,7 @@
         "ext-pdo_sqlite": "*",
         "ext-redis": "*",
         "ext-apcu": "*",
+        "ext-memcached": "*",
         "phpunit/phpunit": "^11.5.19",
         "phpstan/phpstan": "^2.1.14",
         "friendsofphp/php-cs-fixer": "^3.75.0"
@@ -62,7 +66,9 @@
         "ext-pdo_mysql": "For MySQL/MariaDB/Manticore",
         "ext-pdo_pgsql": "For Postgres",
         "ext-pdo_sqlite": "For Sqlite",
-        "ext-redis": "For Redis/Valkey"
+        "ext-redis": "For Redis/Valkey",
+        "ext-memcached": "For Memcached",
+        "ext-apcu": "For APCU"
     },
     "autoload": {
         "psr-4": {

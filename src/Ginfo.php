@@ -6,6 +6,7 @@ use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Database\Manticore;
+use Ginfo\Info\Database\Memcached;
 use Ginfo\Info\Database\Mysql;
 use Ginfo\Info\Database\MysqlCountQueries;
 use Ginfo\Info\Database\MysqlDataLength;
@@ -695,6 +696,23 @@ final readonly class Ginfo
             $data['sqlite_source_id'],
             $data['db_size'],
             $pragma,
+        );
+    }
+
+    /**
+     * Memcached status.
+     */
+    public function getMemcached(\Memcached $connection): ?Memcached
+    {
+        $data = (new Parser\Database\Memcached())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        return new Memcached(
+            $data['stats'],
+            $data['stats_settings'],
+            $data['stats_conns'],
         );
     }
 

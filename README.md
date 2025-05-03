@@ -53,6 +53,9 @@ print_r($ginfo->getPostgres(new \PDO('pgsql:host=127.0.0.1', 'postgres', 'postgr
 print_r($ginfo->getManticore(new \PDO('mysql:host=127.0.0.1;port=9306', 'root', ''))); // status, variables, etc...
 print_r($ginfo->getRedis(new \Redis(['host' => '127.0.0.1', 'port' => 6379]))); // status, memory, cpu, etc...
 print_r($ginfo->getSqlite(new \PDO('sqlite:/var/www/mydb.sqlite'))); // version, size, options, etc...
+$memcached = new \Memcached();
+$memcached->addServer('127.0.0.1', 11211);
+print_r($ginfo->getMemcached($memcached)); // version, stats, etc...
 ```
 
 ### Custom parser example:
@@ -115,7 +118,7 @@ print_r($data->getStats());
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
-- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`)
+- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`)
 
 
 ### Fork changes:
@@ -132,5 +135,5 @@ print_r($data->getStats());
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
-- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite)
+- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached)
 - allow add custom parsers

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 final class SqliteTest extends TestCase
 {
-    public function testMysql(): void
+    public function testSqlite(): void
     {
         $connection = new \PDO('sqlite::memory:');
         $connection->exec('CREATE TABLE t1 (id INTEGER PRIMARY KEY, clmn1 TEXT, clmn2 TEXT, clmn3 TEXT)');
