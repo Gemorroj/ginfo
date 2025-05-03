@@ -23,48 +23,32 @@ final readonly class Manticore implements ParserInterface
             'agent_status' => [],
         ];
 
-        try {
-            $query = $connection->query('SHOW GLOBAL VARIABLES');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['global_variables'][$row['Variable_name']] = $row['Value'];
-                }
+        $query = $connection->query('SHOW GLOBAL VARIABLES');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['global_variables'][$row['Variable_name']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
 
-        try {
-            $query = $connection->query('SHOW STATUS');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['status'][$row['Counter']] = $row['Value'];
-                }
+        $query = $connection->query('SHOW STATUS');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['status'][$row['Counter']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
 
-        try {
-            $query = $connection->query('SHOW SETTINGS');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['settings'][$row['Setting_name']] = $row['Value'];
-                }
+        $query = $connection->query('SHOW SETTINGS');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['settings'][$row['Setting_name']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
 
-        try {
-            $query = $connection->query('SHOW AGENT STATUS');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['agent_status'][$row['Key']] = $row['Value'];
-                }
+        $query = $connection->query('SHOW AGENT STATUS');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['agent_status'][$row['Key']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
 
         return $result;

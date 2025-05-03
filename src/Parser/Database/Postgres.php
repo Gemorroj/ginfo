@@ -166,14 +166,10 @@ final readonly class Postgres implements ParserInterface
             'pg_stat_statements' => [],
         ];
 
-        try {
-            $query = $connection->query('SELECT version()');
-            if ($query) {
-                $row = $query->fetch(\PDO::FETCH_ASSOC);
-                $result['version'] = $row['version'];
-            }
-        } catch (\Exception) {
-            // ignore
+        $query = $connection->query('SELECT version()');
+        if ($query) {
+            $row = $query->fetch(\PDO::FETCH_ASSOC);
+            $result['version'] = $row['version'];
         }
 
         try {

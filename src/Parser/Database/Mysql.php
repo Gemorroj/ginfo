@@ -57,25 +57,18 @@ final readonly class Mysql implements ParserInterface
             'data_length' => [],
         ];
 
-        try {
-            $query = $connection->query('SHOW GLOBAL STATUS');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['global_status'][$row['Variable_name']] = $row['Value'];
-                }
+        $query = $connection->query('SHOW GLOBAL STATUS');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['global_status'][$row['Variable_name']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
-        try {
-            $query = $connection->query('SHOW GLOBAL VARIABLES');
-            if ($query) {
-                foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                    $result['global_variables'][$row['Variable_name']] = $row['Value'];
-                }
+
+        $query = $connection->query('SHOW GLOBAL VARIABLES');
+        if ($query) {
+            foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $result['global_variables'][$row['Variable_name']] = $row['Value'];
             }
-        } catch (\Exception) {
-            // ignore
         }
 
         try {

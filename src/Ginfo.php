@@ -17,6 +17,9 @@ use Ginfo\Info\Database\PostgresPgStatAllTables;
 use Ginfo\Info\Database\PostgresPgStatDatabase;
 use Ginfo\Info\Database\PostgresPgStatStatements;
 use Ginfo\Info\Database\Redis;
+use Ginfo\Info\Database\Sqlite;
+use Ginfo\Info\Database\SqlitePragma;
+use Ginfo\Info\Database\SqlitePragmaTable;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
@@ -637,6 +640,61 @@ final readonly class Ginfo
             $pgStatAllTables,
             $pgStatAllIndexes,
             $pgStatStatements,
+        );
+    }
+
+    /**
+     * Sqlite status.
+     */
+    public function getSqlite(\PDO $connection): ?Sqlite
+    {
+        $data = (new Parser\Database\Sqlite())->run($connection);
+        if (!$data) {
+            return null;
+        }
+
+        $pragmaTableList = [];
+        foreach ($data['pragma']['table_list'] as $v) {
+            $pragmaTableList[] = new SqlitePragmaTable(
+                $v['schema'],
+                $v['name'],
+                $v['type'],
+                $v['ncol'],
+                $v['wr'],
+                $v['strict'],
+            );
+        }
+
+        $pragma = new SqlitePragma(
+            $data['pragma']['auto_vacuum'],
+            $data['pragma']['automatic_index'],
+            $data['pragma']['busy_timeout'],
+            $data['pragma']['cache_size'],
+            $data['pragma']['encoding'],
+            $data['pragma']['ignore_check_constraints'],
+            $data['pragma']['incremental_vacuum'],
+            $data['pragma']['journal_mode'],
+            $data['pragma']['journal_size_limit'],
+            $data['pragma']['locking_mode'],
+            $data['pragma']['page_count'],
+            $data['pragma']['page_size'],
+            $data['pragma']['quick_check'],
+            $data['pragma']['read_uncommitted'],
+            $data['pragma']['secure_delete'],
+            $data['pragma']['synchronous'],
+            $data['pragma']['threads'],
+            $data['pragma']['trusted_schema'],
+            $data['pragma']['wal_autocheckpoint'],
+            $data['pragma']['collation_list'],
+            $data['pragma']['compile_options'],
+            $pragmaTableList,
+        );
+
+        return new Sqlite(
+            $data['sqlite_version'],
+            $data['sqlite_source_id'],
+            $data['db_size'],
+            $pragma,
         );
     }
 
