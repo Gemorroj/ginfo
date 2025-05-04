@@ -13,9 +13,9 @@ final readonly class Free implements ParserInterface
      *
      * @return array{total: float, used: float, free: float, shared: float|null, buffers: float|null, cached: float|null, available: float|null, swapTotal: float|null, swapUsed: float|null, swapFree: float|null}|null
      */
-    public function run(?string $cwd = null): ?array
+    public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['free', '-bw'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['free', '-bw'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

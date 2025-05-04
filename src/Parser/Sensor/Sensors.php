@@ -14,9 +14,9 @@ final readonly class Sensors implements ParserInterface
      *
      * @return array{path: string|null, name: string, value: float, unit: string}[]|null
      */
-    public function run(?string $cwd = null): ?array
+    public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['sensors'], $cwd, ['LANG=C']);
+        $process = new Process(['sensors'], $cwd, ['LANG=C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

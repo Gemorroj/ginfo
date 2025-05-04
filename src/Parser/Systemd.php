@@ -14,18 +14,18 @@ final readonly class Systemd implements ParserInterface
      *
      * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
      */
-    public function run(string $type = Service::TYPE_SERVICE, ?string $cwd = null): ?array
+    public function run(string $type = Service::TYPE_SERVICE, ?string $cwd = null, int $timeout = 1): ?array
     {
         return match ($type) {
-            Service::TYPE_SERVICE => self::services($cwd),
-            Service::TYPE_TARGET => self::targets($cwd),
+            Service::TYPE_SERVICE => self::services($cwd, $timeout),
+            Service::TYPE_TARGET => self::targets($cwd, $timeout),
             default => null,
         };
     }
 
-    private static function targets(?string $cwd = null): ?array
+    private static function targets(?string $cwd, int $timeout): ?array
     {
-        $process = new Process(['systemctl', 'list-units', '--type', 'target', '--all'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['systemctl', 'list-units', '--type', 'target', '--all'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -55,9 +55,9 @@ final readonly class Systemd implements ParserInterface
         return $out;
     }
 
-    private static function services(?string $cwd = null): ?array
+    private static function services(?string $cwd, int $timeout): ?array
     {
-        $process = new Process(['systemctl', 'list-units', '--type', 'service', '--all'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['systemctl', 'list-units', '--type', 'service', '--all'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

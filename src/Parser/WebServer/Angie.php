@@ -17,9 +17,9 @@ final readonly class Angie implements ParserInterface
      *
      * @return array{angie_version: string, nginx_version: string, build_date: \DateTimeImmutable|null, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public function run(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null, int $timeout = 1): ?array
     {
-        $process = new Process(['angie', '-V'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['angie', '-V'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -60,7 +60,7 @@ final readonly class Angie implements ParserInterface
         }
 
         if ($statusPage) {
-            $httpClient ??= HttpClient::create();
+            $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);
             try {
                 $res['status'] = $httpClient->request('GET', $statusPage)->toArray();
             } catch (\Exception $e) {

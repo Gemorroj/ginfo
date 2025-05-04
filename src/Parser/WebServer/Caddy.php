@@ -22,7 +22,7 @@ final readonly class Caddy implements ParserInterface
      *     config: array|null
      * }|null
      */
-    public function run(?string $configPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?array
+    public function run(?string $configPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null, int $timeout = 1): ?array
     {
         $res = [
             'version' => '',
@@ -32,7 +32,7 @@ final readonly class Caddy implements ParserInterface
         ];
 
         // version
-        $process = new Process(['caddy', 'version'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['caddy', 'version'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -79,7 +79,7 @@ final readonly class Caddy implements ParserInterface
         }
 
         if ($configPage) {
-            $httpClient ??= HttpClient::create();
+            $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);
             try {
                 $res['config'] = $httpClient->request('GET', $configPage)->toArray();
             } catch (\Exception $e) {

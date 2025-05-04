@@ -14,9 +14,9 @@ final readonly class Sestatus implements ParserInterface
      *
      * @return array{enabled: bool, mode: string|null, policy: string|null}|null
      */
-    public function run(?string $cwd = null): ?array
+    public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['sestatus'], $cwd, ['LANG' => 'C']);
+        $process = new Process(['sestatus'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
