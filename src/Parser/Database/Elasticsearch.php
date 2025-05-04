@@ -78,7 +78,6 @@ final readonly class Elasticsearch implements ParserInterface
         }
 
         $stats = \file_get_contents($statsPage, false, \stream_context_create($context));
-        \var_dump($stats);
         $json = \json_decode($stats, true, 512, \JSON_THROW_ON_ERROR);
 
         $result['stats'] = [

@@ -85,7 +85,6 @@ jobs:
           discovery.type: single-node
         ports:
           - 9200:9200
-          - 9600:9600
 
     steps:
       - name: Set git to use LF
