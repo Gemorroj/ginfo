@@ -253,7 +253,7 @@ final readonly class Postgres implements ParserInterface
                         'schemaname' => $row['schemaname'],
                         'relname' => $row['relname'],
                         'seq_scan' => self::convertToNumber($row['seq_scan']),
-                        'last_seq_scan' => $row['stats_reset'] ? new \DateTimeImmutable($row['last_seq_scan']) : null,
+                        'last_seq_scan' => $row['last_seq_scan'] ? new \DateTimeImmutable($row['last_seq_scan']) : null,
                         'seq_tup_read' => self::convertToNumber($row['seq_tup_read']),
                         'idx_scan' => self::convertToNumber($row['idx_scan']),
                         'last_idx_scan' => $row['last_idx_scan'] ? new \DateTimeImmutable($row['last_idx_scan']) : null,

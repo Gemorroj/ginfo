@@ -94,6 +94,7 @@ final readonly class Mongo implements ParserInterface
         $result['serverStatus']['pid'] = $serverStatus->pid;
         $result['serverStatus']['uptime'] = $serverStatus->uptime;
         $result['serverStatus']['localTime'] = $serverStatus->localTime->toDateTimeImmutable();
+        \var_dump($serverStatus->extra_info);
         $result['serverStatus']['page_faults'] = $serverStatus->extra_info->page_faults;
         $result['serverStatus']['usagePageFileMB'] = $serverStatus->extra_info->usagePageFileMB;
         $result['serverStatus']['totalPageFileMB'] = $serverStatus->extra_info->totalPageFileMB;

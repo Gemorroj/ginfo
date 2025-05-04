@@ -224,17 +224,15 @@ final class Hwpci implements ParserInterface
      */
     private static function makeResult(array $allDevices): array
     {
-        $sortType = [];
         $sortVendor = [];
         $sortDevice = [];
 
         foreach ($allDevices as $device) {
-            $sortType[] = $device['type'];
             $sortVendor[] = $device['vendor'];
             $sortDevice[] = $device['device'];
         }
 
-        \array_multisort($sortType, \SORT_ASC, $sortVendor, \SORT_ASC, $sortDevice, \SORT_ASC, $allDevices);
+        \array_multisort($sortVendor, \SORT_ASC, $sortDevice, \SORT_ASC, $allDevices);
 
         return $allDevices;
     }
