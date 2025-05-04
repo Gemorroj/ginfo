@@ -403,21 +403,21 @@ class Linux implements OsInterface
                 $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias', ''));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
-                $ueventContents = Common::getIni($path.'/uevent');
+                $ueventContents = @\parse_ini_file($path.'/uevent');
 
                 if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
                     $type = \ucfirst($ueventContents['DEVTYPE']);
                     if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                         $type .= ' ('.$typeMatch.')';
                     }
-                    $deviceUeventContents = Common::getIni($path.'/device/uevent');
+                    $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
                     if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
                         $type .= ' ('.$deviceUeventContents['DRIVER'].')';
                     }
                 } elseif (\in_array($typeMatch, ['PCI', 'USB'], true)) {
                     $type = 'Ethernet ('.$typeMatch.')';
 
-                    $deviceUeventContents = Common::getIni($path.'/device/uevent');
+                    $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
                     if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
                         $type .= ' ('.$deviceUeventContents['DRIVER'].')';
                     }
@@ -497,8 +497,8 @@ class Linux implements OsInterface
 
     public function getSoundCards(): ?array
     {
-        $lines = Common::getLines('/proc/asound/cards');
-        if (null === $lines) {
+        $lines = @\file('/proc/asound/cards', \FILE_SKIP_EMPTY_LINES);
+        if (false === $lines) {
             return null;
         }
 
@@ -614,12 +614,12 @@ class Linux implements OsInterface
             }
         }
 
-        $lsbRelease = Common::getIni('/etc/lsb-release');
+        $lsbRelease = @\parse_ini_file('/etc/lsb-release');
         if ($lsbRelease) {
             return $lsbRelease['DISTRIB_DESCRIPTION'];
         }
 
-        $suseRelease = Common::getLines('/etc/SuSE-release');
+        $suseRelease = @\file('/etc/SuSE-release', \FILE_SKIP_EMPTY_LINES);
         if ($suseRelease) {
             return $suseRelease[0];
         }

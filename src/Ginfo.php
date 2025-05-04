@@ -994,7 +994,7 @@ final readonly class Ginfo
             \PHP_VERSION,
             \PHP_SAPI,
             \ZEND_THREAD_SAFE,
-            (int) Common::convertHumanSizeToBytes((string) \ini_get('memory_limit')),
+            (int) self::convertHumanSizeToBytes((string) \ini_get('memory_limit')),
             \get_loaded_extensions(),
             \get_loaded_extensions(true),
             (string) \php_ini_loaded_file(),
@@ -1006,7 +1006,25 @@ final readonly class Ginfo
             $apcu,
             $fpm,
             \realpath_cache_size(),
-            Common::convertHumanSizeToBytes((string) \ini_get('realpath_cache_size')),
+            self::convertHumanSizeToBytes((string) \ini_get('realpath_cache_size')),
         );
+    }
+
+    private static function convertHumanSizeToBytes(string $humanSize): ?float
+    {
+        $lastLetter = \substr($humanSize, -1);
+        if (\is_numeric($lastLetter)) {
+            return (float) $humanSize;
+        }
+
+        $size = \substr($humanSize, 0, -1);
+
+        return match (\strtolower($lastLetter)) {
+            'b' => (float) $size,
+            'k' => (float) $size * 1024,
+            'm' => (float) $size * 1024 * 1024,
+            'g' => (float) $size * 1024 * 1024 * 1024,
+            default => null,
+        };
     }
 }

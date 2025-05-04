@@ -18,7 +18,7 @@ final class Hwpci implements ParserInterface
     public function run(string $mode = self::MODE_PCI): ?array
     {
         if (self::MODE_PCI === $mode) {
-            $pciIdsFile = Common::locateActualPath([
+            $pciIdsFile = self::locateActualPath([
                 '/usr/share/misc/pci.ids',   // debian/ubuntu
                 '/usr/share/pci.ids',        // opensuse
                 '/usr/share/hwdata/pci.ids', // centos. maybe also redhat/fedora
@@ -35,7 +35,7 @@ final class Hwpci implements ParserInterface
         }
 
         if (self::MODE_USB === $mode) {
-            $usbIdsFile = Common::locateActualPath([
+            $usbIdsFile = self::locateActualPath([
                 '/usr/share/misc/usb.ids',   // debian/ubuntu
                 '/usr/share/usb.ids',        // opensuse
                 '/usr/share/hwdata/usb.ids', // centos. maybe also redhat/fedora
@@ -237,5 +237,19 @@ final class Hwpci implements ParserInterface
         \array_multisort($sortType, \SORT_ASC, $sortVendor, \SORT_ASC, $sortDevice, \SORT_ASC, $allDevices);
 
         return $allDevices;
+    }
+
+    /**
+     * @param string[] $paths
+     */
+    private static function locateActualPath(array $paths): ?string
+    {
+        foreach ($paths as $path) {
+            if (\file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 }
