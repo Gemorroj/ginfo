@@ -7,7 +7,7 @@ use Ginfo\Parser\ParserInterface;
 final readonly class Elasticsearch implements ParserInterface
 {
     /**
-     * @param string $statsPage uri for json stats page https://localhost:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
+     * @param string $statsPage uri for json stats page https://127.0.0.1:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
      *
      * @return array{
      *     stats: array{
@@ -59,7 +59,7 @@ final readonly class Elasticsearch implements ParserInterface
      *     }
      * }|null
      */
-    public function run(string $statsPage = 'https://localhost:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?array
+    public function run(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?array
     {
         $result = [
             'stats' => [],

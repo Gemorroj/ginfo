@@ -487,9 +487,9 @@ final readonly class Ginfo
     /**
      * Elasticsearch/Opensearch status.
      *
-     * @param string $statsPage uri for json stats page https://localhost:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
+     * @param string $statsPage uri for json stats page https://127.0.0.1:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
      */
-    public function getElasticsearch(string $statsPage = 'https://localhost:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?Elasticsearch
+    public function getElasticsearch(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?Elasticsearch
     {
         $data = (new Parser\Database\Elasticsearch())->run($statsPage, $username, $password);
         if (!$data) {
