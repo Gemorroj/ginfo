@@ -5,6 +5,10 @@ namespace Ginfo;
 use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
+use Ginfo\Info\Database\Elasticsearch;
+use Ginfo\Info\Database\ElasticsearchStats;
+use Ginfo\Info\Database\ElasticsearchStatsIndices;
+use Ginfo\Info\Database\ElasticsearchStatsNodes;
 use Ginfo\Info\Database\Manticore;
 use Ginfo\Info\Database\Memcached;
 use Ginfo\Info\Database\Mongo;
@@ -252,6 +256,9 @@ final readonly class Ginfo
 
     /**
      * Nginx status.
+     *
+     * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://nginx.org/en/docs/http/ngx_http_api_module.html
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
     public function getNginx(?string $statusPage = null, ?string $cwd = null): ?Nginx
     {
@@ -271,6 +278,9 @@ final readonly class Ginfo
 
     /**
      * Angie status.
+     *
+     * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://angie.software/angie/docs/configuration/modules/http/http_stub_status/
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
     public function getAngie(?string $statusPage = null, ?string $cwd = null): ?Angie
     {
@@ -292,6 +302,9 @@ final readonly class Ginfo
 
     /**
      * Apache httpd status.
+     *
+     * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
     public function getHttpd(?string $statusPage = null, ?string $cwd = null): ?Httpd
     {
@@ -334,6 +347,9 @@ final readonly class Ginfo
 
     /**
      * Caddy status.
+     *
+     * @param string|null $configPage uri for config page http://localhost:2019/config/ for example. see https://caddyserver.com/docs/api#get-configpath
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
     public function getCaddy(?string $configPage = null, ?string $cwd = null): ?Caddy
     {
@@ -466,6 +482,72 @@ final readonly class Ginfo
             $data['settings'],
             $data['agent_status'],
         );
+    }
+
+    /**
+     * Elasticsearch/Opensearch status.
+     *
+     * @param string $statsPage uri for json stats page https://localhost:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
+     */
+    public function getElasticsearch(string $statsPage = 'https://localhost:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?Elasticsearch
+    {
+        $data = (new Parser\Database\Elasticsearch())->run($statsPage, $username, $password);
+        if (!$data) {
+            return null;
+        }
+
+        $statsNodes = new ElasticsearchStatsNodes(
+            $data['stats']['nodes']['count'],
+            $data['stats']['nodes']['versions'],
+            $data['stats']['nodes']['available_processors'],
+            $data['stats']['nodes']['allocated_processors'],
+            $data['stats']['nodes']['mem_total_in_bytes'],
+            $data['stats']['nodes']['mem_free_in_bytes'],
+            $data['stats']['nodes']['mem_used_in_bytes'],
+            $data['stats']['nodes']['mem_free_percent'],
+            $data['stats']['nodes']['mem_used_percent'],
+            $data['stats']['nodes']['process_cpu_percent'],
+            $data['stats']['nodes']['process_open_file_descriptors_min'],
+            $data['stats']['nodes']['process_open_file_descriptors_max'],
+            $data['stats']['nodes']['process_open_file_descriptors_avg'],
+            $data['stats']['nodes']['jvm_versions'],
+            $data['stats']['nodes']['jvm_mem_heap_used_in_bytes'],
+            $data['stats']['nodes']['jvm_mem_heap_max_in_bytes'],
+            $data['stats']['nodes']['jvm_threads'],
+            $data['stats']['nodes']['fs_total_in_bytes'],
+            $data['stats']['nodes']['fs_free_in_bytes'],
+            $data['stats']['nodes']['fs_available_in_bytes'],
+            $data['stats']['nodes']['fs_cache_reserved_in_bytes'],
+            $data['stats']['nodes']['plugins'],
+        );
+        $statsIndices = new ElasticsearchStatsIndices(
+            $data['stats']['indices']['count'],
+            $data['stats']['indices']['store_size_in_bytes'],
+            $data['stats']['indices']['store_reserved_in_bytes'],
+            $data['stats']['indices']['fielddata_memory_size_in_bytes'],
+            $data['stats']['indices']['fielddata_evictions'],
+            $data['stats']['indices']['query_cache_memory_size_in_bytes'],
+            $data['stats']['indices']['query_cache_total_count'],
+            $data['stats']['indices']['query_cache_hit_count'],
+            $data['stats']['indices']['query_cache_miss_count'],
+            $data['stats']['indices']['query_cache_cache_size'],
+            $data['stats']['indices']['query_cache_cache_count'],
+            $data['stats']['indices']['query_cache_evictions'],
+            $data['stats']['indices']['completion_size_in_bytes'],
+            $data['stats']['indices']['segments_count'],
+            $data['stats']['indices']['segments_memory_in_bytes'],
+        );
+
+        $stats = new ElasticsearchStats(
+            $data['stats']['cluster_name'],
+            $data['stats']['cluster_uuid'],
+            $data['stats']['timestamp'],
+            $data['stats']['status'],
+            $statsNodes,
+            $statsIndices,
+        );
+
+        return new Elasticsearch($stats);
     }
 
     /**

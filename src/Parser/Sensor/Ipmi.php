@@ -13,6 +13,8 @@ use Symfony\Component\Process\Process;
 final readonly class Ipmi implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
     public function run(?string $cwd = null): ?array

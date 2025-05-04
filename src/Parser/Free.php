@@ -9,6 +9,8 @@ use Symfony\Component\Process\Process;
 final readonly class Free implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{total: float, used: float, free: float, shared: float|null, buffers: float|null, cached: float|null, available: float|null, swapTotal: float|null, swapUsed: float|null, swapFree: float|null}|null
      */
     public function run(?string $cwd = null): ?array

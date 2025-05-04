@@ -11,6 +11,7 @@ final readonly class Caddy implements ParserInterface
 {
     /**
      * @param string|null $configPage uri for config page http://localhost:2019/config/ for example. see https://caddyserver.com/docs/api#get-configpath
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      *
      * @return array{
      *     version: string,

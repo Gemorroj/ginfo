@@ -57,6 +57,7 @@ $memcached = new \Memcached();
 $memcached->addServer('127.0.0.1', 11211);
 print_r($ginfo->getMemcached($memcached)); // version, stats, etc...
 print_r($ginfo->getMongo(new \MongoDB\Driver\Manager('mongodb://127.0.0.1:27017'))); // version, stats, etc...
+print_r($ginfo->getElasticsearch('https://localhost:9200/_cluster/stats', 'user', 'pass'); // version, stats, etc...
 ```
 
 ### Custom parser example:
@@ -119,7 +120,7 @@ print_r($data->getStats());
 - Selinux status (linux: need `sestatus`)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
-- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`)
+- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`, `elasticsearch/opensearch`)
 
 
 ### Fork changes:
@@ -136,5 +137,5 @@ print_r($data->getStats());
 - add selinux status info
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
-- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb)
+- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb, elasticsearch/opensearch)
 - allow add custom parsers

@@ -10,6 +10,8 @@ use Symfony\Component\Process\Process;
 final readonly class Apcaccess implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{name: string, model: string, batteryVolts: float, batteryCharge: float, timeLeft: int, currentLoad: float, status: string}|null
      */
     public function run(?string $cwd = null): ?array

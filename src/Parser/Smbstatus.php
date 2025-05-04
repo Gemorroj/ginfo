@@ -12,6 +12,8 @@ use Symfony\Component\Process\Process;
 final readonly class Smbstatus implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{
      *     connections: array{pid: int|null, user: string|null, group: string|null, host: string|null, ip: string|null, protocolVersion: string|null, encryption: string|null, signing: string|null}[],
      *     services: array{pid: int|null, service: string|null, machine: string|null, connectedAt: \DateTimeImmutable|null, encryption: string|null, signing: string|null}[],

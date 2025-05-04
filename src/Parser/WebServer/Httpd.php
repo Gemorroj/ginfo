@@ -11,6 +11,7 @@ final readonly class Httpd implements ParserInterface
 {
     /**
      * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      *
      * @return array{
      *     version: string,

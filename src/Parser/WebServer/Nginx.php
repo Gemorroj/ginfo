@@ -11,6 +11,7 @@ final readonly class Nginx implements ParserInterface
 {
     /**
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://nginx.org/en/docs/http/ngx_http_api_module.html
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      *
      * @return array{nginx_version: string, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */

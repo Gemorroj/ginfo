@@ -10,6 +10,8 @@ use Symfony\Component\Process\Process;
 final readonly class Systemd implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
      */
     public function run(string $type = Service::TYPE_SERVICE, ?string $cwd = null): ?array

@@ -23,6 +23,8 @@
         "mariadb",
         "postgres",
         "manticore",
+        "elasticsearch",
+        "opensearch",
         "sqlite",
         "nginx",
         "angie",

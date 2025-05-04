@@ -11,6 +11,7 @@ final readonly class Angie implements ParserInterface
 {
     /**
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://angie.software/angie/docs/configuration/modules/http/http_stub_status/
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      *
      * @return array{angie_version: string, nginx_version: string, build_date: \DateTimeImmutable|null, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */

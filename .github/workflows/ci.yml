@@ -78,6 +78,12 @@ jobs:
         image: mongo
         ports:
           - 27017:27017
+      opensearch:
+        image: opensearchproject/opensearch:2
+        env:
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: Qdfg!_13dZ
+        ports:
+          - 9200:9200
 
     steps:
       - name: Set git to use LF

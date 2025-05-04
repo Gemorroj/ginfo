@@ -64,6 +64,9 @@ class Linux implements OsInterface
         return \php_uname('n');
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getMemory(?string $cwd = null): ?Memory
     {
         $data = (new Free())->run($cwd);
@@ -248,6 +251,9 @@ class Linux implements OsInterface
         return $out;
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getSensors(?string $cwd = null): ?array
     {
         $return = [];
@@ -561,6 +567,9 @@ class Linux implements OsInterface
         return $result;
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getServices(?string $cwd = null): ?array
     {
         $systemd = new Systemd();
@@ -623,6 +632,9 @@ class Linux implements OsInterface
         return \PHP_OS;
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getLoggedUsers(?string $cwd = null): ?array
     {
         return (new Who())->run($cwd);
@@ -728,6 +740,9 @@ class Linux implements OsInterface
         return $infoStr;
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getUps(?string $cwd = null): ?Ups
     {
         $ups = (new Apcaccess())->run($cwd);
@@ -738,6 +753,9 @@ class Linux implements OsInterface
         return new Ups($ups['name'], $ups['model'], $ups['batteryVolts'], $ups['batteryCharge'], $ups['timeLeft'], $ups['currentLoad'], $ups['status']);
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getPrinters(?string $cwd = null): ?array
     {
         $printers = (new Lpstat())->run($cwd);
@@ -753,6 +771,9 @@ class Linux implements OsInterface
         return $out;
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getSamba(?string $cwd = null): ?Samba
     {
         $data = (new Smbstatus())->run($cwd);
@@ -804,6 +825,9 @@ class Linux implements OsInterface
         return new Samba($files, $services, $connections);
     }
 
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
     public function getSelinux(?string $cwd = null): ?Selinux
     {
         $data = (new Sestatus())->run($cwd);

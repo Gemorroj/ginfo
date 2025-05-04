@@ -10,6 +10,8 @@ use Symfony\Component\Process\Process;
 final readonly class Sestatus implements ParserInterface
 {
     /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     *
      * @return array{enabled: bool, mode: string|null, policy: string|null}|null
      */
     public function run(?string $cwd = null): ?array
