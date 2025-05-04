@@ -16,10 +16,6 @@ final readonly class Mongo implements ParserInterface
      *         uptime: int|float,
      *         localTime: \DateTimeImmutable,
      *         page_faults: int|float,
-     *         usagePageFileMB: int,
-     *         totalPageFileMB: int,
-     *         availPageFileMB: int,
-     *         ramMB: int,
      *         network: array{
      *             bytesIn: int|float,
      *             bytesOut: int|float,
@@ -88,7 +84,6 @@ final readonly class Mongo implements ParserInterface
 
         $cursorServerStatus = $connection->executeCommand('admin', new \MongoDB\Driver\Command(['serverStatus' => 1]));
         $serverStatus = \current($cursorServerStatus->toArray());
-        \var_dump($serverStatus);
         $result['serverStatus']['host'] = $serverStatus->host;
         $result['serverStatus']['version'] = $serverStatus->version;
         $result['serverStatus']['process'] = $serverStatus->process;
@@ -96,10 +91,6 @@ final readonly class Mongo implements ParserInterface
         $result['serverStatus']['uptime'] = $serverStatus->uptime;
         $result['serverStatus']['localTime'] = $serverStatus->localTime->toDateTimeImmutable();
         $result['serverStatus']['page_faults'] = $serverStatus->extra_info->page_faults;
-        $result['serverStatus']['usagePageFileMB'] = $serverStatus->extra_info->usagePageFileMB;
-        $result['serverStatus']['totalPageFileMB'] = $serverStatus->extra_info->totalPageFileMB;
-        $result['serverStatus']['availPageFileMB'] = $serverStatus->extra_info->availPageFileMB;
-        $result['serverStatus']['ramMB'] = $serverStatus->extra_info->ramMB;
 
         $result['serverStatus']['network']['bytesIn'] = $serverStatus->network->bytesIn;
         $result['serverStatus']['network']['bytesOut'] = $serverStatus->network->bytesOut;

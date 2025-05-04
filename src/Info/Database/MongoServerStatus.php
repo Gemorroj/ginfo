@@ -12,10 +12,6 @@ final readonly class MongoServerStatus
         private int|float $uptime,
         private \DateTimeImmutable $localTime,
         private int|float $pageFaults,
-        private int $usagePageFileMB,
-        private int $totalPageFileMB,
-        private int $availPageFileMB,
-        private int $ramMB,
         private MongoServerStatusNetwork $network,
         private MongoServerStatusCounters $counters,
         private MongoServerStatusConnections $connections,
@@ -55,26 +51,6 @@ final readonly class MongoServerStatus
     public function getPageFaults(): float|int
     {
         return $this->pageFaults;
-    }
-
-    public function getUsagePageFileMB(): int
-    {
-        return $this->usagePageFileMB;
-    }
-
-    public function getTotalPageFileMB(): int
-    {
-        return $this->totalPageFileMB;
-    }
-
-    public function getAvailPageFileMB(): int
-    {
-        return $this->availPageFileMB;
-    }
-
-    public function getRamMB(): int
-    {
-        return $this->ramMB;
     }
 
     public function getNetwork(): MongoServerStatusNetwork

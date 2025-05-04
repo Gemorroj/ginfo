@@ -752,10 +752,6 @@ final readonly class Ginfo
             $data['serverStatus']['uptime'],
             $data['serverStatus']['localTime'],
             $data['serverStatus']['page_faults'],
-            $data['serverStatus']['usagePageFileMB'],
-            $data['serverStatus']['totalPageFileMB'],
-            $data['serverStatus']['availPageFileMB'],
-            $data['serverStatus']['ramMB'],
             new MongoServerStatusNetwork(
                 $data['serverStatus']['network']['bytesIn'],
                 $data['serverStatus']['network']['bytesOut'],
