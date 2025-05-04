@@ -82,8 +82,10 @@ jobs:
         image: opensearchproject/opensearch:2
         env:
           OPENSEARCH_INITIAL_ADMIN_PASSWORD: Qdfg!_13dZ
+          discovery.type: single-node
         ports:
           - 9200:9200
+          - 9600:9600
 
     steps:
       - name: Set git to use LF
