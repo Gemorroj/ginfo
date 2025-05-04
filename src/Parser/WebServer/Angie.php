@@ -3,9 +3,11 @@
 namespace Ginfo\Parser\WebServer;
 
 use Ginfo\Parser\ParserInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Angie implements ParserInterface
 {
@@ -15,7 +17,7 @@ final readonly class Angie implements ParserInterface
      *
      * @return array{angie_version: string, nginx_version: string, build_date: \DateTimeImmutable|null, crypto: string, tls_sni: bool, args: string, status: array|null}|null
      */
-    public function run(?string $statusPage = null, ?string $cwd = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?array
     {
         $process = new Process(['angie', '-V'], $cwd, ['LANG' => 'C']);
         try {
@@ -58,13 +60,11 @@ final readonly class Angie implements ParserInterface
         }
 
         if ($statusPage) {
-            $statusPageContent = @\file_get_contents($statusPage);
-            if (false !== $statusPageContent) {
-                try {
-                    $res['status'] = \json_decode($statusPageContent, true, 512, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException $e) {
-                    // ignore
-                }
+            $httpClient ??= HttpClient::create();
+            try {
+                $res['status'] = $httpClient->request('GET', $statusPage)->toArray();
+            } catch (\Exception $e) {
+                // ignore
             }
         }
 

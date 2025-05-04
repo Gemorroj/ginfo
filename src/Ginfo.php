@@ -57,6 +57,7 @@ use Ginfo\Info\WebServer\HttpdStatus;
 use Ginfo\Info\WebServer\Nginx;
 use Ginfo\Os\Linux;
 use Ginfo\Os\OsInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Ginfo
 {
@@ -260,9 +261,9 @@ final readonly class Ginfo
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://nginx.org/en/docs/http/ngx_http_api_module.html
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
-    public function getNginx(?string $statusPage = null, ?string $cwd = null): ?Nginx
+    public function getNginx(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Nginx
     {
-        $data = (new Parser\WebServer\Nginx())->run($statusPage, $cwd);
+        $data = (new Parser\WebServer\Nginx())->run($statusPage, $cwd, $httpClient);
         if (!$data) {
             return null;
         }
@@ -282,9 +283,9 @@ final readonly class Ginfo
      * @param string|null $statusPage uri for json status page http://localhost/status/ for example. see https://angie.software/angie/docs/configuration/modules/http/http_stub_status/
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
-    public function getAngie(?string $statusPage = null, ?string $cwd = null): ?Angie
+    public function getAngie(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Angie
     {
-        $data = (new Parser\WebServer\Angie())->run($statusPage, $cwd);
+        $data = (new Parser\WebServer\Angie())->run($statusPage, $cwd, $httpClient);
         if (!$data) {
             return null;
         }
@@ -306,9 +307,9 @@ final readonly class Ginfo
      * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
-    public function getHttpd(?string $statusPage = null, ?string $cwd = null): ?Httpd
+    public function getHttpd(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Httpd
     {
-        $data = (new Parser\WebServer\Httpd())->run($statusPage, $cwd);
+        $data = (new Parser\WebServer\Httpd())->run($statusPage, $cwd, $httpClient);
         if (!$data) {
             return null;
         }
@@ -351,9 +352,9 @@ final readonly class Ginfo
      * @param string|null $configPage uri for config page http://localhost:2019/config/ for example. see https://caddyserver.com/docs/api#get-configpath
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
-    public function getCaddy(?string $configPage = null, ?string $cwd = null): ?Caddy
+    public function getCaddy(?string $configPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Caddy
     {
-        $data = (new Parser\WebServer\Caddy())->run($configPage, $cwd);
+        $data = (new Parser\WebServer\Caddy())->run($configPage, $cwd, $httpClient);
         if (!$data) {
             return null;
         }
@@ -489,9 +490,9 @@ final readonly class Ginfo
      *
      * @param string $statsPage uri for json stats page https://127.0.0.1:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
      */
-    public function getElasticsearch(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?Elasticsearch
+    public function getElasticsearch(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): ?Elasticsearch
     {
-        $data = (new Parser\Database\Elasticsearch())->run($statsPage, $username, $password);
+        $data = (new Parser\Database\Elasticsearch())->run($statsPage, $username, $password, $httpClient);
         if (!$data) {
             return null;
         }

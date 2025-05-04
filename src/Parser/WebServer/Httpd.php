@@ -3,9 +3,11 @@
 namespace Ginfo\Parser\WebServer;
 
 use Ginfo\Parser\ParserInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Httpd implements ParserInterface
 {
@@ -38,7 +40,7 @@ final readonly class Httpd implements ParserInterface
      *     }|null
      * }|null
      */
-    public function run(?string $statusPage = null, ?string $cwd = null): ?array
+    public function run(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?array
     {
         $process = new Process(['httpd', '-V'], $cwd, ['LANG' => 'C']);
         try {
@@ -82,8 +84,9 @@ final readonly class Httpd implements ParserInterface
         }
 
         if ($statusPage) {
-            $statusPageContent = @\file_get_contents($statusPage);
-            if (false !== $statusPageContent) {
+            $httpClient ??= HttpClient::create();
+            try {
+                $statusPageContent = $httpClient->request('GET', $statusPage)->getContent();
                 $statusPageLines = \explode("\n", \trim($statusPageContent));
                 foreach ($statusPageLines as $line) {
                     if (\str_starts_with($line, '<dt>Server uptime:')) {
@@ -153,6 +156,8 @@ final readonly class Httpd implements ParserInterface
                         }
                     }
                 }
+            } catch (\Exception $e) {
+                // ignore
             }
         }
 

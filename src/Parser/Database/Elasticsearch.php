@@ -3,6 +3,8 @@
 namespace Ginfo\Parser\Database;
 
 use Ginfo\Parser\ParserInterface;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Elasticsearch implements ParserInterface
 {
@@ -59,27 +61,17 @@ final readonly class Elasticsearch implements ParserInterface
      *     }
      * }|null
      */
-    public function run(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null): ?array
+    public function run(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): ?array
     {
-        $result = [
-            'stats' => [],
-        ];
+        $httpClient ??= HttpClient::create();
 
-        $context = [
-            'ssl' => [
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-            ],
-        ];
+        $options = [];
         if ($username || $password) {
-            $context['http'] = [
-                'header' => 'Authorization: Basic '.\base64_encode($username.':'.$password),
-            ];
+            $options['auth_basic'] = [$username, $password];
         }
+        $json = $httpClient->request('GET', $statsPage, $options)->toArray();
 
-        $stats = \file_get_contents($statsPage, false, \stream_context_create($context));
-        $json = \json_decode($stats, true, 512, \JSON_THROW_ON_ERROR);
-
+        $result = [];
         $result['stats'] = [
             'cluster_name' => $json['cluster_name'],
             'cluster_uuid' => $json['cluster_uuid'],

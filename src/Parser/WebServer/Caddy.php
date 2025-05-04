@@ -3,9 +3,11 @@
 namespace Ginfo\Parser\WebServer;
 
 use Ginfo\Parser\ParserInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Caddy implements ParserInterface
 {
@@ -20,7 +22,7 @@ final readonly class Caddy implements ParserInterface
      *     config: array|null
      * }|null
      */
-    public function run(?string $configPage = null, ?string $cwd = null): ?array
+    public function run(?string $configPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?array
     {
         $res = [
             'version' => '',
@@ -77,13 +79,11 @@ final readonly class Caddy implements ParserInterface
         }
 
         if ($configPage) {
-            $configPageContent = @\file_get_contents($configPage);
-            if (false !== $configPageContent) {
-                try {
-                    $res['config'] = \json_decode($configPageContent, true, 512, \JSON_THROW_ON_ERROR);
-                } catch (\JsonException $e) {
-                    // ignore
-                }
+            $httpClient ??= HttpClient::create();
+            try {
+                $res['config'] = $httpClient->request('GET', $configPage)->toArray();
+            } catch (\Exception $e) {
+                // ignore
             }
         }
 
