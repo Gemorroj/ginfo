@@ -9,7 +9,7 @@ final class ElasticsearchTest extends TestCase
 {
     public function testElasticsearch(): void
     {
-        $data = (new Elasticsearch())->run('https://127.0.0.1:9200/_cluster/stats', 'admin', 'Qdfg!_13dZ');
+        $data = (new Elasticsearch())->run('http://127.0.0.1:9200/_cluster/stats', 'admin', 'Qdfg!_13dZ');
 
         self::assertNotEmpty($data['stats']['cluster_name']);
         self::assertNotEmpty($data['stats']['nodes']['count']);
