@@ -88,13 +88,13 @@ final readonly class Mongo implements ParserInterface
 
         $cursorServerStatus = $connection->executeCommand('admin', new \MongoDB\Driver\Command(['serverStatus' => 1]));
         $serverStatus = \current($cursorServerStatus->toArray());
+        \var_dump($serverStatus);
         $result['serverStatus']['host'] = $serverStatus->host;
         $result['serverStatus']['version'] = $serverStatus->version;
         $result['serverStatus']['process'] = $serverStatus->process;
         $result['serverStatus']['pid'] = $serverStatus->pid;
         $result['serverStatus']['uptime'] = $serverStatus->uptime;
         $result['serverStatus']['localTime'] = $serverStatus->localTime->toDateTimeImmutable();
-        \var_dump($serverStatus->extra_info);
         $result['serverStatus']['page_faults'] = $serverStatus->extra_info->page_faults;
         $result['serverStatus']['usagePageFileMB'] = $serverStatus->extra_info->usagePageFileMB;
         $result['serverStatus']['totalPageFileMB'] = $serverStatus->extra_info->totalPageFileMB;
