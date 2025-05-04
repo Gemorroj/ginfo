@@ -121,4 +121,4 @@ jobs:
             composer info -D
 
       - name: Tests
-        run: vendor/bin/phpunit --configuration phpunit.xml.dist --debug
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist
