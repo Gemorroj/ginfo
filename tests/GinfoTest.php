@@ -36,7 +36,11 @@ final class GinfoTest extends TestCase
         self::assertNotEmpty($php->getVersion());
         self::assertSame('cli', $php->getSapiName());
         // self::assertFalse($php->isZendThreadSafe());
-        self::assertGreaterThan(1, $php->getMemoryLimit());
+
+        // -1 or real limit
+        if (-1 !== $php->getMemoryLimit()) {
+            self::assertGreaterThan(1, $php->getMemoryLimit());
+        }
         self::assertNotEmpty($php->getExtensions());
         self::assertNotEmpty($php->getZendExtensions());
         self::assertNotEmpty($php->getIniFile());
