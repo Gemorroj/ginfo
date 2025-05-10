@@ -105,8 +105,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
-          extensions: opcache, apcu, pcre, mbstring, json, pdo_mysql, pdo_pgsql, pdo_sqlite, memcached, mongodb, fpm
+          php-version: ${{ matrix.php-version }}-fpm
+          extensions: opcache, apcu, pcre, mbstring, json, pdo_mysql, pdo_pgsql, pdo_sqlite, memcached, mongodb
           ini-values: opcache.enable=1, opcache.enable_cli=1, apc.enable=1, apc.enable_cli=1
           coverage: none
           tools: composer:v2
