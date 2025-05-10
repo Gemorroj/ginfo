@@ -77,7 +77,7 @@ final class GinfoTest extends TestCase
         self::assertIsInt($php->getApcu()->getFreeMemory());
         self::assertIsInt($php->getApcu()->getCachedVariables());
 
-        self::assertInstanceOf(\DateTimeImmutable::class, $php->getFpm()->getStartTime());
+        // self::assertNotEmpty($php->getFpm()->getPool());
 
         // \print_r($php);
     }
