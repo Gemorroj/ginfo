@@ -686,22 +686,34 @@ class Linux implements OsInterface
         }
 
         // VMware guest. Tested on debian under vmware fusion for mac...
-        if (Common::anyInArray(['vmw_balloon', 'vmwgfx', 'vmw_vmci'], $modules)) {
-            return 'VMWare';
+        foreach (['vmw_balloon', 'vmwgfx', 'vmw_vmci'] as $name) {
+            if (\in_array($name, $modules, true)) {
+                return 'VMWare';
+            }
         }
 
-        if (Common::anyInArray(['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'], $modules) || \is_dir('/proc/xen')) {
+        // Xen
+        if (\is_dir('/proc/xen')) {
             return 'Xen';
+        }
+        foreach (['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'] as $name) {
+            if (\in_array($name, $modules, true)) {
+                return 'Xen';
+            }
         }
 
         // Hyper-V guest. Tested with Trusty under Client Hyper-V in Windows 10 Pro. Needs to be checked before KVM/QEMU!
-        if (Common::anyInArray(['hid_hyperv', 'hv_vmbus', 'hv_utils'], $modules)) {
-            return 'Hyper-V';
+        foreach (['hid_hyperv', 'hv_vmbus', 'hv_utils'] as $name) {
+            if (\in_array($name, $modules, true)) {
+                return 'Hyper-V';
+            }
         }
 
         // Looks like it might be a KVM or QEMU guest! This is a bit lame since Xen can also use virtio but its less likely (?)
-        if (Common::anyInArray(['virtio', 'virtio_balloon', 'virtio_pci', 'virtio-pci', 'virtio_blk', 'virtio_net'], $modules)) {
-            return 'Qemu/KVM';
+        foreach (['virtio', 'virtio_balloon', 'virtio_pci', 'virtio-pci', 'virtio_blk', 'virtio_net'] as $name) {
+            if (\in_array($name, $modules, true)) {
+                return 'Qemu/KVM';
+            }
         }
 
         // idk

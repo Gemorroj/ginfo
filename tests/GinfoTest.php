@@ -33,11 +33,46 @@ final class GinfoTest extends TestCase
         $ginfo = new Ginfo();
         $php = $ginfo->getPhp();
 
+        self::assertNotEmpty($php->getVersion());
         self::assertSame('cli', $php->getSapiName());
+        // self::assertFalse($php->isZendThreadSafe());
+        self::assertGreaterThan(1, $php->getMemoryLimit());
+        self::assertNotEmpty($php->getExtensions());
+        self::assertNotEmpty($php->getZendExtensions());
+        self::assertNotEmpty($php->getIniFile());
+        self::assertNotEmpty($php->getIncludePath());
+        self::assertNotEmpty($php->getOpenBasedir());
+        self::assertGreaterThan(1, $php->getRealpathCacheSizeUsed());
+        self::assertGreaterThan(1, $php->getRealpathCacheSizeAllowed());
+        // self::assertNotEmpty($php->getDisabledFunctions());
+        // self::assertNotEmpty($php->getDisabledClasses());
 
-        self::assertSame('cli', $php->getSapiName());
-        self::assertIsString($php->getApcu()->getVersion());
-        self::assertIsString($php->getOpcache()->getVersion());
+        self::assertTrue($php->getOpcache()->isEnabled());
+        self::assertNotEmpty($php->getOpcache()->getVersion());
+        self::assertIsBool($php->getOpcache()->getConfigEnable());
+        self::assertIsBool($php->getOpcache()->getConfigEnableCli());
+        self::assertIsInt($php->getOpcache()->getUsedMemory());
+        self::assertIsInt($php->getOpcache()->getFreeMemory());
+        self::assertIsInt($php->getOpcache()->getCachedScripts());
+        self::assertIsInt($php->getOpcache()->getHits());
+        self::assertIsInt($php->getOpcache()->getMisses());
+        self::assertIsInt($php->getOpcache()->getInternedStringsUsedMemory());
+        self::assertIsInt($php->getOpcache()->getInternedStringsFreeMemory());
+        self::assertIsInt($php->getOpcache()->getCachedInternedStrings());
+        self::assertIsInt($php->getOpcache()->getOomRestarts());
+        self::assertIsInt($php->getOpcache()->getHashRestarts());
+        self::assertIsInt($php->getOpcache()->getManualRestarts());
+
+        self::assertTrue($php->getApcu()->isEnabled());
+        self::assertNotEmpty($php->getApcu()->getVersion());
+        self::assertIsBool($php->getApcu()->getConfigEnable());
+        self::assertIsBool($php->getApcu()->getConfigEnableCli());
+        self::assertIsInt($php->getApcu()->getHits());
+        self::assertIsInt($php->getApcu()->getMisses());
+        self::assertIsInt($php->getApcu()->getUsedMemory());
+        self::assertIsInt($php->getApcu()->getFreeMemory());
+        self::assertIsInt($php->getApcu()->getCachedVariables());
+
         // self::assertInstanceOf(\DateTimeImmutable::class, $php->getFpm()->getStartTime());
 
         // \print_r($php);
@@ -48,8 +83,13 @@ final class GinfoTest extends TestCase
         $ginfo = new Ginfo();
         $general = $ginfo->getGeneral();
 
-        self::assertIsString($general->getOsName());
+        self::assertNotEmpty($general->getOsName());
+        self::assertNotEmpty($general->getKernel());
+        self::assertNotEmpty($general->getArchitecture());
         self::assertInstanceOf(\DateInterval::class, $general->getUptime());
+        // self::assertNotEmpty($general->getVirtualization());
+        self::assertNotEmpty($general->getLoggedUsers());
+        self::assertNotEmpty($general->getModel());
         self::assertCount(3, $general->getLoad());
 
         // \print_r($general);
@@ -63,8 +103,19 @@ final class GinfoTest extends TestCase
             self::markTestSkipped('Can\'t get cpu');
         }
 
+        self::assertGreaterThan(0, $cpu->getPhysical());
         self::assertGreaterThan(0, $cpu->getCores());
+        self::assertGreaterThan(0, $cpu->getVirtual());
+        // self::assertIsBool($cpu->isHyperThreading());
         self::assertNotEmpty($cpu->getProcessors());
+
+        foreach ($cpu->getProcessors() as $processor) {
+            self::assertNotEmpty($processor->getModel());
+            self::assertNotEmpty($processor->getFlags());
+            self::assertNotEmpty($processor->getArchitecture());
+            self::assertIsInt($processor->getL2Cache());
+            self::assertIsFloat($processor->getSpeed());
+        }
         // \print_r($cpu);
     }
 
@@ -78,6 +129,8 @@ final class GinfoTest extends TestCase
 
         self::assertGreaterThan(1, $memory->getTotal());
         self::assertGreaterThan(1, $memory->getFree());
+        self::assertGreaterThan(1, $memory->getUsed());
+
         // \print_r($memory);
     }
 
