@@ -117,7 +117,7 @@ final readonly class Mysql implements ParserInterface
                 SELECT object_type, object_schema, object_name, count_read, count_write, count_fetch, count_insert, count_update, count_delete
                 FROM performance_schema.table_io_waits_summary_by_table
                 WHERE count_star > 0
-                ORDER BY count_star DESC
+                ORDER BY object_type ASC, object_schema ASC, object_name ASC
             ');
             if ($query) {
                 foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
