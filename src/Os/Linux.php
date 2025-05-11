@@ -177,6 +177,10 @@ class Linux implements OsInterface
             );
         }
 
+        \usort($drives, static function (Drive $a, Drive $b): int {
+            return $a->getName() <=> $b->getName();
+        });
+
         return $drives;
     }
 
@@ -221,6 +225,10 @@ class Linux implements OsInterface
             );
         }
 
+        \usort($mounts, static function (Mount $a, Mount $b): int {
+            return $a->getMount() <=> $b->getMount();
+        });
+
         return $mounts;
     }
 
@@ -231,14 +239,14 @@ class Linux implements OsInterface
             return null;
         }
 
-        $out = [];
+        $raids = [];
         foreach ($data as $raid) {
             $drives = [];
             foreach ($raid['drives'] as $drive) {
                 $drives[] = new Raid\Drive($drive['path'], $drive['state']);
             }
 
-            $out[] = new Raid(
+            $raids[] = new Raid(
                 $raid['device'],
                 $raid['status'],
                 $raid['level'],
@@ -250,7 +258,11 @@ class Linux implements OsInterface
             );
         }
 
-        return $out;
+        \usort($raids, static function (Raid $a, Raid $b): int {
+            return $a->getDevice() <=> $b->getDevice();
+        });
+
+        return $raids;
     }
 
     /**

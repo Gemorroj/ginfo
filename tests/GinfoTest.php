@@ -77,6 +77,7 @@ final class GinfoTest extends TestCase
         self::assertIsInt($php->getApcu()->getFreeMemory());
         self::assertIsInt($php->getApcu()->getCachedVariables());
 
+        // how to test fpm?
         // self::assertNotEmpty($php->getFpm()->getPool());
 
         // \print_r($php);
@@ -147,6 +148,7 @@ final class GinfoTest extends TestCase
         }
 
         self::assertNotEmpty($processes);
+        self::assertGreaterThan(0, $processes[0]->getPid());
         self::assertNotEmpty($processes[0]->getName());
         // \print_r($processes);
     }
