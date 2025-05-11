@@ -140,7 +140,7 @@ final readonly class Mysql implements ParserInterface
 
         try {
             $query = $connection->query('
-                SELECT table_schema, table_name, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
+                SELECT table_schema AS `table_schema`, table_name AS `table_name`, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
                 FROM information_schema.tables
                 GROUP BY table_schema, table_name
                 ORDER BY `data_length` DESC
