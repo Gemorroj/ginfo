@@ -50,11 +50,13 @@ use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
 use Ginfo\Info\WebServer\Angie;
+use Ginfo\Info\WebServer\AngieProcess;
 use Ginfo\Info\WebServer\Caddy;
 use Ginfo\Info\WebServer\CaddyBuildInfo;
 use Ginfo\Info\WebServer\Httpd;
 use Ginfo\Info\WebServer\HttpdStatus;
 use Ginfo\Info\WebServer\Nginx;
+use Ginfo\Info\WebServer\NginxProcess;
 use Ginfo\Os\Linux;
 use Ginfo\Os\OsInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -89,23 +91,13 @@ final readonly class Ginfo
      */
     public function getGeneral(): General
     {
-        $uptimeTimestamp = $this->os->getUptime();
-        if ($uptimeTimestamp) {
-            $startDate = new \DateTimeImmutable('now - '.$uptimeTimestamp.' seconds');
-            $endDate = new \DateTimeImmutable('now');
-
-            $uptime = $startDate->diff($endDate);
-        } else {
-            $uptime = null;
-        }
-
         return new General(
             new \DateTimeImmutable(),
             $this->os->getOsName(),
             $this->os->getKernel(),
             $this->os->getHostName(),
             $this->os->getArchitecture(),
-            $uptime,
+            $this->os->getUptime(),
             $this->os->getVirtualization(),
             $this->os->getLoggedUsers(),
             $this->os->getModel(),
@@ -268,11 +260,23 @@ final readonly class Ginfo
             return null;
         }
 
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new NginxProcess(
+                $process['pid'],
+                $process['master'],
+                $process['VmPeak'],
+                $process['VmSize'],
+                $process['uptime'],
+            );
+        }
+
         return new Nginx(
             $data['nginx_version'],
             $data['crypto'],
             $data['tls_sni'],
             $data['args'],
+            $processes,
             $data['status'],
         );
     }
@@ -290,6 +294,17 @@ final readonly class Ginfo
             return null;
         }
 
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new AngieProcess(
+                $process['pid'],
+                $process['master'],
+                $process['VmPeak'],
+                $process['VmSize'],
+                $process['uptime'],
+            );
+        }
+
         return new Angie(
             $data['angie_version'],
             $data['nginx_version'],
@@ -297,6 +312,7 @@ final readonly class Ginfo
             $data['crypto'],
             $data['tls_sni'],
             $data['args'],
+            $processes,
             $data['status'],
         );
     }

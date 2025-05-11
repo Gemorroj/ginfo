@@ -10,7 +10,7 @@ final readonly class General implements InfoInterface
         private string $kernel,
         private string $hostName,
         private string $architecture,
-        private ?\DateInterval $uptime = null,
+        private ?int $uptime = null,
         private ?string $virtualization = null,
         /** @var string[]|null */
         private ?array $loggedUsers = null,
@@ -40,7 +40,7 @@ final readonly class General implements InfoInterface
         return $this->hostName;
     }
 
-    public function getUptime(): ?\DateInterval
+    public function getUptime(): ?int
     {
         return $this->uptime;
     }

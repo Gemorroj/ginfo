@@ -6,11 +6,15 @@ use Ginfo\Info\InfoInterface;
 
 final readonly class Nginx implements InfoInterface
 {
+    /**
+     * @param NginxProcess[] $processes
+     */
     public function __construct(
         private string $nginxVersion,
         private string $crypto,
         private bool $tlsSni,
         private string $args,
+        private array $processes,
         private ?array $status = null,
     ) {
     }
@@ -33,6 +37,14 @@ final readonly class Nginx implements InfoInterface
     public function getArgs(): string
     {
         return $this->args;
+    }
+
+    /**
+     * @return NginxProcess[]
+     */
+    public function getProcesses(): array
+    {
+        return $this->processes;
     }
 
     public function getStatus(): ?array
