@@ -90,7 +90,7 @@ final readonly class Angie implements ParserInterface
         if ($pids) {
             $masterPid = $pids[0];
             foreach ($pids as $pid) {
-                $process = [
+                $pidProcess = [
                     'pid' => $pid,
                     'master' => $pid === $masterPid,
                     'VmPeak' => null,
@@ -104,12 +104,12 @@ final readonly class Angie implements ParserInterface
                     foreach ($keyValuePidStatus as $key => $value) {
                         if ('VmPeak' === $key) {
                             $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
-                            $process['VmPeak'] = $valueBytes;
+                            $pidProcess['VmPeak'] = $valueBytes;
                             continue;
                         }
                         if ('VmSize' === $key) {
                             $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
-                            $process['VmSize'] = $valueBytes;
+                            $pidProcess['VmSize'] = $valueBytes;
                             continue;
                         }
                     }
@@ -118,12 +118,12 @@ final readonly class Angie implements ParserInterface
                 $process = new Process(['ps', '-p', $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
                 try {
                     $process->mustRun();
-                    $process['uptime'] = (int) \trim($process->getOutput());
+                    $pidProcess['uptime'] = (int) \trim($process->getOutput());
                 } catch (ProcessFailedException|ProcessStartFailedException $e) {
                     // ignore
                 }
 
-                $res['processes'][] = $process;
+                $res['processes'][] = $pidProcess;
             }
         }
 

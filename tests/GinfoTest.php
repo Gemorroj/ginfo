@@ -91,7 +91,7 @@ final class GinfoTest extends TestCase
         self::assertNotEmpty($general->getOsName());
         self::assertNotEmpty($general->getKernel());
         self::assertNotEmpty($general->getArchitecture());
-        self::assertIsFloat($general->getUptime());
+        self::assertIsInt($general->getUptime());
         // self::assertNotEmpty($general->getVirtualization());
         self::assertIsArray($general->getLoggedUsers());
         self::assertNotEmpty($general->getModel());
