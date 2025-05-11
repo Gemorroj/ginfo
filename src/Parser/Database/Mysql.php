@@ -143,7 +143,7 @@ final readonly class Mysql implements ParserInterface
                 SELECT table_schema AS `table_schema`, table_name AS `table_name`, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
                 FROM information_schema.tables
                 GROUP BY table_schema, table_name
-                ORDER BY `data_length` DESC
+                ORDER BY `table_schema` ASC, `table_name` ASC
             ');
             if ($query) {
                 foreach ($query->fetchAll(\PDO::FETCH_ASSOC) as $row) {
