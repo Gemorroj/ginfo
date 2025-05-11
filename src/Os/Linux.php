@@ -164,7 +164,7 @@ class Linux implements OsInterface
             }
 
             $namePartition = $parts[3];
-            $p = \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : [];
+            $p = \array_key_exists($namePartition, $partitions) ? $partitions[$namePartition] : [];
 
             $drives[] = new Drive(
                 self::getContents(\dirname($path).'/model', 'Unknown').$type,
