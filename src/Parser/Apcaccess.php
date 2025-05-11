@@ -2,13 +2,15 @@
 
 namespace Ginfo\Parser;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessStartFailedException;
 use Symfony\Component\Process\Process;
 
 final readonly class Apcaccess implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
      *
@@ -28,7 +30,7 @@ final readonly class Apcaccess implements ParserInterface
             return null;
         }
 
-        $block = Common::parseKeyValueBlock($result);
+        $block = self::parseKeyValueBlock($result);
         if (!isset($block['UPSNAME'])) {
             return null;
         }

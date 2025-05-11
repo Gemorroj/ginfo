@@ -2,10 +2,12 @@
 
 namespace Ginfo\Parser;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 
 final readonly class Mdadm implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @return array{device: string, status: string, level: string, drives: array{path: string, state: string}[], size: float, count: array{active: int, total: int}, chart: string}[]|null
      */
@@ -16,7 +18,7 @@ Personalities : [raid1]
 md0 : active raid1 sdb[0]
       1046528 blocks super 1.2 [2/1] [U_]
          */
-        $mdadmContents = Common::getContents('/proc/mdstat');
+        $mdadmContents = self::getContents('/proc/mdstat');
         if (null === $mdadmContents) {
             return null;
         }

@@ -2,7 +2,7 @@
 
 namespace Ginfo\Os;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -40,6 +40,8 @@ use Ginfo\Parser\Who;
 
 class Linux implements OsInterface
 {
+    use CommonTrait;
+
     /**
      * @return string the arch OS
      */
@@ -110,7 +112,7 @@ class Linux implements OsInterface
 
     public function getUptime(): ?int
     {
-        $uptime = Common::getContents('/proc/uptime');
+        $uptime = self::getContents('/proc/uptime');
         if (null === $uptime) {
             return null;
         }
@@ -121,7 +123,7 @@ class Linux implements OsInterface
     public function getDrives(): ?array
     {
         $partitions = [];
-        $partitionsContents = Common::getContents('/proc/partitions');
+        $partitionsContents = self::getContents('/proc/partitions');
         if (null === $partitionsContents) {
             return null;
         }
@@ -145,7 +147,7 @@ class Linux implements OsInterface
             $parts = \explode('/', $path);
 
             // Attempt getting read/write stats
-            if (1 !== \preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)/', Common::getContents(\dirname($path, 2).'/stat'), $statMatches)) {
+            if (1 !== \preg_match('/^(\d+)\s+\d+\s+\d+\s+\d+\s+(\d+)/', self::getContents(\dirname($path, 2).'/stat'), $statMatches)) {
                 $reads = null;
                 $writes = null;
             } else {
@@ -153,8 +155,8 @@ class Linux implements OsInterface
             }
 
             $type = '';
-            if ('0' === Common::getContents(\dirname($path, 2).'/queue/rotational')) {
-                if ('SD' === Common::getContents(\dirname($path).'/type')) {
+            if ('0' === self::getContents(\dirname($path, 2).'/queue/rotational')) {
+                if ('SD' === self::getContents(\dirname($path).'/type')) {
                     $type = ' (SD)';
                 } else {
                     $type = ' (SSD)';
@@ -165,10 +167,10 @@ class Linux implements OsInterface
             $p = \array_key_exists($namePartition, $partitions) && \is_array($partitions[$namePartition]) ? $partitions[$namePartition] : [];
 
             $drives[] = new Drive(
-                Common::getContents(\dirname($path).'/model', 'Unknown').$type,
+                self::getContents(\dirname($path).'/model', 'Unknown').$type,
                 '/dev/'.$namePartition,
-                Common::getContents(\dirname($path, 2).'/size', '0') * 512,
-                Common::getContents(\dirname($path).'/vendor'),
+                self::getContents(\dirname($path, 2).'/size', '0') * 512,
+                self::getContents(\dirname($path).'/vendor'),
                 $reads,
                 $writes,
                 $p,
@@ -180,7 +182,7 @@ class Linux implements OsInterface
 
     public function getMounts(): ?array
     {
-        $contents = Common::getContents('/proc/mounts');
+        $contents = self::getContents('/proc/mounts');
         if (null === $contents) {
             return null;
         }
@@ -297,8 +299,8 @@ class Linux implements OsInterface
         $paths = \glob('/sys/{devices/virtual,class}/backlight/*/max_brightness', \GLOB_NOSORT | \GLOB_BRACE);
         if ($paths) {
             foreach ($paths as $bl) {
-                $max = Common::getContents($bl);
-                $cur = Common::getContents(\dirname($bl).'/actual_brightness');
+                $max = self::getContents($bl);
+                $cur = self::getContents(\dirname($bl).'/actual_brightness');
                 if (null === $cur) {
                     continue;
                 }
@@ -355,7 +357,7 @@ class Linux implements OsInterface
 
     public function getLoad(): ?array
     {
-        $load = Common::getContents('/proc/loadavg');
+        $load = self::getContents('/proc/loadavg');
         if (!$load) {
             return null;
         }
@@ -378,20 +380,20 @@ class Linux implements OsInterface
 
         $return = [];
         foreach ($paths as $path) {
-            $speed = (int) Common::getContents($path.'/speed'); // Mbits/sec
+            $speed = (int) self::getContents($path.'/speed'); // Mbits/sec
             if ($speed) {
                 $speed *= 1000000;
             }
 
-            $operstateContents = Common::getContents($path.'/operstate');
+            $operstateContents = self::getContents($path.'/operstate');
             $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
 
             if (null === $state && \file_exists($path.'/carrier')) {
-                $state = Common::getContents($path.'/carrier') ? 'up' : 'down';
+                $state = self::getContents($path.'/carrier') ? 'up' : 'down';
             }
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
-            $typeCode = Common::getContents($path.'/type');
+            $typeCode = self::getContents($path.'/type');
 
             if ('772' === $typeCode) {
                 $type = 'Loopback';
@@ -400,7 +402,7 @@ class Linux implements OsInterface
             } elseif ('776' === $typeCode) {
                 $type = 'IPv6 in IPv4';
             } else {
-                $typeContents = \mb_strtoupper(Common::getContents($path.'/device/modalias', ''));
+                $typeContents = \mb_strtoupper(self::getContents($path.'/device/modalias', ''));
                 [$typeMatch] = \explode(':', $typeContents, 2);
 
                 $ueventContents = @\parse_ini_file($path.'/uevent');
@@ -439,14 +441,14 @@ class Linux implements OsInterface
             }
 
             $statsReceived = new Network\Stats(
-                (int) Common::getContents($path.'/statistics/rx_bytes', '0'),
-                (int) Common::getContents($path.'/statistics/rx_errors', '0'),
-                (int) Common::getContents($path.'/statistics/rx_packets', '0')
+                (int) self::getContents($path.'/statistics/rx_bytes', '0'),
+                (int) self::getContents($path.'/statistics/rx_errors', '0'),
+                (int) self::getContents($path.'/statistics/rx_packets', '0')
             );
             $statsSent = new Network\Stats(
-                (int) Common::getContents($path.'/statistics/tx_bytes', '0'),
-                (int) Common::getContents($path.'/statistics/tx_errors', '0'),
-                (int) Common::getContents($path.'/statistics/tx_packets', '0')
+                (int) self::getContents($path.'/statistics/tx_bytes', '0'),
+                (int) self::getContents($path.'/statistics/tx_errors', '0'),
+                (int) self::getContents($path.'/statistics/tx_packets', '0')
             );
 
             $return[] = new Network(
@@ -471,12 +473,12 @@ class Linux implements OsInterface
 
         $return = [];
         foreach ($paths as $b) {
-            $uevent = Common::getContents($b.'/uevent');
+            $uevent = self::getContents($b.'/uevent');
             if (null === $uevent) {
                 continue;
             }
 
-            $block = Common::parseKeyValueBlock($uevent, '=');
+            $block = self::parseKeyValueBlock($uevent, '=');
 
             $return[] = new Battery(
                 $block['POWER_SUPPLY_MODEL_NAME'],
@@ -522,16 +524,16 @@ class Linux implements OsInterface
 
         $result = [];
         foreach ($processes as $process) {
-            $statusContents = Common::getContents($process);
+            $statusContents = self::getContents($process);
             if (null === $statusContents) {
                 continue;
             }
 
-            $cmdlineContents = Common::getContents(\dirname($process).'/cmdline');
-            $ioContents = Common::getContents(\dirname($process).'/io');
+            $cmdlineContents = self::getContents(\dirname($process).'/cmdline');
+            $ioContents = self::getContents(\dirname($process).'/io');
 
-            $blockIo = $ioContents ? Common::parseKeyValueBlock($ioContents) : null;
-            $blockStatus = Common::parseKeyValueBlock($statusContents);
+            $blockIo = $ioContents ? self::parseKeyValueBlock($ioContents) : null;
+            $blockStatus = self::parseKeyValueBlock($statusContents);
 
             $uid = \explode("\t", $blockStatus['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
@@ -608,7 +610,7 @@ class Linux implements OsInterface
         ];
 
         foreach ($stringReleases as $releaseFile) {
-            $os = Common::getContents($releaseFile);
+            $os = self::getContents($releaseFile);
             if (null !== $os) {
                 return $os;
             }
@@ -624,7 +626,7 @@ class Linux implements OsInterface
             return $suseRelease[0];
         }
 
-        $debianVersion = Common::getContents('/etc/debian_version');
+        $debianVersion = self::getContents('/etc/debian_version');
         if (null !== $debianVersion) {
             return 'Debian '.$debianVersion;
         }
@@ -646,7 +648,7 @@ class Linux implements OsInterface
             return 'OpenVZ';
         }
 
-        $biosVendor = Common::getContents('/sys/devices/virtual/dmi/id/bios_vendor');
+        $biosVendor = self::getContents('/sys/devices/virtual/dmi/id/bios_vendor');
         if ('Veertu' === $biosVendor) {
             return 'Veertu';
         }
@@ -654,20 +656,20 @@ class Linux implements OsInterface
             return 'Parallels';
         }
 
-        if (\str_contains(Common::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
+        if (\str_contains(self::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
             return 'LXC';
         }
         if (\is_file('/mnt/wsl/resolv.conf')) {
             return 'WSL';
         }
 
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(Common::getContents('/proc/1/cgroup', ''), 'docker')) {
+        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(self::getContents('/proc/1/cgroup', ''), 'docker')) {
             return 'Docker';
         }
 
         // Try getting kernel modules
         $modules = [];
-        if (\preg_match_all('/^(\S+)/m', Common::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
+        if (\preg_match_all('/^(\S+)/m', self::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $modules[] = $match[1];
             }
@@ -726,14 +728,13 @@ class Linux implements OsInterface
     public function getModel(): ?string
     {
         $info = [];
-        $vendor = Common::getContents('/sys/devices/virtual/dmi/id/board_vendor');
-        $name = Common::getContents('/sys/devices/virtual/dmi/id/board_name');
-        $product = Common::getContents('/sys/devices/virtual/dmi/id/product_name');
 
+        $name = self::getContents('/sys/devices/virtual/dmi/id/board_name');
         if (!$name) {
             return null;
         }
 
+        $vendor = self::getContents('/sys/devices/virtual/dmi/id/board_vendor');
         // Don't add vendor to the mix if the name starts with it
         if ($vendor && !\str_starts_with($name, $vendor)) {
             $info[] = $vendor;
@@ -743,6 +744,7 @@ class Linux implements OsInterface
 
         $infoStr = \implode(' ', $info);
 
+        $product = self::getContents('/sys/devices/virtual/dmi/id/product_name');
         // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
         // dell latitude e6500 or hp z260
         if ($product && !\str_contains($name, $product) && !\str_contains($product, 'Filled')) {

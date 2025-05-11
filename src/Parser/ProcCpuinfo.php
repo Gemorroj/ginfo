@@ -2,23 +2,25 @@
 
 namespace Ginfo\Parser;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 
 final readonly class ProcCpuinfo implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @return array{physical: int, cores: int, virtual: int, hyperThreading: bool, processors: array{model: string, speed: int, l2Cache: int|null, flags: string[]|null, architecture: string|null}[]}|null
      */
     public function run(): ?array
     {
-        $cpuInfo = Common::getContents('/proc/cpuinfo');
+        $cpuInfo = self::getContents('/proc/cpuinfo');
         if (null === $cpuInfo) {
             return null;
         }
 
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
-            $cpuData[] = Common::parseKeyValueBlock($block);
+            $cpuData[] = self::parseKeyValueBlock($block);
         }
 
         $cores = (static function () use ($cpuData): int {

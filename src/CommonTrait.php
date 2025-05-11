@@ -4,17 +4,13 @@ namespace Ginfo;
 
 /**
  * @internal
- *
- * @deprecated
  */
-final readonly class Common
+trait CommonTrait
 {
     /**
      * Get a file's contents, or default to second param.
-     *
-     * @deprecated
      */
-    public static function getContents(string $file, ?string $default = null): ?string
+    protected static function getContents(string $file, ?string $default = null): ?string
     {
         if (\file_exists($file) && \is_readable($file)) {
             $data = @\file_get_contents($file);
@@ -29,11 +25,9 @@ final readonly class Common
     }
 
     /**
-     * @deprecated
-     *
      * @return array<string, string>
      */
-    public static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
+    protected static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
     {
         $tmp = [];
         foreach (\explode("\n", $block) as $line) {

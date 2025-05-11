@@ -2,11 +2,13 @@
 
 namespace Ginfo\Parser\Sensor;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 use Ginfo\Parser\ParserInterface;
 
 final readonly class ThermalZone implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @return array{path: string, name: string, value: float, unit: string}[]|null
      */
@@ -22,10 +24,12 @@ final readonly class ThermalZone implements ParserInterface
             $labelPath = $path.'/type';
             $valuePath = $path.'/temp';
 
-            $label = Common::getContents($labelPath);
-            $value = Common::getContents($valuePath);
-
-            if (null === $label || null === $value) {
+            $label = self::getContents($labelPath);
+            if (null === $label) {
+                continue;
+            }
+            $value = self::getContents($valuePath);
+            if (null === $value) {
                 continue;
             }
 

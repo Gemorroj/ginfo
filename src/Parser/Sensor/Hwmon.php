@@ -2,11 +2,13 @@
 
 namespace Ginfo\Parser\Sensor;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 use Ginfo\Parser\ParserInterface;
 
 final readonly class Hwmon implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @return array{path: string|null, name:  string, value: float, unit: string}|null
      */
@@ -20,21 +22,21 @@ final readonly class Hwmon implements ParserInterface
         $hwmonVals = [];
         foreach ($paths as $path) {
             $initPath = \rtrim($path, 'input');
-            $value = Common::getContents($path);
+            $value = self::getContents($path);
             $base = \basename($path);
             $labelPath = $initPath.'label';
             $modelPath = \dirname($path).'/device/model';
-            $driverName = Common::getContents(\dirname($path).'/name');
+            $driverName = self::getContents(\dirname($path).'/name');
 
             // Temperatures
             if (\str_starts_with($base, 'temp') && \is_file($labelPath)) {
-                $label = Common::getContents($labelPath);
+                $label = self::getContents($labelPath);
                 $value /= $value > 10000 ? 1000 : 1;
                 $unit = 'C'; // I don't think this is ever going to be in F
             }
             // Devices (such as hard drives)
             elseif (\str_starts_with($base, 'temp') && \is_file($modelPath)) {
-                $label = Common::getContents($modelPath);
+                $label = self::getContents($modelPath);
                 $value /= $value > 10000 ? 1000 : 1;
                 $unit = 'C'; // I don't think this is ever going to be in F
             }
@@ -46,7 +48,7 @@ final readonly class Hwmon implements ParserInterface
             elseif (\preg_match('/^in(\d+)_/', $base, $m)) {
                 $unit = 'V';
                 $value /= 1000;
-                $label = Common::getContents($labelPath) ?: 'in'.$m[1];
+                $label = self::getContents($labelPath) ?: 'in'.$m[1];
             } else {
                 continue;
             }

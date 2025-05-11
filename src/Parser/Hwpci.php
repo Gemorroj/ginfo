@@ -2,13 +2,15 @@
 
 namespace Ginfo\Parser;
 
-use Ginfo\Common;
+use Ginfo\CommonTrait;
 
 /**
  * Deal with pci.ids and usb.ids workings.
  */
 final class Hwpci implements ParserInterface
 {
+    use CommonTrait;
+
     public const MODE_PCI = 'pci';
     public const MODE_USB = 'usb';
 
@@ -116,7 +118,7 @@ final class Hwpci implements ParserInterface
 
             // First try uevent
             if (\is_readable($path.'/uevent')
-                && \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
+                && \preg_match('/^product=([^\/]+)\/([^\/]+)\/[^$]+$/m', \mb_strtolower(self::getContents($path.'/uevent')), $match)) {
                 $vendorId = \str_pad($match[1], 4, '0', \STR_PAD_LEFT);
                 $deviceId = \str_pad($match[2], 4, '0', \STR_PAD_LEFT);
                 $deviceKey = $vendorId.'-'.$deviceId;
@@ -124,7 +126,7 @@ final class Hwpci implements ParserInterface
                 $devices[$deviceKey] = isset($devices[$deviceKey]) ? $devices[$deviceKey] + 1 : 1;
             } // And next modalias
             elseif (\is_readable($path.'/modalias')
-                && \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', Common::getContents($path.'/modalias'), $match)) {
+                && \preg_match('/^usb:v([0-9A-Z]{4})p([0-9A-Z]{4})/', self::getContents($path.'/modalias'), $match)) {
                 $vendorId = \mb_strtolower($match[1]);
                 $deviceId = \mb_strtolower($match[2]);
                 $deviceKey = $vendorId.'-'.$deviceId;
@@ -136,7 +138,7 @@ final class Hwpci implements ParserInterface
             }
 
             // Also get speed
-            $speed = (int) Common::getContents($path.'/speed', '0');
+            $speed = (int) self::getContents($path.'/speed', '0');
             $speeds[$deviceKey] = $speed ? ($speed * 1000 * 1000) : null;
         }
 
@@ -157,7 +159,7 @@ final class Hwpci implements ParserInterface
         $speeds = [];
         foreach ((array) @\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($fDevice = Common::getContents($path.'/device', '')) && ($fVend = Common::getContents($path.'/vendor', ''))
+            if (($fDevice = self::getContents($path.'/device', '')) && ($fVend = self::getContents($path.'/vendor', ''))
                 && '' !== $fDevice && '' !== $fVend) {
                 [, $vendorId] = \explode('x', $fVend, 2);
                 [, $deviceId] = \explode('x', $fDevice, 2);
@@ -166,14 +168,14 @@ final class Hwpci implements ParserInterface
                 $devices[$deviceKey] = isset($devices[$deviceKey]) ? $devices[$deviceKey] + 1 : 1;
             } // Try uevent nextly
             elseif (\is_readable($path.'/uevent')
-                && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(Common::getContents($path.'/uevent')), $match)) {
+                && \preg_match('/pci\_(?:subsys_)?id=(\w+):(\w+)/', \mb_strtolower(self::getContents($path.'/uevent')), $match)) {
                 [, $vendorId, $deviceId] = $match;
                 $deviceKey = $vendorId.'-'.$deviceId;
                 $vendors[$vendorId] = true;
                 $devices[$deviceKey] = isset($devices[$deviceKey]) ? $devices[$deviceKey] + 1 : 1;
             } // Now for modalias
             elseif (\is_readable($path.'/modalias')
-                && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/i', \mb_strtolower(Common::getContents($path.'/modalias')), $match)) {
+                && \preg_match('/^pci:v0{4}([0-9A-Z]{4})d0{4}([0-9A-Z]{4})/i', \mb_strtolower(self::getContents($path.'/modalias')), $match)) {
                 [, $vendorId, $deviceId] = $match;
                 $deviceKey = $vendorId.'-'.$deviceId;
                 $vendors[$vendorId] = true;
