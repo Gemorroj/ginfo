@@ -64,6 +64,9 @@ final class SensorsTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
+    /**
+     * @param array{path: string|null, name: string, value: string, unit: string} $expected
+     */
     #[DataProvider('provideSensorStrings')]
     public function testParseSensor(string $data, array $expected): void
     {

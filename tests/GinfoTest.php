@@ -295,32 +295,52 @@ final class GinfoTest extends TestCase
         // \print_r($printers);
     }
 
-    public function testDisk(): void
+    public function testDiskDrives(): void
     {
         $ginfo = new Ginfo();
         $disk = $ginfo->getDisk();
 
         $drivers = $disk->getDrives();
-        $mounts = $disk->getMounts();
-        $raids = $disk->getRaids();
-
         if (!$drivers) {
             self::markTestSkipped('Can\'t get drivers');
         }
+
+        self::assertNotEmpty($drivers[0]->getDevice());
+        self::assertNotEmpty($drivers[0]->getName());
+        self::assertGreaterThan(0, $drivers[0]->getSize());
+
+        // \print_r($drivers);
+    }
+
+    public function testDiskMounts(): void
+    {
+        $ginfo = new Ginfo();
+        $disk = $ginfo->getDisk();
+
+        $mounts = $disk->getMounts();
         if (!$mounts) {
             self::markTestSkipped('Can\'t get mounts');
         }
-        /*if (!$raids) {
-            self::markTestSkipped('Can\'t get raids');
-        }*/
-
-        self::assertNotEmpty($drivers[0]->getName());
+        self::assertNotEmpty($mounts[0]->getMount());
         self::assertNotEmpty($mounts[0]->getDevice());
-        if ($raids) {
-            self::assertNotEmpty($raids[0]->getDevice());
-        }
-        // \print_r($drivers);
+
         // \print_r($mounts);
+    }
+
+    public function testDiskRaids(): void
+    {
+        $ginfo = new Ginfo();
+        $disk = $ginfo->getDisk();
+
+        $raids = $disk->getRaids();
+        if (!$raids) {
+            self::markTestSkipped('Can\'t get raids');
+        }
+
+        self::assertNotEmpty($raids[0]->getStatus());
+        self::assertNotEmpty($raids[0]->getDevice());
+        self::assertNotEmpty($raids[0]->getDrives());
+        self::assertNotEmpty($raids[0]->getChart());
         // \print_r($raids);
     }
 }
