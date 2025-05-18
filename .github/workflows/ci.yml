@@ -110,7 +110,9 @@ jobs:
           curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
           sudo apt update
           sudo apt install -y caddy
-          echo ":81 { }" | sudo tee /etc/caddy/Caddyfile
+          echo "{
+            admin localhost:2019
+          }" | sudo tee /etc/caddy/Caddyfile
           sudo systemctl stop caddy
 
       - name: Start web-servers
