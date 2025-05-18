@@ -2,6 +2,7 @@
 
 namespace Ginfo\Parser\WebServer;
 
+use Ginfo\CommonTrait;
 use Ginfo\Parser\ParserInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -11,6 +12,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Caddy implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @param string|null $configPage uri for config page http://localhost:2019/config/ for example. see https://caddyserver.com/docs/api#get-configpath
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
@@ -19,6 +22,13 @@ final readonly class Caddy implements ParserInterface
      *     version: string,
      *     build_info: array{go: string, path: string, mod: string, dep: string[], build: string[]},
      *     list_modules: string[],
+     *     processes: array{
+     *          pid: int,
+     *          master: bool,
+     *          VmPeak: float|null,
+     *          VmSize: float|null,
+     *          uptime: int|null,
+     *      }[],
      *     config: array|null
      * }|null
      */
@@ -28,6 +38,7 @@ final readonly class Caddy implements ParserInterface
             'version' => '',
             'build_info' => [],
             'list_modules' => [],
+            'processes' => [],
             'config' => null,
         ];
 
@@ -77,6 +88,8 @@ final readonly class Caddy implements ParserInterface
 
             $res['list_modules'][] = $line;
         }
+
+        $res['processes'] = self::processStat('caddy');
 
         if ($configPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);

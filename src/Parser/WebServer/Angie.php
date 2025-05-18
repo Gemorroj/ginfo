@@ -78,54 +78,7 @@ final readonly class Angie implements ParserInterface
             }
         }
 
-        $process = new Process(['pidof', 'angie'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
-        try {
-            $process->mustRun();
-            $pids = \explode(' ', \trim($process->getOutput()));
-            \sort($pids, \SORT_NUMERIC);
-        } catch (ProcessFailedException|ProcessStartFailedException $e) {
-            $pids = [];
-        }
-
-        if ($pids) {
-            $masterPid = $pids[0];
-            foreach ($pids as $pid) {
-                $pidProcess = [
-                    'pid' => $pid,
-                    'master' => $pid === $masterPid,
-                    'VmPeak' => null,
-                    'VmSize' => null,
-                    'uptime' => null,
-                ];
-                // https://man7.org/linux/man-pages/man5/proc_pid_status.5.html
-                $pidStatus = self::getContents('/proc/'.$pid.'/status');
-                if ($pidStatus) {
-                    $keyValuePidStatus = self::parseKeyValueBlock($pidStatus, ':');
-                    foreach ($keyValuePidStatus as $key => $value) {
-                        if ('VmPeak' === $key) {
-                            $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
-                            $pidProcess['VmPeak'] = $valueBytes;
-                            continue;
-                        }
-                        if ('VmSize' === $key) {
-                            $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
-                            $pidProcess['VmSize'] = $valueBytes;
-                            continue;
-                        }
-                    }
-                }
-
-                $process = new Process(['ps', '-p', $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
-                try {
-                    $process->mustRun();
-                    $pidProcess['uptime'] = (int) \trim($process->getOutput());
-                } catch (ProcessFailedException|ProcessStartFailedException $e) {
-                    // ignore
-                }
-
-                $res['processes'][] = $pidProcess;
-            }
-        }
+        $res['processes'] = self::processStat('angie');
 
         if ($statusPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);
