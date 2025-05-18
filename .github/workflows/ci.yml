@@ -101,7 +101,17 @@ jobs:
           echo "deb https://download.angie.software/angie/$(. /etc/os-release && echo "$ID/$VERSION_ID $VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/angie.list > /dev/null
           sudo apt update
           sudo apt install -y angie
-          sudo systemctl stop angie
+          echo "server {
+            listen 81
+            server_name localhost;
+
+            location /status/ {
+              api /status/;
+              allow 127.0.0.1;
+              deny all;
+            }
+          }" | sudo tee /etc/angie/http.d/default.conf
+          sudo systemctl restart angie
 
       - name: Install Caddy
         run: |
@@ -113,12 +123,14 @@ jobs:
           echo "{
             admin localhost:2019
           }" | sudo tee /etc/caddy/Caddyfile
-          sudo systemctl stop caddy
+          sudo systemctl restart caddy
 
-      - name: Start web-servers
+      - name: Install Apache Httpd
         run: |
-          sudo systemctl start angie
-          sudo systemctl start caddy
+          sudo add-apt-repository ppa:ondrej/apache2 -y
+          sudo apt update
+          sudo apt install -y apache2
+          sudo systemctl restart apache2
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

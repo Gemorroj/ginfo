@@ -2,6 +2,7 @@
 
 namespace Ginfo\Parser\WebServer;
 
+use Ginfo\CommonTrait;
 use Ginfo\Parser\ParserInterface;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -11,6 +12,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final readonly class Httpd implements ParserInterface
 {
+    use CommonTrait;
+
     /**
      * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
@@ -22,6 +25,13 @@ final readonly class Httpd implements ParserInterface
      *     threaded: bool,
      *     forked: bool,
      *     args: string,
+     *     processes: array{
+     *          pid: int,
+     *          master: bool,
+     *          VmPeak: float|null,
+     *          VmSize: float|null,
+     *          uptime: int|null,
+     *      }[],
      *     status: array{
      *          uptime: string,
      *          load: string,
@@ -40,9 +50,9 @@ final readonly class Httpd implements ParserInterface
      *     }|null
      * }|null
      */
-    public function run(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null, int $timeout = 1): ?array
+    public function run(string $processName = 'httpd', ?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null, int $timeout = 1): ?array
     {
-        $process = new Process(['httpd', '-V'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
+        $process = new Process([$processName, '-V'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -56,6 +66,7 @@ final readonly class Httpd implements ParserInterface
             'threaded' => false,
             'forked' => false,
             'args' => '',
+            'processes' => [],
             'status' => null,
         ];
         $lines = \explode("\n", \trim($process->getOutput()));
@@ -82,6 +93,8 @@ final readonly class Httpd implements ParserInterface
                 $res['args'] .= $res['args'] ? ' '.$line : $line;
             }
         }
+
+        $res['processes'] = self::processStat($processName, $cwd, $timeout);
 
         if ($statusPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);

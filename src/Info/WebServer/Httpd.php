@@ -7,7 +7,8 @@ use Ginfo\Info\InfoInterface;
 final readonly class Httpd implements InfoInterface
 {
     /**
-     * @param string[] $loaded
+     * @param string[]       $loaded
+     * @param HttpdProcess[] $processes
      */
     public function __construct(
         private string $version,
@@ -16,6 +17,7 @@ final readonly class Httpd implements InfoInterface
         private bool $threaded,
         private bool $forked,
         private string $args,
+        private array $processes,
         private ?HttpdStatus $status = null,
     ) {
     }
@@ -48,6 +50,14 @@ final readonly class Httpd implements InfoInterface
     public function getArgs(): string
     {
         return $this->args;
+    }
+
+    /**
+     * @return HttpdProcess[]
+     */
+    public function getProcesses(): array
+    {
+        return $this->processes;
     }
 
     public function getStatus(): ?HttpdStatus

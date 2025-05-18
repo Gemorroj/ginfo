@@ -68,7 +68,7 @@ final readonly class Nginx implements ParserInterface
             }
         }
 
-        $res['processes'] = self::processStat('nginx');
+        $res['processes'] = self::processStat('nginx', $cwd, $timeout);
 
         if ($statusPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);

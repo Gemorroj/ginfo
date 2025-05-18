@@ -89,7 +89,7 @@ final readonly class Caddy implements ParserInterface
             $res['list_modules'][] = $line;
         }
 
-        $res['processes'] = self::processStat('caddy');
+        $res['processes'] = self::processStat('caddy', $cwd, $timeout);
 
         if ($configPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);

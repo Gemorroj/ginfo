@@ -9,7 +9,7 @@ final class AngieTest extends TestCase
 {
     public function testAngie(): void
     {
-        $data = (new Angie())->run('http://localhost/status/');
+        $data = (new Angie())->run('http://localhost:81/status/');
         if (!$data) {
             self::markTestSkipped('Angie is not found');
         }
@@ -19,6 +19,7 @@ final class AngieTest extends TestCase
         self::assertStringContainsString('--with-http_stub_status_module', $data['args']);
         self::assertIsArray($data['status']);
         self::assertIsArray($data['processes']);
+        self::assertNotEmpty($data['processes']);
         foreach ($data['processes'] as $process) {
             self::assertIsNumeric($process['pid']);
             self::assertIsNumeric($process['VmPeak']);

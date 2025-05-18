@@ -78,7 +78,7 @@ final readonly class Angie implements ParserInterface
             }
         }
 
-        $res['processes'] = self::processStat('angie');
+        $res['processes'] = self::processStat('angie', $cwd, $timeout);
 
         if ($statusPage) {
             $httpClient ??= HttpClient::create(['timeout' => (float) $timeout]);

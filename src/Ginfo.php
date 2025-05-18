@@ -53,7 +53,9 @@ use Ginfo\Info\WebServer\Angie;
 use Ginfo\Info\WebServer\AngieProcess;
 use Ginfo\Info\WebServer\Caddy;
 use Ginfo\Info\WebServer\CaddyBuildInfo;
+use Ginfo\Info\WebServer\CaddyProcess;
 use Ginfo\Info\WebServer\Httpd;
+use Ginfo\Info\WebServer\HttpdProcess;
 use Ginfo\Info\WebServer\HttpdStatus;
 use Ginfo\Info\WebServer\Nginx;
 use Ginfo\Info\WebServer\NginxProcess;
@@ -323,11 +325,22 @@ final readonly class Ginfo
      * @param string|null $statusPage uri for status page http://localhost/status/ for example. see https://httpd.apache.org/docs/current/mod/mod_status.html
      * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
      */
-    public function getHttpd(?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Httpd
+    public function getHttpd(string $processName = 'httpd', ?string $statusPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Httpd
     {
-        $data = (new Parser\WebServer\Httpd())->run($statusPage, $cwd, $httpClient);
+        $data = (new Parser\WebServer\Httpd())->run($processName, $statusPage, $cwd, $httpClient);
         if (!$data) {
             return null;
+        }
+
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new HttpdProcess(
+                $process['pid'],
+                $process['master'],
+                $process['VmPeak'],
+                $process['VmSize'],
+                $process['uptime'],
+            );
         }
 
         if ($data['status']) {
@@ -358,6 +371,7 @@ final readonly class Ginfo
             $data['threaded'],
             $data['forked'],
             $data['args'],
+            $processes,
             $status
         );
     }
@@ -375,6 +389,17 @@ final readonly class Ginfo
             return null;
         }
 
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new CaddyProcess(
+                $process['pid'],
+                $process['master'],
+                $process['VmPeak'],
+                $process['VmSize'],
+                $process['uptime'],
+            );
+        }
+
         $buildInfo = new CaddyBuildInfo(
             $data['build_info']['go'],
             $data['build_info']['path'],
@@ -387,6 +412,7 @@ final readonly class Ginfo
             $data['version'],
             $buildInfo,
             $data['list_modules'],
+            $processes,
             $data['config'],
         );
     }

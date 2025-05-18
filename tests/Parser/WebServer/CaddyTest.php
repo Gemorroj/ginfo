@@ -19,6 +19,7 @@ final class CaddyTest extends TestCase
         self::assertNotEmpty($data['build_info']['build']);
         self::assertNotEmpty($data['list_modules']);
         self::assertIsArray($data['processes']);
+        self::assertNotEmpty($data['processes']);
         foreach ($data['processes'] as $process) {
             self::assertIsNumeric($process['pid']);
             self::assertIsNumeric($process['VmPeak']);
