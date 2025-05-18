@@ -101,6 +101,7 @@ jobs:
           echo "deb https://download.angie.software/angie/$(. /etc/os-release && echo "$ID/$VERSION_ID $VERSION_CODENAME") main" | sudo tee /etc/apt/sources.list.d/angie.list > /dev/null
           sudo apt update
           sudo apt install -y angie
+          sudo systemctl stop angie
 
       - name: Install Caddy
         run: |
@@ -109,8 +110,13 @@ jobs:
           curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
           sudo apt update
           sudo apt install -y caddy
-          echo ":2019 { }" | sudo tee /etc/caddy/Caddyfile
-          sudo systemctl restart caddy
+          echo ":81 { }" | sudo tee /etc/caddy/Caddyfile
+          sudo systemctl stop caddy
+
+      - name: Start web-servers
+        run: |
+          sudo systemctl start angie
+          sudo systemctl start caddy
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
