@@ -8,12 +8,13 @@ final readonly class Memory implements InfoInterface
         private float $total,
         private float $used,
         private float $free,
-        private ?float $shared = null,
-        private ?float $buffers = null,
-        private ?float $cached = null,
-        private ?float $swapTotal = null,
-        private ?float $swapUsed = null,
-        private ?float $swapFree = null,
+        private float $available,
+        private float $shared,
+        private float $buffers,
+        private float $cached,
+        private float $swapTotal,
+        private float $swapUsed,
+        private float $swapFree,
     ) {
     }
 
@@ -32,32 +33,37 @@ final readonly class Memory implements InfoInterface
         return $this->free;
     }
 
-    public function getShared(): ?float
+    public function getAvailable(): float
+    {
+        return $this->available;
+    }
+
+    public function getShared(): float
     {
         return $this->shared;
     }
 
-    public function getBuffers(): ?float
+    public function getBuffers(): float
     {
         return $this->buffers;
     }
 
-    public function getCached(): ?float
+    public function getCached(): float
     {
         return $this->cached;
     }
 
-    public function getSwapTotal(): ?float
+    public function getSwapTotal(): float
     {
         return $this->swapTotal;
     }
 
-    public function getSwapUsed(): ?float
+    public function getSwapUsed(): float
     {
         return $this->swapUsed;
     }
 
-    public function getSwapFree(): ?float
+    public function getSwapFree(): float
     {
         return $this->swapFree;
     }

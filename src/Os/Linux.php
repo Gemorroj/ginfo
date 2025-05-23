@@ -21,11 +21,11 @@ use Ginfo\Info\SoundCard;
 use Ginfo\Info\Ups;
 use Ginfo\Info\Usb;
 use Ginfo\Parser\Apcaccess;
-use Ginfo\Parser\Free;
 use Ginfo\Parser\Hwpci;
 use Ginfo\Parser\Lpstat;
 use Ginfo\Parser\Mdadm;
 use Ginfo\Parser\ProcCpuinfo;
+use Ginfo\Parser\ProcMeminfo;
 use Ginfo\Parser\Sensor\Hddtemp;
 use Ginfo\Parser\Sensor\Hwmon;
 use Ginfo\Parser\Sensor\Ipmi;
@@ -66,26 +66,24 @@ class Linux implements OsInterface
         return \php_uname('n');
     }
 
-    /**
-     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
-     */
-    public function getMemory(?string $cwd = null): ?Memory
+    public function getMemory(): ?Memory
     {
-        $data = (new Free())->run($cwd);
-        if (null === $data) {
+        $memInfo = (new ProcMeminfo())->run();
+        if (!$memInfo) {
             return null;
         }
 
         return new Memory(
-            $data['total'],
-            $data['used'],
-            $data['free'],
-            $data['shared'],
-            $data['buffers'],
-            $data['cached'],
-            $data['swapTotal'],
-            $data['swapUsed'],
-            $data['swapFree']
+            $memInfo['total'],
+            $memInfo['used'],
+            $memInfo['free'],
+            $memInfo['available'],
+            $memInfo['shared'],
+            $memInfo['buffers'],
+            $memInfo['cached'],
+            $memInfo['swapTotal'],
+            $memInfo['swapUsed'],
+            $memInfo['swapFree']
         );
     }
 

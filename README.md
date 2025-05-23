@@ -107,7 +107,7 @@ print_r($data->getStats());
 - USB devices (linux: need `usbutils`)
 - Network devices and stats
 - Uptime
-- Memory usage (physical and swap, linux: need `free`)
+- Memory usage (physical and swap)
 - Temperatures/voltages/fan speeds (linux: need `hddtemp` as daemon, `mbmon` as daemon, `sensors` (part of `lm-sensors`), `hwmon`, `acpi themal zone`, `nvidia-smi`, `ipmitool`)
 - RAID arrays (linux: need `mdadm`)
 - Motherboard (linux: need `dimedecode`)
@@ -139,3 +139,4 @@ print_r($data->getStats());
 - add web-servers info (nginx, angie, httpd, caddy)
 - add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb, elasticsearch/opensearch)
 - allow add custom parsers
+- use /proc/meminfo instead free for memory info

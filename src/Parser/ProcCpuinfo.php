@@ -9,10 +9,23 @@ final readonly class ProcCpuinfo implements ParserInterface
     use CommonTrait;
 
     /**
-     * @return array{physical: int, cores: int, virtual: int, hyperThreading: bool, processors: array{model: string, speed: int, l2Cache: int|null, flags: string[]|null, architecture: string|null}[]}|null
+     * @return array{
+     *     physical: int,
+     *     cores: int,
+     *     virtual: int,
+     *     hyperThreading: bool,
+     *     processors: array{
+     *         model: string,
+     *         speed: int,
+     *         l2Cache: int|null,
+     *         flags: string[]|null,
+     *         architecture: string|null
+     *     }[]
+     * }|null
      */
     public function run(): ?array
     {
+        // https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/6/html/deployment_guide/s2-proc-cpuinfo
         $cpuInfo = self::getContents('/proc/cpuinfo');
         if (null === $cpuInfo) {
             return null;

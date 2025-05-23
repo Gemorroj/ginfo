@@ -135,6 +135,7 @@ final class GinfoTest extends TestCase
         self::assertGreaterThan(1, $memory->getTotal());
         self::assertGreaterThan(1, $memory->getFree());
         self::assertGreaterThan(1, $memory->getUsed());
+        self::assertGreaterThan(1, $memory->getAvailable());
 
         // \print_r($memory);
     }
