@@ -36,7 +36,9 @@ final readonly class ProcMeminfo implements ParserInterface
         foreach ($lines as $line) {
             [$key, $value] = \explode(':', $line, 2);
             $key = \trim($key);
-            $value = ((float) \trim(\explode(' ', $value, 2)[0])) * 1024; // unit always kB
+            $value = \trim($value);
+            $value = \trim(\explode(' ', $value, 2)[0]);
+            $value = ((float) $value) * 1024; // unit always kB
             $arr[$key] = $value;
         }
 
