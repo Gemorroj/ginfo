@@ -53,8 +53,8 @@
         "ext-pcre": "*",
         "ext-mbstring": "*",
         "ext-json": "*",
-        "symfony/process": "^6.4.20||^7.4||^8.0",
-        "symfony/http-client": "^6.4.20||^7.4||^8.0"
+        "symfony/process": "^7.4||^8.0",
+        "symfony/http-client": "^7.4||^8.0"
     },
     "require-dev": {
         "ext-pdo_mysql": "*",
@@ -64,9 +64,9 @@
         "ext-apcu": "*",
         "ext-memcached": "*",
         "ext-mongodb": "*",
-        "phpunit/phpunit": "^11.5.46",
-        "phpstan/phpstan": "^2.1.33",
-        "friendsofphp/php-cs-fixer": "^3.91.3"
+        "phpunit/phpunit": "^11.5||^12.5",
+        "phpstan/phpstan": "^2.1.37",
+        "friendsofphp/php-cs-fixer": "^3.93"
     },
     "suggest": {
         "ext-pdo_mysql": "For MySQL/MariaDB/Manticore",
