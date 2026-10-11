@@ -23,7 +23,7 @@ final readonly class Nginx implements ParserInterface
      *     crypto: string,
      *     tls_sni: bool,
      *     args: string,
-     *     status: array|null,
+     *     status: array<string, mixed>|null,
      *     processes: array{
      *         pid: int,
      *         master: bool,

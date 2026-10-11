@@ -7,22 +7,9 @@ use Ginfo\Parser\ParserInterface;
 final readonly class Redis implements ParserInterface
 {
     /**
-     * @return array{
-     *     server: array<string, string>,
-     *     clients: array<string, string>,
-     *     memory: array<string, string>,
-     *     persistence: array<string, string>,
-     *     stats: array<string, string>,
-     *     replication: array<string, string>,
-     *     cpu: array<string, string>,
-     *     modules: array<string, string>,
-     *     errorstats: array<string, string>,
-     *     cluster: array<string, string>,
-     *     keyspace: array<string, string>,
-     *     keysizes: array<string, string>,
-     * }|null
+     * @return array<string, array<string, string>>
      */
-    public function run(\Redis $connection = new \Redis(['host' => '127.0.0.1', 'port' => 6379])): ?array
+    public function run(\Redis $connection = new \Redis(['host' => '127.0.0.1', 'port' => 6379])): array
     {
         $result = [
             'server' => [],

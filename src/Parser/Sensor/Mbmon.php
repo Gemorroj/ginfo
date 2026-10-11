@@ -40,6 +40,8 @@ final readonly class Mbmon implements ParserInterface
 
     /**
      * Parse and return info from daemon socket.
+     *
+     * @return array{path: string|null, name: string, value: float, unit: string}[]
      */
     private static function parseSockData(string $data): array
     {

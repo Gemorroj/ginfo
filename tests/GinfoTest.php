@@ -11,20 +11,11 @@ final class GinfoTest extends TestCase
 {
     public function testGetCustomParser(): void
     {
-        $customParser = new class implements InfoParserInterface {
-            public function run(): ?InfoInterface
-            {
-                return new class implements InfoInterface {
-                    public function getOk(): string
-                    {
-                        return 'OK';
-                    }
-                };
-            }
-        };
+        $customParser = new CustomInfoParser();
 
         $ginfo = new Ginfo(customParsers: [$customParser]);
         $data = $ginfo->getCustomParser($customParser::class);
+        self::assertInstanceOf(CustomInfo::class, $data);
         self::assertSame('OK', $data->getOk());
     }
 
@@ -119,7 +110,7 @@ final class GinfoTest extends TestCase
             self::assertNotEmpty($processor->getFlags());
             self::assertNotEmpty($processor->getArchitecture());
             self::assertIsInt($processor->getL2Cache());
-            self::assertIsFloat($processor->getSpeed());
+            self::assertGreaterThanOrEqual(0, $processor->getSpeed());
         }
         // \print_r($cpu);
     }
@@ -343,5 +334,21 @@ final class GinfoTest extends TestCase
         self::assertNotEmpty($raids[0]->getDrives());
         self::assertNotEmpty($raids[0]->getChart());
         // \print_r($raids);
+    }
+}
+
+final class CustomInfoParser implements InfoParserInterface
+{
+    public function run(): InfoInterface
+    {
+        return new CustomInfo();
+    }
+}
+
+final class CustomInfo implements InfoInterface
+{
+    public function getOk(): string
+    {
+        return 'OK';
     }
 }

@@ -15,20 +15,32 @@ final readonly class Who implements ParserInterface
      */
     public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['who', '--count'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
+        $process = new Process(['who'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
             return null;
         }
 
-        $list = $process->getOutput();
-        $list = \explode("\n", \trim($list));
-        \array_pop($list); // remove footer
+        return self::parse($process->getOutput());
+    }
 
+    /**
+     * @return string[]
+     */
+    private static function parse(string $output): array
+    {
         $out = [];
-        foreach ($list as $line) {
-            $out[] = \trim($line);
+        foreach (\explode("\n", \trim($output)) as $line) {
+            $line = \trim($line);
+            if ('' === $line || \str_starts_with($line, 'USER') || \str_starts_with($line, 'system boot')) {
+                continue; // skip header (busybox) and footer (GNU)
+            }
+
+            $user = \explode(' ', $line, 2)[0];
+            if ('' !== $user) {
+                $out[] = $user;
+            }
         }
 
         return $out;

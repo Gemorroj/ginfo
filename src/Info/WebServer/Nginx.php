@@ -7,7 +7,8 @@ use Ginfo\Info\InfoInterface;
 final readonly class Nginx implements InfoInterface
 {
     /**
-     * @param NginxProcess[] $processes
+     * @param NginxProcess[]            $processes
+     * @param array<string, mixed>|null $status
      */
     public function __construct(
         private string $nginxVersion,
@@ -47,6 +48,9 @@ final readonly class Nginx implements InfoInterface
         return $this->processes;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getStatus(): ?array
     {
         return $this->status;

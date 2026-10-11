@@ -149,7 +149,8 @@ class Linux implements OsInterface
                 $reads = null;
                 $writes = null;
             } else {
-                [, $reads, $writes] = $statMatches;
+                $reads = (float) $statMatches[1];
+                $writes = (float) $statMatches[2];
             }
 
             $type = '';
@@ -167,7 +168,7 @@ class Linux implements OsInterface
             $drives[] = new Drive(
                 self::getContents(\dirname($path).'/model', 'Unknown').$type,
                 '/dev/'.$namePartition,
-                self::getContents(\dirname($path, 2).'/size', '0') * 512,
+                (float) self::getContents(\dirname($path, 2).'/size', '0') * 512,
                 self::getContents(\dirname($path).'/vendor'),
                 $reads,
                 $writes,
@@ -217,8 +218,8 @@ class Linux implements OsInterface
                 $size,
                 $used,
                 $free,
-                null !== $size && null !== $free && $size > 0 ? \round($free / $size, 2) * 100 : null,
-                null !== $size && null !== $used && $size > 0 ? \round($used / $size, 2) * 100 : null,
+                self::percent($free, $size),
+                self::percent($used, $size),
                 \explode(',', $mount[4])
             );
         }
@@ -247,7 +248,7 @@ class Linux implements OsInterface
             $raids[] = new Raid(
                 $raid['device'],
                 $raid['status'],
-                $raid['level'],
+                (int) $raid['level'],
                 $raid['size'],
                 $raid['count']['active'],
                 $raid['count']['total'],
@@ -311,16 +312,18 @@ class Linux implements OsInterface
             foreach ($paths as $bl) {
                 $max = self::getContents($bl);
                 $cur = self::getContents(\dirname($bl).'/actual_brightness');
-                if (null === $cur) {
+                if (null === $cur || null === $max) {
                     continue;
                 }
 
-                if ($max < 0 || $cur < 0) {
+                $maxValue = (float) $max;
+                $curValue = (float) $cur;
+                if ($maxValue <= 0 || $curValue < 0) {
                     continue;
                 }
                 $return[] = [
                     'name' => 'Backlight brightness',
-                    'value' => \round($cur / $max, 2) * 100,
+                    'value' => \round($curValue / $maxValue * 100, 2),
                     'unit' => '%',
                     'path' => null,
                 ];
@@ -390,10 +393,7 @@ class Linux implements OsInterface
 
         $return = [];
         foreach ($paths as $path) {
-            $speed = (int) self::getContents($path.'/speed'); // Mbits/sec
-            if ($speed) {
-                $speed *= 1000000;
-            }
+            $speed = self::parseSpeed(self::getContents($path.'/speed'));
 
             $operstateContents = self::getContents($path.'/operstate');
             $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
@@ -491,16 +491,16 @@ class Linux implements OsInterface
             $block = self::parseKeyValueBlock($uevent, '=');
 
             $return[] = new Battery(
-                $block['POWER_SUPPLY_MODEL_NAME'],
-                $block['POWER_SUPPLY_MANUFACTURER'],
-                $block['POWER_SUPPLY_STATUS'],
-                $block['POWER_SUPPLY_CAPACITY'],
-                $block['POWER_SUPPLY_VOLTAGE_NOW'],
+                $block['POWER_SUPPLY_MODEL_NAME'] ?? '',
+                $block['POWER_SUPPLY_MANUFACTURER'] ?? '',
+                $block['POWER_SUPPLY_STATUS'] ?? '',
+                (int) ($block['POWER_SUPPLY_CAPACITY'] ?? 0),
+                (int) ($block['POWER_SUPPLY_VOLTAGE_NOW'] ?? 0),
                 $block['POWER_SUPPLY_TECHNOLOGY'] ?? null,
-                $block['POWER_SUPPLY_ENERGY_NOW'] ?? null,
-                $block['POWER_SUPPLY_ENERGY_FULL'] ?? null,
-                $block['POWER_SUPPLY_CHARGE_NOW'] ?? null,
-                $block['POWER_SUPPLY_CHARGE_FULL'] ?? null
+                isset($block['POWER_SUPPLY_ENERGY_NOW']) ? (int) $block['POWER_SUPPLY_ENERGY_NOW'] : null,
+                isset($block['POWER_SUPPLY_ENERGY_FULL']) ? (int) $block['POWER_SUPPLY_ENERGY_FULL'] : null,
+                isset($block['POWER_SUPPLY_CHARGE_NOW']) ? (int) $block['POWER_SUPPLY_CHARGE_NOW'] : null,
+                isset($block['POWER_SUPPLY_CHARGE_FULL']) ? (int) $block['POWER_SUPPLY_CHARGE_FULL'] : null
             );
         }
 
@@ -514,8 +514,45 @@ class Linux implements OsInterface
             return null;
         }
 
+        return self::parseSoundCards($lines);
+    }
+
+    private static function percent(?float $part, ?float $total): ?float
+    {
+        if (null === $part || null === $total || $total <= 0) {
+            return null;
+        }
+
+        return \round($part / $total * 100, 2);
+    }
+
+    private static function parseSpeed(?string $raw): ?float
+    {
+        if (null === $raw || !\is_numeric($raw)) {
+            return null;
+        }
+
+        $speedMb = (int) $raw;
+        // 4294967295 is -1 as unsigned 32-bit, used for virtual/no-link interfaces
+        if ($speedMb <= 0 || 4294967295 === $speedMb) {
+            return null;
+        }
+
+        return (float) ($speedMb * 1000000); // Mbits/sec -> bit/s
+    }
+
+    /**
+     * @param string[] $lines
+     *
+     * @return SoundCard[]
+     */
+    private static function parseSoundCards(array $lines): array
+    {
         $cards = [];
-        for ($i = 0, $l = \count($lines); $i < $l; $i += 2) {
+        for ($i = 0, $l = \count($lines); $i + 1 < $l; $i += 2) {
+            if (!\str_contains($lines[$i], ']:')) {
+                continue;
+            }
             $name = \trim(\explode(']:', $lines[$i], 2)[1]);
             $vendor = \trim(\explode(' at ', $lines[$i + 1], 2)[0]);
 
@@ -545,7 +582,7 @@ class Linux implements OsInterface
             $blockIo = $ioContents ? self::parseKeyValueBlock($ioContents) : null;
             $blockStatus = self::parseKeyValueBlock($statusContents);
 
-            $uid = \explode("\t", $blockStatus['Uid'], 2)[0];
+            $uid = (int) \explode("\t", $blockStatus['Uid'], 2)[0];
             $user = \posix_getpwuid($uid);
 
             if (isset($blockStatus['VmSize'])) {
@@ -555,7 +592,7 @@ class Linux implements OsInterface
                 $vmSize = null;
             }
 
-            if (isset($blockStatus['VmSize'])) {
+            if (isset($blockStatus['VmPeak'])) {
                 $vmPeak = (float) $blockStatus['VmPeak']; // drop kB
                 $vmPeak *= 1024;
             } else {
@@ -564,15 +601,15 @@ class Linux implements OsInterface
 
             $result[] = new Process(
                 $blockStatus['Name'],
-                $blockStatus['Pid'],
+                (int) $blockStatus['Pid'],
                 null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
-                $blockStatus['Threads'],
+                (int) $blockStatus['Threads'],
                 $blockStatus['State'],
                 $vmSize,
                 $vmPeak,
-                $user ? $user['name'] : $uid,
-                $blockIo['read_bytes'] ?? null,
-                $blockIo['write_bytes'] ?? null
+                $user ? $user['name'] : (string) $uid,
+                isset($blockIo['read_bytes']) ? (float) $blockIo['read_bytes'] : null,
+                isset($blockIo['write_bytes']) ? (float) $blockIo['write_bytes'] : null
             );
         }
 
@@ -807,9 +844,10 @@ class Linux implements OsInterface
 
         $files = [];
         foreach ($data['files'] as $file) {
+            $filePosixUser = null !== $file['uid'] ? \posix_getpwuid($file['uid']) : false;
             $files[] = new Samba\File(
-                $file['pid'],
-                \posix_getpwuid($file['uid'])['name'],
+                (int) $file['pid'],
+                false !== $filePosixUser ? $filePosixUser['name'] : (string) $file['uid'],
                 $file['denyMode'],
                 $file['access'],
                 $file['rw'],

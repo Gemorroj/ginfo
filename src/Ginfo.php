@@ -420,12 +420,9 @@ final readonly class Ginfo
     /**
      * Mysql/MariaDB status.
      */
-    public function getMysql(\PDO $connection): ?Mysql
+    public function getMysql(\PDO $connection): Mysql
     {
         $data = (new Parser\Database\Mysql())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         $performance95thPercentile = [];
         foreach ($data['performance_95th_percentile'] as $v) {
@@ -512,12 +509,9 @@ final readonly class Ginfo
     /**
      * Manticore status.
      */
-    public function getManticore(\PDO $connection): ?Manticore
+    public function getManticore(\PDO $connection): Manticore
     {
         $data = (new Parser\Database\Manticore())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         return new Manticore(
             $data['global_variables'],
@@ -532,12 +526,9 @@ final readonly class Ginfo
      *
      * @param string $statsPage uri for json stats page https://127.0.0.1:9200/_cluster/stats for example. see https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-cluster-stats
      */
-    public function getElasticsearch(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): ?Elasticsearch
+    public function getElasticsearch(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): Elasticsearch
     {
         $data = (new Parser\Database\Elasticsearch())->run($statsPage, $username, $password, $httpClient);
-        if (!$data) {
-            return null;
-        }
 
         $statsNodes = new ElasticsearchStatsNodes(
             $data['stats']['nodes']['count'],
@@ -596,12 +587,9 @@ final readonly class Ginfo
     /**
      * Postgres status.
      */
-    public function getPostgres(\PDO $connection): ?Postgres
+    public function getPostgres(\PDO $connection): Postgres
     {
         $data = (new Parser\Database\Postgres())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         $pgStatActivity = [];
         foreach ($data['pg_stat_activity'] as $v) {
@@ -780,12 +768,9 @@ final readonly class Ginfo
     /**
      * Mongo status.
      */
-    public function getMongo(\MongoDB\Driver\Manager $connection): ?Mongo
+    public function getMongo(\MongoDB\Driver\Manager $connection): Mongo
     {
         $data = (new Parser\Database\Mongo())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         $serverStatus = new MongoServerStatus(
             $data['serverStatus']['host'],
@@ -878,12 +863,9 @@ final readonly class Ginfo
     /**
      * Sqlite status.
      */
-    public function getSqlite(\PDO $connection): ?Sqlite
+    public function getSqlite(\PDO $connection): Sqlite
     {
         $data = (new Parser\Database\Sqlite())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         $pragmaTableList = [];
         foreach ($data['pragma']['table_list'] as $v) {
@@ -933,12 +915,9 @@ final readonly class Ginfo
     /**
      * Memcached status.
      */
-    public function getMemcached(\Memcached $connection): ?Memcached
+    public function getMemcached(\Memcached $connection): Memcached
     {
         $data = (new Parser\Database\Memcached())->run($connection);
-        if (!$data) {
-            return null;
-        }
 
         return new Memcached(
             $data['stats'],
@@ -966,8 +945,8 @@ final readonly class Ginfo
         $opcache = new Php\Opcache(
             $opcacheStatus['opcache_enabled'] ?? false,
             \phpversion('Zend Opcache') ?: null,
-            $opcacheConfiguration['directives']['opcache.enable'] ?? false,
-            $opcacheConfiguration['directives']['opcache.enable_cli'] ?? null,
+            $opcacheConfiguration['directives']['opcache.enable'] ?? false, // @phpstan-ignore nullCoalesce.offset
+            $opcacheConfiguration['directives']['opcache.enable_cli'] ?? null, // @phpstan-ignore nullCoalesce.offset
             $opcacheStatus['memory_usage']['used_memory'] ?? null,
             $opcacheStatus['memory_usage']['free_memory'] ?? null,
             $opcacheStatus['opcache_statistics']['num_cached_scripts'] ?? null,
@@ -988,7 +967,7 @@ final readonly class Ginfo
             false !== $apcEnableCli ? (bool) $apcEnableCli : null,
             $apcuCacheInfo['num_hits'] ?? null,
             $apcuCacheInfo['num_misses'] ?? null,
-            isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? $apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem'] : null,
+            isset($apcuSmaInfo['num_seg'], $apcuSmaInfo['seg_size'], $apcuSmaInfo['avail_mem']) ? (int) ($apcuSmaInfo['num_seg'] * $apcuSmaInfo['seg_size'] - $apcuSmaInfo['avail_mem']) : null,
             $apcuSmaInfo['avail_mem'] ?? null,
             $apcuCacheInfo['num_entries'] ?? null
         );

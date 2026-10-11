@@ -10,7 +10,7 @@ final readonly class Hwmon implements ParserInterface
     use CommonTrait;
 
     /**
-     * @return array{path: string|null, name:  string, value: float, unit: string}|null
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
      */
     public function run(): ?array
     {
@@ -23,6 +23,10 @@ final readonly class Hwmon implements ParserInterface
         foreach ($paths as $path) {
             $initPath = \rtrim($path, 'input');
             $value = self::getContents($path);
+            if (null === $value) {
+                continue;
+            }
+            $value = (float) $value;
             $base = \basename($path);
             $labelPath = $initPath.'label';
             $modelPath = \dirname($path).'/device/model';

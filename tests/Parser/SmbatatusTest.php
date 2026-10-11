@@ -95,6 +95,9 @@ final class SmbatatusTest extends TestCase
         ]]; // samba 4.4
     }
 
+    /**
+     * @param array<string, mixed> $expected
+     */
     #[DataProvider('provideConnectionStrings')]
     public function testParseConnection(string $data, array $expected): void
     {
@@ -105,6 +108,9 @@ final class SmbatatusTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
+    /**
+     * @param array<string, mixed> $expected
+     */
     #[DataProvider('provideServiceStrings')]
     public function testParseService(string $data, array $expected): void
     {
@@ -115,6 +121,9 @@ final class SmbatatusTest extends TestCase
         self::assertEquals($expected, $actual);
     }
 
+    /**
+     * @param array<string, mixed> $expected
+     */
     #[DataProvider('provideFileStrings')]
     public function testParseFile(string $data, array $expected): void
     {

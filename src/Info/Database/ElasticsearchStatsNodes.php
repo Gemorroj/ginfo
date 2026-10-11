@@ -42,6 +42,9 @@ final readonly class ElasticsearchStatsNodes implements InfoInterface
         return $this->count;
     }
 
+    /**
+     * @return string[]
+     */
     public function getVersions(): array
     {
         return $this->versions;
@@ -102,6 +105,9 @@ final readonly class ElasticsearchStatsNodes implements InfoInterface
         return $this->processOpenFileDescriptorsAvg;
     }
 
+    /**
+     * @return string[]
+     */
     public function getJvmVersions(): array
     {
         return $this->jvmVersions;
@@ -142,6 +148,9 @@ final readonly class ElasticsearchStatsNodes implements InfoInterface
         return $this->fsCacheReservedInBytes;
     }
 
+    /**
+     * @return string[]
+     */
     public function getPlugins(): array
     {
         return $this->plugins;

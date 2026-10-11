@@ -12,9 +12,9 @@ final readonly class Manticore implements ParserInterface
      *     status: array<string, string>,
      *     settings: array<string, string>,
      *     agent_status: array<string, string>,
-     * }|null
+     * }
      */
-    public function run(\PDO $connection = new \PDO('mysql:host=127.0.0.1;port=9306', 'root', '')): ?array
+    public function run(\PDO $connection = new \PDO('mysql:host=127.0.0.1;port=9306', 'root', '')): array
     {
         $result = [
             'global_variables' => [],

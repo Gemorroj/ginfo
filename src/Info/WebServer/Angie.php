@@ -7,7 +7,8 @@ use Ginfo\Info\InfoInterface;
 final readonly class Angie implements InfoInterface
 {
     /**
-     * @param AngieProcess[] $processes
+     * @param AngieProcess[]            $processes
+     * @param array<string, mixed>|null $status
      */
     public function __construct(
         private string $angieVersion,
@@ -59,6 +60,9 @@ final readonly class Angie implements InfoInterface
         return $this->processes;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getStatus(): ?array
     {
         return $this->status;

@@ -27,6 +27,9 @@ final readonly class Httpd implements InfoInterface
         return $this->version;
     }
 
+    /**
+     * @return string[]
+     */
     public function getLoaded(): array
     {
         return $this->loaded;

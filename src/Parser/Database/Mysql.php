@@ -45,9 +45,9 @@ final readonly class Mysql implements ParserInterface
      *         data_length: float|int,
      *         index_length: float|int,
      *     }[]
-     * }|null
+     * }
      */
-    public function run(\PDO $connection = new \PDO('mysql:host=127.0.0.1', 'root', '')): ?array
+    public function run(\PDO $connection = new \PDO('mysql:host=127.0.0.1', 'root', '')): array
     {
         $result = [
             'global_status' => [],

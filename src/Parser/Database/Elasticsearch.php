@@ -59,9 +59,9 @@ final readonly class Elasticsearch implements ParserInterface
      *             segments_memory_in_bytes: int|float,
      *         },
      *     }
-     * }|null
+     * }
      */
-    public function run(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): ?array
+    public function run(string $statsPage = 'https://127.0.0.1:9200/_cluster/stats', ?string $username = null, ?string $password = null, ?HttpClientInterface $httpClient = null): array
     {
         $httpClient ??= HttpClient::create();
 

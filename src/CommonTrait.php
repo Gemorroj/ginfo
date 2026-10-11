@@ -29,6 +29,8 @@ trait CommonTrait
     }
 
     /**
+     * @param non-empty-string $delimiter
+     *
      * @return array<string, string>
      */
     protected static function parseKeyValueBlock(string $block, string $delimiter = ':'): array
@@ -59,7 +61,12 @@ trait CommonTrait
         $process = new Process(['pidof', $processName], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
-            $pids = \explode(' ', \trim($process->getOutput()));
+            $pids = [];
+            foreach (\explode(' ', \trim($process->getOutput())) as $pid) {
+                if ('' !== $pid) {
+                    $pids[] = (int) $pid;
+                }
+            }
             \sort($pids, \SORT_NUMERIC);
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
             $pids = [];
@@ -81,19 +88,19 @@ trait CommonTrait
                     $keyValuePidStatus = self::parseKeyValueBlock($pidStatus, ':');
                     foreach ($keyValuePidStatus as $key => $value) {
                         if ('VmPeak' === $key) {
-                            $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
+                            $valueBytes = (float) \explode(' ', $value)[0] * 1024; // always Kb
                             $pidProcess['VmPeak'] = $valueBytes;
                             continue;
                         }
                         if ('VmSize' === $key) {
-                            $valueBytes = \explode(' ', $value)[0] * 1024; // always Kb
+                            $valueBytes = (float) \explode(' ', $value)[0] * 1024; // always Kb
                             $pidProcess['VmSize'] = $valueBytes;
                             continue;
                         }
                     }
                 }
 
-                $process = new Process(['ps', '-p', $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
+                $process = new Process(['ps', '-p', (string) $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
                 try {
                     $process->mustRun();
                     $pidProcess['uptime'] = (int) \trim($process->getOutput());

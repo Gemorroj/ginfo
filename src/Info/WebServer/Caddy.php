@@ -7,8 +7,9 @@ use Ginfo\Info\InfoInterface;
 final readonly class Caddy implements InfoInterface
 {
     /**
-     * @param string[]       $listModules
-     * @param CaddyProcess[] $processes
+     * @param string[]                  $listModules
+     * @param CaddyProcess[]            $processes
+     * @param array<string, mixed>|null $config
      */
     public function __construct(
         private string $version,
@@ -45,6 +46,9 @@ final readonly class Caddy implements InfoInterface
         return $this->processes;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getConfig(): ?array
     {
         return $this->config;

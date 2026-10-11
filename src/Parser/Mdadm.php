@@ -53,7 +53,7 @@ md0 : active raid1 sdb[0]
             [$countTotal, $countActive] = \explode('/', $array['counts'], 2);
 
             $state = $array['state'];
-            if (isset($array['blurb'])) {
+            if (isset($array['blurb'])) { // @phpstan-ignore isset.offset
                 $state .= $array['blurb'];
             }
 

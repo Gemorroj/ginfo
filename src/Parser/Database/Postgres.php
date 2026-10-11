@@ -153,9 +153,9 @@ final readonly class Postgres implements ParserInterface
      *         stats_since: \DateTimeImmutable,
      *         minmax_stats_since: \DateTimeImmutable,
      *      }[],
-     * }|null
+     * }
      */
-    public function run(\PDO $connection = new \PDO('pgsql:host=127.0.0.1', 'postgres', 'postgres')): ?array
+    public function run(\PDO $connection = new \PDO('pgsql:host=127.0.0.1', 'postgres', 'postgres')): array
     {
         $result = [
             'version' => null,
@@ -169,7 +169,9 @@ final readonly class Postgres implements ParserInterface
         $query = $connection->query('SELECT version()');
         if ($query) {
             $row = $query->fetch(\PDO::FETCH_ASSOC);
-            $result['version'] = $row['version'];
+            if (false !== $row) {
+                $result['version'] = $row['version'];
+            }
         }
 
         try {

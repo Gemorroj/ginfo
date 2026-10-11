@@ -25,13 +25,19 @@ final readonly class Lpstat implements ParserInterface
             return null;
         }
 
-        $lines = \explode("\n", \trim($process->getOutput()));
+        return self::parse($process->getOutput());
+    }
 
+    /**
+     * @return array{name: string, enabled: bool}[]
+     */
+    private static function parse(string $output): array
+    {
         $res = [];
-        foreach ($lines as $line) {
+        foreach (\explode("\n", \trim($output)) as $line) {
             $line = \trim($line);
 
-            if (\preg_match('/^printer (\w+) .*([enabled|disabled]+) since .+?/Uu', $line, $printersMatch)) {
+            if (\preg_match('/^printer (\w+) .*(enabled|disabled) since .+?/Uu', $line, $printersMatch)) {
                 $res[] = [
                     'name' => \str_replace('_', ' ', $printersMatch[1]),
                     'enabled' => 'enabled' === $printersMatch[2],

@@ -16,10 +16,10 @@ final readonly class ProcCpuinfo implements ParserInterface
      *     hyperThreading: bool,
      *     processors: array{
      *         model: string,
-     *         speed: int,
+     *         speed: float,
      *         l2Cache: int|null,
-     *         flags: string[]|null,
-     *         architecture: string|null
+     *         flags: string[],
+     *         architecture: string
      *     }[]
      * }|null
      */
@@ -31,29 +31,51 @@ final readonly class ProcCpuinfo implements ParserInterface
             return null;
         }
 
+        return self::parse($cpuInfo);
+    }
+
+    /**
+     * @return array{
+     *     physical: int,
+     *     cores: int,
+     *     virtual: int,
+     *     hyperThreading: bool,
+     *     processors: array{
+     *         model: string,
+     *         speed: float,
+     *         l2Cache: int|null,
+     *         flags: string[],
+     *         architecture: string
+     *     }[]
+     * }
+     */
+    private static function parse(string $cpuInfo): array
+    {
         $cpuData = [];
         foreach (\explode("\n\n", $cpuInfo) as $block) {
             $cpuData[] = self::parseKeyValueBlock($block);
         }
 
+        $virtual = \count($cpuData);
+
         $cores = (static function () use ($cpuData): int {
             $out = [];
+            $hasCores = false;
             foreach ($cpuData as $block) {
-                $out[$block['physical id']] = $block['cpu cores'];
+                if (isset($block['cpu cores'])) {
+                    $hasCores = true;
+                    $out[$block['physical id'] ?? '0'] = (int) $block['cpu cores'];
+                }
             }
 
-            return (int) \array_sum($out);
+            // ARM and some other architectures don't expose "cpu cores"
+            return $hasCores ? (int) \array_sum($out) : \count($cpuData);
         })();
-        $virtual = \count($cpuData);
 
         $physical = (static function () use ($cpuData): int {
             $out = [];
             foreach ($cpuData as $block) {
-                if (isset($out[$block['physical id']])) {
-                    ++$out[$block['physical id']];
-                } else {
-                    $out[$block['physical id']] = 1;
-                }
+                $out[$block['physical id'] ?? '0'] = true;
             }
 
             return \count($out);
@@ -61,16 +83,20 @@ final readonly class ProcCpuinfo implements ParserInterface
 
         $processors = [];
         foreach ($cpuData as $block) {
-            if (isset($processors[$block['physical id']])) {
+            $physicalId = $block['physical id'] ?? '0';
+            if (isset($processors[$physicalId])) {
                 continue;
             }
-            $flags = \explode(' ', $block['flags']);
-            $architecture = self::getArchitecture($block['model name'], $flags, $block['isa'] ?? null);
 
-            $processors[$block['physical id']] = [
-                'model' => $block['model name'],
-                'speed' => $block['cpu MHz'],
-                'l2Cache' => (float) $block['cache size'] * 1024, // L2 cache, drop KB
+            $model = $block['model name'] ?? $block['Processor'] ?? $block['model'] ?? '';
+            $flagsStr = $block['flags'] ?? $block['Features'] ?? '';
+            $flags = '' === $flagsStr ? [] : \explode(' ', $flagsStr);
+            $architecture = self::getArchitecture($model, $flags, $block['isa'] ?? null);
+
+            $processors[$physicalId] = [
+                'model' => $model,
+                'speed' => (float) ($block['cpu MHz'] ?? 0),
+                'l2Cache' => isset($block['cache size']) ? (int) ((float) $block['cache size'] * 1024) : null, // L2 cache, drop KB
                 'flags' => $flags,
                 'architecture' => $architecture,
             ];
@@ -91,7 +117,7 @@ final readonly class ProcCpuinfo implements ParserInterface
      *
      * @param string[] $flags
      */
-    private static function getArchitecture(string $modelName, array $flags, ?string $isa): ?string
+    private static function getArchitecture(string $modelName, array $flags, ?string $isa): string
     {
         if ($isa && \str_contains($isa, 'rv64')) {
             return 'RISC-V';

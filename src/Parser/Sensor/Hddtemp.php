@@ -7,7 +7,7 @@ use Ginfo\Parser\ParserInterface;
 final readonly class Hddtemp implements ParserInterface
 {
     /**
-     * @return array{path: string|null, name:  string, value: float, unit: string}|null
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
      */
     public function run(string $host = 'localhost', int $port = 7634, int $timeout = 1): ?array
     {
@@ -40,6 +40,8 @@ final readonly class Hddtemp implements ParserInterface
 
     /**
      * Parse and return info from daemon socket.
+     *
+     * @return array{path: string, name: string, value: float, unit: string}[]
      */
     private static function parseSockData(string $data): array
     {

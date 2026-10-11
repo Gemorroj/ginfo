@@ -29,14 +29,14 @@ final readonly class Caddy implements ParserInterface
      *          VmSize: float|null,
      *          uptime: int|null,
      *      }[],
-     *     config: array|null
+     *     config: array<string, mixed>|null
      * }|null
      */
     public function run(?string $configPage = null, ?string $cwd = null, ?HttpClientInterface $httpClient = null, int $timeout = 1): ?array
     {
         $res = [
             'version' => '',
-            'build_info' => [],
+            'build_info' => ['go' => '', 'path' => '', 'mod' => '', 'dep' => [], 'build' => []],
             'list_modules' => [],
             'processes' => [],
             'config' => null,

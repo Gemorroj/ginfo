@@ -16,11 +16,9 @@ final class HttpdTest extends TestCase
 
         self::assertStringStartsWith('2.4.', $data['version']);
         self::assertStringStartsWith('-D', $data['args']);
-        self::assertStringStartsWith('-1.', $data['status']['load']);
-        self::assertIsArray($data['processes']);
+        self::assertMatchesRegularExpression('/^\d+\.\d+ \d+\.\d+ \d+\.\d+$/', $data['status']['load']);
         self::assertNotEmpty($data['processes']);
         foreach ($data['processes'] as $process) {
-            self::assertIsNumeric($process['pid']);
             self::assertIsNumeric($process['VmPeak']);
             self::assertIsNumeric($process['VmSize']);
             self::assertIsNumeric($process['uptime']);

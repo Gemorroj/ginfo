@@ -73,9 +73,9 @@ final readonly class Mongo implements ParserInterface
      *             commands: array{time: int|float, count: int|float},
      *         }>
      *     }>
-     * }|null
+     * }
      */
-    public function run(\MongoDB\Driver\Manager $connection = new \MongoDB\Driver\Manager('mongodb://127.0.0.1:27017')): ?array
+    public function run(\MongoDB\Driver\Manager $connection = new \MongoDB\Driver\Manager('mongodb://127.0.0.1:27017')): array
     {
         $result = [
             'serverStatus' => [],
@@ -84,35 +84,36 @@ final readonly class Mongo implements ParserInterface
 
         $cursorServerStatus = $connection->executeCommand('admin', new \MongoDB\Driver\Command(['serverStatus' => 1]));
         $serverStatus = \current($cursorServerStatus->toArray());
-        $result['serverStatus']['host'] = $serverStatus->host;
-        $result['serverStatus']['version'] = $serverStatus->version;
-        $result['serverStatus']['process'] = $serverStatus->process;
-        $result['serverStatus']['pid'] = $serverStatus->pid;
-        $result['serverStatus']['uptime'] = $serverStatus->uptime;
-        $result['serverStatus']['localTime'] = $serverStatus->localTime->toDateTimeImmutable();
-        $result['serverStatus']['page_faults'] = $serverStatus->extra_info->page_faults;
+        $result['serverStatus']['host'] = (string) $serverStatus->host;
+        $result['serverStatus']['version'] = (string) $serverStatus->version;
+        $result['serverStatus']['process'] = (string) $serverStatus->process;
+        $result['serverStatus']['pid'] = (int) $serverStatus->pid;
+        $result['serverStatus']['uptime'] = (int) $serverStatus->uptime;
+        $localTime = $serverStatus->localTime->toDateTimeImmutable();
+        $result['serverStatus']['localTime'] = $localTime instanceof \DateTimeImmutable ? $localTime : new \DateTimeImmutable();
+        $result['serverStatus']['page_faults'] = (int) $serverStatus->extra_info->page_faults;
 
-        $result['serverStatus']['network']['bytesIn'] = $serverStatus->network->bytesIn;
-        $result['serverStatus']['network']['bytesOut'] = $serverStatus->network->bytesOut;
-        $result['serverStatus']['network']['numRequests'] = $serverStatus->network->numRequests;
+        $result['serverStatus']['network']['bytesIn'] = (int) $serverStatus->network->bytesIn;
+        $result['serverStatus']['network']['bytesOut'] = (int) $serverStatus->network->bytesOut;
+        $result['serverStatus']['network']['numRequests'] = (int) $serverStatus->network->numRequests;
 
-        $result['serverStatus']['counters']['insert'] = $serverStatus->opcounters->insert;
-        $result['serverStatus']['counters']['query'] = $serverStatus->opcounters->query;
-        $result['serverStatus']['counters']['update'] = $serverStatus->opcounters->update;
-        $result['serverStatus']['counters']['delete'] = $serverStatus->opcounters->delete;
-        $result['serverStatus']['counters']['getmore'] = $serverStatus->opcounters->getmore;
-        $result['serverStatus']['counters']['command'] = $serverStatus->opcounters->command;
+        $result['serverStatus']['counters']['insert'] = (int) $serverStatus->opcounters->insert;
+        $result['serverStatus']['counters']['query'] = (int) $serverStatus->opcounters->query;
+        $result['serverStatus']['counters']['update'] = (int) $serverStatus->opcounters->update;
+        $result['serverStatus']['counters']['delete'] = (int) $serverStatus->opcounters->delete;
+        $result['serverStatus']['counters']['getmore'] = (int) $serverStatus->opcounters->getmore;
+        $result['serverStatus']['counters']['command'] = (int) $serverStatus->opcounters->command;
 
-        $result['serverStatus']['connections']['current'] = $serverStatus->connections->current;
-        $result['serverStatus']['connections']['available'] = $serverStatus->connections->available;
-        $result['serverStatus']['connections']['totalCreated'] = $serverStatus->connections->totalCreated;
-        $result['serverStatus']['connections']['rejected'] = $serverStatus->connections->rejected;
-        $result['serverStatus']['connections']['active'] = $serverStatus->connections->active;
-        $result['serverStatus']['connections']['threaded'] = $serverStatus->connections->threaded;
-        $result['serverStatus']['connections']['exhaustIsMaster'] = $serverStatus->connections->exhaustIsMaster;
-        $result['serverStatus']['connections']['exhaustHello'] = $serverStatus->connections->exhaustHello;
-        $result['serverStatus']['connections']['awaitingTopologyChanges'] = $serverStatus->connections->awaitingTopologyChanges;
-        $result['serverStatus']['connections']['loadBalanced'] = $serverStatus->connections->loadBalanced;
+        $result['serverStatus']['connections']['current'] = (int) $serverStatus->connections->current;
+        $result['serverStatus']['connections']['available'] = (int) $serverStatus->connections->available;
+        $result['serverStatus']['connections']['totalCreated'] = (int) $serverStatus->connections->totalCreated;
+        $result['serverStatus']['connections']['rejected'] = (int) $serverStatus->connections->rejected;
+        $result['serverStatus']['connections']['active'] = (int) $serverStatus->connections->active;
+        $result['serverStatus']['connections']['threaded'] = (int) $serverStatus->connections->threaded;
+        $result['serverStatus']['connections']['exhaustIsMaster'] = (int) $serverStatus->connections->exhaustIsMaster;
+        $result['serverStatus']['connections']['exhaustHello'] = (int) $serverStatus->connections->exhaustHello;
+        $result['serverStatus']['connections']['awaitingTopologyChanges'] = (int) $serverStatus->connections->awaitingTopologyChanges;
+        $result['serverStatus']['connections']['loadBalanced'] = (int) $serverStatus->connections->loadBalanced;
 
         $cursorTop = $connection->executeCommand('admin', new \MongoDB\Driver\Command(['top' => 1]));
         $top = \current($cursorTop->toArray());
@@ -122,33 +123,70 @@ final readonly class Mongo implements ParserInterface
                 continue;
             }
             $items = (array) $items;
-            $topData[$key] = \array_map(static function (\stdClass $item): array {
-                return (array) $item;
-            }, $items);
+            $topData[$key] = [
+                'total' => self::castTopItem($items['total'] ?? null),
+                'readLock' => self::castTopItem($items['readLock'] ?? null),
+                'writeLock' => self::castTopItem($items['writeLock'] ?? null),
+                'queries' => self::castTopItem($items['queries'] ?? null),
+                'getmore' => self::castTopItem($items['getmore'] ?? null),
+                'insert' => self::castTopItem($items['insert'] ?? null),
+                'update' => self::castTopItem($items['update'] ?? null),
+                'remove' => self::castTopItem($items['remove'] ?? null),
+                'commands' => self::castTopItem($items['commands'] ?? null),
+            ];
         }
 
         $cursorListDatabases = $connection->executeCommand('admin', new \MongoDB\Driver\Command(['listDatabases' => 1]));
         $listDatabases = \current($cursorListDatabases->toArray());
         foreach ($listDatabases->databases as $item) {
-            $cursorDbstats = $connection->executeCommand($item->name, new \MongoDB\Driver\Command(['dbstats' => 1]));
+            $dbName = (string) $item->name;
+            $cursorDbstats = $connection->executeCommand($dbName, new \MongoDB\Driver\Command(['dbstats' => 1]));
             $dbstats = (array) \current($cursorDbstats->toArray());
 
             $top = [];
             foreach ($topData as $key => $topItem) {
-                if (\str_starts_with($key, $item->name.'.')) {
-                    $key = \substr($key, \strlen($item->name) + 1);
+                if (\str_starts_with($key, $dbName.'.')) {
+                    $key = \substr($key, \strlen($dbName) + 1);
                     $top[$key] = $topItem;
                 }
             }
 
-            $result['databases'][$item->name] = [
-                'sizeOnDisk' => $item->sizeOnDisk,
-                'empty' => $item->empty,
-                'stats' => $dbstats,
+            $result['databases'][$dbName] = [
+                'sizeOnDisk' => (int) $item->sizeOnDisk,
+                'empty' => (bool) $item->empty,
+                'stats' => [
+                    'db' => (string) ($dbstats['db'] ?? ''),
+                    'collections' => (int) ($dbstats['collections'] ?? 0),
+                    'views' => (int) ($dbstats['views'] ?? 0),
+                    'objects' => (int) ($dbstats['objects'] ?? 0),
+                    'avgObjSize' => (int) ($dbstats['avgObjSize'] ?? 0),
+                    'dataSize' => (int) ($dbstats['dataSize'] ?? 0),
+                    'storageSize' => (int) ($dbstats['storageSize'] ?? 0),
+                    'indexes' => (int) ($dbstats['indexes'] ?? 0),
+                    'indexSize' => (int) ($dbstats['indexSize'] ?? 0),
+                    'totalSize' => (int) ($dbstats['totalSize'] ?? 0),
+                    'scaleFactor' => (int) ($dbstats['scaleFactor'] ?? 0),
+                    'fsUsedSize' => (int) ($dbstats['fsUsedSize'] ?? 0),
+                    'fsTotalSize' => (int) ($dbstats['fsTotalSize'] ?? 0),
+                    'ok' => (int) ($dbstats['ok'] ?? 0),
+                ],
                 'top' => $top,
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * @return array{time: int, count: int}
+     */
+    private static function castTopItem(mixed $item): array
+    {
+        $item = (array) $item;
+
+        return [
+            'time' => (int) ($item['time'] ?? 0),
+            'count' => (int) ($item['count'] ?? 0),
+        ];
     }
 }

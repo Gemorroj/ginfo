@@ -23,6 +23,9 @@ final readonly class Systemd implements ParserInterface
         };
     }
 
+    /**
+     * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
+     */
     private static function targets(?string $cwd, int $timeout): ?array
     {
         $process = new Process(['systemctl', 'list-units', '--type', 'target', '--all'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
@@ -41,7 +44,10 @@ final readonly class Systemd implements ParserInterface
         foreach ($lines as $line) {
             $line = \ltrim($line, '●');
             $line = \trim($line);
-            [$unit, $load, $active, $sub, $description] = \preg_split('/\s+/', $line, 5);
+            if ('' === $line) {
+                continue;
+            }
+            [$unit, $load, $active, $sub, $description] = \array_pad(\preg_split('/\s+/', $line, 5) ?: [], 5, '');
 
             $out[] = [
                 'name' => $unit,
@@ -55,6 +61,9 @@ final readonly class Systemd implements ParserInterface
         return $out;
     }
 
+    /**
+     * @return array{name: string, loaded: bool, started: bool, state: string, description: string}[]|null
+     */
     private static function services(?string $cwd, int $timeout): ?array
     {
         $process = new Process(['systemctl', 'list-units', '--type', 'service', '--all'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
@@ -73,7 +82,10 @@ final readonly class Systemd implements ParserInterface
         foreach ($lines as $line) {
             $line = \ltrim($line, '●');
             $line = \trim($line);
-            [$unit, $load, $active, $sub, $description] = \preg_split('/\s+/', $line, 5);
+            if ('' === $line) {
+                continue;
+            }
+            [$unit, $load, $active, $sub, $description] = \array_pad(\preg_split('/\s+/', $line, 5) ?: [], 5, '');
 
             $out[] = [
                 'name' => $unit,

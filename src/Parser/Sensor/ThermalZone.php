@@ -33,6 +33,7 @@ final readonly class ThermalZone implements ParserInterface
                 continue;
             }
 
+            $value = (float) $value;
             $value /= $value > 10000 ? 1000 : 1;
 
             $thermalZoneVals[] = [

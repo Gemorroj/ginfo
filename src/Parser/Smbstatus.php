@@ -80,6 +80,9 @@ final readonly class Smbstatus implements ParserInterface
         return $res;
     }
 
+    /**
+     * @return array{pid: int|null, service: string|null, machine: string|null, connectedAt: \DateTimeImmutable|null, encryption: string|null, signing: string|null}
+     */
     private static function parseService(string $service): array
     {
         $out = [
@@ -91,56 +94,36 @@ final readonly class Smbstatus implements ParserInterface
             'signing' => null, // samba 4.4
         ];
 
-        $service .= ' '; // fix for connectedAt parser algorithm
-        $connectedAtYear = false;
-        foreach (\preg_split('/\s+/', $service) as $token) {
-            if (!isset($out['service'])) {
-                $out['service'] = $token;
-                continue;
-            }
-            if (!isset($out['pid'])) {
-                $out['pid'] = (int) $token;
-                continue;
-            }
-            if (!isset($out['machine'])) {
-                $out['machine'] = $token;
-                continue;
-            }
-            if (!isset($out['connectedAt'])) {
-                $out['connectedAt'] = $token;
-                continue;
-            }
+        $tokens = \preg_split('/\s+/', \trim($service)) ?: [];
+        if (isset($tokens[0])) {
+            $out['service'] = $tokens[0];
+        }
+        if (isset($tokens[1])) {
+            $out['pid'] = (int) $tokens[1];
+        }
+        if (isset($tokens[2])) {
+            $out['machine'] = $tokens[2];
+        }
 
-            // tested date: Wed Dec  9 01:40:20 PM 2015 CET   or    Fri Mar 30 15:48:34 2018
-            if (isset($out['connectedAt']) && !($out['connectedAt'] instanceof \DateTimeImmutable)) {
-                if ($connectedAtYear) { // perhaps timezone
-                    if (!\str_contains($token, '-')) { // yes, timezone
-                        $out['connectedAt'] .= ' '.$token;
-                        $out['connectedAt'] = new \DateTimeImmutable($out['connectedAt']);
-                        continue;
-                    }
-                    $out['connectedAt'] = new \DateTimeImmutable($out['connectedAt']);
-                } else {
-                    if (\preg_match('/^[0-9]{4}$/', $token)) { // year
-                        $connectedAtYear = true;
-                    }
-                    $out['connectedAt'] .= ' '.$token;
-                    continue;
-                }
+        // tested date: Wed Dec  9 01:40:20 PM 2015 CET   or    Fri Mar 30 15:48:34 2018
+        $rest = \implode(' ', \array_slice($tokens, 3));
+        if (\preg_match('/^(\w+\s+\w+\s+\d+\s+\d+:\d+:\d+(?:\s+[AP]M)?\s+\d{4}(?:\s+[A-Z]{2,6}(?![-\w]))?)\s*(.*)$/', $rest, $match)) {
+            $out['connectedAt'] = new \DateTimeImmutable($match[1]);
+            $extra = '' !== $match[2] ? (\preg_split('/\s+/', \trim($match[2])) ?: []) : [];
+            if (isset($extra[0])) {
+                $out['encryption'] = '-' === $extra[0] ? null : $extra[0];
             }
-            if (!isset($out['encryption'])) {
-                $out['encryption'] = '-' === $token ? null : $token;
-                continue;
-            }
-            if (!isset($out['signing'])) {
-                $out['signing'] = '-' === $token ? null : $token;
-                continue;
+            if (isset($extra[1])) {
+                $out['signing'] = '-' === $extra[1] ? null : $extra[1];
             }
         }
 
         return $out;
     }
 
+    /**
+     * @return array{pid: int|null, user: string|null, group: string|null, host: string|null, ip: string|null, protocolVersion: string|null, encryption: string|null, signing: string|null}
+     */
     private static function parseConnection(string $connection): array
     {
         $out = [
@@ -153,48 +136,39 @@ final readonly class Smbstatus implements ParserInterface
             'encryption' => null, // samba 4.4
             'signing' => null, // samba 4.4
         ];
-        foreach (\preg_split('/\s+/', $connection) as $token) {
-            if (!isset($out['pid'])) {
-                $out['pid'] = (int) $token;
-                continue;
+
+        $tokens = \preg_split('/\s+/', \trim($connection)) ?: [];
+
+        if (isset($tokens[0])) {
+            $out['pid'] = (int) $tokens[0];
+        }
+        $out['user'] = $tokens[1] ?? null;
+        $out['group'] = $tokens[2] ?? null;
+        $out['host'] = $tokens[3] ?? null;
+        $out['ip'] = isset($tokens[4]) ? \trim($tokens[4], '()') : null;
+
+        $rest = \array_slice($tokens, 5);
+        if (isset($rest[0])) {
+            $out['protocolVersion'] = \array_shift($rest);
+            if ('Unknown' === $out['protocolVersion'] && isset($rest[0])) {
+                $out['protocolVersion'] .= ' '.\array_shift($rest);
             }
-            if (!isset($out['user'])) {
-                $out['user'] = $token;
-                continue;
-            }
-            if (!isset($out['group'])) {
-                $out['group'] = $token;
-                continue;
-            }
-            if (!isset($out['host'])) {
-                $out['host'] = $token;
-                continue;
-            }
-            if (!isset($out['ip'])) {
-                $out['ip'] = \trim($token, '()');
-                continue;
-            }
-            if (!isset($out['protocolVersion'])) {
-                $out['protocolVersion'] = $token;
-                continue;
-            }
-            if (isset($out['protocolVersion']) && 'Unknown' === $out['protocolVersion']) {
-                $out['protocolVersion'] .= ' '.$token;
-                continue;
-            }
-            if (!isset($out['encryption'])) {
-                $out['encryption'] = '-' === $token ? null : $token;
-                continue;
-            }
-            if (!isset($out['signing'])) {
-                $out['signing'] = '-' === $token ? null : $token;
-                continue;
-            }
+        }
+        if (isset($rest[0])) {
+            $token = \array_shift($rest);
+            $out['encryption'] = '-' === $token ? null : $token;
+        }
+        if (isset($rest[0])) {
+            $token = \array_shift($rest);
+            $out['signing'] = '-' === $token ? null : $token;
         }
 
         return $out;
     }
 
+    /**
+     * @return array{pid: int|null, uid: int|null, denyMode: string|null, access: string|null, rw: string|null, oplock: string|null, sharePath: string|null, name: string|null, time: \DateTimeImmutable|null}
+     */
     private static function parseFile(string $file): array
     {
         $out = [
@@ -208,49 +182,24 @@ final readonly class Smbstatus implements ParserInterface
             'name' => null,
             'time' => null,
         ];
-        foreach (\preg_split('/\s+/', $file) as $token) {
-            if (!isset($out['pid'])) {
-                $out['pid'] = (int) $token;
-                continue;
-            }
-            if (!isset($out['uid'])) {
-                $out['uid'] = (int) $token;
-                continue;
-            }
-            if (!isset($out['denyMode'])) {
-                $out['denyMode'] = $token;
-                continue;
-            }
-            if (!isset($out['access'])) {
-                $out['access'] = $token;
-                continue;
-            }
-            if (!isset($out['rw'])) {
-                $out['rw'] = $token;
-                continue;
-            }
-            if (!isset($out['oplock'])) {
-                $out['oplock'] = $token;
-                continue;
-            }
-            if (!isset($out['sharePath'])) {
-                $out['sharePath'] = $token;
-                continue;
-            }
-            if (!isset($out['name'])) {
-                $out['name'] = $token;
-                continue;
-            }
-            if (!isset($out['time'])) {
-                $out['time'] = $token;
-                continue;
-            }
-            if (isset($out['time'])) {
-                $out['time'] .= ' '.$token; // add all strings to time
-                continue;
-            }
+
+        $tokens = \preg_split('/\s+/', \trim($file)) ?: [];
+
+        if (isset($tokens[0])) {
+            $out['pid'] = (int) $tokens[0];
         }
-        $out['time'] = $out['time'] ? new \DateTimeImmutable($out['time']) : null;
+        if (isset($tokens[1])) {
+            $out['uid'] = (int) $tokens[1];
+        }
+        $out['denyMode'] = $tokens[2] ?? null;
+        $out['access'] = $tokens[3] ?? null;
+        $out['rw'] = $tokens[4] ?? null;
+        $out['oplock'] = $tokens[5] ?? null;
+        $out['sharePath'] = $tokens[6] ?? null;
+        $out['name'] = $tokens[7] ?? null;
+
+        $time = \implode(' ', \array_slice($tokens, 8));
+        $out['time'] = '' !== $time ? new \DateTimeImmutable($time) : null;
 
         return $out;
     }

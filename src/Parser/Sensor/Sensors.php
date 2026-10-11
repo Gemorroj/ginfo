@@ -16,7 +16,7 @@ final readonly class Sensors implements ParserInterface
      */
     public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['sensors'], $cwd, ['LANG=C'], null, (float) $timeout);
+        $process = new Process(['sensors'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {
@@ -39,6 +39,9 @@ final readonly class Sensors implements ParserInterface
         return \str_contains($line, ':') && !\str_starts_with($line, 'Adapter:');
     }
 
+    /**
+     * @return array{path: string|null, name: string, value: float, unit: string}
+     */
     private static function parseSensor(string $sensor): array
     {
         [$name, $tmpStr] = \explode(':', $sensor, 2);

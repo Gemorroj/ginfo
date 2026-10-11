@@ -25,7 +25,15 @@ final readonly class Apcaccess implements ParserInterface
             return null;
         }
 
-        $result = \trim($process->getOutput());
+        return self::parse($process->getOutput());
+    }
+
+    /**
+     * @return array{name: string, model: string, batteryVolts: float, batteryCharge: float, timeLeft: int, currentLoad: float, status: string}|null
+     */
+    private static function parse(string $output): ?array
+    {
+        $result = \trim($output);
         if (\str_starts_with($result, 'Error')) {
             return null;
         }
@@ -35,10 +43,19 @@ final readonly class Apcaccess implements ParserInterface
             return null;
         }
 
-        $batteryVolts = \trim(\str_ends_with($block['BATTV'], 'Volts') ? \substr($block['BATTV'], 0, \strlen('Volts')) : $block['BATTV']);
-        $batteryCharge = \trim(\str_ends_with($block['BCHARGE'], 'Percent') ? \substr($block['BCHARGE'], 0, \strlen('Percent')) : $block['BCHARGE']);
-        $timeLeft = \trim(\str_ends_with($block['Minutes'], 'Minutes') ? \substr($block['Minutes'], 0, \strlen('Minutes')) : $block['Minutes']);
-        $currentLoad = \trim(\str_ends_with($block['LOADPCT'], 'Percent') ? \substr($block['LOADPCT'], 0, \strlen('Percent')) : $block['LOADPCT']);
+        $block += [
+            'MODEL' => '',
+            'STATUS' => '',
+            'BATTV' => '',
+            'BCHARGE' => '',
+            'TIMELEFT' => '',
+            'LOADPCT' => '',
+        ];
+
+        $batteryVolts = \trim(\str_ends_with($block['BATTV'], 'Volts') ? \substr($block['BATTV'], 0, -\strlen('Volts')) : $block['BATTV']);
+        $batteryCharge = \trim(\str_ends_with($block['BCHARGE'], 'Percent') ? \substr($block['BCHARGE'], 0, -\strlen('Percent')) : $block['BCHARGE']);
+        $timeLeft = \trim(\str_ends_with($block['TIMELEFT'], 'Minutes') ? \substr($block['TIMELEFT'], 0, -\strlen('Minutes')) : $block['TIMELEFT']);
+        $currentLoad = \trim(\str_ends_with($block['LOADPCT'], 'Percent') ? \substr($block['LOADPCT'], 0, -\strlen('Percent')) : $block['LOADPCT']);
 
         return [
             'name' => $block['UPSNAME'],

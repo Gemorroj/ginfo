@@ -18,10 +18,8 @@ final class AngieTest extends TestCase
         self::assertTrue($data['tls_sni']);
         self::assertStringContainsString('--with-http_stub_status_module', $data['args']);
         self::assertIsArray($data['status']);
-        self::assertIsArray($data['processes']);
         self::assertNotEmpty($data['processes']);
         foreach ($data['processes'] as $process) {
-            self::assertIsNumeric($process['pid']);
             self::assertIsNumeric($process['VmPeak']);
             self::assertIsNumeric($process['VmSize']);
             self::assertIsNumeric($process['uptime']);

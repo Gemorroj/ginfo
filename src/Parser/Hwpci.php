@@ -58,6 +58,11 @@ final class Hwpci implements ParserInterface
 
     /**
      * Parse vendor and device names out of hardware ID files. Works for USB and PCI.
+     *
+     * @param array<string, mixed> $vendors
+     * @param array<string, int>   $deviceKeys
+     *
+     * @return array<string, array{0: string, 1: string}>
      */
     private static function resolveIds(string $file, array $vendors, array $deviceKeys): array
     {
@@ -104,6 +109,8 @@ final class Hwpci implements ParserInterface
 
     /**
      * Get device and vendor IDs for USB devices on Linux.
+     *
+     * @return array{vendors: array<string, bool>, devices: array<string, int>, speeds: array<string, int|null>}
      */
     private static function fetchUsbIdsLinux(): array
     {
@@ -112,7 +119,7 @@ final class Hwpci implements ParserInterface
         $speeds = [];
         foreach ((array) @\glob('/sys/bus/usb/devices/*', \GLOB_NOSORT) as $path) {
             // Avoid the same device artificially appearing more than once
-            if (\str_contains($path, ':')) {
+            if (\str_contains((string) $path, ':')) {
                 continue;
             }
 
@@ -151,6 +158,8 @@ final class Hwpci implements ParserInterface
 
     /**
      * Get device and vendor IDs for PCI devices on Linux.
+     *
+     * @return array{vendors: array<string, bool>, devices: array<string, int>, speeds: array<string, int|null>}
      */
     private static function fetchPciIdsLinux(): array
     {
@@ -159,8 +168,7 @@ final class Hwpci implements ParserInterface
         $speeds = [];
         foreach ((array) @\glob('/sys/bus/pci/devices/*', \GLOB_NOSORT) as $path) {
             // See if we can use simple vendor/device files and avoid taking time with regex
-            if (($fDevice = self::getContents($path.'/device', '')) && ($fVend = self::getContents($path.'/vendor', ''))
-                && '' !== $fDevice && '' !== $fVend) {
+            if (($fDevice = self::getContents($path.'/device', '')) && ($fVend = self::getContents($path.'/vendor', ''))) {
                 [, $vendorId] = \explode('x', $fVend, 2);
                 [, $deviceId] = \explode('x', $fDevice, 2);
                 $deviceKey = $vendorId.'-'.$deviceId;
@@ -197,6 +205,10 @@ final class Hwpci implements ParserInterface
 
     /**
      * Get any USB or PCI devices present on the host system.
+     *
+     * @param array{vendors: array<string, bool>, devices: array<string, int>, speeds: array<string, int|null>} $deviceIds
+     *
+     * @return array{vendor: string, device: string, count: int, speed: int|null}[]
      */
     private static function extractDevs(array $deviceIds, string $file): array
     {
@@ -223,6 +235,10 @@ final class Hwpci implements ParserInterface
 
     /**
      * Compile and return USB and PCI devices in a sorted list.
+     *
+     * @param array{vendor: string, device: string, count: int, speed: int|null}[] $allDevices
+     *
+     * @return array{vendor: string, device: string, count: int, speed: int|null}[]
      */
     private static function makeResult(array $allDevices): array
     {
