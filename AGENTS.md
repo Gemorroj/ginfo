@@ -28,3 +28,7 @@ Tests require Linux with readable `/proc`, `/sys`, `/etc`; some tests need runni
 - Use `Symfony\Component\Process` for external commands, never raw `shell_exec`.
 - Add new parsers as `Parser/*Parser.php` + `Info/*Info.php` pair, register in `Ginfo.php`.
 - No UI, no i18n, no Windows/BSD support.
+
+## Conventions
+
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `build:`, `chore:`, ...).
