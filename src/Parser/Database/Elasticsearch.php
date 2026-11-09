@@ -100,7 +100,7 @@ final readonly class Elasticsearch implements ParserInterface
                 'fs_total_in_bytes' => $json['nodes']['fs']['total_in_bytes'],
                 'fs_free_in_bytes' => $json['nodes']['fs']['free_in_bytes'],
                 'fs_available_in_bytes' => $json['nodes']['fs']['available_in_bytes'],
-                'fs_cache_reserved_in_bytes' => $json['nodes']['fs']['cache_reserved_in_bytes'],
+                'fs_cache_reserved_in_bytes' => $json['nodes']['fs']['cache_reserved_in_bytes'] ?? 0,
                 'plugins' => \array_map(static function (array $plugin): string {
                     return $plugin['name'];
                 }, $json['nodes']['plugins']),

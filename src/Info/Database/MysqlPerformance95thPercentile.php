@@ -11,7 +11,7 @@ final readonly class MysqlPerformance95thPercentile
      */
     public function __construct(
         private string $query,
-        private string $db,
+        private ?string $db,
         private bool $fullScan,
         private float|int $execCount,
         private float|int $errCount,
@@ -34,7 +34,7 @@ final readonly class MysqlPerformance95thPercentile
         return $this->query;
     }
 
-    public function getDb(): string
+    public function getDb(): ?string
     {
         return $this->db;
     }

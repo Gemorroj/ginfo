@@ -9,7 +9,7 @@ final readonly class PostgresPgStatStatements
         private int $userid,
         private int $dbid,
         private bool $toplevel,
-        private int|float $queryid,
+        private int|float|null $queryid,
         private string $query,
         private int|float $plans,
         private float $totalPlanTime,
@@ -53,8 +53,8 @@ final readonly class PostgresPgStatStatements
         private float $jitEmissionTime,
         private int|float $jitDeformCount,
         private float $jitDeformTime,
-        private \DateTimeImmutable $statsSince,
-        private \DateTimeImmutable $minmaxStatsSince,
+        private ?\DateTimeImmutable $statsSince,
+        private ?\DateTimeImmutable $minmaxStatsSince,
     ) {
     }
 
@@ -73,7 +73,7 @@ final readonly class PostgresPgStatStatements
         return $this->toplevel;
     }
 
-    public function getQueryid(): float|int
+    public function getQueryid(): float|int|null
     {
         return $this->queryid;
     }
@@ -293,12 +293,12 @@ final readonly class PostgresPgStatStatements
         return $this->jitDeformTime;
     }
 
-    public function getStatsSince(): \DateTimeImmutable
+    public function getStatsSince(): ?\DateTimeImmutable
     {
         return $this->statsSince;
     }
 
-    public function getMinmaxStatsSince(): \DateTimeImmutable
+    public function getMinmaxStatsSince(): ?\DateTimeImmutable
     {
         return $this->minmaxStatsSince;
     }

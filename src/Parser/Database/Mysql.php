@@ -6,13 +6,15 @@ use Ginfo\Parser\ParserInterface;
 
 final readonly class Mysql implements ParserInterface
 {
+    use DatabaseValueTrait;
+
     /**
      * @return array{
      *     global_status: array<string, string>,
      *     global_variables: array<string, string>,
      *     performance_95th_percentile: array{
      *         query: string,
-     *         db: string,
+     *         db: ?string,
      *         full_scan: bool,
      *         exec_count: float|int,
      *         err_count: float|int,
@@ -83,9 +85,9 @@ final readonly class Mysql implements ParserInterface
                         'query' => $row['query'],
                         'db' => $row['db'],
                         'full_scan' => (bool) $row['full_scan'],
-                        'exec_count' => self::convertToNumber($row['exec_count']),
-                        'err_count' => self::convertToNumber($row['err_count']),
-                        'warn_count' => self::convertToNumber($row['warn_count']),
+                        'exec_count' => self::toNumberOrNull($row['exec_count']),
+                        'err_count' => self::toNumberOrNull($row['err_count']),
+                        'warn_count' => self::toNumberOrNull($row['warn_count']),
                         'total_latency' => [
                             'value' => (float) $totalLatency[0],
                             'unit' => \trim($totalLatency[1]),
@@ -98,10 +100,10 @@ final readonly class Mysql implements ParserInterface
                             'value' => (float) $avgLatency[0],
                             'unit' => \trim($avgLatency[1]),
                         ],
-                        'rows_sent' => self::convertToNumber($row['rows_sent']),
-                        'rows_sent_avg' => self::convertToNumber($row['rows_sent_avg']),
-                        'rows_examined' => self::convertToNumber($row['rows_examined']),
-                        'rows_examined_avg' => self::convertToNumber($row['rows_examined_avg']),
+                        'rows_sent' => self::toNumberOrNull($row['rows_sent']),
+                        'rows_sent_avg' => self::toNumberOrNull($row['rows_sent_avg']),
+                        'rows_examined' => self::toNumberOrNull($row['rows_examined']),
+                        'rows_examined_avg' => self::toNumberOrNull($row['rows_examined_avg']),
                         'first_seen' => new \DateTimeImmutable($row['first_seen']),
                         'last_seen' => new \DateTimeImmutable($row['last_seen']),
                         'digest' => $row['digest'],
@@ -125,12 +127,12 @@ final readonly class Mysql implements ParserInterface
                         'object_type' => $row['object_type'],
                         'object_schema' => $row['object_schema'],
                         'object_name' => $row['object_name'],
-                        'count_read' => self::convertToNumber($row['count_read']),
-                        'count_write' => self::convertToNumber($row['count_write']),
-                        'count_fetch' => self::convertToNumber($row['count_fetch']),
-                        'count_insert' => self::convertToNumber($row['count_insert']),
-                        'count_update' => self::convertToNumber($row['count_update']),
-                        'count_delete' => self::convertToNumber($row['count_delete']),
+                        'count_read' => self::toNumberOrNull($row['count_read']),
+                        'count_write' => self::toNumberOrNull($row['count_write']),
+                        'count_fetch' => self::toNumberOrNull($row['count_fetch']),
+                        'count_insert' => self::toNumberOrNull($row['count_insert']),
+                        'count_update' => self::toNumberOrNull($row['count_update']),
+                        'count_delete' => self::toNumberOrNull($row['count_delete']),
                     ];
                 }
             }
@@ -140,7 +142,7 @@ final readonly class Mysql implements ParserInterface
 
         try {
             $query = $connection->query('
-                SELECT table_schema AS `table_schema`, table_name AS `table_name`, SUM(data_length) AS `data_length`, SUM(index_length) AS `index_length`
+                SELECT table_schema AS `table_schema`, table_name AS `table_name`, COALESCE(SUM(data_length), 0) AS `data_length`, COALESCE(SUM(index_length), 0) AS `index_length`
                 FROM information_schema.tables
                 GROUP BY table_schema, table_name
                 ORDER BY `table_schema` ASC, `table_name` ASC
@@ -150,8 +152,8 @@ final readonly class Mysql implements ParserInterface
                     $result['data_length'][] = [
                         'table_schema' => $row['table_schema'],
                         'table_name' => $row['table_name'],
-                        'data_length' => self::convertToNumber($row['data_length']),
-                        'index_length' => self::convertToNumber($row['index_length']),
+                        'data_length' => self::toNumberOrNull($row['data_length']),
+                        'index_length' => self::toNumberOrNull($row['index_length']),
                     ];
                 }
             }
@@ -160,20 +162,5 @@ final readonly class Mysql implements ParserInterface
         }
 
         return $result;
-    }
-
-    private static function convertToNumber(?string $number): int|float|null
-    {
-        if (null === $number) {
-            return null;
-        }
-        if ($number > \PHP_INT_MAX) {
-            return (float) $number;
-        }
-        if ((string) (int) $number !== $number) {
-            return (float) $number;
-        }
-
-        return (int) $number;
     }
 }

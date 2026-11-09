@@ -2,6 +2,7 @@
 
 namespace Ginfo\Tests\Parser\Database;
 
+use Ginfo\Ginfo;
 use Ginfo\Parser\Database\Postgres;
 use PHPUnit\Framework\TestCase;
 
@@ -23,5 +24,12 @@ final class PostgresTest extends TestCase
         self::assertNotEmpty($data['pg_stat_all_tables']);
         self::assertNotEmpty($data['pg_stat_all_indexes']);
         self::assertArrayHasKey('pg_stat_statements', $data);
+
+        // pg_stat_* counters are NULL for some rows (e.g. tables without indexes) and must not leak NULL to the DTO
+        $postgres = (new Ginfo())->getPostgres($connection);
+        self::assertNotEmpty($postgres->getPgStatActivity());
+        self::assertNotEmpty($postgres->getPgStatDatabase());
+        self::assertNotEmpty($postgres->getPgStatAllTables());
+        self::assertNotEmpty($postgres->getPgStatAllIndexes());
     }
 }
