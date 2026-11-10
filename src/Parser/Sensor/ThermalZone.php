@@ -21,29 +21,34 @@ final readonly class ThermalZone implements ParserInterface
 
         $thermalZoneVals = [];
         foreach ($paths as $path) {
-            $labelPath = $path.'/type';
-            $valuePath = $path.'/temp';
-
-            $label = self::getContents($labelPath);
-            if (null === $label) {
-                continue;
-            }
-            $value = self::getContents($valuePath);
-            if (null === $value) {
+            $sensor = self::parse($path, self::getContents($path.'/type'), self::getContents($path.'/temp'));
+            if (null === $sensor) {
                 continue;
             }
 
-            $value = (float) $value;
-            $value /= $value > 10000 ? 1000 : 1;
-
-            $thermalZoneVals[] = [
-                'path' => $path,
-                'name' => $label,
-                'value' => $value,
-                'unit' => 'C', // I don't think this is ever going to be in F
-            ];
+            $thermalZoneVals[] = $sensor;
         }
 
         return $thermalZoneVals;
+    }
+
+    /**
+     * @return array{path: string, name: string, value: float, unit: string}|null
+     */
+    private static function parse(string $path, ?string $label, ?string $value): ?array
+    {
+        if (null === $label || null === $value) {
+            return null;
+        }
+
+        $value = (float) $value;
+        $value /= $value > 10000 ? 1000 : 1;
+
+        return [
+            'path' => $path,
+            'name' => $label,
+            'value' => $value,
+            'unit' => 'C', // I don't think this is ever going to be in F
+        ];
     }
 }

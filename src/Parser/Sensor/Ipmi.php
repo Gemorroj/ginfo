@@ -28,7 +28,15 @@ final readonly class Ipmi implements ParserInterface
 
         $result = $process->getOutput();
 
-        if (!\preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $result, $matches, \PREG_SET_ORDER)) {
+        return self::parse($result);
+    }
+
+    /**
+     * @return array{path: string|null, name: string, value: float, unit: string}[]|null
+     */
+    private static function parse(string $output): ?array
+    {
+        if (!\preg_match_all('/^([^|]+)\| ([\d\.]+ (?:Volts|degrees [CF]))\s+\| ok$/m', $output, $matches, \PREG_SET_ORDER)) {
             return null;
         }
 

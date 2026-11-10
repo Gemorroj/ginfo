@@ -21,51 +21,66 @@ final readonly class Hwmon implements ParserInterface
 
         $hwmonVals = [];
         foreach ($paths as $path) {
-            $initPath = \rtrim($path, 'input');
             $value = self::getContents($path);
             if (null === $value) {
                 continue;
             }
-            $value = (float) $value;
-            $base = \basename($path);
-            $labelPath = $initPath.'label';
-            $modelPath = \dirname($path).'/device/model';
-            $driverName = self::getContents(\dirname($path).'/name');
 
-            // Temperatures
-            if (\str_starts_with($base, 'temp') && \is_file($labelPath)) {
-                $label = self::getContents($labelPath);
-                $value /= $value > 10000 ? 1000 : 1;
-                $unit = 'C'; // I don't think this is ever going to be in F
-            }
-            // Devices (such as hard drives)
-            elseif (\str_starts_with($base, 'temp') && \is_file($modelPath)) {
-                $label = self::getContents($modelPath);
-                $value /= $value > 10000 ? 1000 : 1;
-                $unit = 'C'; // I don't think this is ever going to be in F
-            }
-            // Fan RPMs
-            elseif (\preg_match('/^fan(\d+)_/', $base, $m)) {
-                $label = 'fan'.$m[1];
-                $unit = 'RPM';
-            } // Volts
-            elseif (\preg_match('/^in(\d+)_/', $base, $m)) {
-                $unit = 'V';
-                $value /= 1000;
-                $label = self::getContents($labelPath) ?: 'in'.$m[1];
-            } else {
+            $sensor = self::parseSensor(
+                \basename($path),
+                $value,
+                self::getContents(\substr($path, 0, -\strlen('input')).'label'),
+                self::getContents(\dirname($path).'/device/model'),
+                self::getContents(\dirname($path).'/name'),
+            );
+            if (null === $sensor) {
                 continue;
             }
 
-            // Append values
-            $hwmonVals[] = [
-                'path' => null,
-                'name' => $label.($driverName ? ' ('.$driverName.')' : ''),
-                'value' => $value,
-                'unit' => $unit,
-            ];
+            $hwmonVals[] = $sensor;
         }
 
         return $hwmonVals;
+    }
+
+    /**
+     * @return array{path: string|null, name: string, value: float, unit: string}|null
+     */
+    private static function parseSensor(string $base, string $value, ?string $label, ?string $model, ?string $driverName): ?array
+    {
+        $value = (float) $value;
+
+        // Temperatures
+        if (\str_starts_with($base, 'temp') && null !== $label) {
+            $name = $label;
+            $value /= $value > 10000 ? 1000 : 1;
+            $unit = 'C'; // I don't think this is ever going to be in F
+        }
+        // Devices (such as hard drives)
+        elseif (\str_starts_with($base, 'temp') && null !== $model) {
+            $name = $model;
+            $value /= $value > 10000 ? 1000 : 1;
+            $unit = 'C'; // I don't think this is ever going to be in F
+        }
+        // Fan RPMs
+        elseif (\preg_match('/^fan(\d+)_/', $base, $m)) {
+            $name = 'fan'.$m[1];
+            $unit = 'RPM';
+        }
+        // Volts
+        elseif (\preg_match('/^in(\d+)_/', $base, $m)) {
+            $unit = 'V';
+            $value /= 1000;
+            $name = $label ?: 'in'.$m[1];
+        } else {
+            return null;
+        }
+
+        return [
+            'path' => null,
+            'name' => $name.(null !== $driverName && '' !== $driverName ? ' ('.$driverName.')' : ''),
+            'value' => $value,
+            'unit' => $unit,
+        ];
     }
 }

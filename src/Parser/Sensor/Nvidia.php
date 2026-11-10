@@ -28,43 +28,69 @@ final readonly class Nvidia implements ParserInterface
 
         $cardsList = $process->getOutput();
 
-        if (!\preg_match_all('/GPU (\d+): (.+) \(UUID:.+\)/', $cardsList, $matches, \PREG_SET_ORDER)) {
+        $cards = self::parseCards($cardsList);
+        if (null === $cards) {
             return null;
         }
 
         $result = [];
-        foreach ($matches as $card) {
-            $id = $card[1];
-            $name = \trim($card[2]);
-
-            $processCard = new Process(['nvidia-smi', 'dmon', '-s', 'p', '-c', '1', '-i', $id], $cwd, ['LANG' => 'C']);
+        foreach ($cards as $card) {
+            $processCard = new Process(['nvidia-smi', 'dmon', '-s', 'p', '-c', '1', '-i', $card['id']], $cwd, ['LANG' => 'C']);
             $processCard->run();
             if (!$processCard->isSuccessful()) {
                 continue;
             }
 
-            $cardStat = $process->getOutput();
-
-            if (\preg_match('/(\d+)\s+(\d+)\s+(\d+)/', $cardStat, $match)) {
-                if ($match[1] !== $id) {
-                    continue;
-                }
-
-                $result[] = [
-                    'path' => null,
-                    'name' => $name.' Power',
-                    'value' => (float) $match[2],
-                    'unit' => 'W',
-                ];
-                $result[] = [
-                    'path' => null,
-                    'name' => $name.' Temperature',
-                    'value' => (float) $match[3],
-                    'unit' => 'C',
-                ];
+            foreach (self::parseCard($card['id'], $card['name'], $processCard->getOutput()) as $sensor) {
+                $result[] = $sensor;
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @return array<int, array{id: string, name: string}>|null
+     */
+    private static function parseCards(string $output): ?array
+    {
+        if (!\preg_match_all('/GPU (\d+): (.+) \(UUID:.+\)/', $output, $matches, \PREG_SET_ORDER)) {
+            return null;
+        }
+
+        $cards = [];
+        foreach ($matches as $card) {
+            $cards[] = [
+                'id' => $card[1],
+                'name' => \trim($card[2]),
+            ];
+        }
+
+        return $cards;
+    }
+
+    /**
+     * @return array<int, array{path: string|null, name: string, value: float, unit: string}>
+     */
+    private static function parseCard(string $id, string $name, string $output): array
+    {
+        if (!\preg_match('/(\d+)\s+(\d+)\s+(\d+)/', $output, $match) || $match[1] !== $id) {
+            return [];
+        }
+
+        return [
+            [
+                'path' => null,
+                'name' => $name.' Power',
+                'value' => (float) $match[2],
+                'unit' => 'W',
+            ],
+            [
+                'path' => null,
+                'name' => $name.' Temperature',
+                'value' => (float) $match[3],
+                'unit' => 'C',
+            ],
+        ];
     }
 }
