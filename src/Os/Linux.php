@@ -115,25 +115,17 @@ class Linux implements OsInterface
             return null;
         }
 
-        return (int) \explode(' ', $uptime, 2)[0];
+        return self::parseUptime($uptime);
     }
 
     public function getDrives(): ?array
     {
-        $partitions = [];
         $partitionsContents = self::getContents('/proc/partitions');
         if (null === $partitionsContents) {
             return null;
         }
 
-        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+|[a-z]+\d+)(p?\d+)$/m', $partitionsContents, $partitionsMatch, \PREG_SET_ORDER) > 0) {
-            foreach ($partitionsMatch as $partition) {
-                $partitions[$partition[2]][] = new Drive\Partition(
-                    $partition[1] * 1024,
-                    $partition[2].$partition[3]
-                );
-            }
-        }
+        $partitions = self::parsePartitions($partitionsContents);
 
         $paths = \glob('/sys/block/*/device/uevent', \GLOB_NOSORT);
         if (!$paths) {
@@ -190,20 +182,20 @@ class Linux implements OsInterface
             return null;
         }
 
-        if (false === \preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $match, \PREG_SET_ORDER)) {
+        $lines = self::parseMountLines($contents);
+        if (null === $lines) {
             return null;
         }
 
         $mounts = [];
-        foreach ($match as $mount) {
-            // Spaces and other things in the mount path are escaped C style. Fix that.
-            $mount[2] = \stripcslashes($mount[2]);
+        foreach ($lines as $line) {
+            $mountPoint = $line['mount'];
 
-            if (\is_readable($mount[2])) {
-                $size = \disk_total_space($mount[2]);
+            if (\is_readable($mountPoint)) {
+                $size = \disk_total_space($mountPoint);
                 $size = false === $size ? null : $size;
 
-                $free = \disk_free_space($mount[2]);
+                $free = \disk_free_space($mountPoint);
                 $free = false === $free ? null : $free;
 
                 $used = (null !== $size && null !== $free) ? $size - $free : null;
@@ -212,15 +204,15 @@ class Linux implements OsInterface
             }
 
             $mounts[] = new Mount(
-                $mount[1],
-                $mount[2],
-                $mount[3],
+                $line['device'],
+                $mountPoint,
+                $line['fstype'],
                 $size,
                 $used,
                 $free,
                 self::percent($free, $size),
                 self::percent($used, $size),
-                \explode(',', $mount[4])
+                $line['options']
             );
         }
 
@@ -375,13 +367,7 @@ class Linux implements OsInterface
             return null;
         }
 
-        $loadArr = \explode(' ', $load);
-
-        return [
-            (float) $loadArr[0],
-            (float) $loadArr[1],
-            (float) $loadArr[2],
-        ];
+        return self::parseLoad($load);
     }
 
     public function getNetwork(): ?array
@@ -560,6 +546,95 @@ class Linux implements OsInterface
         }
 
         return $cards;
+    }
+
+    private static function parseUptime(string $content): ?int
+    {
+        $content = \trim($content);
+        if ('' === $content) {
+            return null;
+        }
+
+        return (int) $content;
+    }
+
+    /**
+     * @return array{0: float, 1: float, 2: float}|null
+     */
+    private static function parseLoad(string $content): ?array
+    {
+        $parts = \preg_split('/\s+/', \trim($content)) ?: [];
+        if (!isset($parts[0], $parts[1], $parts[2]) || !\is_numeric($parts[0]) || !\is_numeric($parts[1]) || !\is_numeric($parts[2])) {
+            return null;
+        }
+
+        return [(float) $parts[0], (float) $parts[1], (float) $parts[2]];
+    }
+
+    /**
+     * @return array<string, Drive\Partition[]>
+     */
+    private static function parsePartitions(string $contents): array
+    {
+        $partitions = [];
+        if (\preg_match_all('/(\d+)\s+([a-z]{3}|nvme\d+n\d+|[a-z]+\d+)(p?\d+)$/m', $contents, $matches, \PREG_SET_ORDER) > 0) {
+            foreach ($matches as $partition) {
+                $partitions[$partition[2]][] = new Drive\Partition(
+                    (float) ($partition[1] * 1024),
+                    $partition[2].$partition[3],
+                );
+            }
+        }
+
+        return $partitions;
+    }
+
+    /**
+     * @return array<int, array{device: string, mount: string, fstype: string, options: string[]}>|null
+     */
+    private static function parseMountLines(string $contents): ?array
+    {
+        if (false === \preg_match_all('/^(\S+) (\S+) (\S+) (.+) \d \d$/m', $contents, $matches, \PREG_SET_ORDER)) {
+            return null;
+        }
+
+        $lines = [];
+        foreach ($matches as $match) {
+            $lines[] = [
+                'device' => $match[1],
+                // Spaces and other things in the mount path are escaped C style. Fix that.
+                'mount' => \stripcslashes($match[2]),
+                'fstype' => $match[3],
+                'options' => \explode(',', $match[4]),
+            ];
+        }
+
+        return $lines;
+    }
+
+    private static function parseModel(?string $name, ?string $vendor, ?string $product): ?string
+    {
+        if (!$name) {
+            return null;
+        }
+
+        $info = [];
+        // Don't add vendor to the mix if the name starts with it
+        if ($vendor && !\str_starts_with($name, $vendor)) {
+            $info[] = $vendor;
+        }
+
+        $info[] = $name;
+
+        $infoStr = \implode(' ', $info);
+
+        // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
+        // dell latitude e6500 or hp z260
+        if ($product && !\str_contains($name, $product) && !\str_contains($product, 'Filled')) {
+            return $product.' ('.$infoStr.')';
+        }
+
+        return $infoStr;
     }
 
     public function getProcesses(): ?array
@@ -774,31 +849,11 @@ class Linux implements OsInterface
      */
     public function getModel(): ?string
     {
-        $info = [];
-
-        $name = self::getContents('/sys/devices/virtual/dmi/id/board_name');
-        if (!$name) {
-            return null;
-        }
-
-        $vendor = self::getContents('/sys/devices/virtual/dmi/id/board_vendor');
-        // Don't add vendor to the mix if the name starts with it
-        if ($vendor && !\str_starts_with($name, $vendor)) {
-            $info[] = $vendor;
-        }
-
-        $info[] = $name;
-
-        $infoStr = \implode(' ', $info);
-
-        $product = self::getContents('/sys/devices/virtual/dmi/id/product_name');
-        // product name is usually bullshit, but *occasionally* it's a useful name of the computer, such as
-        // dell latitude e6500 or hp z260
-        if ($product && !\str_contains($name, $product) && !\str_contains($product, 'Filled')) {
-            return $product.' ('.$infoStr.')';
-        }
-
-        return $infoStr;
+        return self::parseModel(
+            self::getContents('/sys/devices/virtual/dmi/id/board_name'),
+            self::getContents('/sys/devices/virtual/dmi/id/board_vendor'),
+            self::getContents('/sys/devices/virtual/dmi/id/product_name'),
+        );
     }
 
     /**
