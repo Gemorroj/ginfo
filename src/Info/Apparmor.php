@@ -21,7 +21,7 @@ final readonly class Apparmor implements InfoInterface
     }
 
     /**
-     * @return array<string, string> profile name => mode (enforce|complain|kill|unconfined)
+     * @return array<string, string> profile name => mode (enforce|complain|prompt|kill|unconfined)
      */
     public function getProfiles(): array
     {

@@ -21,6 +21,15 @@ final readonly class Apparmor implements ParserInterface
      */
     public function run(?string $cwd = null, int $timeout = 1): ?array
     {
+        $module = self::getContents('/sys/module/apparmor/parameters/enabled');
+        if ('N' === $module) {
+            return [
+                'enabled' => false,
+                'profiles' => [],
+                'processes' => [],
+            ];
+        }
+
         $binary = self::locateExecutable('aa-status', ['/usr/sbin/aa-status', '/sbin/aa-status', '/usr/bin/aa-status']);
 
         $json = self::execute([$binary, '--json'], $cwd, $timeout);
@@ -37,10 +46,9 @@ final readonly class Apparmor implements ParserInterface
         }
 
         // aa-status is not installed, but the module state is still readable
-        $enabled = self::getContents('/sys/module/apparmor/parameters/enabled');
-        if (null !== $enabled) {
+        if (null !== $module) {
             return [
-                'enabled' => 'Y' === $enabled,
+                'enabled' => 'Y' === $module,
                 'profiles' => [],
                 'processes' => [],
             ];
@@ -52,7 +60,7 @@ final readonly class Apparmor implements ParserInterface
     /**
      * @param string[] $command
      *
-     * @return string|null stdout or null when the process cannot be started
+     * @return string|null stdout or null when the process cannot be started or writes nothing
      */
     private static function execute(array $command, ?string $cwd, int $timeout): ?string
     {
@@ -63,7 +71,13 @@ final readonly class Apparmor implements ParserInterface
             return null;
         }
 
-        return $process->isStarted() ? $process->getOutput() : null;
+        if (!$process->isStarted()) {
+            return null;
+        }
+
+        $output = $process->getOutput();
+
+        return '' === \trim($output) ? null : $output;
     }
 
     /**
@@ -132,7 +146,8 @@ final readonly class Apparmor implements ParserInterface
                 continue;
             }
 
-            if (\str_starts_with($trimmed, 'apparmor module is not loaded')) {
+            if (\str_starts_with($trimmed, 'apparmor module is not loaded')
+                || \str_starts_with($trimmed, 'apparmor filesystem is not mounted')) {
                 $enabled = false;
                 $section = $mode = null;
                 continue;
@@ -172,7 +187,7 @@ final readonly class Apparmor implements ParserInterface
 
             if ('profiles' === $section) {
                 $profiles[$trimmed] = (string) $mode;
-            } elseif ('processes' === $section && 1 === \preg_match('/^(\S+)\s+\((\d+)\)(?:\s+(.+))?$/', $trimmed, $matches)) {
+            } elseif ('processes' === $section && 1 === \preg_match('/^(.+?)\s+\((\d+)\)(?:\s+(.+))?$/', $trimmed, $matches)) {
                 $processes[] = [
                     'executable' => $matches[1],
                     'profile' => '' !== ($matches[3] ?? '') ? $matches[3] : $matches[1],

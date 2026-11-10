@@ -124,6 +124,15 @@ final class ApparmorTest extends TestCase
             ],
         ];
 
+        yield 'filesystem is not mounted' => [
+            "apparmor filesystem is not mounted.\n",
+            [
+                'enabled' => false,
+                'profiles' => [],
+                'processes' => [],
+            ],
+        ];
+
         yield 'module without policy' => [
             "apparmor module is loaded.\n0 profiles are loaded.\n0 processes have profiles defined.\n",
             [
@@ -143,5 +152,28 @@ final class ApparmorTest extends TestCase
         $method = new \ReflectionMethod(Apparmor::class, 'parseText');
 
         self::assertSame($expected, $method->invoke(null, $output));
+    }
+
+    public function testRealOutput(): void
+    {
+        $json = \json_decode((string) \file_get_contents(__DIR__.'/../Fixtures/apparmor-status.json'), true, 512, \JSON_THROW_ON_ERROR);
+
+        $parseJson = new \ReflectionMethod(Apparmor::class, 'parseJson');
+        $parseText = new \ReflectionMethod(Apparmor::class, 'parseText');
+
+        $fromJson = $parseJson->invoke(null, $json);
+        $fromText = $parseText->invoke(null, (string) \file_get_contents(__DIR__.'/../Fixtures/apparmor-status.txt'));
+
+        self::assertTrue($fromJson['enabled']);
+        self::assertCount(106, $fromJson['profiles']);
+        self::assertSame('enforce', $fromJson['profiles']['/usr/bin/man']);
+        self::assertSame('complain', $fromJson['profiles']['transmission-cli']);
+        self::assertSame('unconfined', $fromJson['profiles']['1password']);
+        self::assertSame([
+            ['executable' => '/usr/sbin/mysqld', 'profile' => '/usr/sbin/mysqld', 'pid' => 1004, 'status' => 'enforce'],
+        ], $fromJson['processes']);
+
+        // both aa-status formats must produce the same data
+        self::assertEquals($fromJson, $fromText);
     }
 }
