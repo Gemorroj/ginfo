@@ -85,25 +85,15 @@ trait CommonTrait
                 // https://man7.org/linux/man-pages/man5/proc_pid_status.5.html
                 $pidStatus = self::getContents('/proc/'.$pid.'/status');
                 if ($pidStatus) {
-                    $keyValuePidStatus = self::parseKeyValueBlock($pidStatus, ':');
-                    foreach ($keyValuePidStatus as $key => $value) {
-                        if ('VmPeak' === $key) {
-                            $valueBytes = (float) \explode(' ', $value)[0] * 1024; // always Kb
-                            $pidProcess['VmPeak'] = $valueBytes;
-                            continue;
-                        }
-                        if ('VmSize' === $key) {
-                            $valueBytes = (float) \explode(' ', $value)[0] * 1024; // always Kb
-                            $pidProcess['VmSize'] = $valueBytes;
-                            continue;
-                        }
-                    }
+                    $pidStatusInfo = self::parsePidStatus($pidStatus);
+                    $pidProcess['VmPeak'] = $pidStatusInfo['VmPeak'];
+                    $pidProcess['VmSize'] = $pidStatusInfo['VmSize'];
                 }
 
                 $process = new Process(['ps', '-p', (string) $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
                 try {
                     $process->mustRun();
-                    $pidProcess['uptime'] = (int) \trim($process->getOutput());
+                    $pidProcess['uptime'] = self::parseUptime($process->getOutput());
                 } catch (ProcessFailedException|ProcessStartFailedException $e) {
                     // ignore
                 }
@@ -113,5 +103,31 @@ trait CommonTrait
         }
 
         return $out;
+    }
+
+    /**
+     * @return array{VmPeak: float|null, VmSize: float|null}
+     */
+    protected static function parsePidStatus(string $status): array
+    {
+        $result = [
+            'VmPeak' => null,
+            'VmSize' => null,
+        ];
+
+        foreach (self::parseKeyValueBlock($status, ':') as $key => $value) {
+            if ('VmPeak' === $key || 'VmSize' === $key) {
+                $result[$key] = (float) \explode(' ', $value)[0] * 1024; // always Kb
+            }
+        }
+
+        return $result;
+    }
+
+    protected static function parseUptime(string $output): ?int
+    {
+        $output = \trim($output);
+
+        return '' === $output ? null : (int) $output;
     }
 }
