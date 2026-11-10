@@ -792,24 +792,40 @@ class Linux implements OsInterface
             '/etc/slackware-version',
         ];
 
+        $release = null;
         foreach ($stringReleases as $releaseFile) {
-            $os = self::getContents($releaseFile);
-            if (null !== $os) {
-                return $os;
+            $release = self::getContents($releaseFile);
+            if (null !== $release) {
+                break;
             }
         }
 
-        $lsbRelease = @\parse_ini_file('/etc/lsb-release');
-        if ($lsbRelease) {
-            return $lsbRelease['DISTRIB_DESCRIPTION'];
+        return self::parseOsName(
+            $release,
+            @\parse_ini_file('/etc/lsb-release') ?: null,
+            @\file('/etc/SuSE-release', \FILE_SKIP_EMPTY_LINES) ?: null,
+            self::getContents('/etc/debian_version'),
+        );
+    }
+
+    /**
+     * @param array<string, mixed>|null $lsbRelease
+     * @param string[]|null             $suseRelease
+     */
+    private static function parseOsName(?string $release, ?array $lsbRelease, ?array $suseRelease, ?string $debianVersion): string
+    {
+        if (null !== $release) {
+            return $release;
         }
 
-        $suseRelease = @\file('/etc/SuSE-release', \FILE_SKIP_EMPTY_LINES);
-        if ($suseRelease) {
-            return $suseRelease[0];
+        if (null !== $lsbRelease && isset($lsbRelease['DISTRIB_DESCRIPTION'])) {
+            return (string) $lsbRelease['DISTRIB_DESCRIPTION'];
         }
 
-        $debianVersion = self::getContents('/etc/debian_version');
+        if (null !== $suseRelease && [] !== $suseRelease) {
+            return (string) $suseRelease[0];
+        }
+
         if (null !== $debianVersion) {
             return 'Debian '.$debianVersion;
         }
@@ -827,29 +843,6 @@ class Linux implements OsInterface
 
     public function getVirtualization(): ?string
     {
-        if (\is_file('/proc/vz/veinfo')) {
-            return 'OpenVZ';
-        }
-
-        $biosVendor = self::getContents('/sys/devices/virtual/dmi/id/bios_vendor');
-        if ('Veertu' === $biosVendor) {
-            return 'Veertu';
-        }
-        if (\str_starts_with($biosVendor, 'Parallels')) {
-            return 'Parallels';
-        }
-
-        if (\str_contains(self::getContents('/proc/mounts', ''), 'lxcfs /proc/')) {
-            return 'LXC';
-        }
-        if (\is_file('/mnt/wsl/resolv.conf')) {
-            return 'WSL';
-        }
-
-        if (\is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(self::getContents('/proc/1/cgroup', ''), 'docker')) {
-            return 'Docker';
-        }
-
         // Try getting kernel modules
         $modules = [];
         if (\preg_match_all('/^(\S+)/m', self::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
@@ -866,6 +859,51 @@ class Linux implements OsInterface
             }
         }
 
+        return self::detectVirtualization(
+            \is_file('/proc/vz/veinfo'),
+            self::getContents('/sys/devices/virtual/dmi/id/bios_vendor'),
+            \str_contains(self::getContents('/proc/mounts', ''), 'lxcfs /proc/'),
+            \is_file('/mnt/wsl/resolv.conf'),
+            \is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(self::getContents('/proc/1/cgroup', ''), 'docker'),
+            \is_dir('/proc/xen'),
+            $modules,
+        );
+    }
+
+    /**
+     * @param string[] $modules
+     */
+    private static function detectVirtualization(
+        bool $hasOpenVz,
+        ?string $biosVendor,
+        bool $hasLxcFs,
+        bool $hasWsl,
+        bool $hasDocker,
+        bool $hasXenDir,
+        array $modules,
+    ): ?string {
+        if ($hasOpenVz) {
+            return 'OpenVZ';
+        }
+
+        if ('Veertu' === $biosVendor) {
+            return 'Veertu';
+        }
+        if (null !== $biosVendor && \str_starts_with($biosVendor, 'Parallels')) {
+            return 'Parallels';
+        }
+
+        if ($hasLxcFs) {
+            return 'LXC';
+        }
+        if ($hasWsl) {
+            return 'WSL';
+        }
+
+        if ($hasDocker) {
+            return 'Docker';
+        }
+
         if (\in_array('vboxguest', $modules, true)) {
             return 'VirtualBox';
         }
@@ -878,7 +916,7 @@ class Linux implements OsInterface
         }
 
         // Xen
-        if (\is_dir('/proc/xen')) {
+        if ($hasXenDir) {
             return 'Xen';
         }
         foreach (['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'] as $name) {

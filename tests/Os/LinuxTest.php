@@ -360,4 +360,85 @@ final class LinuxTest extends TestCase
 
         self::assertSame($expected, $method->invoke(null, $statusContents, $cmdlineContents, $ioContents));
     }
+
+    public static function provideVirtualization(): \Generator
+    {
+        yield 'openvz' => [true, null, false, false, false, false, [], 'OpenVZ'];
+        yield 'veertu' => [false, 'Veertu', false, false, false, false, [], 'Veertu'];
+        yield 'parallels' => [false, 'Parallels Software International Inc.', false, false, false, false, [], 'Parallels'];
+        yield 'lxc' => [false, null, true, false, false, false, [], 'LXC'];
+        yield 'wsl' => [false, null, false, true, false, false, [], 'WSL'];
+        yield 'docker' => [false, null, false, false, true, false, [], 'Docker'];
+        yield 'docker has priority over modules' => [false, null, false, false, true, false, ['vboxguest'], 'Docker'];
+        yield 'virtualbox' => [false, null, false, false, false, false, ['vboxguest'], 'VirtualBox'];
+        yield 'vmware' => [false, null, false, false, false, false, ['vmwgfx'], 'VMWare'];
+        yield 'xen directory' => [false, null, false, false, false, true, [], 'Xen'];
+        yield 'xen module' => [false, null, false, false, false, false, ['xen_gntdev'], 'Xen'];
+        yield 'hyper-v' => [false, null, false, false, false, false, ['hv_vmbus'], 'Hyper-V'];
+        yield 'qemu/kvm' => [false, null, false, false, false, false, ['virtio_pci'], 'Qemu/KVM'];
+        yield 'none' => [false, null, false, false, false, false, [], null];
+    }
+
+    /**
+     * @param string[] $modules
+     */
+    #[DataProvider('provideVirtualization')]
+    public function testDetectVirtualization(
+        bool $hasOpenVz,
+        ?string $biosVendor,
+        bool $hasLxcFs,
+        bool $hasWsl,
+        bool $hasDocker,
+        bool $hasXenDir,
+        array $modules,
+        ?string $expected,
+    ): void {
+        $method = new \ReflectionMethod(Linux::class, 'detectVirtualization');
+
+        self::assertSame($expected, $method->invoke(null, $hasOpenVz, $biosVendor, $hasLxcFs, $hasWsl, $hasDocker, $hasXenDir, $modules));
+    }
+
+    public static function provideOsName(): \Generator
+    {
+        yield 'release file wins' => [
+            ['CentOS Linux release 7.9', ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            'CentOS Linux release 7.9',
+        ];
+
+        yield 'lsb release' => [
+            [null, ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            'Ubuntu 24.04.1 LTS',
+        ];
+
+        yield 'lsb release without description' => [
+            [null, ['DISTRIB_ID' => 'Ubuntu'], ['openSUSE Leap 15.5'], '12.5'],
+            'openSUSE Leap 15.5',
+        ];
+
+        yield 'suse release' => [
+            [null, null, ['openSUSE Leap 15.5'], '12.5'],
+            'openSUSE Leap 15.5',
+        ];
+
+        yield 'debian version' => [
+            [null, null, null, '12.5'],
+            'Debian 12.5',
+        ];
+
+        yield 'fallback' => [
+            [null, null, null, null],
+            \PHP_OS,
+        ];
+    }
+
+    /**
+     * @param array{0: string|null, 1: array<string, mixed>|null, 2: string[]|null, 3: string|null} $input
+     */
+    #[DataProvider('provideOsName')]
+    public function testParseOsName(array $input, string $expected): void
+    {
+        $method = new \ReflectionMethod(Linux::class, 'parseOsName');
+
+        self::assertSame($expected, $method->invoke(null, ...$input));
+    }
 }
