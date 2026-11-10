@@ -26,10 +26,19 @@ final readonly class Sestatus implements ParserInterface
         }
 
         $result = \trim($process->getOutput());
-        $block = self::parseKeyValueBlock($result);
+
+        return self::parse($result);
+    }
+
+    /**
+     * @return array{enabled: bool, mode: string|null, policy: string|null}
+     */
+    private static function parse(string $output): array
+    {
+        $block = self::parseKeyValueBlock(\trim($output));
 
         return [
-            'enabled' => 'enabled' === $block['SELinux status'],
+            'enabled' => 'enabled' === ($block['SELinux status'] ?? ''),
             'mode' => $block['Current mode'] ?? null,
             'policy' => $block['Loaded policy name'] ?? null,
         ];

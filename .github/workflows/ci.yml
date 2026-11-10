@@ -136,3 +136,28 @@ jobs:
 
       - name: Tests
         run: vendor/bin/phpunit --configuration phpunit.xml.dist
+
+  static-analysis:
+    name: static analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: opcache, apcu, pcre, mbstring, json, pdo_mysql, pdo_pgsql, pdo_sqlite, memcached, mongodb
+          coverage: none
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --optimize-autoloader --no-interaction --ansi --no-progress --prefer-dist
+
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
+
+      - name: PHP-CS-Fixer
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff

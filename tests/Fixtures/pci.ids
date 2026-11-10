@@ -1,0 +1,6 @@
+# minimal pci.ids fixture for Hwpci tests
+8086  Intel Corporation
+	1234  Some Device
+	5678  Another Device
+10de  NVIDIA Corporation
+	abcd  GeForce

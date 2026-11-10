@@ -16,7 +16,16 @@ final readonly class Hddtemp implements ParserInterface
             return null;
         }
 
-        return self::parseSockData($data);
+        $sensors = self::parseSockData($data);
+
+        // Ignore devices that no longer exist
+        if (\is_readable('/dev')) {
+            $sensors = \array_values(\array_filter($sensors, static function (array $sensor): bool {
+                return \file_exists($sensor['path']);
+            }));
+        }
+
+        return $sensors;
     }
 
     /**
@@ -50,15 +59,14 @@ final readonly class Hddtemp implements ParserInterface
 
         $return = [];
         foreach ($drives as $drive) {
-            [$path, $name, $temp, $unit] = \explode('|', \trim($drive));
+            $parts = \explode('|', \trim($drive));
+            if (4 !== \count($parts)) {
+                continue;
+            }
+            [$path, $name, $temp, $unit] = $parts;
 
             // Ignore garbled output from SSDs that hddtemp cant parse
             if (\str_contains($temp, 'UNK')) {
-                continue;
-            }
-
-            // Ignore no longer existant devices?
-            if (!\file_exists($path) && \is_readable('/dev')) {
                 continue;
             }
 

@@ -23,7 +23,15 @@ md0 : active raid1 sdb[0]
             return null;
         }
 
-        if (false === \preg_match_all('/(?P<device>\S+)\s*:\s*(?P<state>\w+)(?P<blurb>\s+\([^)]+\))?\s*raid(?P<level>\d+)\s*(?P<drives>[\w+\[\d+\] (\(\w\))?]+)\n\s+(?P<blocks>\d+) blocks[^[]+\[(?P<counts>\d\/\d)\] \[(?P<chart>[U\_]+)\]/mi', (string) $mdadmContents, $match, \PREG_SET_ORDER)) {
+        return self::parseMdstat($mdadmContents);
+    }
+
+    /**
+     * @return array{device: string, status: string, level: string, drives: array{path: string, state: string}[], size: float, count: array{active: int, total: int}, chart: string}[]|null
+     */
+    private static function parseMdstat(string $contents): ?array
+    {
+        if (false === \preg_match_all('/(?P<device>\S+)\s*:\s*(?P<state>\w+)(?P<blurb>\s+\([^)]+\))?\s*raid(?P<level>\d+)\s*(?P<drives>[\w+\[\d+\] (\(\w\))?]+)\n\s+(?P<blocks>\d+) blocks[^[]+\[(?P<counts>\d\/\d)\] \[(?P<chart>[U\_]+)\]/mi', $contents, $match, \PREG_SET_ORDER)) {
             return null;
         }
 
@@ -62,7 +70,7 @@ md0 : active raid1 sdb[0]
                 'status' => $state,
                 'level' => $array['level'],
                 'drives' => $drives,
-                'size' => $array['blocks'] * 1024,
+                'size' => (float) ($array['blocks'] * 1024),
                 'count' => [
                     'active' => (int) $countActive,
                     'total' => (int) $countTotal,
