@@ -381,60 +381,24 @@ class Linux implements OsInterface
         foreach ($paths as $path) {
             $speed = self::parseSpeed(self::getContents($path.'/speed'));
 
-            $operstateContents = self::getContents($path.'/operstate');
-            $state = \in_array($operstateContents, ['up', 'down'], true) ? $operstateContents : null;
-
-            if (null === $state && \file_exists($path.'/carrier')) {
-                $state = self::getContents($path.'/carrier') ? 'up' : 'down';
-            }
+            $state = self::parseNetworkState(
+                self::getContents($path.'/operstate'),
+                \file_exists($path.'/carrier'),
+                self::getContents($path.'/carrier'),
+            );
 
             // Try the weird ways of getting type (https://stackoverflow.com/a/16060638)
-            $typeCode = self::getContents($path.'/type');
+            $ueventContents = @\parse_ini_file($path.'/uevent');
+            $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
 
-            if ('772' === $typeCode) {
-                $type = 'Loopback';
-            } elseif ('65534' === $typeCode) {
-                $type = 'Tunnel';
-            } elseif ('776' === $typeCode) {
-                $type = 'IPv6 in IPv4';
-            } else {
-                $typeContents = \mb_strtoupper(self::getContents($path.'/device/modalias', ''));
-                [$typeMatch] = \explode(':', $typeContents, 2);
-
-                $ueventContents = @\parse_ini_file($path.'/uevent');
-
-                if ($ueventContents && isset($ueventContents['DEVTYPE'])) {
-                    $type = \ucfirst($ueventContents['DEVTYPE']);
-                    if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
-                        $type .= ' ('.$typeMatch.')';
-                    }
-                    $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
-                    if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
-                        $type .= ' ('.$deviceUeventContents['DRIVER'].')';
-                    }
-                } elseif (\in_array($typeMatch, ['PCI', 'USB'], true)) {
-                    $type = 'Ethernet ('.$typeMatch.')';
-
-                    $deviceUeventContents = @\parse_ini_file($path.'/device/uevent');
-                    if ($deviceUeventContents && isset($deviceUeventContents['DRIVER'])) {
-                        $type .= ' ('.$deviceUeventContents['DRIVER'].')';
-                    }
-                } elseif ('VIRTIO' === $typeMatch) {
-                    $type = 'VirtIO';
-                } elseif ('XEN:VIF' === $typeContents) {
-                    $type = 'Xen (VIF)';
-                } elseif ('XEN-BACKEND:VIF' === $typeContents) {
-                    $type = 'Xen Backend (VIF)';
-                } elseif (\is_dir($path.'/bridge')) {
-                    $type = 'Bridge';
-                } elseif (\is_dir($path.'/bonding')) {
-                    $type = 'Bond';
-                } else {
-                    $type = null;
-                }
-
-                // TODO find some way of finding out what provides the virt-specific kvm vnet devices
-            }
+            $type = self::parseNetworkType(
+                self::getContents($path.'/type'),
+                \mb_strtoupper(self::getContents($path.'/device/modalias', '')),
+                \is_array($ueventContents) && isset($ueventContents['DEVTYPE']) ? (string) $ueventContents['DEVTYPE'] : null,
+                \is_array($deviceUeventContents) && isset($deviceUeventContents['DRIVER']) ? (string) $deviceUeventContents['DRIVER'] : null,
+                \is_dir($path.'/bridge'),
+                \is_dir($path.'/bonding'),
+            );
 
             $statsReceived = new Network\Stats(
                 (int) self::getContents($path.'/statistics/rx_bytes', '0'),
@@ -635,6 +599,78 @@ class Linux implements OsInterface
         }
 
         return $infoStr;
+    }
+
+    private static function parseNetworkState(?string $operstate, bool $carrierExists, ?string $carrier): ?string
+    {
+        if (\in_array($operstate, ['up', 'down'], true)) {
+            return $operstate;
+        }
+
+        if ($carrierExists) {
+            return $carrier ? 'up' : 'down';
+        }
+
+        return null;
+    }
+
+    private static function parseNetworkType(
+        ?string $typeCode,
+        string $typeContents,
+        ?string $deviceType,
+        ?string $driver,
+        bool $hasBridge,
+        bool $hasBonding,
+    ): ?string {
+        if ('772' === $typeCode) {
+            return 'Loopback';
+        }
+        if ('65534' === $typeCode) {
+            return 'Tunnel';
+        }
+        if ('776' === $typeCode) {
+            return 'IPv6 in IPv4';
+        }
+
+        [$typeMatch] = \explode(':', $typeContents, 2);
+
+        if (null !== $deviceType) {
+            $type = \ucfirst($deviceType);
+            if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
+                $type .= ' ('.$typeMatch.')';
+            }
+            if (null !== $driver) {
+                $type .= ' ('.$driver.')';
+            }
+
+            return $type;
+        }
+
+        if (\in_array($typeMatch, ['PCI', 'USB'], true)) {
+            $type = 'Ethernet ('.$typeMatch.')';
+            if (null !== $driver) {
+                $type .= ' ('.$driver.')';
+            }
+
+            return $type;
+        }
+        if ('VIRTIO' === $typeMatch) {
+            return 'VirtIO';
+        }
+        if ('XEN:VIF' === $typeContents) {
+            return 'Xen (VIF)';
+        }
+        if ('XEN-BACKEND:VIF' === $typeContents) {
+            return 'Xen Backend (VIF)';
+        }
+        if ($hasBridge) {
+            return 'Bridge';
+        }
+        if ($hasBonding) {
+            return 'Bond';
+        }
+
+        return null;
     }
 
     public function getProcesses(): ?array

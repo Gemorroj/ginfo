@@ -242,4 +242,55 @@ final class LinuxTest extends TestCase
 
         self::assertEquals($expected, $method->invoke(null, $contents));
     }
+
+    public static function provideNetworkState(): \Generator
+    {
+        yield ['up', false, null, 'up'];
+        yield ['down', false, null, 'down'];
+        yield ['unknown', true, '1', 'up'];
+        yield ['unknown', true, '0', 'down'];
+        yield ['unknown', true, '', 'down'];
+        yield ['unknown', false, null, null];
+        yield [null, true, '1', 'up'];
+    }
+
+    #[DataProvider('provideNetworkState')]
+    public function testParseNetworkState(?string $operstate, bool $carrierExists, ?string $carrier, ?string $expected): void
+    {
+        $method = new \ReflectionMethod(Linux::class, 'parseNetworkState');
+
+        self::assertSame($expected, $method->invoke(null, $operstate, $carrierExists, $carrier));
+    }
+
+    public static function provideNetworkType(): \Generator
+    {
+        yield 'loopback takes precedence' => ['772', 'PCI:1234', 'ethernet', 'e1000e', false, false, 'Loopback'];
+        yield 'tunnel' => ['65534', '', null, null, false, false, 'Tunnel'];
+        yield 'ipv6 in ipv4' => ['776', '', null, null, false, false, 'IPv6 in IPv4'];
+        yield 'pci device type and driver' => ['1', 'PCI:1234', 'ethernet', 'e1000e', false, false, 'Ethernet (PCI) (e1000e)'];
+        yield 'usb device type' => ['1', 'USB:abcd', 'wlan', null, false, false, 'Wlan (USB)'];
+        yield 'pci device with driver' => ['1', 'PCI:1234', null, 'e1000e', false, false, 'Ethernet (PCI) (e1000e)'];
+        yield 'pci device without driver' => ['1', 'PCI:1234', null, null, false, false, 'Ethernet (PCI)'];
+        yield 'virtio' => ['1', 'VIRTIO:1234', null, null, false, false, 'VirtIO'];
+        yield 'xen' => ['1', 'XEN:VIF', null, null, false, false, 'Xen (VIF)'];
+        yield 'xen backend' => ['1', 'XEN-BACKEND:VIF', null, null, false, false, 'Xen Backend (VIF)'];
+        yield 'bridge' => ['1', '', null, null, true, false, 'Bridge'];
+        yield 'bond' => ['1', '', null, null, false, true, 'Bond'];
+        yield 'unknown' => ['1', '', null, null, false, false, null];
+    }
+
+    #[DataProvider('provideNetworkType')]
+    public function testParseNetworkType(
+        ?string $typeCode,
+        string $typeContents,
+        ?string $deviceType,
+        ?string $driver,
+        bool $hasBridge,
+        bool $hasBonding,
+        ?string $expected,
+    ): void {
+        $method = new \ReflectionMethod(Linux::class, 'parseNetworkType');
+
+        self::assertSame($expected, $method->invoke(null, $typeCode, $typeContents, $deviceType, $driver, $hasBridge, $hasBonding));
+    }
 }
