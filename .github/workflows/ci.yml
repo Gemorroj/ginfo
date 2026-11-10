@@ -78,6 +78,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Install Apache Httpd
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y apache2
+          sudo a2enmod status
+          sudo service apache2 restart
+
       - name: Install Angie
         run: |
           sudo curl -o /etc/apt/trusted.gpg.d/angie-signing.gpg https://angie.software/keys/angie-signing.gpg
@@ -107,13 +114,6 @@ jobs:
             admin localhost:2019
           }" | sudo tee /etc/caddy/Caddyfile
           sudo systemctl restart caddy
-
-      - name: Install Apache Httpd
-        run: |
-          sudo add-apt-repository ppa:ondrej/apache2 -y
-          sudo apt update
-          sudo apt install -y apache2
-          sudo systemctl restart apache2
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
