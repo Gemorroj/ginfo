@@ -843,6 +843,19 @@ class Linux implements OsInterface
 
     public function getVirtualization(): ?string
     {
+        $container = self::detectContainer(
+            self::getContents('/run/systemd/container'),
+            \file_exists('/run/.containerenv'),
+            \file_exists('/.dockerenv') || \file_exists('/.dockerinit') || \str_contains(self::getContents('/proc/1/cgroup', ''), 'docker'),
+            false !== \getenv('KUBERNETES_SERVICE_HOST') || \is_dir('/var/run/secrets/kubernetes.io/serviceaccount'),
+            self::getContents('/proc/sys/kernel/osrelease'),
+            \file_exists('/proc/vz') && !\file_exists('/proc/bc'),
+            \str_contains(self::getContents('/proc/mounts', ''), 'lxcfs /proc/'),
+        );
+        if (null !== $container) {
+            return $container;
+        }
+
         // Try getting kernel modules
         $modules = [];
         if (\preg_match_all('/^(\S+)/m', self::getContents('/proc/modules', ''), $matches, \PREG_SET_ORDER)) {
@@ -859,49 +872,98 @@ class Linux implements OsInterface
             }
         }
 
-        return self::detectVirtualization(
-            \is_file('/proc/vz/veinfo'),
-            self::getContents('/sys/devices/virtual/dmi/id/bios_vendor'),
-            \str_contains(self::getContents('/proc/mounts', ''), 'lxcfs /proc/'),
-            \is_file('/mnt/wsl/resolv.conf'),
-            \is_file('/.dockerenv') || \is_file('/.dockerinit') || \str_contains(self::getContents('/proc/1/cgroup', ''), 'docker'),
+        return self::detectVm(
+            self::getContents('/sys/class/dmi/id/product_name'),
+            self::getContents('/sys/class/dmi/id/sys_vendor'),
+            self::getContents('/sys/class/dmi/id/board_vendor'),
+            self::getContents('/sys/class/dmi/id/bios_vendor'),
+            self::getContents('/sys/class/dmi/id/product_version'),
+            self::getContents('/sys/hypervisor/type'),
             \is_dir('/proc/xen'),
             $modules,
         );
     }
 
-    /**
-     * @param string[] $modules
-     */
-    private static function detectVirtualization(
+    private static function detectContainer(
+        ?string $containerManager,
+        bool $hasPodmanEnv,
+        bool $hasDockerEnv,
+        bool $hasKubernetes,
+        ?string $osRelease,
         bool $hasOpenVz,
-        ?string $biosVendor,
         bool $hasLxcFs,
-        bool $hasWsl,
-        bool $hasDocker,
-        bool $hasXenDir,
-        array $modules,
     ): ?string {
         if ($hasOpenVz) {
             return 'OpenVZ';
         }
 
-        if ('Veertu' === $biosVendor) {
-            return 'Veertu';
-        }
-        if (null !== $biosVendor && \str_starts_with($biosVendor, 'Parallels')) {
-            return 'Parallels';
-        }
-
-        if ($hasLxcFs) {
-            return 'LXC';
-        }
-        if ($hasWsl) {
+        if (null !== $osRelease && (\str_contains($osRelease, 'Microsoft') || \str_contains($osRelease, 'WSL'))) {
             return 'WSL';
         }
 
-        if ($hasDocker) {
+        $manager = null !== $containerManager ? \strtolower(\trim($containerManager)) : '';
+        if ('' !== $manager && 'oci' !== $manager) {
+            return match ($manager) {
+                'lxc', 'lxc-libvirt' => 'LXC',
+                'systemd-nspawn' => 'systemd-nspawn',
+                'docker' => 'Docker',
+                'podman' => 'Podman',
+                'rkt' => 'RKT',
+                'pouch' => 'Pouch',
+                'wsl' => 'WSL',
+                'proot' => 'PRoot',
+                default => 'Container (other)',
+            };
+        }
+
+        if ($hasKubernetes) {
+            return 'Kubernetes';
+        }
+        if ($hasPodmanEnv) {
+            return 'Podman';
+        }
+        if ($hasDockerEnv) {
             return 'Docker';
+        }
+        if ($hasLxcFs) {
+            return 'LXC';
+        }
+        if ('oci' === $manager) {
+            return 'Container (other)';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string[] $modules
+     */
+    private static function detectVm(
+        ?string $productName,
+        ?string $sysVendor,
+        ?string $boardVendor,
+        ?string $biosVendor,
+        ?string $productVersion,
+        ?string $hypervisorType,
+        bool $hasXenDir,
+        array $modules,
+    ): ?string {
+        // EC2 bare metal instances are not virtualized
+        if (null !== $sysVendor && \str_starts_with($sysVendor, 'Amazon EC2')
+            && null !== $productName && \str_contains($productName, '.metal')) {
+            return null;
+        }
+
+        $byDmi = self::detectVirtualizationByDmi($productName, $sysVendor, $boardVendor, $biosVendor, $productVersion);
+        if (null !== $byDmi) {
+            return $byDmi;
+        }
+
+        if ('xen' === $hypervisorType) {
+            return 'Xen';
+        }
+        if ($hasXenDir) {
+            return 'Xen';
         }
 
         if (\in_array('vboxguest', $modules, true)) {
@@ -916,9 +978,6 @@ class Linux implements OsInterface
         }
 
         // Xen
-        if ($hasXenDir) {
-            return 'Xen';
-        }
         foreach (['xenfs', 'xen_gntdev', 'xen_evtchn', 'xen_blkfront', 'xen_netfront'] as $name) {
             if (\in_array($name, $modules, true)) {
                 return 'Xen';
@@ -940,6 +999,53 @@ class Linux implements OsInterface
         }
 
         // idk
+        return null;
+    }
+
+    private static function detectVirtualizationByDmi(
+        ?string $productName,
+        ?string $sysVendor,
+        ?string $boardVendor,
+        ?string $biosVendor,
+        ?string $productVersion,
+    ): ?string {
+        static $table = [
+            'KVM' => 'Qemu/KVM',
+            'OpenStack' => 'OpenStack',
+            'KubeVirt' => 'KubeVirt',
+            'Alibaba Cloud' => 'Alibaba Cloud',
+            'Amazon EC2' => 'Amazon EC2',
+            'QEMU' => 'Qemu/KVM',
+            'VMware' => 'VMWare',
+            'VMW' => 'VMWare',
+            'innotek GmbH' => 'VirtualBox',
+            'VirtualBox' => 'VirtualBox',
+            'Oracle Corporation' => 'VirtualBox',
+            'OracleCloud' => 'Oracle Cloud',
+            'Xen' => 'Xen',
+            'Bochs' => 'Bochs',
+            'Parallels' => 'Parallels',
+            'BHYVE' => 'bhyve',
+            'Hyper-V' => 'Hyper-V',
+            'Microsoft Corporation' => 'Hyper-V',
+            'Apple Virtualization' => 'Apple Virtualization',
+            'Google Compute Engine' => 'Google Compute Engine',
+            'DigitalOcean' => 'DigitalOcean',
+            'Veertu' => 'Veertu',
+        ];
+
+        foreach ([$productName, $sysVendor, $boardVendor, $biosVendor, $productVersion] as $value) {
+            if (null === $value) {
+                continue;
+            }
+
+            foreach ($table as $prefix => $virtualization) {
+                if (\str_starts_with($value, (string) $prefix)) {
+                    return $virtualization;
+                }
+            }
+        }
+
         return null;
     }
 

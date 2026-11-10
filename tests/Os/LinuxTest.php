@@ -361,41 +361,101 @@ final class LinuxTest extends TestCase
         self::assertSame($expected, $method->invoke(null, $statusContents, $cmdlineContents, $ioContents));
     }
 
-    public static function provideVirtualization(): \Generator
+    public static function provideContainer(): \Generator
     {
-        yield 'openvz' => [true, null, false, false, false, false, [], 'OpenVZ'];
-        yield 'veertu' => [false, 'Veertu', false, false, false, false, [], 'Veertu'];
-        yield 'parallels' => [false, 'Parallels Software International Inc.', false, false, false, false, [], 'Parallels'];
-        yield 'lxc' => [false, null, true, false, false, false, [], 'LXC'];
-        yield 'wsl' => [false, null, false, true, false, false, [], 'WSL'];
-        yield 'docker' => [false, null, false, false, true, false, [], 'Docker'];
-        yield 'docker has priority over modules' => [false, null, false, false, true, false, ['vboxguest'], 'Docker'];
-        yield 'virtualbox' => [false, null, false, false, false, false, ['vboxguest'], 'VirtualBox'];
-        yield 'vmware' => [false, null, false, false, false, false, ['vmwgfx'], 'VMWare'];
-        yield 'xen directory' => [false, null, false, false, false, true, [], 'Xen'];
-        yield 'xen module' => [false, null, false, false, false, false, ['xen_gntdev'], 'Xen'];
-        yield 'hyper-v' => [false, null, false, false, false, false, ['hv_vmbus'], 'Hyper-V'];
-        yield 'qemu/kvm' => [false, null, false, false, false, false, ['virtio_pci'], 'Qemu/KVM'];
-        yield 'none' => [false, null, false, false, false, false, [], null];
+        yield 'openvz' => [null, false, false, false, null, true, false, 'OpenVZ'];
+        yield 'openvz has priority' => ['docker', true, true, true, '4.15.0-microsoft', true, true, 'OpenVZ'];
+        yield 'wsl by osrelease' => [null, false, false, false, '5.15.153.1-microsoft-standard-WSL2', false, false, 'WSL'];
+        yield 'wsl by manager' => ['wsl', false, false, false, null, false, false, 'WSL'];
+        yield 'systemd-nspawn' => ['systemd-nspawn', false, false, false, null, false, false, 'systemd-nspawn'];
+        yield 'lxc' => ['lxc', false, false, false, null, false, false, 'LXC'];
+        yield 'lxc-libvirt' => ['lxc-libvirt', false, false, false, null, false, false, 'LXC'];
+        yield 'docker manager' => ['docker', false, false, false, null, false, false, 'Docker'];
+        yield 'podman manager' => ['podman', false, false, false, null, false, false, 'Podman'];
+        yield 'rkt' => ['rkt', false, false, false, null, false, false, 'RKT'];
+        yield 'pouch' => ['pouch', false, false, false, null, false, false, 'Pouch'];
+        yield 'proot' => ['proot', false, false, false, null, false, false, 'PRoot'];
+        yield 'unknown manager' => ['containerd', false, false, false, null, false, false, 'Container (other)'];
+        yield 'manager is case insensitive' => ['Docker', false, false, false, null, false, false, 'Docker'];
+        yield 'oci with podman env' => ['oci', true, false, false, null, false, false, 'Podman'];
+        yield 'oci without files' => ['oci', false, false, false, null, false, false, 'Container (other)'];
+        yield 'kubernetes' => [null, false, false, true, null, false, false, 'Kubernetes'];
+        yield 'kubernetes beats docker' => [null, false, true, true, null, false, false, 'Kubernetes'];
+        yield 'podman env' => [null, true, false, false, null, false, false, 'Podman'];
+        yield 'docker env' => [null, false, true, false, null, false, false, 'Docker'];
+        yield 'lxcfs' => [null, false, false, false, null, false, true, 'LXC'];
+        yield 'none' => [null, false, false, false, null, false, false, null];
+    }
+
+    #[DataProvider('provideContainer')]
+    public function testDetectContainer(
+        ?string $containerManager,
+        bool $hasPodmanEnv,
+        bool $hasDockerEnv,
+        bool $hasKubernetes,
+        ?string $osRelease,
+        bool $hasOpenVz,
+        bool $hasLxcFs,
+        ?string $expected,
+    ): void {
+        $method = new \ReflectionMethod(Linux::class, 'detectContainer');
+
+        self::assertSame($expected, $method->invoke(null, $containerManager, $hasPodmanEnv, $hasDockerEnv, $hasKubernetes, $osRelease, $hasOpenVz, $hasLxcFs));
+    }
+
+    public static function provideVm(): \Generator
+    {
+        yield 'kvm' => ['KVM', null, null, null, null, null, false, [], 'Qemu/KVM'];
+        yield 'openstack' => ['OpenStack Nova', null, null, null, null, null, false, [], 'OpenStack'];
+        yield 'kubevirt' => ['KubeVirt', null, null, null, null, null, false, [], 'KubeVirt'];
+        yield 'alibaba cloud' => [null, 'Alibaba Cloud', null, null, null, null, false, [], 'Alibaba Cloud'];
+        yield 'amazon ec2' => ['r6i.large', 'Amazon EC2', null, null, null, null, false, [], 'Amazon EC2'];
+        yield 'amazon ec2 bare metal' => ['r6i.metal', 'Amazon EC2', null, null, null, null, false, [], null];
+        yield 'qemu' => ['QEMU', null, null, null, null, null, false, [], 'Qemu/KVM'];
+        yield 'vmware' => [null, 'VMware, Inc.', null, null, null, null, false, [], 'VMWare'];
+        yield 'vmw prefix' => [null, 'VMW', null, null, null, null, false, [], 'VMWare'];
+        yield 'virtualbox innotek' => [null, null, null, 'innotek GmbH', null, null, false, [], 'VirtualBox'];
+        yield 'virtualbox oracle corporation' => [null, 'Oracle Corporation', null, null, null, null, false, [], 'VirtualBox'];
+        yield 'oracle cloud' => [null, 'OracleCloud', null, null, null, null, false, [], 'Oracle Cloud'];
+        yield 'xen dmi' => [null, null, null, 'Xen', null, null, false, [], 'Xen'];
+        yield 'bochs' => ['Bochs', null, null, null, null, null, false, [], 'Bochs'];
+        yield 'parallels' => [null, null, null, 'Parallels Software International Inc.', null, null, false, [], 'Parallels'];
+        yield 'bhyve' => ['BHYVE', null, null, null, null, null, false, [], 'bhyve'];
+        yield 'hyper-v product version' => [null, null, null, null, 'Hyper-V', null, false, [], 'Hyper-V'];
+        yield 'microsoft' => [null, 'Microsoft Corporation', null, null, null, null, false, [], 'Hyper-V'];
+        yield 'apple virtualization' => ['Apple Virtualization', null, null, null, null, null, false, [], 'Apple Virtualization'];
+        yield 'google compute engine' => ['Google Compute Engine', null, null, null, null, null, false, [], 'Google Compute Engine'];
+        yield 'digitalocean' => [null, 'DigitalOcean', null, null, null, null, false, [], 'DigitalOcean'];
+        yield 'veertu' => [null, null, null, 'Veertu', null, null, false, [], 'Veertu'];
+        yield 'xen hypervisor type' => [null, null, null, null, null, 'xen', false, [], 'Xen'];
+        yield 'xen directory' => [null, null, null, null, null, null, true, [], 'Xen'];
+        yield 'virtualbox module' => [null, null, null, null, null, null, false, ['vboxguest'], 'VirtualBox'];
+        yield 'vmware module' => [null, null, null, null, null, null, false, ['vmwgfx'], 'VMWare'];
+        yield 'xen module' => [null, null, null, null, null, null, false, ['xen_gntdev'], 'Xen'];
+        yield 'hyper-v module' => [null, null, null, null, null, null, false, ['hv_vmbus'], 'Hyper-V'];
+        yield 'qemu/kvm module' => [null, null, null, null, null, null, false, ['virtio_pci'], 'Qemu/KVM'];
+        yield 'dmi has priority over modules' => ['QEMU', null, null, null, null, null, false, ['vboxguest'], 'Qemu/KVM'];
+        yield 'none' => [null, null, null, null, null, null, false, [], null];
     }
 
     /**
      * @param string[] $modules
      */
-    #[DataProvider('provideVirtualization')]
-    public function testDetectVirtualization(
-        bool $hasOpenVz,
+    #[DataProvider('provideVm')]
+    public function testDetectVm(
+        ?string $productName,
+        ?string $sysVendor,
+        ?string $boardVendor,
         ?string $biosVendor,
-        bool $hasLxcFs,
-        bool $hasWsl,
-        bool $hasDocker,
+        ?string $productVersion,
+        ?string $hypervisorType,
         bool $hasXenDir,
         array $modules,
         ?string $expected,
     ): void {
-        $method = new \ReflectionMethod(Linux::class, 'detectVirtualization');
+        $method = new \ReflectionMethod(Linux::class, 'detectVm');
 
-        self::assertSame($expected, $method->invoke(null, $hasOpenVz, $biosVendor, $hasLxcFs, $hasWsl, $hasDocker, $hasXenDir, $modules));
+        self::assertSame($expected, $method->invoke(null, $productName, $sysVendor, $boardVendor, $biosVendor, $productVersion, $hypervisorType, $hasXenDir, $modules));
     }
 
     public static function provideOsName(): \Generator
