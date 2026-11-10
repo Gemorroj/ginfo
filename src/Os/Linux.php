@@ -687,44 +687,69 @@ class Linux implements OsInterface
                 continue;
             }
 
-            $cmdlineContents = self::getContents(\dirname($process).'/cmdline');
-            $ioContents = self::getContents(\dirname($process).'/io');
-
-            $blockIo = $ioContents ? self::parseKeyValueBlock($ioContents) : null;
-            $blockStatus = self::parseKeyValueBlock($statusContents);
-
-            $uid = (int) \explode("\t", $blockStatus['Uid'], 2)[0];
-            $user = \posix_getpwuid($uid);
-
-            if (isset($blockStatus['VmSize'])) {
-                $vmSize = (float) $blockStatus['VmSize']; // drop kB
-                $vmSize *= 1024;
-            } else {
-                $vmSize = null;
+            $data = self::parseProcess(
+                $statusContents,
+                self::getContents(\dirname($process).'/cmdline'),
+                self::getContents(\dirname($process).'/io'),
+            );
+            if (null === $data) {
+                continue;
             }
 
-            if (isset($blockStatus['VmPeak'])) {
-                $vmPeak = (float) $blockStatus['VmPeak']; // drop kB
-                $vmPeak *= 1024;
-            } else {
-                $vmPeak = null;
-            }
+            $user = \posix_getpwuid($data['uid']);
 
             $result[] = new Process(
-                $blockStatus['Name'],
-                (int) $blockStatus['Pid'],
-                null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
-                (int) $blockStatus['Threads'],
-                $blockStatus['State'],
-                $vmSize,
-                $vmPeak,
-                $user ? $user['name'] : (string) $uid,
-                isset($blockIo['read_bytes']) ? (float) $blockIo['read_bytes'] : null,
-                isset($blockIo['write_bytes']) ? (float) $blockIo['write_bytes'] : null
+                $data['name'],
+                $data['pid'],
+                $data['cmdline'],
+                $data['threads'],
+                $data['state'],
+                $data['vmSize'],
+                $data['vmPeak'],
+                $user ? $user['name'] : (string) $data['uid'],
+                $data['readBytes'],
+                $data['writeBytes'],
             );
         }
 
         return $result;
+    }
+
+    /**
+     * @return array{
+     *     name: string,
+     *     pid: int,
+     *     uid: int,
+     *     cmdline: string|null,
+     *     threads: int,
+     *     state: string,
+     *     vmSize: float|null,
+     *     vmPeak: float|null,
+     *     readBytes: float|null,
+     *     writeBytes: float|null,
+     * }|null
+     */
+    private static function parseProcess(string $statusContents, ?string $cmdlineContents, ?string $ioContents): ?array
+    {
+        $status = self::parseKeyValueBlock($statusContents);
+        if (!isset($status['Name'], $status['Pid'], $status['Uid'], $status['Threads'], $status['State'])) {
+            return null;
+        }
+
+        $io = null !== $ioContents ? self::parseKeyValueBlock($ioContents) : [];
+
+        return [
+            'name' => $status['Name'],
+            'pid' => (int) $status['Pid'],
+            'uid' => (int) \explode("\t", $status['Uid'], 2)[0],
+            'cmdline' => null !== $cmdlineContents ? \str_replace("\0", ' ', $cmdlineContents) : null,
+            'threads' => (int) $status['Threads'],
+            'state' => $status['State'],
+            'vmSize' => isset($status['VmSize']) ? (float) $status['VmSize'] * 1024 : null,
+            'vmPeak' => isset($status['VmPeak']) ? (float) $status['VmPeak'] * 1024 : null,
+            'readBytes' => isset($io['read_bytes']) ? (float) $io['read_bytes'] : null,
+            'writeBytes' => isset($io['write_bytes']) ? (float) $io['write_bytes'] : null,
+        ];
     }
 
     /**

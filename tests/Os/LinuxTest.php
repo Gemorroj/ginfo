@@ -293,4 +293,71 @@ final class LinuxTest extends TestCase
 
         self::assertSame($expected, $method->invoke(null, $typeCode, $typeContents, $deviceType, $driver, $hasBridge, $hasBonding));
     }
+
+    public static function provideProcess(): \Generator
+    {
+        $status = "Name:\tnginx\nState:\tS (sleeping)\nPid:\t1234\nThreads:\t4\nVmPeak:\t  263452 kB\nVmSize:\t  263248 kB\nUid:\t1000\t1000\t1000\t1000\nGid:\t1000\t1000\t1000\t1000\n";
+        $io = "rchar: 12345\nwchar: 67890\nread_bytes: 4096\nwrite_bytes: 8192\n";
+
+        yield 'full' => [
+            $status,
+            "nginx\0-g\0daemon off;\0",
+            $io,
+            [
+                'name' => 'nginx',
+                'pid' => 1234,
+                'uid' => 1000,
+                'cmdline' => 'nginx -g daemon off; ',
+                'threads' => 4,
+                'state' => 'S (sleeping)',
+                'vmSize' => 269565952.0,
+                'vmPeak' => 269774848.0,
+                'readBytes' => 4096.0,
+                'writeBytes' => 8192.0,
+            ],
+        ];
+
+        yield 'without memory, cmdline and io' => [
+            "Name:\tnginx\nState:\tS (sleeping)\nPid:\t1234\nThreads:\t4\nUid:\t1000\t1000\t1000\t1000\n",
+            null,
+            null,
+            [
+                'name' => 'nginx',
+                'pid' => 1234,
+                'uid' => 1000,
+                'cmdline' => null,
+                'threads' => 4,
+                'state' => 'S (sleeping)',
+                'vmSize' => null,
+                'vmPeak' => null,
+                'readBytes' => null,
+                'writeBytes' => null,
+            ],
+        ];
+
+        yield 'missing required fields' => [
+            "Name:\tnginx\nPid:\t1234\n",
+            null,
+            null,
+            null,
+        ];
+
+        yield 'empty status' => [
+            '',
+            null,
+            null,
+            null,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|null $expected
+     */
+    #[DataProvider('provideProcess')]
+    public function testParseProcess(string $statusContents, ?string $cmdlineContents, ?string $ioContents, ?array $expected): void
+    {
+        $method = new \ReflectionMethod(Linux::class, 'parseProcess');
+
+        self::assertSame($expected, $method->invoke(null, $statusContents, $cmdlineContents, $ioContents));
+    }
 }
