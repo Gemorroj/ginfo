@@ -48,6 +48,15 @@ jobs:
         image: memcached
         ports:
           - 11211:11211
+      mailpit:
+        image: axllent/mailpit
+        env:
+          MP_SMTP_BIND_ADDR: '0.0.0.0:1025'
+          MP_SMTP_DISABLE_RDNS: 'true'
+          MP_SMTP_AUTH: 'user:pass'
+          MP_SMTP_AUTH_ALLOW_INSECURE: 'true'
+        ports:
+          - 1025:1025
       mongo:
         image: mongo
         ports:

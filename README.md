@@ -44,6 +44,7 @@ print_r($ginfo->getServices()); // name, state, type, etc...
 print_r($ginfo->getPrinters()); // name, enabled
 print_r($ginfo->getSamba()); // files, services, connections, etc...
 print_r($ginfo->getSelinux()); // enabled, mode, policy
+print_r($ginfo->getSmtp('smtp.example.com', 587, \Ginfo\Info\Mail\Smtp::ENCRYPTION_STARTTLS, 'user', 'pass')); // banner, capabilities, tls, auth, time
 print_r($ginfo->getNginx()); // version, status, etc...
 print_r($ginfo->getAngie('http://localhost/status/')); // version, status, etc...
 print_r($ginfo->getHttpd()); // version, status, etc...
@@ -118,6 +119,7 @@ print_r($data->getStats());
 - Printer status (linux: need `lpstat`)
 - Samba status (linux: need `smbstatus`)
 - Selinux status (linux: need `sestatus`)
+- SMTP server availability (greeting, EHLO capabilities, STARTTLS, AUTH)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
 - Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`, `elasticsearch/opensearch`)
@@ -135,6 +137,7 @@ print_r($data->getStats());
 - adapt the code to modern standards
 - minimal php version 8.2
 - add selinux status info
+- add smtp availability check
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
 - add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb, elasticsearch/opensearch)

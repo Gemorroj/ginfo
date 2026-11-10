@@ -36,6 +36,7 @@ use Ginfo\Info\Database\SqlitePragmaTable;
 use Ginfo\Info\Disk;
 use Ginfo\Info\General;
 use Ginfo\Info\InfoInterface;
+use Ginfo\Info\Mail\Smtp;
 use Ginfo\Info\Memory;
 use Ginfo\Info\Network;
 use Ginfo\Info\Pci;
@@ -247,6 +248,41 @@ final readonly class Ginfo
     public function getSelinux(): ?Selinux
     {
         return $this->os->getSelinux();
+    }
+
+    /**
+     * SMTP server availability. The SMTP session is performed (greeting, EHLO, STARTTLS, AUTH), but no mail is sent.
+     *
+     * @param string      $host       host or ip address without scheme
+     * @param int         $port       port
+     * @param string      $encryption one of none, tls (implicit TLS, aka smtps), starttls. see Smtp::ENCRYPTION_*
+     * @param string|null $username   authenticate when not empty
+     * @param string|null $password   authentication password
+     * @param float       $timeout    connect and read timeout in seconds
+     * @param bool        $verifyPeer verify the server certificate and its name
+     */
+    public function getSmtp(
+        string $host = 'localhost',
+        int $port = 25,
+        string $encryption = Smtp::ENCRYPTION_NONE,
+        ?string $username = null,
+        ?string $password = null,
+        float $timeout = 3.0,
+        bool $verifyPeer = true,
+    ): Smtp {
+        $data = (new Parser\Mail\Smtp())->run($host, $port, $encryption, $username, $password, $timeout, $verifyPeer);
+
+        return new Smtp(
+            $data['host'],
+            $data['port'],
+            $data['encryption'],
+            $data['banner'],
+            $data['tls'],
+            $data['capabilities'],
+            $data['authenticated'],
+            $data['time'],
+            $data['error'],
+        );
     }
 
     /**

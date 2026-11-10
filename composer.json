@@ -33,7 +33,10 @@
         "httpd",
         "opcache",
         "apcu",
-        "fpm"
+        "fpm",
+        "smtp",
+        "mail",
+        "mailer"
     ],
     "license": "MIT",
     "authors": [
@@ -75,7 +78,8 @@
         "ext-redis": "For Redis/Valkey",
         "ext-memcached": "For Memcached",
         "ext-apcu": "For APCU",
-        "ext-mongodb": "For MongoDB"
+        "ext-mongodb": "For MongoDB",
+        "ext-openssl": "For SMTP over TLS"
     },
     "autoload": {
         "psr-4": {
