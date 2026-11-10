@@ -5,6 +5,10 @@ namespace Ginfo;
 use Ginfo\Exception\UnknownParserException;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
+use Ginfo\Info\Database\Clickhouse;
+use Ginfo\Info\Database\ClickhouseDisk;
+use Ginfo\Info\Database\ClickhouseProcess;
+use Ginfo\Info\Database\ClickhouseReplica;
 use Ginfo\Info\Database\Elasticsearch;
 use Ginfo\Info\Database\ElasticsearchStats;
 use Ginfo\Info\Database\ElasticsearchStatsIndices;
@@ -618,6 +622,73 @@ final readonly class Ginfo
         );
 
         return new Elasticsearch($stats);
+    }
+
+    /**
+     * ClickHouse status.
+     *
+     * @param string $url HTTP endpoint of the ClickHouse server, http://127.0.0.1:8123 for example
+     */
+    public function getClickhouse(
+        string $url = 'http://127.0.0.1:8123',
+        ?string $username = null,
+        ?string $password = null,
+        ?HttpClientInterface $httpClient = null,
+        int $timeout = 1,
+    ): ?Clickhouse {
+        $data = (new Parser\Database\Clickhouse())->run($url, $username, $password, $httpClient, $timeout);
+        if (null === $data) {
+            return null;
+        }
+
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new ClickhouseProcess(
+                $process['query_id'],
+                $process['user'],
+                $process['elapsed'],
+                $process['read_rows'],
+                $process['read_bytes'],
+                $process['memory_usage'],
+                $process['query'],
+            );
+        }
+
+        $replicas = [];
+        foreach ($data['replicas'] as $replica) {
+            $replicas[] = new ClickhouseReplica(
+                $replica['database'],
+                $replica['table'],
+                $replica['engine'],
+                $replica['is_readonly'],
+                $replica['absolute_delay'],
+                $replica['queue_size'],
+                $replica['total_replicas'],
+                $replica['active_replicas'],
+            );
+        }
+
+        $disks = [];
+        foreach ($data['disks'] as $disk) {
+            $disks[] = new ClickhouseDisk(
+                $disk['name'],
+                $disk['path'],
+                $disk['free_space'],
+                $disk['total_space'],
+                $disk['keep_free_space'],
+            );
+        }
+
+        return new Clickhouse(
+            $data['version'],
+            $data['uptime'],
+            $data['metrics'],
+            $data['events'],
+            $data['asynchronous_metrics'],
+            $processes,
+            $replicas,
+            $disks,
+        );
     }
 
     /**

@@ -59,6 +59,7 @@ $memcached->addServer('127.0.0.1', 11211);
 print_r($ginfo->getMemcached($memcached)); // version, stats, etc...
 print_r($ginfo->getMongo(new \MongoDB\Driver\Manager('mongodb://127.0.0.1:27017'))); // version, stats, etc...
 print_r($ginfo->getElasticsearch('https://127.0.0.1:9200/_cluster/stats', 'user', 'pass'); // version, stats, etc...
+print_r($ginfo->getClickhouse('http://127.0.0.1:8123', 'default', '')); // version, uptime, metrics, replicas, disks, etc...
 ```
 
 ### Custom parser example:
@@ -122,7 +123,7 @@ print_r($data->getStats());
 - SMTP server availability (greeting, EHLO capabilities, STARTTLS, AUTH)
 - PHP (basic info, `opcache`, `apcu`)
 - Web-Servers (`angie`, `nginx`, `httpd`, `caddy`)
-- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`, `elasticsearch/opensearch`)
+- Databases (`mysql/mariadb`, `postgres`, `manticore`, `redis/valkey`, `sqlite`, `memcached`, `mongodb`, `elasticsearch/opensearch`, `clickhouse`)
 
 
 ### Fork changes:
@@ -140,6 +141,6 @@ print_r($data->getStats());
 - add smtp availability check
 - add php info (basic, opcache, apcu)
 - add web-servers info (nginx, angie, httpd, caddy)
-- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb, elasticsearch/opensearch)
+- add databases info (mysql/mariadb, postgres, manticore, redis/valkey, sqlite, memcached, mongodb, elasticsearch/opensearch, clickhouse)
 - allow add custom parsers
 - use /proc/meminfo instead free for memory info

@@ -34,6 +34,13 @@ jobs:
         image: manticoresearch/manticore
         ports:
           - 9306:9306
+      clickhouse:
+        image: clickhouse/clickhouse-server
+        env:
+          CLICKHOUSE_USER: default
+          CLICKHOUSE_PASSWORD: clickhouse
+        ports:
+          - 8123:8123
       pgsql:
         image: postgres
         env:

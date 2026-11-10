@@ -25,6 +25,7 @@
         "manticore",
         "elasticsearch",
         "opensearch",
+        "clickhouse",
         "sqlite",
         "nginx",
         "angie",
