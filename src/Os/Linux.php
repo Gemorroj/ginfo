@@ -800,8 +800,11 @@ class Linux implements OsInterface
             }
         }
 
+        $osReleaseContents = self::getContents('/etc/os-release') ?? self::getContents('/usr/lib/os-release');
+
         return self::parseOsName(
             $release,
+            null !== $osReleaseContents ? self::parseOsRelease($osReleaseContents) : [],
             @\parse_ini_file('/etc/lsb-release') ?: null,
             @\file('/etc/SuSE-release', \FILE_SKIP_EMPTY_LINES) ?: null,
             self::getContents('/etc/debian_version'),
@@ -809,13 +812,24 @@ class Linux implements OsInterface
     }
 
     /**
+     * @param array<string, string>     $osRelease
      * @param array<string, mixed>|null $lsbRelease
      * @param string[]|null             $suseRelease
      */
-    private static function parseOsName(?string $release, ?array $lsbRelease, ?array $suseRelease, ?string $debianVersion): string
-    {
+    private static function parseOsName(
+        ?string $release,
+        array $osRelease,
+        ?array $lsbRelease,
+        ?array $suseRelease,
+        ?string $debianVersion,
+    ): string {
         if (null !== $release) {
             return $release;
+        }
+
+        $prettyName = $osRelease['PRETTY_NAME'] ?? '';
+        if ('' !== $prettyName) {
+            return $prettyName;
         }
 
         if (null !== $lsbRelease && isset($lsbRelease['DISTRIB_DESCRIPTION'])) {
@@ -831,6 +845,34 @@ class Linux implements OsInterface
         }
 
         return \PHP_OS;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private static function parseOsRelease(string $contents): array
+    {
+        $result = [];
+        foreach (\explode("\n", $contents) as $line) {
+            $line = \trim($line);
+            if ('' === $line || \str_starts_with($line, '#')) {
+                continue;
+            }
+
+            $parts = \explode('=', $line, 2);
+            if (2 !== \count($parts)) {
+                continue;
+            }
+
+            $key = \trim($parts[0]);
+            if ('' === $key) {
+                continue;
+            }
+
+            $result[$key] = \trim($parts[1], " \t\"'");
+        }
+
+        return $result;
     }
 
     /**

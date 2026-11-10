@@ -461,38 +461,53 @@ final class LinuxTest extends TestCase
     public static function provideOsName(): \Generator
     {
         yield 'release file wins' => [
-            ['CentOS Linux release 7.9', ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            ['CentOS Linux release 7.9', ['PRETTY_NAME' => 'Some Linux 1.0'], ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
             'CentOS Linux release 7.9',
         ];
 
+        yield 'os-release pretty name' => [
+            [null, ['ID' => 'custom', 'PRETTY_NAME' => 'Custom Linux 1.0'], ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            'Custom Linux 1.0',
+        ];
+
+        yield 'os-release without pretty name falls back to lsb' => [
+            [null, ['ID' => 'custom'], ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            'Ubuntu 24.04.1 LTS',
+        ];
+
         yield 'lsb release' => [
-            [null, ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
+            [null, [], ['DISTRIB_DESCRIPTION' => 'Ubuntu 24.04.1 LTS'], ['openSUSE Leap 15.5'], '12.5'],
             'Ubuntu 24.04.1 LTS',
         ];
 
         yield 'lsb release without description' => [
-            [null, ['DISTRIB_ID' => 'Ubuntu'], ['openSUSE Leap 15.5'], '12.5'],
+            [null, [], ['DISTRIB_ID' => 'Ubuntu'], ['openSUSE Leap 15.5'], '12.5'],
             'openSUSE Leap 15.5',
         ];
 
         yield 'suse release' => [
-            [null, null, ['openSUSE Leap 15.5'], '12.5'],
+            [null, [], null, ['openSUSE Leap 15.5'], '12.5'],
             'openSUSE Leap 15.5',
         ];
 
+        yield 'debian via os-release' => [
+            [null, ['ID' => 'debian', 'PRETTY_NAME' => 'Debian GNU/Linux 12 (bookworm)'], null, null, '12.5'],
+            'Debian GNU/Linux 12 (bookworm)',
+        ];
+
         yield 'debian version' => [
-            [null, null, null, '12.5'],
+            [null, [], null, null, '12.5'],
             'Debian 12.5',
         ];
 
         yield 'fallback' => [
-            [null, null, null, null],
+            [null, [], null, null, null],
             \PHP_OS,
         ];
     }
 
     /**
-     * @param array{0: string|null, 1: array<string, mixed>|null, 2: string[]|null, 3: string|null} $input
+     * @param array{0: string|null, 1: array<string, string>, 2: array<string, mixed>|null, 3: string[]|null, 4: string|null} $input
      */
     #[DataProvider('provideOsName')]
     public function testParseOsName(array $input, string $expected): void
@@ -500,5 +515,44 @@ final class LinuxTest extends TestCase
         $method = new \ReflectionMethod(Linux::class, 'parseOsName');
 
         self::assertSame($expected, $method->invoke(null, ...$input));
+    }
+
+    public static function provideOsRelease(): \Generator
+    {
+        yield 'typical file' => [
+            <<<'TXT'
+                NAME="Astra Linux"
+                ID=astra
+                ID_LIKE=debian
+                PRETTY_NAME="Astra Linux (Orel)"
+                VERSION_ID="1.7"
+                ANSI_COLOR="1;31"
+                # a comment
+                EMPTY=
+                INVALID LINE
+                TXT,
+            [
+                'NAME' => 'Astra Linux',
+                'ID' => 'astra',
+                'ID_LIKE' => 'debian',
+                'PRETTY_NAME' => 'Astra Linux (Orel)',
+                'VERSION_ID' => '1.7',
+                'ANSI_COLOR' => '1;31',
+                'EMPTY' => '',
+            ],
+        ];
+
+        yield 'empty' => ['', []];
+    }
+
+    /**
+     * @param array<string, string> $expected
+     */
+    #[DataProvider('provideOsRelease')]
+    public function testParseOsRelease(string $contents, array $expected): void
+    {
+        $method = new \ReflectionMethod(Linux::class, 'parseOsRelease');
+
+        self::assertSame($expected, $method->invoke(null, $contents));
     }
 }
