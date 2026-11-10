@@ -18,7 +18,13 @@ final readonly class Sestatus implements ParserInterface
      */
     public function run(?string $cwd = null, int $timeout = 1): ?array
     {
-        $process = new Process(['sestatus'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
+        $process = new Process(
+            [self::locateExecutable('sestatus', ['/usr/sbin/sestatus', '/sbin/sestatus', '/usr/bin/sestatus'])],
+            $cwd,
+            ['LANG' => 'C'],
+            null,
+            (float) $timeout,
+        );
         try {
             $process->mustRun();
         } catch (ProcessFailedException|ProcessStartFailedException $e) {

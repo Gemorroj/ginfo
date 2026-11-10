@@ -37,7 +37,9 @@
         "fpm",
         "smtp",
         "mail",
-        "mailer"
+        "mailer",
+        "selinux",
+        "apparmor"
     ],
     "license": "MIT",
     "authors": [

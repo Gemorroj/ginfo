@@ -52,6 +52,23 @@ final class CommonTraitTest extends TestCase
 
         self::assertSame($expected, $method->invoke(null, $output));
     }
+
+    public static function provideExecutable(): \Generator
+    {
+        yield 'existing path' => ['sestatus', ['/nonexistent/foo', \PHP_BINARY], \PHP_BINARY];
+        yield 'fallback to the bare name' => ['sestatus', ['/nonexistent/foo'], 'sestatus'];
+    }
+
+    /**
+     * @param string[] $paths
+     */
+    #[DataProvider('provideExecutable')]
+    public function testLocateExecutable(string $name, array $paths, string $expected): void
+    {
+        $method = new \ReflectionMethod(CommonTraitFixture::class, 'locateExecutable');
+
+        self::assertSame($expected, $method->invoke(null, $name, $paths));
+    }
 }
 
 final class CommonTraitFixture

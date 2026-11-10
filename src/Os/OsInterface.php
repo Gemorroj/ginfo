@@ -2,6 +2,7 @@
 
 namespace Ginfo\Os;
 
+use Ginfo\Info\Apparmor;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -133,4 +134,6 @@ interface OsInterface
     public function getSamba(): ?Samba;
 
     public function getSelinux(): ?Selinux;
+
+    public function getApparmor(): ?Apparmor;
 }

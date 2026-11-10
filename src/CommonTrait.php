@@ -29,6 +29,22 @@ trait CommonTrait
     }
 
     /**
+     * Locate an executable in the given paths, falling back to the bare name (PATH lookup).
+     *
+     * @param string[] $paths
+     */
+    protected static function locateExecutable(string $name, array $paths): string
+    {
+        foreach ($paths as $path) {
+            if (\is_executable($path)) {
+                return $path;
+            }
+        }
+
+        return $name;
+    }
+
+    /**
      * @param non-empty-string $delimiter
      *
      * @return array<string, string>

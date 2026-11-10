@@ -3,6 +3,7 @@
 namespace Ginfo\Os;
 
 use Ginfo\CommonTrait;
+use Ginfo\Info\Apparmor;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Disk\Drive;
@@ -1200,5 +1201,18 @@ class Linux implements OsInterface
         }
 
         return new Selinux($data['enabled'], $data['mode'], $data['policy']);
+    }
+
+    /**
+     * @param string|null $cwd The working directory or null to use the working dir of the current PHP process
+     */
+    public function getApparmor(?string $cwd = null): ?Apparmor
+    {
+        $data = (new \Ginfo\Parser\Apparmor())->run($cwd);
+        if (null === $data) {
+            return null;
+        }
+
+        return new Apparmor($data['enabled'], $data['profiles'], $data['processes']);
     }
 }

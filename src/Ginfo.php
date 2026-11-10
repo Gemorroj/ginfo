@@ -3,6 +3,7 @@
 namespace Ginfo;
 
 use Ginfo\Exception\UnknownParserException;
+use Ginfo\Info\Apparmor;
 use Ginfo\Info\Battery;
 use Ginfo\Info\Cpu;
 use Ginfo\Info\Database\Clickhouse;
@@ -252,6 +253,14 @@ final readonly class Ginfo
     public function getSelinux(): ?Selinux
     {
         return $this->os->getSelinux();
+    }
+
+    /**
+     * AppArmor status.
+     */
+    public function getApparmor(): ?Apparmor
+    {
+        return $this->os->getApparmor();
     }
 
     /**
