@@ -165,13 +165,7 @@ jobs:
             done
             curl -fsS "$FRANKENPHP_THREADS_URL" > /dev/null
           fi
-          if [ "${{ matrix.php }}" = "8.2" ] && [ "${{ matrix.deps }}" != "--prefer-lowest" ]; then
-            sudo apt-get update
-            sudo apt-get install -y gdb
-            gdb -batch -ex "set pagination off" -ex run -ex "thread apply all bt" --args php vendor/bin/phpunit --configuration phpunit.xml.dist
-          else
-            vendor/bin/phpunit --configuration phpunit.xml.dist
-          fi
+          vendor/bin/phpunit --configuration phpunit.xml.dist
 
   static-analysis:
     name: static analysis

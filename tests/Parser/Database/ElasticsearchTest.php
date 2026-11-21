@@ -5,14 +5,17 @@ namespace Ginfo\Tests\Parser\Database;
 use Ginfo\Ginfo;
 use Ginfo\Parser\Database\Elasticsearch;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpClient\NativeHttpClient;
+use Symfony\Component\HttpClient\HttpClient;
 
 final class ElasticsearchTest extends TestCase
 {
     public function testElasticsearch(): void
     {
-        // The curl-based client segfaults on PHP 8.2 in the GitHub Actions runner.
-        $httpClient = new NativeHttpClient([
+        if (\PHP_VERSION_ID < 80300 && 'true' === \getenv('GITHUB_ACTIONS')) {
+            self::markTestSkipped('Skipped on PHP 8.2 in GitHub Actions due to a PHP engine segfault in live HTTP tests');
+        }
+
+        $httpClient = HttpClient::create([
             'verify_peer' => false,
         ]);
         $data = (new Elasticsearch())->run('https://127.0.0.1:9200/_cluster/stats', 'admin', 'Qdfg!_13dZ', $httpClient);
