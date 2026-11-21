@@ -165,7 +165,11 @@ jobs:
             done
             curl -fsS "$FRANKENPHP_THREADS_URL" > /dev/null
           fi
-          vendor/bin/phpunit --configuration phpunit.xml.dist
+          if [ "${{ matrix.php }}" = "8.2" ]; then
+            vendor/bin/phpunit --configuration phpunit.xml.dist --process-isolation
+          else
+            vendor/bin/phpunit --configuration phpunit.xml.dist
+          fi
 
   static-analysis:
     name: static analysis
