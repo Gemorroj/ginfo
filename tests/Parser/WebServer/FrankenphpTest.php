@@ -39,9 +39,8 @@ final class FrankenphpTest extends TestCase
             if (null !== $process['VmSize']) {
                 self::assertIsNumeric($process['VmSize']);
             }
-            if (null !== $process['uptime']) {
-                self::assertIsInt($process['uptime']);
-            }
+            self::assertNotNull($process['uptime']);
+            self::assertIsInt($process['uptime']);
         }
 
         if (!$data['threads']) {
@@ -90,9 +89,8 @@ final class FrankenphpTest extends TestCase
         if (null !== $process->getVmSize()) {
             self::assertIsNumeric($process->getVmSize());
         }
-        if (null !== $process->getUptime()) {
-            self::assertIsInt($process->getUptime());
-        }
+        self::assertNotNull($process->getUptime());
+        self::assertIsInt($process->getUptime());
 
         if (!$frankenphp->getThreads()) {
             if (null !== self::getConfiguredThreadsUrl()) {

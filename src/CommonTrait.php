@@ -90,6 +90,9 @@ trait CommonTrait
 
         if ($pids) {
             $masterPid = $pids[0];
+            $systemUptime = self::parseSystemUptime(self::getContents('/proc/uptime') ?? '');
+            $clkTck = null !== $systemUptime ? self::getClkTck($cwd, $timeout) : 0;
+
             foreach ($pids as $pid) {
                 $pidProcess = [
                     'pid' => $pid,
@@ -106,12 +109,10 @@ trait CommonTrait
                     $pidProcess['VmSize'] = $pidStatusInfo['VmSize'];
                 }
 
-                $process = new Process(['ps', '-p', (string) $pid, '-o', 'etimes='], $cwd, ['LANG' => 'C'], null, (float) $timeout);
-                try {
-                    $process->mustRun();
-                    $pidProcess['uptime'] = self::parseUptime($process->getOutput());
-                } catch (ProcessFailedException|ProcessStartFailedException $e) {
-                    // ignore
+                // https://man7.org/linux/man-pages/man5/proc_pid_stat.5.html
+                $pidStat = self::getContents('/proc/'.$pid.'/stat');
+                if (null !== $pidStat && null !== $systemUptime) {
+                    $pidProcess['uptime'] = self::parseProcessUptime($pidStat, $systemUptime, $clkTck);
                 }
 
                 $out[] = $pidProcess;
@@ -140,10 +141,64 @@ trait CommonTrait
         return $result;
     }
 
-    protected static function parseUptime(string $output): ?int
+    /**
+     * @return float|null seconds since boot
+     */
+    private static function parseSystemUptime(string $uptime): ?float
     {
-        $output = \trim($output);
+        $parts = \preg_split('/\s+/', \trim($uptime));
+        if (!\is_array($parts) || !isset($parts[0]) || !\is_numeric($parts[0])) {
+            return null;
+        }
 
-        return '' === $output ? null : (int) $output;
+        return (float) $parts[0];
+    }
+
+    /**
+     * @return float|null start time in clock ticks since boot
+     */
+    private static function parsePidStatStartTime(string $stat): ?float
+    {
+        $pos = \strrpos($stat, ')');
+        if (false === $pos) {
+            return null;
+        }
+
+        $fields = \preg_split('/\s+/', \trim(\substr($stat, $pos + 2)));
+        if (!\is_array($fields) || !isset($fields[19]) || !\is_numeric($fields[19])) {
+            return null;
+        }
+
+        return (float) $fields[19];
+    }
+
+    private static function parseProcessUptime(string $stat, float $systemUptime, int $clkTck): ?int
+    {
+        if ($clkTck <= 0) {
+            return null;
+        }
+
+        $startTicks = self::parsePidStatStartTime($stat);
+        if (null === $startTicks) {
+            return null;
+        }
+
+        return \max(0, (int) ($systemUptime - $startTicks / $clkTck));
+    }
+
+    private static function getClkTck(?string $cwd, int $timeout): int
+    {
+        $process = new Process(['getconf', 'CLK_TCK'], $cwd, ['LANG' => 'C'], null, (float) $timeout);
+        try {
+            $process->mustRun();
+            $clkTck = (int) \trim($process->getOutput());
+            if ($clkTck > 0) {
+                return $clkTck;
+            }
+        } catch (ProcessFailedException|ProcessStartFailedException $e) {
+            // ignore
+        }
+
+        return 100;
     }
 }
