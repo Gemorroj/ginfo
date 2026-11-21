@@ -10,10 +10,6 @@ final class ClickhouseTest extends TestCase
 {
     public function testClickhouse(): void
     {
-        if (\PHP_VERSION_ID < 80300 && 'true' === \getenv('GITHUB_ACTIONS')) {
-            self::markTestSkipped('Skipped on PHP 8.2 in GitHub Actions due to a PHP engine segfault in live HTTP tests');
-        }
-
         $data = (new Clickhouse())->run('http://127.0.0.1:8123', 'default', 'clickhouse');
         if (null === $data) {
             self::markTestSkipped('ClickHouse is not found');

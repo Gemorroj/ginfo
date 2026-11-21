@@ -11,10 +11,6 @@ final class ElasticsearchTest extends TestCase
 {
     public function testElasticsearch(): void
     {
-        if (\PHP_VERSION_ID < 80300 && 'true' === \getenv('GITHUB_ACTIONS')) {
-            self::markTestSkipped('Skipped on PHP 8.2 in GitHub Actions due to a PHP engine segfault in live HTTP tests');
-        }
-
         $httpClient = HttpClient::create([
             'verify_peer' => false,
         ]);
