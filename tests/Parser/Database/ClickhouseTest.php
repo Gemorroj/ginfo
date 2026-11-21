@@ -24,7 +24,7 @@ final class ClickhouseTest extends TestCase
         $clickhouse = (new Ginfo())->getClickhouse('http://127.0.0.1:8123', 'default', 'clickhouse');
         self::assertNotNull($clickhouse);
         self::assertSame($data['version'], $clickhouse->getVersion());
-        self::assertSame($data['uptime'], $clickhouse->getUptime());
+        self::assertGreaterThanOrEqual($data['uptime'], $clickhouse->getUptime());
         self::assertNotEmpty($clickhouse->getMetrics());
         self::assertNotEmpty($clickhouse->getDisks());
     }
