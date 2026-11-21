@@ -30,6 +30,7 @@
         "nginx",
         "angie",
         "caddy",
+        "frankenphp",
         "apache",
         "httpd",
         "opcache",

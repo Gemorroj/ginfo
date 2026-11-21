@@ -1,0 +1,12 @@
+{
+	skip_install_trust
+	admin localhost:2020
+	frankenphp {
+		num_threads 2
+	}
+}
+
+:8082 {
+	root * /tmp/frankenphp/public
+	php_server
+}

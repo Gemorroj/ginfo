@@ -60,6 +60,10 @@ use Ginfo\Info\WebServer\AngieProcess;
 use Ginfo\Info\WebServer\Caddy;
 use Ginfo\Info\WebServer\CaddyBuildInfo;
 use Ginfo\Info\WebServer\CaddyProcess;
+use Ginfo\Info\WebServer\Frankenphp;
+use Ginfo\Info\WebServer\FrankenphpBuildInfo;
+use Ginfo\Info\WebServer\FrankenphpProcess;
+use Ginfo\Info\WebServer\FrankenphpThread;
 use Ginfo\Info\WebServer\Httpd;
 use Ginfo\Info\WebServer\HttpdProcess;
 use Ginfo\Info\WebServer\HttpdStatus;
@@ -463,6 +467,65 @@ final readonly class Ginfo
             $data['list_modules'],
             $processes,
             $data['config'],
+        );
+    }
+
+    /**
+     * FrankenPHP status.
+     *
+     * @param string|null $threadsUrl uri for the FrankenPHP threads page http://localhost:2019/frankenphp/threads for example. see https://frankenphp.dev/docs/metrics/#threads-state-endpoint
+     * @param string|null $cwd        The working directory or null to use the working dir of the current PHP process
+     */
+    public function getFrankenphp(?string $threadsUrl = 'http://localhost:2019/frankenphp/threads', ?string $cwd = null, ?HttpClientInterface $httpClient = null): ?Frankenphp
+    {
+        $data = (new Parser\WebServer\Frankenphp())->run($threadsUrl, $cwd, $httpClient);
+        if (!$data) {
+            return null;
+        }
+
+        $processes = [];
+        foreach ($data['processes'] as $process) {
+            $processes[] = new FrankenphpProcess(
+                $process['pid'],
+                $process['master'],
+                $process['VmPeak'],
+                $process['VmSize'],
+                $process['uptime'],
+            );
+        }
+
+        $threads = [];
+        foreach ($data['threads'] as $thread) {
+            $threads[] = new FrankenphpThread(
+                $thread['index'],
+                $thread['name'],
+                $thread['state'],
+                $thread['is_waiting'],
+                $thread['is_busy'],
+                $thread['waiting_since_milliseconds'],
+                $thread['current_uri'],
+                $thread['current_method'],
+                $thread['request_started_at'],
+                $thread['request_count'],
+                $thread['memory_usage'],
+            );
+        }
+
+        $buildInfo = new FrankenphpBuildInfo(
+            $data['build_info']['go'],
+            $data['build_info']['path'],
+            $data['build_info']['mod'],
+            $data['build_info']['dep'],
+            $data['build_info']['build'],
+        );
+
+        return new Frankenphp(
+            $data['version'],
+            $buildInfo,
+            $data['list_modules'],
+            $processes,
+            $threads,
+            $data['reserved_thread_count'],
         );
     }
 

@@ -122,6 +122,13 @@ jobs:
           }" | sudo tee /etc/caddy/Caddyfile
           sudo systemctl restart caddy
 
+      - name: Install FrankenPHP
+        if: matrix.php == '8.5' && matrix.deps == ''
+        run: |
+          sudo curl -fsSL -o /usr/local/bin/frankenphp https://github.com/php/frankenphp/releases/latest/download/frankenphp-linux-x86_64
+          sudo chmod +x /usr/local/bin/frankenphp
+          frankenphp version
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -142,7 +149,23 @@ jobs:
             composer info -D
 
       - name: Tests
-        run: vendor/bin/phpunit --configuration phpunit.xml.dist
+        run: |
+          if command -v frankenphp > /dev/null 2>&1; then
+            mkdir -p /tmp/frankenphp/public
+            echo '<?php echo "ok";' > /tmp/frankenphp/public/index.php
+            frankenphp run --config tests/Fixtures/frankenphp/Caddyfile > /tmp/frankenphp.log 2>&1 &
+            FRANKENPHP_PID=$!
+            trap 'kill "$FRANKENPHP_PID" 2>/dev/null || true' EXIT
+            export FRANKENPHP_THREADS_URL=http://localhost:2020/frankenphp/threads
+            for i in $(seq 1 30); do
+              if curl -fsS "$FRANKENPHP_THREADS_URL" > /dev/null; then
+                break
+              fi
+              sleep 1
+            done
+            curl -fsS "$FRANKENPHP_THREADS_URL" > /dev/null
+          fi
+          vendor/bin/phpunit --configuration phpunit.xml.dist
 
   static-analysis:
     name: static analysis
