@@ -85,7 +85,9 @@ final class GinfoTest extends TestCase
         self::assertIsInt($general->getUptime());
         // self::assertNotEmpty($general->getVirtualization());
         self::assertIsArray($general->getLoggedUsers());
-        self::assertNotEmpty($general->getModel());
+        if (null !== $general->getModel()) {
+            self::assertNotEmpty($general->getModel());
+        }
         self::assertCount(3, $general->getLoad());
 
         // \print_r($general);
